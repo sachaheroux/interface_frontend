@@ -4,8 +4,10 @@ import SystemDescription from "./components/SystemDescription";
 import AlgorithmFormAndResult from "./components/AlgorithmFormAndResult";
 import FlowshopSPTForm from "./components/FlowshopSPTForm";
 import FlowshopEDDForm from "./components/FlowshopEDDForm";
+import FlowshopJohnsonForm from "./components/FlowshopJohnsonForm";
 import FlowshopSPTInfo from "./components/FlowshopSPTInfo";
 import FlowshopEDDInfo from "./components/FlowshopEDDInfo";
+import FlowshopJohnsonInfo from "./components/FlowshopJohnsonInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -98,14 +100,16 @@ function App() {
           {systeme && !algorithme && <SystemDescription system={systeme} />}
           {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTForm />}
           {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDForm />}
-          {algorithme && !(systeme === "Flowshop" && (algorithme === "SPT" || algorithme === "EDD")) && (
+          {systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonForm />}
+          {algorithme && !(systeme === "Flowshop" && ["SPT", "EDD", "Johnson"].includes(algorithme)) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
 
-        {/* Info Flowshop */}
+        {/* Infos à droite */}
         {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTInfo />}
         {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDInfo />}
+        {systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonInfo />}
       </div>
     </div>
   );

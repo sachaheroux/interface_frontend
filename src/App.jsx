@@ -3,7 +3,9 @@ import WelcomeView from "./components/WelcomeView";
 import SystemDescription from "./components/SystemDescription";
 import AlgorithmFormAndResult from "./components/AlgorithmFormAndResult";
 import FlowshopSPTForm from "./components/FlowshopSPTForm";
+import FlowshopEDDForm from "./components/FlowshopEDDForm";
 import FlowshopSPTInfo from "./components/FlowshopSPTInfo";
+import FlowshopEDDInfo from "./components/FlowshopEDDInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -95,19 +97,22 @@ function App() {
           {!systeme && !algorithme && <WelcomeView />}
           {systeme && !algorithme && <SystemDescription system={systeme} />}
           {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTForm />}
-          {algorithme && !(systeme === "Flowshop" && algorithme === "SPT") && (
+          {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDForm />}
+          {algorithme && !(systeme === "Flowshop" && (algorithme === "SPT" || algorithme === "EDD")) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
 
-        {/* Info Flowshop SPT */}
+        {/* Info Flowshop */}
         {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTInfo />}
+        {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDInfo />}
       </div>
     </div>
   );
 }
 
 export default App;
+
 
 
 

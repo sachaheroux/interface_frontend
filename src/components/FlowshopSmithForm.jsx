@@ -27,6 +27,7 @@ function FlowshopSmithForm() {
     setGanttUrl(null);
 
     const formattedJobs = jobs.map(job => [job.duration, job.dueDate]);
+console.log("Jobs envoyés à /smith :", formattedJobs);
 
     fetch(`${API_URL}/smith`, {
       method: "POST",

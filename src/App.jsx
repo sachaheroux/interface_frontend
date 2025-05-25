@@ -5,16 +5,18 @@ import AlgorithmFormAndResult from "./components/AlgorithmFormAndResult";
 import FlowshopSPTForm from "./components/FlowshopSPTForm";
 import FlowshopEDDForm from "./components/FlowshopEDDForm";
 import FlowshopJohnsonForm from "./components/FlowshopJohnsonForm";
+import FlowshopJohnsonModifieForm from "./components/FlowshopJohnsonModifieForm";
 import FlowshopSPTInfo from "./components/FlowshopSPTInfo";
 import FlowshopEDDInfo from "./components/FlowshopEDDInfo";
 import FlowshopJohnsonInfo from "./components/FlowshopJohnsonInfo";
+import FlowshopJohnsonModifieInfo from "./components/FlowshopJohnsonModifieInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
   const [algorithme, setAlgorithme] = useState("");
 
   const systemes = {
-    "Flowshop": ["SPT", "EDD", "FSSP", "Johnson", "Johnson modifié", "Contraintes", "Smith"],
+    "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Smith"],
     "Jobshop": ["SPT", "EDD", "Contraintes"],
     "Ligne d'assemblage": ["COMSOAL", "LPT", "PL"],
     "Ligne de transfert": ["Markov", "LIBA"],
@@ -101,7 +103,8 @@ function App() {
           {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTForm />}
           {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDForm />}
           {systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonForm />}
-          {algorithme && !(systeme === "Flowshop" && ["SPT", "EDD", "Johnson"].includes(algorithme)) && (
+          {systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieForm />}
+          {algorithme && !(systeme === "Flowshop" && ["SPT", "EDD", "Johnson", "Johnson modifié"].includes(algorithme)) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -110,6 +113,7 @@ function App() {
         {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTInfo />}
         {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDInfo />}
         {systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonInfo />}
+        {systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
       </div>
     </div>
   );

@@ -6,10 +6,12 @@ import FlowshopSPTForm from "./components/FlowshopSPTForm";
 import FlowshopEDDForm from "./components/FlowshopEDDForm";
 import FlowshopJohnsonForm from "./components/FlowshopJohnsonForm";
 import FlowshopJohnsonModifieForm from "./components/FlowshopJohnsonModifieForm";
+import FlowshopSmithForm from "./components/FlowshopSmithForm";
 import FlowshopSPTInfo from "./components/FlowshopSPTInfo";
 import FlowshopEDDInfo from "./components/FlowshopEDDInfo";
 import FlowshopJohnsonInfo from "./components/FlowshopJohnsonInfo";
 import FlowshopJohnsonModifieInfo from "./components/FlowshopJohnsonModifieInfo";
+import FlowshopSmithInfo from "./components/FlowshopSmithInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -104,7 +106,8 @@ function App() {
           {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDForm />}
           {systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonForm />}
           {systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieForm />}
-          {algorithme && !(systeme === "Flowshop" && ["SPT", "EDD", "Johnson", "Johnson modifié"].includes(algorithme)) && (
+          {systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithForm />}
+          {algorithme && !(systeme === "Flowshop" && ["SPT", "EDD", "Johnson", "Johnson modifié", "Smith"].includes(algorithme)) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -114,6 +117,7 @@ function App() {
         {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDInfo />}
         {systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonInfo />}
         {systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
+        {systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithInfo />}
       </div>
     </div>
   );

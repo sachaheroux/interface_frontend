@@ -108,3 +108,17 @@
   margin-top: 0;
   color: #1d4ed8;
 }
+
+.unitSelector {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.select {
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  border-radius: 0.4rem;
+  border: 1px solid #cbd5e1;
+}

@@ -1,3 +1,4 @@
+// FlowshopSmithForm.jsx
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 
@@ -81,7 +82,6 @@ function FlowshopSmithForm() {
           <input
             type="text"
             inputMode="decimal"
-            step="any"
             value={job[0]}
             onChange={e => {
               const newJobs = [...jobs];
@@ -93,7 +93,6 @@ function FlowshopSmithForm() {
           <input
             type="text"
             inputMode="decimal"
-            step="any"
             value={job[1]}
             onChange={e => {
               const newJobs = [...jobs];

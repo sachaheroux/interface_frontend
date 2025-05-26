@@ -1,7 +1,8 @@
+// ✅ FlowshopEDDForm.jsx
 import { useState } from "react";
-import styles from "./EDDForm.module.css";
+import styles from "./FlowshopSPTForm.module.css";
 
-function EDDForm() {
+function FlowshopEDDForm() {
   const [jobs, setJobs] = useState([
     [{ machine: "0", duration: "3" }, { machine: "1", duration: "2" }],
     [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
@@ -185,5 +186,6 @@ function EDDForm() {
   );
 }
 
-export default EDDForm;
+export default FlowshopEDDForm;
+
 

@@ -1,7 +1,8 @@
+// FlowshopJohnsonForm.jsx
 import { useState } from "react";
-import styles from "./JohnsonForm.module.css";
+import styles from "./FlowshopSPTForm.module.css";
 
-function JohnsonForm() {
+function FlowshopJohnsonForm() {
   const [jobs, setJobs] = useState([
     ["3", "2"],
     ["2", "4"]
@@ -80,7 +81,7 @@ function JohnsonForm() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Planification Johnson</h2>
+      <h2 className={styles.title}>Planification Flowshop - Johnson</h2>
 
       <div className={styles.buttonGroup}>
         <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
@@ -176,5 +177,6 @@ function JohnsonForm() {
   );
 }
 
-export default JohnsonForm;
+export default FlowshopJohnsonForm;
+
 

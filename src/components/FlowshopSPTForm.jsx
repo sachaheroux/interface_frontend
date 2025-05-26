@@ -92,7 +92,7 @@ function FlowshopSPTForm() {
                 value={op.machine}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].machine = parseInt(e.target.value);
+                  newJobs[jobIdx][opIdx].machine = parseInt(e.target.value, 10);
                   setJobs(newJobs);
                 }}
               />
@@ -102,8 +102,9 @@ function FlowshopSPTForm() {
                 step="any"
                 value={op.duration}
                 onChange={e => {
+                  const val = parseFloat(e.target.value.replace(",", "."));
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].duration = parseFloat(e.target.value.replace(",", "."));
+                  newJobs[jobIdx][opIdx].duration = isNaN(val) ? 0 : val;
                   setJobs(newJobs);
                 }}
               />
@@ -121,8 +122,9 @@ function FlowshopSPTForm() {
             step="any"
             value={d}
             onChange={e => {
+              const val = parseFloat(e.target.value.replace(",", "."));
               const newDates = [...dueDates];
-              newDates[i] = parseFloat(e.target.value.replace(",", "."));
+              newDates[i] = isNaN(val) ? 0 : val;
               setDueDates(newDates);
             }}
           />
@@ -178,6 +180,7 @@ function FlowshopSPTForm() {
 }
 
 export default FlowshopSPTForm;
+
 
 
 

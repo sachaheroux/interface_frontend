@@ -1,12 +1,12 @@
 import { useState } from "react";
-import styles from "./FlowshopSPTForm.module.css";
+import styles from "./EDDForm.module.css";
 
-function FlowshopEDDForm() {
+function EDDForm() {
   const [jobs, setJobs] = useState([
-    [{ machine: 0, duration: 3 }, { machine: 1, duration: 2 }],
-    [{ machine: 0, duration: 2 }, { machine: 1, duration: 4 }]
+    [{ machine: "0", duration: "3" }, { machine: "1", duration: "2" }],
+    [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
   ]);
-  const [dueDates, setDueDates] = useState([10, 9]);
+  const [dueDates, setDueDates] = useState(["10", "9"]);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
@@ -15,9 +15,9 @@ function FlowshopEDDForm() {
 
   const addJob = () => {
     const machineCount = jobs[0].length;
-    const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: i, duration: 1 }));
+    const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: "1" }));
     setJobs([...jobs, newJob]);
-    setDueDates([...dueDates, 10]);
+    setDueDates([...dueDates, "10"]);
   };
 
   const removeJob = () => {
@@ -28,7 +28,7 @@ function FlowshopEDDForm() {
   };
 
   const addTaskToAllJobs = () => {
-    const updatedJobs = jobs.map(job => [...job, { machine: job.length, duration: 1 }]);
+    const updatedJobs = jobs.map(job => [...job, { machine: String(job.length), duration: "1" }]);
     setJobs(updatedJobs);
   };
 
@@ -40,34 +40,42 @@ function FlowshopEDDForm() {
   const handleSubmit = () => {
     setError(null);
     setGanttUrl(null);
-    const formattedJobs = jobs.map(job => job.map(op => [op.machine, op.duration]));
 
-    fetch(`${API_URL}/edd`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jobs_data: formattedJobs, due_dates: dueDates })
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Erreur API");
-        return res.json();
+    try {
+      const formattedJobs = jobs.map(job =>
+        job.map(op => [parseInt(op.machine, 10), parseFloat(op.duration.replace(",", "."))])
+      );
+      const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
+
+      fetch(`${API_URL}/edd`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates })
       })
-      .then(data => {
-        setResult(data);
-        return fetch(`${API_URL}/edd/gantt`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jobs_data: formattedJobs, due_dates: dueDates })
-        });
-      })
-      .then(res => {
-        if (!res.ok) throw new Error("Erreur Gantt API");
-        return res.blob();
-      })
-      .then(blob => {
-        const url = URL.createObjectURL(blob);
-        setGanttUrl(url);
-      })
-      .catch(err => setError(err.message));
+        .then(res => {
+          if (!res.ok) throw new Error("Erreur API");
+          return res.json();
+        })
+        .then(data => {
+          setResult(data);
+          return fetch(`${API_URL}/edd/gantt`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates })
+          });
+        })
+        .then(res => {
+          if (!res.ok) throw new Error("Erreur Gantt API");
+          return res.blob();
+        })
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          setGanttUrl(url);
+        })
+        .catch(err => setError(err.message));
+    } catch (e) {
+      setError("Erreur dans les données saisies.");
+    }
   };
 
   return (
@@ -92,17 +100,18 @@ function FlowshopEDDForm() {
                 value={op.machine}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].machine = parseInt(e.target.value);
+                  newJobs[jobIdx][opIdx].machine = e.target.value;
                   setJobs(newJobs);
                 }}
               />
               Durée :
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={op.duration}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].duration = parseInt(e.target.value);
+                  newJobs[jobIdx][opIdx].duration = e.target.value;
                   setJobs(newJobs);
                 }}
               />
@@ -116,11 +125,12 @@ function FlowshopEDDForm() {
         <div key={i} className={styles.taskRow}>
           Job {i} :
           <input
-            type="number"
+            type="text"
+            inputMode="decimal"
             value={d}
             onChange={e => {
               const newDates = [...dueDates];
-              newDates[i] = parseInt(e.target.value);
+              newDates[i] = e.target.value;
               setDueDates(newDates);
             }}
           />
@@ -175,4 +185,5 @@ function FlowshopEDDForm() {
   );
 }
 
-export default FlowshopEDDForm;
+export default EDDForm;
+

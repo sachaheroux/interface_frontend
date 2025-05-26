@@ -99,10 +99,11 @@ function FlowshopSPTForm() {
               Durée :
               <input
                 type="number"
+                step="any"
                 value={op.duration}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].duration = parseInt(e.target.value);
+                  newJobs[jobIdx][opIdx].duration = parseFloat(e.target.value);
                   setJobs(newJobs);
                 }}
               />
@@ -117,10 +118,11 @@ function FlowshopSPTForm() {
           Job {i} :
           <input
             type="number"
+            step="any"
             value={d}
             onChange={e => {
               const newDates = [...dueDates];
-              newDates[i] = parseInt(e.target.value);
+              newDates[i] = parseFloat(e.target.value);
               setDueDates(newDates);
             }}
           />
@@ -176,6 +178,7 @@ function FlowshopSPTForm() {
 }
 
 export default FlowshopSPTForm;
+
 
 
 

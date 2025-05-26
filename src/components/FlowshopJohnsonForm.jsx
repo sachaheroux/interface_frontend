@@ -1,4 +1,3 @@
-// FlowshopJohnsonForm.jsx
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 
@@ -8,6 +7,7 @@ function FlowshopJohnsonForm() {
     ["2", "4"]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
+  const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
@@ -51,7 +51,7 @@ function FlowshopJohnsonForm() {
       fetch(`${API_URL}/johnson`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates })
+        body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates, unite })
       })
         .then(res => {
           if (!res.ok) throw new Error("Erreur API");
@@ -62,7 +62,7 @@ function FlowshopJohnsonForm() {
           return fetch(`${API_URL}/johnson/gantt`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates })
+            body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates, unite })
           });
         })
         .then(res => {
@@ -83,6 +83,15 @@ function FlowshopJohnsonForm() {
     <div className={styles.container}>
       <h2 className={styles.title}>Planification Flowshop - Johnson</h2>
 
+      <div className={styles.unitSelector}>
+        <label>Unité de temps :</label>
+        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
+          <option value="minutes">minutes</option>
+          <option value="heures">heures</option>
+          <option value="jours">jours</option>
+        </select>
+      </div>
+
       <div className={styles.buttonGroup}>
         <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
         <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
@@ -95,7 +104,7 @@ function FlowshopJohnsonForm() {
           <h4>Job {jobIdx}</h4>
           {job.map((value, idx) => (
             <div key={idx} className={styles.taskRow}>
-              Tâche {idx} :
+              Tâche {idx} ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"
@@ -111,7 +120,7 @@ function FlowshopJohnsonForm() {
         </div>
       ))}
 
-      <h4 className={styles.subtitle}>Dates dues</h4>
+      <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
       {dueDates.map((d, i) => (
         <div key={i} className={styles.taskRow}>
           Job {i} :
@@ -178,5 +187,6 @@ function FlowshopJohnsonForm() {
 }
 
 export default FlowshopJohnsonForm;
+
 
 

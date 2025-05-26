@@ -1,4 +1,3 @@
-// FlowshopContraintesForm.jsx
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 
@@ -8,6 +7,7 @@ function FlowshopContraintesForm() {
     [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
+  const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
@@ -51,7 +51,7 @@ function FlowshopContraintesForm() {
       fetch(`${API_URL}/contraintes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates })
+        body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates, unite })
       })
         .then(res => {
           if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
@@ -62,7 +62,7 @@ function FlowshopContraintesForm() {
           return fetch(`${API_URL}/contraintes/gantt`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates })
+            body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates, unite })
           });
         })
         .then(res => {
@@ -82,6 +82,15 @@ function FlowshopContraintesForm() {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Planification Flowshop - Contraintes (CP)</h2>
+
+      <div className={styles.unitSelector}>
+        <label>Unité de temps :</label>
+        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
+          <option value="minutes">minutes</option>
+          <option value="heures">heures</option>
+          <option value="jours">jours</option>
+        </select>
+      </div>
 
       <div className={styles.buttonGroup}>
         <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
@@ -105,7 +114,7 @@ function FlowshopContraintesForm() {
                   setJobs(newJobs);
                 }}
               />
-              Durée :
+              Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"
@@ -121,7 +130,7 @@ function FlowshopContraintesForm() {
         </div>
       ))}
 
-      <h4 className={styles.subtitle}>Dates dues</h4>
+      <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
       {dueDates.map((d, i) => (
         <div key={i} className={styles.taskRow}>
           Job {i} :
@@ -187,3 +196,4 @@ function FlowshopContraintesForm() {
 }
 
 export default FlowshopContraintesForm;
+

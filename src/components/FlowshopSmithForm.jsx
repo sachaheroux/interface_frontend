@@ -1,4 +1,3 @@
-// FlowshopSmithForm.jsx
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 
@@ -7,6 +6,7 @@ function FlowshopSmithForm() {
     ["10", "25"],
     ["8", "20"]
   ]);
+  const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
@@ -37,7 +37,7 @@ function FlowshopSmithForm() {
       fetch(`${API_URL}/smith`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobs: formattedJobs })
+        body: JSON.stringify({ jobs: formattedJobs, unite })
       })
         .then(res => {
           if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
@@ -48,7 +48,7 @@ function FlowshopSmithForm() {
           return fetch(`${API_URL}/smith/gantt`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ jobs: formattedJobs })
+            body: JSON.stringify({ jobs: formattedJobs, unite })
           });
         })
         .then(res => {
@@ -69,6 +69,15 @@ function FlowshopSmithForm() {
     <div className={styles.container}>
       <h2 className={styles.title}>Planification Flowshop - Smith</h2>
 
+      <div className={styles.unitSelector}>
+        <label>Unité de temps :</label>
+        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
+          <option value="minutes">minutes</option>
+          <option value="heures">heures</option>
+          <option value="jours">jours</option>
+        </select>
+      </div>
+
       <div className={styles.buttonGroup}>
         <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
         <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
@@ -78,7 +87,7 @@ function FlowshopSmithForm() {
       {jobs.map((job, idx) => (
         <div key={idx} className={styles.taskRow}>
           Job {idx} :
-          Durée :
+          Durée ({unite}) :
           <input
             type="text"
             inputMode="decimal"
@@ -89,7 +98,7 @@ function FlowshopSmithForm() {
               setJobs(newJobs);
             }}
           />
-          Date due :
+          Date due ({unite}) :
           <input
             type="text"
             inputMode="decimal"
@@ -132,4 +141,5 @@ function FlowshopSmithForm() {
 }
 
 export default FlowshopSmithForm;
+
 

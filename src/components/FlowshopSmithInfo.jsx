@@ -12,17 +12,14 @@ function FlowshopSmithInfo() {
     }}>
       <h4 style={{ marginTop: 0, color: "#1d4ed8" }}>À propos de l'algorithme de Smith</h4>
       <p>
-        L'algorithme de Smith est une méthode d'ordonnancement à une seule machine basée sur les dates d’échéance.
-        Il sélectionne les jobs admissibles dont la date d’échéance est postérieure au temps total restant,
-        puis les ordonne en plaçant les plus longs en premier.
+        L'algorithme de Smith est une méthode d'ordonnancement appliquée à un ensemble de jobs caractérisés par leur temps de traitement et leur date due. Il vise à déterminer une séquence optimale qui minimise le flowtime, le nombre moyen de jobs en cours, et le retard cumulé.
       </p>
       <p>
-        Cette approche permet de minimiser le retard cumulé tout en offrant une séquence performante sur le flowtime
-        et le nombre moyen de jobs dans le système.
+        <strong>Contraintes importantes :</strong><br/>
+        Smith ne sélectionne que les jobs dits "admissibles", c'est-à-dire ceux dont la date due est supérieure ou égale au temps total restant à traiter (τ). Si aucun job ne respecte cette contrainte, l'algorithme ne peut générer de séquence valide, et un message explicite est retourné.
       </p>
       <p>
-        C’est une méthode utile pour les environnements où les ressources sont limitées à une machine et où les
-        priorités de livraison sont importantes.
+        Cette contrainte reflète une réalité de planification stricte : certains jobs sont écartés si leur échéance est trop courte pour être atteinte même avec un traitement immédiat.
       </p>
     </div>
   );

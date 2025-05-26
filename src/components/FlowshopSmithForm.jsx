@@ -3,8 +3,8 @@ import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopSmithForm() {
   const [jobs, setJobs] = useState([
-    { duration: 10, dueDate: 15 },
-    { duration: 5, dueDate: 12 }
+    [10, 25],
+    [8, 20]
   ]);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -13,7 +13,7 @@ function FlowshopSmithForm() {
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    setJobs([...jobs, { duration: 1, dueDate: 10 }]);
+    setJobs([...jobs, [1, 10]]);
   };
 
   const removeJob = () => {
@@ -24,18 +24,16 @@ function FlowshopSmithForm() {
 
   const handleSubmit = () => {
     setError(null);
+    setResult(null);
     setGanttUrl(null);
-
-    const formattedJobs = jobs.map(job => [job.duration, job.dueDate]);
-console.log("Jobs envoyés à /smith :", formattedJobs);
 
     fetch(`${API_URL}/smith`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jobs: formattedJobs })
+      body: JSON.stringify({ jobs })
     })
       .then(res => {
-        if (!res.ok) throw new Error("Erreur API");
+        if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
         return res.json();
       })
       .then(data => {
@@ -43,7 +41,7 @@ console.log("Jobs envoyés à /smith :", formattedJobs);
         return fetch(`${API_URL}/smith/gantt`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jobs: formattedJobs })
+          body: JSON.stringify({ jobs })
         });
       })
       .then(res => {
@@ -59,34 +57,35 @@ console.log("Jobs envoyés à /smith :", formattedJobs);
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Planification - Règle de Smith</h2>
+      <h2 className={styles.title}>Planification Flowshop - Smith</h2>
 
       <div className={styles.buttonGroup}>
         <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
         <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
       </div>
 
+      <h4 className={styles.subtitle}>Jobs</h4>
       {jobs.map((job, idx) => (
         <div key={idx} className={styles.taskRow}>
           Job {idx} :
           Durée :
           <input
             type="number"
-            value={job.duration}
+            value={job[0]}
             onChange={e => {
-              const updatedJobs = [...jobs];
-              updatedJobs[idx].duration = parseInt(e.target.value);
-              setJobs(updatedJobs);
+              const updated = [...jobs];
+              updated[idx][0] = parseFloat(e.target.value);
+              setJobs(updated);
             }}
           />
           Date due :
           <input
             type="number"
-            value={job.dueDate}
+            value={job[1]}
             onChange={e => {
-              const updatedJobs = [...jobs];
-              updatedJobs[idx].dueDate = parseInt(e.target.value);
-              setJobs(updatedJobs);
+              const updated = [...jobs];
+              updated[idx][1] = parseFloat(e.target.value);
+              setJobs(updated);
             }}
           />
         </div>
@@ -99,12 +98,10 @@ console.log("Jobs envoyés à /smith :", formattedJobs);
       {result && (
         <div className={styles.resultBlock}>
           <h3>Résultats</h3>
+          <div><strong>Séquence :</strong> {JSON.stringify(result.sequence)}</div>
           <div><strong>Flowtime :</strong> {result.flowtime}</div>
-          <div><strong>Nombre de jobs (N) :</strong> {result.N}</div>
+          <div><strong>Nombre moyen de jobs (N) :</strong> {result.N}</div>
           <div><strong>Retard cumulé :</strong> {result.cumulative_delay}</div>
-
-          <h4>Séquence optimale</h4>
-          <div>{result.sequence.join(" → ")}</div>
 
           {ganttUrl && (
             <>

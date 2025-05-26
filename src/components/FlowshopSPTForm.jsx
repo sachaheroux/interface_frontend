@@ -89,10 +89,11 @@ function FlowshopSPTForm() {
               Machine :
               <input
                 type="number"
+                step="any"
                 value={op.machine}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].machine = parseInt(e.target.value);
+                  newJobs[jobIdx][opIdx].machine = parseFloat(e.target.value);
                   setJobs(newJobs);
                 }}
               />
@@ -178,6 +179,7 @@ function FlowshopSPTForm() {
 }
 
 export default FlowshopSPTForm;
+
 
 
 

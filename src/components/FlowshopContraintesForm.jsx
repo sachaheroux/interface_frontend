@@ -79,6 +79,16 @@ function FlowshopContraintesForm() {
     }
   };
 
+  const handleDownloadGantt = () => {
+    if (!ganttUrl) return;
+    const link = document.createElement("a");
+    link.href = ganttUrl;
+    link.download = "diagramme_gantt.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Planification Flowshop - Contraintes (CP)</h2>
@@ -187,6 +197,9 @@ function FlowshopContraintesForm() {
                 alt="Gantt"
                 style={{ width: "100%", maxWidth: "700px", marginTop: "1rem", borderRadius: "0.5rem" }}
               />
+              <button className={styles.downloadButton} onClick={handleDownloadGantt}>
+                Télécharger le diagramme de Gantt
+              </button>
             </>
           )}
         </div>
@@ -196,4 +209,5 @@ function FlowshopContraintesForm() {
 }
 
 export default FlowshopContraintesForm;
+
 

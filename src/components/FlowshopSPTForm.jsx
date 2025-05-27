@@ -7,6 +7,8 @@ function FlowshopSPTForm() {
     [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
+  const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
+  const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1"]);
   const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -19,23 +21,29 @@ function FlowshopSPTForm() {
     const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: "1" }));
     setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
+    setJobNames([...jobNames, `Job ${jobs.length}`]);
   };
 
   const removeJob = () => {
     if (jobs.length > 1) {
       setJobs(jobs.slice(0, -1));
       setDueDates(dueDates.slice(0, -1));
+      setJobNames(jobNames.slice(0, -1));
     }
   };
 
   const addTaskToAllJobs = () => {
     const updatedJobs = jobs.map(job => [...job, { machine: String(job.length), duration: "1" }]);
     setJobs(updatedJobs);
+    setMachineNames([...machineNames, `Machine ${machineNames.length}`]);
   };
 
   const removeTaskFromAllJobs = () => {
-    const updatedJobs = jobs.map(job => job.length > 1 ? job.slice(0, -1) : job);
-    setJobs(updatedJobs);
+    if (jobs[0].length > 1) {
+      const updatedJobs = jobs.map(job => job.slice(0, -1));
+      setJobs(updatedJobs);
+      setMachineNames(machineNames.slice(0, -1));
+    }
   };
 
   const handleSubmit = () => {
@@ -48,10 +56,18 @@ function FlowshopSPTForm() {
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
 
+      const payload = {
+        jobs_data: formattedJobs,
+        due_dates: formattedDueDates,
+        unite,
+        job_names: jobNames,
+        machine_names: machineNames
+      };
+
       fetch(`${API_URL}/spt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates, unite })
+        body: JSON.stringify(payload)
       })
         .then(res => {
           if (!res.ok) throw new Error("Erreur API");
@@ -62,7 +78,7 @@ function FlowshopSPTForm() {
           return fetch(`${API_URL}/spt/gantt`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ jobs_data: formattedJobs, due_dates: formattedDueDates, unite })
+            body: JSON.stringify(payload)
           });
         })
         .then(res => {
@@ -109,9 +125,37 @@ function FlowshopSPTForm() {
         <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une tâche</button>
       </div>
 
+      <h4 className={styles.subtitle}>Noms des machines</h4>
+      {machineNames.map((name, i) => (
+        <div key={i} className={styles.taskRow}>
+          Machine {i} :
+          <input
+            type="text"
+            value={name}
+            onChange={e => {
+              const newNames = [...machineNames];
+              newNames[i] = e.target.value;
+              setMachineNames(newNames);
+            }}
+          />
+        </div>
+      ))}
+
       {jobs.map((job, jobIdx) => (
         <div key={jobIdx} className={styles.jobBlock}>
           <h4>Job {jobIdx}</h4>
+          <div className={styles.taskRow}>
+            Nom du job :
+            <input
+              type="text"
+              value={jobNames[jobIdx]}
+              onChange={e => {
+                const newNames = [...jobNames];
+                newNames[jobIdx] = e.target.value;
+                setJobNames(newNames);
+              }}
+            />
+          </div>
           {job.map((op, opIdx) => (
             <div key={opIdx} className={styles.taskRow}>
               Machine :
@@ -209,6 +253,7 @@ function FlowshopSPTForm() {
 }
 
 export default FlowshopSPTForm;
+
 
 
 

@@ -3,14 +3,8 @@ import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopJohnsonModifieForm() {
   const [jobs, setJobs] = useState([
-    [
-      { machine: "0", duration: "3" },
-      { machine: "1", duration: "2" }
-    ],
-    [
-      { machine: "0", duration: "2" },
-      { machine: "1", duration: "4" }
-    ]
+    [{ machine: "0", duration: "3" }, { machine: "1", duration: "2" }],
+    [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
@@ -21,6 +15,22 @@ function FlowshopJohnsonModifieForm() {
   const [ganttUrl, setGanttUrl] = useState(null);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
+
+  const addJob = () => {
+    const machineCount = jobs[0].length;
+    const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: "1" }));
+    setJobs([...jobs, newJob]);
+    setDueDates([...dueDates, "10"]);
+    setJobNames([...jobNames, `Job ${jobs.length}`]);
+  };
+
+  const removeJob = () => {
+    if (jobs.length > 1) {
+      setJobs(jobs.slice(0, -1));
+      setDueDates(dueDates.slice(0, -1));
+      setJobNames(jobNames.slice(0, -1));
+    }
+  };
 
   const handleSubmit = () => {
     setError(null);
@@ -92,6 +102,11 @@ function FlowshopJohnsonModifieForm() {
           <option value="heures">heures</option>
           <option value="jours">jours</option>
         </select>
+      </div>
+
+      <div className={styles.buttonGroup}>
+        <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
+        <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
       </div>
 
       <h4 className={styles.subtitle}>Noms des machines</h4>
@@ -223,5 +238,6 @@ function FlowshopJohnsonModifieForm() {
 }
 
 export default FlowshopJohnsonModifieForm;
+
 
 

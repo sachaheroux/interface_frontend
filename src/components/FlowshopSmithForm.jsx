@@ -2,11 +2,10 @@ import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopSmithForm() {
-  const [jobs, setJobs] = useState([[
-    ["10"],
-    ["8"]
-  ]]);
-  const [dueDates, setDueDates] = useState(["25", "20"]);
+  const [jobs, setJobs] = useState([
+    ["10", "25"],
+    ["8", "20"]
+  ]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
   const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
@@ -16,15 +15,13 @@ function FlowshopSmithForm() {
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    setJobs([...jobs, ["0", "1"]]);
-    setDueDates([...dueDates, "10"]);
+    setJobs([...jobs, ["1", "10"]]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
   };
 
   const removeJob = () => {
     if (jobs.length > 1) {
       setJobs(jobs.slice(0, -1));
-      setDueDates(dueDates.slice(0, -1));
       setJobNames(jobNames.slice(0, -1));
     }
   };
@@ -42,8 +39,8 @@ function FlowshopSmithForm() {
 
       const payload = {
         jobs: formattedJobs,
-        unite,
-        job_names: jobNames
+        job_names: jobNames,
+        unite
       };
 
       fetch(`${API_URL}/smith`, {
@@ -179,6 +176,7 @@ function FlowshopSmithForm() {
 }
 
 export default FlowshopSmithForm;
+
 
 
 

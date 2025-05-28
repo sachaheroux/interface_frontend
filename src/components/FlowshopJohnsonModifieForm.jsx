@@ -3,8 +3,8 @@ import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopJohnsonModifieForm() {
   const [jobs, setJobs] = useState([
-    [3, 2],
-    [2, 4]
+    ["3", "2"],
+    ["2", "4"]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
@@ -37,7 +37,10 @@ function FlowshopJohnsonModifieForm() {
 
     try {
       const formattedJobs = jobs.map(job =>
-        job.map(val => parseFloat(val.toString().replace(",", ".")))
+        job.map((duration, machineIdx) => [
+          machineIdx,
+          parseFloat(duration.replace(",", "."))
+        ])
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
 
@@ -227,4 +230,5 @@ function FlowshopJohnsonModifieForm() {
 }
 
 export default FlowshopJohnsonModifieForm;
+
 

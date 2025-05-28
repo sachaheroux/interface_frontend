@@ -17,9 +17,9 @@ function FlowshopJohnsonModifieForm() {
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    const machineCount = jobs[0].length;
-    const newJob = Array.from({ length: machineCount }, (_, i) => ({
-      machine: String(i),
+    const machineCount = machineNames.length;
+    const newJob = Array.from({ length: machineCount }, () => ({
+      machine: "0",
       duration: "1"
     }));
     setJobs([...jobs, newJob]);
@@ -151,6 +151,8 @@ function FlowshopJohnsonModifieForm() {
               Machine :
               <input
                 type="number"
+                min="0"
+                max={machineNames.length - 1}
                 value={op.machine}
                 onChange={e => {
                   const newJobs = [...jobs];

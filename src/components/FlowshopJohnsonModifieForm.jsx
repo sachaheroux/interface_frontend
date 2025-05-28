@@ -3,8 +3,8 @@ import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopJohnsonModifieForm() {
   const [jobs, setJobs] = useState([
-    ["3", "2"],
-    ["2", "4"]
+    [{ machine: "0", duration: "3" }, { machine: "1", duration: "2" }],
+    [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
@@ -17,7 +17,11 @@ function FlowshopJohnsonModifieForm() {
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    const newJob = Array(machineNames.length).fill("1");
+    const machineCount = jobs[0].length;
+    const newJob = Array.from({ length: machineCount }, (_, i) => ({
+      machine: String(i),
+      duration: "1"
+    }));
     setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
@@ -37,9 +41,9 @@ function FlowshopJohnsonModifieForm() {
 
     try {
       const formattedJobs = jobs.map(job =>
-        job.map((duration, machineIdx) => [
-          machineIdx,
-          parseFloat(duration.replace(",", "."))
+        job.map(op => [
+          parseInt(op.machine, 10),
+          parseFloat(op.duration.replace(",", "."))
         ])
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
@@ -142,16 +146,26 @@ function FlowshopJohnsonModifieForm() {
               }}
             />
           </div>
-          {job.map((duration, i) => (
-            <div key={i} className={styles.taskRow}>
-              Durée sur Machine {i} ({unite}) :
+          {job.map((op, opIdx) => (
+            <div key={opIdx} className={styles.taskRow}>
+              Machine :
+              <input
+                type="number"
+                value={op.machine}
+                onChange={e => {
+                  const newJobs = [...jobs];
+                  newJobs[jobIdx][opIdx].machine = e.target.value;
+                  setJobs(newJobs);
+                }}
+              />
+              Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"
-                value={duration}
+                value={op.duration}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][i] = e.target.value;
+                  newJobs[jobIdx][opIdx].duration = e.target.value;
                   setJobs(newJobs);
                 }}
               />
@@ -230,5 +244,6 @@ function FlowshopJohnsonModifieForm() {
 }
 
 export default FlowshopJohnsonModifieForm;
+
 
 

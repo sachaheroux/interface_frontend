@@ -1,15 +1,21 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 
-function JohnsonModifieForm() {
+function FlowshopJohnsonModifieForm() {
   const [jobs, setJobs] = useState([
-    [3, 2],
-    [2, 4]
+    [
+      { machine: "0", duration: "3" },
+      { machine: "1", duration: "2" }
+    ],
+    [
+      { machine: "0", duration: "2" },
+      { machine: "1", duration: "4" }
+    ]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
-  const [jobNames, setJobNames] = useState(["Job 1", "Job 2"]);
-  const [machineNames, setMachineNames] = useState(["Machine 1", "Machine 2"]);
-  const [unit, setUnit] = useState("heures");
+  const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
+  const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1"]);
+  const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
@@ -22,23 +28,25 @@ function JohnsonModifieForm() {
 
     try {
       const formattedJobs = jobs.map(job =>
-        job.map(d => parseFloat(d.toString().replace(",", ".")))
+        job.map(op => [parseInt(op.machine, 10), parseFloat(op.duration.replace(",", "."))])
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
+
+      const payload = {
+        jobs_data: formattedJobs,
+        due_dates: formattedDueDates,
+        unite,
+        job_names: jobNames,
+        machine_names: machineNames
+      };
 
       fetch(`${API_URL}/johnson_modifie`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jobs_data: formattedJobs,
-          due_dates: formattedDueDates,
-          unite: unit,
-          job_names: jobNames,
-          machine_names: machineNames
-        })
+        body: JSON.stringify(payload)
       })
         .then(res => {
-          if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+          if (!res.ok) throw new Error("Erreur API");
           return res.json();
         })
         .then(data => {
@@ -46,13 +54,7 @@ function JohnsonModifieForm() {
           return fetch(`${API_URL}/johnson_modifie/gantt`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              jobs_data: formattedJobs,
-              due_dates: formattedDueDates,
-              unite: unit,
-              job_names: jobNames,
-              machine_names: machineNames
-            })
+            body: JSON.stringify(payload)
           });
         })
         .then(res => {
@@ -69,76 +71,96 @@ function JohnsonModifieForm() {
     }
   };
 
+  const handleDownloadGantt = () => {
+    if (!ganttUrl) return;
+    const link = document.createElement("a");
+    link.href = ganttUrl;
+    link.download = "diagramme_gantt.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Planification Flowshop - Johnson Modifié</h2>
 
-      <div className={styles.dropdownGroup}>
+      <div className={styles.unitSelector}>
         <label>Unité de temps :</label>
-        <select
-          className={styles.dropdown}
-          value={unit}
-          onChange={(e) => setUnit(e.target.value)}
-        >
-          <option value="heures">heures</option>
+        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
           <option value="minutes">minutes</option>
+          <option value="heures">heures</option>
           <option value="jours">jours</option>
         </select>
       </div>
 
-      {jobs.map((job, jobIdx) => (
-        <div key={jobIdx} className={styles.jobBlock}>
-          <h4>Job {jobIdx + 1}</h4>
+      <h4 className={styles.subtitle}>Noms des machines</h4>
+      {machineNames.map((name, i) => (
+        <div key={i} className={styles.taskRow}>
+          Machine {i} :
           <input
             type="text"
-            value={jobNames[jobIdx]}
+            value={name}
             onChange={e => {
-              const newNames = [...jobNames];
-              newNames[jobIdx] = e.target.value;
-              setJobNames(newNames);
+              const newNames = [...machineNames];
+              newNames[i] = e.target.value;
+              setMachineNames(newNames);
             }}
-            placeholder="Nom du job"
-            className={styles.nameInput}
           />
-          {job.map((duration, mIdx) => (
-            <div key={mIdx} className={styles.taskRow}>
-              Machine {mIdx + 1} :
+        </div>
+      ))}
+
+      {jobs.map((job, jobIdx) => (
+        <div key={jobIdx} className={styles.jobBlock}>
+          <h4>Job {jobIdx}</h4>
+          <div className={styles.taskRow}>
+            Nom du job :
+            <input
+              type="text"
+              value={jobNames[jobIdx]}
+              onChange={e => {
+                const newNames = [...jobNames];
+                newNames[jobIdx] = e.target.value;
+                setJobNames(newNames);
+              }}
+            />
+          </div>
+          {job.map((op, opIdx) => (
+            <div key={opIdx} className={styles.taskRow}>
+              Machine :
               <input
-                type="text"
-                value={duration}
-                inputMode="decimal"
+                type="number"
+                value={op.machine}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][mIdx] = e.target.value;
+                  newJobs[jobIdx][opIdx].machine = e.target.value;
                   setJobs(newJobs);
                 }}
               />
-              {jobIdx === 0 && (
-                <input
-                  type="text"
-                  value={machineNames[mIdx]}
-                  onChange={e => {
-                    const newNames = [...machineNames];
-                    newNames[mIdx] = e.target.value;
-                    setMachineNames(newNames);
-                  }}
-                  placeholder="Nom machine"
-                  className={styles.nameInput}
-                />
-              )}
+              Durée ({unite}) :
+              <input
+                type="text"
+                inputMode="decimal"
+                value={op.duration}
+                onChange={e => {
+                  const newJobs = [...jobs];
+                  newJobs[jobIdx][opIdx].duration = e.target.value;
+                  setJobs(newJobs);
+                }}
+              />
             </div>
           ))}
         </div>
       ))}
 
-      <h4 className={styles.subtitle}>Dates dues</h4>
+      <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
       {dueDates.map((d, i) => (
         <div key={i} className={styles.taskRow}>
-          {jobNames[i] || `Job ${i + 1}`} :
+          Job {i} :
           <input
             type="text"
-            value={d}
             inputMode="decimal"
+            value={d}
             onChange={e => {
               const newDates = [...dueDates];
               newDates[i] = e.target.value;
@@ -155,6 +177,7 @@ function JohnsonModifieForm() {
       {result && (
         <div className={styles.resultBlock}>
           <h3>Résultats</h3>
+          <div><strong>Séquence :</strong> {result.sequence.join(" → ")}</div>
           <div><strong>Makespan :</strong> {result.makespan}</div>
           <div><strong>Flowtime :</strong> {result.flowtime}</div>
           <div><strong>Retard cumulé :</strong> {result.retard_cumule}</div>
@@ -173,7 +196,7 @@ function JohnsonModifieForm() {
                 <strong>{machine}</strong>
                 <ul>
                   {tasks.map((t, i) => (
-                    <li key={i}>{jobNames[t.job] || `Job ${t.job}`} - Tâche {t.task} : {t.start} → {t.start + t.duration}</li>
+                    <li key={i}>Job {t.job} - Tâche {t.task} : {t.start} → {t.start + t.duration}</li>
                   ))}
                 </ul>
               </li>
@@ -188,9 +211,9 @@ function JohnsonModifieForm() {
                 alt="Gantt"
                 style={{ width: "100%", maxWidth: "700px", marginTop: "1rem", borderRadius: "0.5rem" }}
               />
-              <a href={ganttUrl} download="gantt.png">
-                <button className={styles.downloadButton}>📥 Télécharger le Gantt</button>
-              </a>
+              <button className={styles.downloadButton} onClick={handleDownloadGantt}>
+                Télécharger le diagramme de Gantt
+              </button>
             </>
           )}
         </div>
@@ -199,6 +222,6 @@ function JohnsonModifieForm() {
   );
 }
 
-export default JohnsonModifieForm;
+export default FlowshopJohnsonModifieForm;
 
 

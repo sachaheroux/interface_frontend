@@ -3,8 +3,8 @@ import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopSmithForm() {
   const [jobs, setJobs] = useState([[
-    ["0", "10"],
-    ["0", "8"]
+    ["10"],
+    ["8"]
   ]]);
   const [dueDates, setDueDates] = useState(["25", "20"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);

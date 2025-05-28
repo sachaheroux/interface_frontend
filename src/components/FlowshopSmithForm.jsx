@@ -2,10 +2,12 @@ import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopSmithForm() {
-  const [jobs, setJobs] = useState([
-    { duration: "10", due: "25", name: "Job 1" },
-    { duration: "8", due: "20", name: "Job 2" }
-  ]);
+  const [jobs, setJobs] = useState([[
+    ["0", "10"],
+    ["0", "8"]
+  ]]);
+  const [dueDates, setDueDates] = useState(["25", "20"]);
+  const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
   const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -14,12 +16,16 @@ function FlowshopSmithForm() {
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    setJobs([...jobs, { duration: "1", due: "10", name: `Job ${jobs.length + 1}` }]);
+    setJobs([...jobs, ["0", "1"]]);
+    setDueDates([...dueDates, "10"]);
+    setJobNames([...jobNames, `Job ${jobs.length}`]);
   };
 
   const removeJob = () => {
     if (jobs.length > 1) {
       setJobs(jobs.slice(0, -1));
+      setDueDates(dueDates.slice(0, -1));
+      setJobNames(jobNames.slice(0, -1));
     }
   };
 
@@ -29,16 +35,21 @@ function FlowshopSmithForm() {
     setGanttUrl(null);
 
     try {
-      const formattedJobs = jobs.map(job => [
-        parseFloat(job.duration.replace(",", ".")),
-        parseFloat(job.due.replace(",", "."))
+      const formattedJobs = jobs.map(([duration, due]) => [
+        parseFloat(duration.replace(",", ".")),
+        parseFloat(due.replace(",", "."))
       ]);
-      const jobNames = jobs.map(job => job.name);
+
+      const payload = {
+        jobs: formattedJobs,
+        unite,
+        job_names: jobNames
+      };
 
       fetch(`${API_URL}/smith`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobs: formattedJobs, unite, job_names: jobNames })
+        body: JSON.stringify(payload)
       })
         .then(res => {
           if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
@@ -49,7 +60,7 @@ function FlowshopSmithForm() {
           return fetch(`${API_URL}/smith/gantt`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ jobs: formattedJobs, unite, job_names: jobNames })
+            body: JSON.stringify(payload)
           });
         })
         .then(res => {
@@ -94,41 +105,45 @@ function FlowshopSmithForm() {
         <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
       </div>
 
-      <h4 className={styles.subtitle}>Jobs</h4>
       {jobs.map((job, idx) => (
-        <div key={idx} className={styles.taskRow}>
-          Nom :
-          <input
-            type="text"
-            value={job.name}
-            onChange={e => {
-              const newJobs = [...jobs];
-              newJobs[idx].name = e.target.value;
-              setJobs(newJobs);
-            }}
-          />
-          Durée ({unite}) :
-          <input
-            type="text"
-            inputMode="decimal"
-            value={job.duration}
-            onChange={e => {
-              const newJobs = [...jobs];
-              newJobs[idx].duration = e.target.value;
-              setJobs(newJobs);
-            }}
-          />
-          Date due ({unite}) :
-          <input
-            type="text"
-            inputMode="decimal"
-            value={job.due}
-            onChange={e => {
-              const newJobs = [...jobs];
-              newJobs[idx].due = e.target.value;
-              setJobs(newJobs);
-            }}
-          />
+        <div key={idx} className={styles.jobBlock}>
+          <h4>Job {idx}</h4>
+          <div className={styles.taskRow}>
+            Nom du job :
+            <input
+              type="text"
+              value={jobNames[idx]}
+              onChange={e => {
+                const newNames = [...jobNames];
+                newNames[idx] = e.target.value;
+                setJobNames(newNames);
+              }}
+            />
+          </div>
+          <div className={styles.taskRow}>
+            Durée ({unite}) :
+            <input
+              type="text"
+              inputMode="decimal"
+              value={job[0]}
+              onChange={e => {
+                const newJobs = [...jobs];
+                newJobs[idx][0] = e.target.value;
+                setJobs(newJobs);
+              }}
+            />
+            Date due ({unite}) :
+            <input
+              type="text"
+              inputMode="decimal"
+              value={job[1]}
+              onChange={e => {
+                const newJobs = [...jobs];
+                newJobs[idx][1] = e.target.value;
+                setJobs(newJobs);
+              }}
+            />
+          </div>
         </div>
       ))}
 
@@ -164,6 +179,7 @@ function FlowshopSmithForm() {
 }
 
 export default FlowshopSmithForm;
+
 
 
 

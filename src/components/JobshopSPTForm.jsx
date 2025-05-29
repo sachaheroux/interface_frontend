@@ -81,12 +81,14 @@ function JobshopSPTForm() {
           });
         })
         .then(res => {
-          if (!res.ok) throw new Error("Erreur Gantt API");
-          return res.json();
+         if (!res.ok) throw new Error("Erreur Gantt API");
+         return res.blob();
         })
-        .then(data => {
-          setGanttUrl("data:image/png;base64," + data.image_base64);
+        .then(blob => {
+         const url = URL.createObjectURL(blob);
+         setGanttUrl(url);
         })
+
         .catch(err => setError(err.message));
     } catch (e) {
       setError("Erreur dans les données saisies.");

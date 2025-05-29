@@ -7,6 +7,7 @@ function FlowshopSPTForm() {
     [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
+  const [dueDateTimes, setDueDateTimes] = useState(["", ""]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
   const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1"]);
   const [unite, setUnite] = useState("heures");
@@ -18,7 +19,6 @@ function FlowshopSPTForm() {
   const [openingHours, setOpeningHours] = useState({ start: "08:00", end: "17:00" });
   const [weekendDays, setWeekendDays] = useState({ samedi: false, dimanche: false });
   const [feries, setFeries] = useState([""]);
-  const [dueDateTimes, setDueDateTimes] = useState(["", ""]);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -169,48 +169,36 @@ function FlowshopSPTForm() {
               }}
             />
           </div>
+          {job.map((op, opIdx) => (
+            <div key={opIdx} className={styles.taskRow}>
+              Machine :
+              <input
+                type="number"
+                value={op.machine}
+                onChange={e => {
+                  const newJobs = [...jobs];
+                  newJobs[jobIdx][opIdx].machine = e.target.value;
+                  setJobs(newJobs);
+                }}
+              />
+              Durée ({unite}) :
+              <input
+                type="text"
+                inputMode="decimal"
+                value={op.duration}
+                onChange={e => {
+                  const newJobs = [...jobs];
+                  newJobs[jobIdx][opIdx].duration = e.target.value;
+                  setJobs(newJobs);
+                }}
+              />
+            </div>
+          ))}
         </div>
       ))}
 
-      <div className={styles.advancedToggle}>
-        <label>
-          <input type="checkbox" checked={showAdvanced} onChange={() => setShowAdvanced(!showAdvanced)} />
-          Saisies avancées
-        </label>
-      </div>
-
       {!showAdvanced && (
         <>
-          {jobs.map((job, jobIdx) => (
-            <div key={jobIdx} className={styles.jobBlock}>
-              {job.map((op, opIdx) => (
-                <div key={opIdx} className={styles.taskRow}>
-                  Machine :
-                  <input
-                    type="number"
-                    value={op.machine}
-                    onChange={e => {
-                      const newJobs = [...jobs];
-                      newJobs[jobIdx][opIdx].machine = e.target.value;
-                      setJobs(newJobs);
-                    }}
-                  />
-                  Durée ({unite}) :
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    value={op.duration}
-                    onChange={e => {
-                      const newJobs = [...jobs];
-                      newJobs[jobIdx][opIdx].duration = e.target.value;
-                      setJobs(newJobs);
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-          ))}
-
           <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
           {dueDates.map((d, i) => (
             <div key={i} className={styles.taskRow}>
@@ -230,12 +218,23 @@ function FlowshopSPTForm() {
         </>
       )}
 
+      <div className={styles.advancedToggle}>
+        <label>
+          <input type="checkbox" checked={showAdvanced} onChange={() => setShowAdvanced(!showAdvanced)} />
+          Saisies avancées
+        </label>
+      </div>
+
       {showAdvanced && (
         <div className={styles.advancedSection}>
           <h4 className={styles.subtitle}>Horaire réel de l’usine</h4>
           <div className={styles.taskRow}>
             Début de l’agenda (date + heure) :
-            <input type="datetime-local" value={startDateTime} onChange={e => setStartDateTime(e.target.value)} />
+            <input
+              type="datetime-local"
+              value={startDateTime}
+              onChange={e => setStartDateTime(e.target.value)}
+            />
           </div>
           <div className={styles.taskRow}>
             Heures d’ouverture :
@@ -260,16 +259,21 @@ function FlowshopSPTForm() {
             Jours fériés :
             {feries.map((date, i) => (
               <div key={i}>
-                <input type="date" value={date} onChange={e => {
-                  const updated = [...feries];
-                  updated[i] = e.target.value;
-                  setFeries(updated);
-                }} />
+                <input
+                  type="date"
+                  value={date}
+                  onChange={e => {
+                    const updated = [...feries];
+                    updated[i] = e.target.value;
+                    setFeries(updated);
+                  }}
+                />
               </div>
             ))}
-            <button className={styles.button} onClick={() => setFeries([...feries, ""])}>+ Ajouter un jour férié</button>
+            <button className={styles.button} onClick={() => setFeries([...feries, ""])}>
+              + Ajouter un jour férié
+            </button>
           </div>
-
           <h4 className={styles.subtitle}>Dates dues avec heure (par job)</h4>
           {jobs.map((_, jobIdx) => (
             <div key={jobIdx} className={styles.taskRow}>
@@ -289,6 +293,7 @@ function FlowshopSPTForm() {
       )}
 
       <button className={styles.submitButton} onClick={handleSubmit}>Lancer l'algorithme</button>
+
       {error && <p className={styles.error}>{error}</p>}
 
       {result && (
@@ -327,7 +332,9 @@ function FlowshopSPTForm() {
                 alt="Gantt"
                 style={{ width: "100%", maxWidth: "700px", marginTop: "1rem", borderRadius: "0.5rem" }}
               />
-              <button className={styles.downloadButton} onClick={handleDownloadGantt}>Télécharger le diagramme de Gantt</button>
+              <button className={styles.downloadButton} onClick={handleDownloadGantt}>
+                Télécharger le diagramme de Gantt
+              </button>
             </>
           )}
         </div>

@@ -5,11 +5,11 @@ function AgendaGrid({ agendaData }) {
   const [dayOffset, setDayOffset] = useState(0);
 
   if (!agendaData) return null;
-  const { groups, items } = agendaData;
+  const { groups, items, opening_hours } = agendaData;
 
-  // Heures affichées (08:00 à 17:00 par défaut)
-  const startHour = 8;
-  const endHour = 17;
+  // Heures affichées dynamiques selon les données
+  const startHour = opening_hours?.start ? parseInt(opening_hours.start.split(":")[0], 10) : 8;
+  const endHour = opening_hours?.end ? parseInt(opening_hours.end.split(":")[0], 10) : 17;
   const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => `${(startHour + i).toString().padStart(2, "0")}:00`);
 
   // Calcul de la date affichée (jour de départ + offset)

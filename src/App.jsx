@@ -112,8 +112,7 @@ function App() {
           {systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithForm />}
           {systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesForm />}
           {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTForm />}
-
-          {algorithme && !(systeme === "Flowshop") && (
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && algorithme === "SPT") && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -131,6 +130,7 @@ function App() {
 }
 
 export default App;
+
 
 
 

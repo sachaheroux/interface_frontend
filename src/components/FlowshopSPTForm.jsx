@@ -65,17 +65,21 @@ function FlowshopSPTForm() {
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
 
       const payload = {
-        jobs_data: formattedJobs,
-        due_dates: formattedDueDates,
-        unite,
-        job_names: jobNames,
-        machine_names: machineNames,
-        agenda_start_datetime: startDateTime,
-        opening_hours: openingHours,
-        weekend_days: Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k),
-        jours_feries: feries.filter(f => f),
-        due_date_times: dueDateTimes
+       jobs_data: formattedJobs,
+       due_dates: formattedDueDates,
+       unite,
+       job_names: jobNames,
+       machine_names: machineNames
       };
+
+      if (showAdvanced) {
+       payload.agenda_start_datetime = startDateTime;
+       payload.opening_hours = openingHours;
+       payload.weekend_days = Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k);
+       payload.jours_feries = feries.filter(f => f);
+       payload.due_date_times = dueDateTimes;
+      }
+
 
       fetch(`${API_URL}/spt`, {
         method: "POST",

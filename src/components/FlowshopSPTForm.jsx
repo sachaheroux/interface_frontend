@@ -1,10 +1,11 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
+import AgendaGrid from "./AgendaGrid";
 
 function FlowshopSPTForm() {
   const [jobs, setJobs] = useState([
-    [{ duration: "3" }, { duration: "2" }],
-    [{ duration: "2" }, { duration: "4" }]
+    ["3", "2"],
+    ["2", "4"]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
@@ -13,12 +14,12 @@ function FlowshopSPTForm() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
-
+  const [saisieAvancee, setSaisieAvancee] = useState(false);
+  const [agendaData, setAgendaData] = useState(null);
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    const machineCount = jobs[0].length;
-    const newJob = Array.from({ length: machineCount }, () => ({ duration: "1" }));
+    const newJob = Array.from({ length: machineNames.length }, () => "1");
     setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
@@ -33,7 +34,7 @@ function FlowshopSPTForm() {
   };
 
   const addTaskToAllJobs = () => {
-    const updatedJobs = jobs.map(job => [...job, { duration: "1" }]);
+    const updatedJobs = jobs.map(job => [...job, "1"]);
     setJobs(updatedJobs);
     setMachineNames([...machineNames, `Machine ${machineNames.length + 1}`]);
   };
@@ -49,10 +50,10 @@ function FlowshopSPTForm() {
   const handleSubmit = () => {
     setError(null);
     setGanttUrl(null);
-
+    setAgendaData(null);
     try {
       const formattedJobs = jobs.map(job =>
-        job.map((op, i) => [i, parseFloat(op.duration.replace(",", "."))])
+        job.map((duration, i) => [i, parseFloat(duration.replace(",", "."))])
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
 
@@ -70,7 +71,7 @@ function FlowshopSPTForm() {
         body: JSON.stringify(payload)
       })
         .then(res => {
-          if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
+          if (!res.ok) throw new Error("Erreur API");
           return res.json();
         })
         .then(data => {
@@ -156,16 +157,16 @@ function FlowshopSPTForm() {
               }}
             />
           </div>
-          {job.map((op, opIdx) => (
-            <div key={opIdx} className={styles.taskRow}>
-              Machine {opIdx + 1} — Durée ({unite}) :
+          {job.map((duration, taskIdx) => (
+            <div key={taskIdx} className={styles.taskRow}>
+              Machine {taskIdx + 1} - Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"
-                value={op.duration}
+                value={duration}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].duration = e.target.value;
+                  newJobs[jobIdx][taskIdx] = e.target.value;
                   setJobs(newJobs);
                 }}
               />

@@ -14,6 +14,7 @@ import FlowshopSmithForm from "./components/FlowshopSmithForm";
 import FlowshopSmithInfo from "./components/FlowshopSmithInfo";
 import FlowshopContraintesForm from "./components/FlowshopContraintesForm";
 import FlowshopContraintesInfo from "./components/FlowshopContraintesInfo";
+import JobshopSPTForm from "./components/JobshopSPTForm";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -110,6 +111,8 @@ function App() {
           {systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieForm />}
           {systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithForm />}
           {systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesForm />}
+          {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTForm />}
+
           {algorithme && !(systeme === "Flowshop") && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}

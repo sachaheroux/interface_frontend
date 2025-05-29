@@ -1,9 +1,8 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
-import AgendaTimeline from "./AgendaTimeline";
+import AgendaGrid from "./AgendaGrid";
 
 function FlowshopSPTForm() {
-  // Etats principaux
   const [jobs, setJobs] = useState([
     [{ machine: "0", duration: "3" }, { machine: "1", duration: "2" }],
     [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
@@ -13,12 +12,9 @@ function FlowshopSPTForm() {
   const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1"]);
   const [unite, setUnite] = useState("heures");
 
-  // Résultats / erreurs
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
-
-  // Saisie avancée
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [startDateTime, setStartDateTime] = useState("");
   const [openingHours, setOpeningHours] = useState({ start: "08:00", end: "17:00" });
@@ -29,7 +25,6 @@ function FlowshopSPTForm() {
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
-  // --- Gestion dynamique des jobs/tâches/machines/noms ---
   const addJob = () => {
     const machineCount = jobs[0].length;
     const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: "1" }));
@@ -62,7 +57,6 @@ function FlowshopSPTForm() {
     }
   };
 
-  // --- Soumission de l'algorithme ---
   const handleSubmit = async () => {
     setError(null);
     setGanttUrl(null);
@@ -70,7 +64,6 @@ function FlowshopSPTForm() {
     setAgendaData(null);
 
     try {
-      // Construction du payload général
       const formattedJobs = jobs.map(job =>
         job.map(op => [parseInt(op.machine, 10), parseFloat(op.duration.replace(",", "."))])
       );
@@ -88,7 +81,6 @@ function FlowshopSPTForm() {
         machine_names: machineNames,
       };
 
-      // Ajout des champs avancés si activé
       if (showAdvanced) {
         payload.agenda_start_datetime = startDateTime;
         payload.opening_hours = openingHours;
@@ -97,7 +89,6 @@ function FlowshopSPTForm() {
         payload.due_date_times = dueDateTimes;
       }
 
-      // 1. Requête principale (toujours /spt)
       const resAlgo = await fetch(`${API_URL}/spt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -107,9 +98,7 @@ function FlowshopSPTForm() {
       const data = await resAlgo.json();
       setResult(data);
 
-      // 2. Requête visuelle (Gantt ou Agenda)
       if (showAdvanced) {
-        // Mode Agenda
         const resAgenda = await fetch(`${API_URL}/spt/agenda`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -118,9 +107,8 @@ function FlowshopSPTForm() {
         if (!resAgenda.ok) throw new Error("Erreur génération de l'agenda");
         const agendaJson = await resAgenda.json();
         setAgendaData(agendaJson);
-        setGanttUrl(null); // pas de diagramme Gantt en mode avancé
+        setGanttUrl(null);
       } else {
-        // Mode Gantt classique (PNG)
         const resGantt = await fetch(`${API_URL}/spt/gantt`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -130,14 +118,13 @@ function FlowshopSPTForm() {
         const blob = await resGantt.blob();
         const url = URL.createObjectURL(blob);
         setGanttUrl(url);
-        setAgendaData(null); // pas d'agenda en mode normal
+        setAgendaData(null);
       }
     } catch (e) {
       setError(e.message || "Erreur dans les données saisies.");
     }
   };
 
-  // --- Télécharger le Gantt (mode normal) ---
   const handleDownloadGantt = () => {
     if (!ganttUrl) return;
     const link = document.createElement("a");
@@ -152,7 +139,6 @@ function FlowshopSPTForm() {
     <div className={styles.container}>
       <h2 className={styles.title}>Planification Flowshop - SPT</h2>
 
-      {/* Unité de temps */}
       <div className={styles.unitSelector}>
         <label>Unité de temps :</label>
         <select value={unite} onChange={e => setUnite(e.target.value)} className={styles.select}>
@@ -162,7 +148,6 @@ function FlowshopSPTForm() {
         </select>
       </div>
 
-      {/* Gestion dynamique jobs/machines */}
       <div className={styles.buttonGroup}>
         <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
         <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
@@ -170,7 +155,6 @@ function FlowshopSPTForm() {
         <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une tâche</button>
       </div>
 
-      {/* Saisie des noms de machines */}
       <h4 className={styles.subtitle}>Noms des machines</h4>
       {machineNames.map((name, i) => (
         <div key={i} className={styles.taskRow}>
@@ -187,7 +171,6 @@ function FlowshopSPTForm() {
         </div>
       ))}
 
-      {/* Saisie des jobs/tâches */}
       {jobs.map((job, jobIdx) => (
         <div key={jobIdx} className={styles.jobBlock}>
           <h4>Job {jobIdx}</h4>
@@ -231,7 +214,6 @@ function FlowshopSPTForm() {
         </div>
       ))}
 
-      {/* Saisie dates dues (mode normal seulement) */}
       {!showAdvanced && (
         <>
           <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
@@ -253,7 +235,6 @@ function FlowshopSPTForm() {
         </>
       )}
 
-      {/* Toggle saisie avancée */}
       <div className={styles.advancedToggle}>
         <label>
           <input type="checkbox" checked={showAdvanced} onChange={() => setShowAdvanced(!showAdvanced)} />
@@ -261,7 +242,6 @@ function FlowshopSPTForm() {
         </label>
       </div>
 
-      {/* Champs avancés */}
       {showAdvanced && (
         <div className={styles.advancedSection}>
           <h4 className={styles.subtitle}>Horaire réel de l’usine</h4>
@@ -329,13 +309,10 @@ function FlowshopSPTForm() {
         </div>
       )}
 
-      {/* Soumettre */}
       <button className={styles.submitButton} onClick={handleSubmit}>Lancer l'algorithme</button>
 
-      {/* Erreur */}
       {error && <p className={styles.error}>{error}</p>}
 
-      {/* Résultats */}
       {result && (
         <div className={styles.resultBlock}>
           <h3>Résultats</h3>
@@ -364,7 +341,6 @@ function FlowshopSPTForm() {
             ))}
           </ul>
 
-          {/* Diagramme de Gantt (mode normal) */}
           {ganttUrl && !showAdvanced && (
             <>
               <h4>Diagramme de Gantt</h4>
@@ -379,11 +355,10 @@ function FlowshopSPTForm() {
             </>
           )}
 
-          {/* Agenda interactif (mode avancé) */}
           {agendaData && showAdvanced && (
             <>
               <h4>Agenda réel</h4>
-              <AgendaTimeline agendaData={agendaData} />
+              <AgendaGrid agendaData={agendaData} />
             </>
           )}
         </div>
@@ -393,6 +368,7 @@ function FlowshopSPTForm() {
 }
 
 export default FlowshopSPTForm;
+
 
 
 

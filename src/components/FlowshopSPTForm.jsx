@@ -8,7 +8,7 @@ function FlowshopSPTForm() {
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
-  const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1"]);
+  const [machineNames, setMachineNames] = useState(["Machine 1", "Machine 2"]);
   const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -35,7 +35,7 @@ function FlowshopSPTForm() {
   const addTaskToAllJobs = () => {
     const updatedJobs = jobs.map(job => [...job, { duration: "1" }]);
     setJobs(updatedJobs);
-    setMachineNames([...machineNames, `Machine ${machineNames.length}`]);
+    setMachineNames([...machineNames, `Machine ${machineNames.length + 1}`]);
   };
 
   const removeTaskFromAllJobs = () => {
@@ -52,7 +52,7 @@ function FlowshopSPTForm() {
 
     try {
       const formattedJobs = jobs.map(job =>
-        job.map(op => parseFloat(op.duration.replace(",", ".")))
+        job.map((op, i) => [i, parseFloat(op.duration.replace(",", "."))])
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
 
@@ -128,7 +128,7 @@ function FlowshopSPTForm() {
       <h4 className={styles.subtitle}>Noms des machines</h4>
       {machineNames.map((name, i) => (
         <div key={i} className={styles.taskRow}>
-          Machine {i} :
+          Machine {i + 1} :
           <input
             type="text"
             value={name}
@@ -158,7 +158,7 @@ function FlowshopSPTForm() {
           </div>
           {job.map((op, opIdx) => (
             <div key={opIdx} className={styles.taskRow}>
-              Durée ({unite}) :
+              Machine {opIdx + 1} — Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"

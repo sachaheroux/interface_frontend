@@ -3,8 +3,8 @@ import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopEDDForm() {
   const [jobs, setJobs] = useState([
-    [{ machine: "0", duration: "3" }, { machine: "1", duration: "2" }],
-    [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
+    [{ duration: "3" }, { duration: "2" }],
+    [{ duration: "2" }, { duration: "4" }]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
@@ -18,7 +18,7 @@ function FlowshopEDDForm() {
 
   const addJob = () => {
     const machineCount = jobs[0].length;
-    const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: "1" }));
+    const newJob = Array.from({ length: machineCount }, () => ({ duration: "1" }));
     setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
@@ -33,7 +33,7 @@ function FlowshopEDDForm() {
   };
 
   const addTaskToAllJobs = () => {
-    const updatedJobs = jobs.map(job => [...job, { machine: String(job.length), duration: "1" }]);
+    const updatedJobs = jobs.map(job => [...job, { duration: "1" }]);
     setJobs(updatedJobs);
     setMachineNames([...machineNames, `Machine ${machineNames.length}`]);
   };
@@ -52,7 +52,7 @@ function FlowshopEDDForm() {
 
     try {
       const formattedJobs = jobs.map(job =>
-        job.map(op => [parseInt(op.machine, 10), parseFloat(op.duration.replace(",", "."))])
+        job.map((op, i) => [i, parseFloat(op.duration.replace(",", "."))])
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
 
@@ -158,17 +158,7 @@ function FlowshopEDDForm() {
           </div>
           {job.map((op, opIdx) => (
             <div key={opIdx} className={styles.taskRow}>
-              Machine :
-              <input
-                type="number"
-                value={op.machine}
-                onChange={e => {
-                  const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].machine = e.target.value;
-                  setJobs(newJobs);
-                }}
-              />
-              Durée ({unite}) :
+              {machineNames[opIdx] || `Machine ${opIdx}`} :
               <input
                 type="text"
                 inputMode="decimal"

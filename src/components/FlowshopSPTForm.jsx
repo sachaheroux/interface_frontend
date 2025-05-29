@@ -14,6 +14,13 @@ function FlowshopSPTForm() {
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
 
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [startDateTime, setStartDateTime] = useState("");
+  const [openingHours, setOpeningHours] = useState({ start: "08:00", end: "17:00" });
+  const [weekendDays, setWeekendDays] = useState({ samedi: false, dimanche: false });
+  const [feries, setFeries] = useState([""]);
+  const [dueDateTimes, setDueDateTimes] = useState(["", ""]);
+
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
@@ -21,6 +28,7 @@ function FlowshopSPTForm() {
     const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: "1" }));
     setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
+    setDueDateTimes([...dueDateTimes, ""]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
   };
 
@@ -28,6 +36,7 @@ function FlowshopSPTForm() {
     if (jobs.length > 1) {
       setJobs(jobs.slice(0, -1));
       setDueDates(dueDates.slice(0, -1));
+      setDueDateTimes(dueDateTimes.slice(0, -1));
       setJobNames(jobNames.slice(0, -1));
     }
   };
@@ -181,6 +190,20 @@ function FlowshopSPTForm() {
               />
             </div>
           ))}
+          {showAdvanced && (
+            <div className={styles.taskRow}>
+              Due date + heure :
+              <input
+                type="datetime-local"
+                value={dueDateTimes[jobIdx]}
+                onChange={e => {
+                  const newDueDateTimes = [...dueDateTimes];
+                  newDueDateTimes[jobIdx] = e.target.value;
+                  setDueDateTimes(newDueDateTimes);
+                }}
+              />
+            </div>
+          )}
         </div>
       ))}
 
@@ -200,6 +223,72 @@ function FlowshopSPTForm() {
           />
         </div>
       ))}
+
+      {/* CASE À COCHER */}
+      <div className={styles.advancedToggle}>
+        <label>
+          <input type="checkbox" checked={showAdvanced} onChange={() => setShowAdvanced(!showAdvanced)} />
+          Saisies avancées
+        </label>
+      </div>
+
+      {/* SECTION AVANCÉE */}
+      {showAdvanced && (
+        <div className={styles.advancedSection}>
+          <h4 className={styles.subtitle}>Horaire réel de l’usine</h4>
+          <div className={styles.taskRow}>
+            Début de l’agenda (date + heure) :
+            <input
+              type="datetime-local"
+              value={startDateTime}
+              onChange={e => setStartDateTime(e.target.value)}
+            />
+          </div>
+          <div className={styles.taskRow}>
+            Heures d’ouverture :
+            <input type="time" value={openingHours.start} onChange={e => setOpeningHours({ ...openingHours, start: e.target.value })} />
+            à
+            <input type="time" value={openingHours.end} onChange={e => setOpeningHours({ ...openingHours, end: e.target.value })} />
+          </div>
+          <div className={styles.taskRow}>
+            Jours de congé :
+            {["samedi", "dimanche"].map(day => (
+              <label key={day} style={{ marginLeft: "10px" }}>
+                <input
+                  type="checkbox"
+                  checked={weekendDays[day]}
+                  onChange={() =>
+                    setWeekendDays({ ...weekendDays, [day]: !weekendDays[day] })
+                  }
+                />
+                {day.charAt(0).toUpperCase() + day.slice(1)}
+              </label>
+            ))}
+          </div>
+          <div className={styles.taskRow}>
+            Jours fériés :
+            {feries.map((date, i) => (
+              <div key={i}>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={e => {
+                    const updated = [...feries];
+                    updated[i] = e.target.value;
+                    setFeries(updated);
+                  }}
+                />
+              </div>
+            ))}
+            <button
+              className={styles.button}
+              onClick={() => setFeries([...feries, ""])}
+            >
+              + Ajouter un jour férié
+            </button>
+          </div>
+        </div>
+      )}
 
       <button className={styles.submitButton} onClick={handleSubmit}>Lancer l'algorithme</button>
 
@@ -253,6 +342,7 @@ function FlowshopSPTForm() {
 }
 
 export default FlowshopSPTForm;
+
 
 
 

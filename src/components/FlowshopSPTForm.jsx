@@ -188,17 +188,7 @@ function FlowshopSPTForm() {
           </div>
           {job.map((op, opIdx) => (
             <div key={opIdx} className={styles.taskRow}>
-              Machine :
-              <input
-                type="number"
-                value={op.machine}
-                onChange={e => {
-                  const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].machine = e.target.value;
-                  setJobs(newJobs);
-                }}
-              />
-              Durée ({unite}) :
+              {machineNames[opIdx] || `Machine ${opIdx}`} - Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"

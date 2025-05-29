@@ -71,7 +71,6 @@ function FlowshopSPTForm() {
         unite,
         job_names: jobNames,
         machine_names: machineNames,
-        // Saisies avancées (non utilisées côté algo, mais disponibles si besoin)
         agenda_start_datetime: startDateTime,
         opening_hours: openingHours,
         weekend_days: Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k),
@@ -90,7 +89,7 @@ function FlowshopSPTForm() {
         })
         .then(data => {
           setResult(data);
-          return fetch(`${API_URL}/spt/gantt`, {
+          return fetch(`${API_URL}/spt/gantt_reel`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
@@ -242,14 +241,12 @@ function FlowshopSPTForm() {
           </div>
           <div className={styles.taskRow}>
             Jours de congé :
-            {["samedi", "dimanche"].map(day => (
+            {Object.keys(weekendDays).map(day => (
               <label key={day} style={{ marginLeft: "10px" }}>
                 <input
                   type="checkbox"
                   checked={weekendDays[day]}
-                  onChange={() =>
-                    setWeekendDays({ ...weekendDays, [day]: !weekendDays[day] })
-                  }
+                  onChange={() => setWeekendDays({ ...weekendDays, [day]: !weekendDays[day] })}
                 />
                 {day.charAt(0).toUpperCase() + day.slice(1)}
               </label>
@@ -270,10 +267,7 @@ function FlowshopSPTForm() {
                 />
               </div>
             ))}
-            <button
-              className={styles.button}
-              onClick={() => setFeries([...feries, ""])}
-            >
+            <button className={styles.button} onClick={() => setFeries([...feries, ""])}>
               + Ajouter un jour férié
             </button>
           </div>

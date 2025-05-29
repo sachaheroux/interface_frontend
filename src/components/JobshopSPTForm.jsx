@@ -59,11 +59,9 @@ function JobshopSPTForm() {
         jobs_data: formattedJobs,
         due_dates: formattedDueDates,
         job_names: jobNames,
-        machine_names: machineNames
+        machine_names: machineNames,
+        unite: unite
       };
-
-      console.log(JSON.stringify(payload, null, 2));
-
 
       fetch(`${API_URL}/jobshop/spt`, {
         method: "POST",

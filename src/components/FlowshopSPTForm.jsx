@@ -6,50 +6,116 @@ function FlowshopSPTForm() {
     [{ machine: "0", duration: "3" }, { machine: "1", duration: "2" }],
     [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
   ]);
+  const [dueDates, setDueDates] = useState(["10", "9"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
   const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1"]);
-  const [dueDates, setDueDates] = useState(["10", "9"]);
   const [unite, setUnite] = useState("heures");
-
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [ganttUrl, setGanttUrl] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [advancedJobs, setAdvancedJobs] = useState([...jobs]);
-  const [dueDateTimes, setDueDateTimes] = useState(["", ""]);
   const [startDateTime, setStartDateTime] = useState("");
   const [openingHours, setOpeningHours] = useState({ start: "08:00", end: "17:00" });
   const [weekendDays, setWeekendDays] = useState({ samedi: false, dimanche: false });
   const [feries, setFeries] = useState([""]);
+  const [dueDateTimes, setDueDateTimes] = useState(["", ""]);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
+  const addJob = () => {
+    const machineCount = jobs[0].length;
+    const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: "1" }));
+    setJobs([...jobs, newJob]);
+    setDueDates([...dueDates, "10"]);
+    setDueDateTimes([...dueDateTimes, ""]);
+    setJobNames([...jobNames, `Job ${jobs.length}`]);
+  };
+
+  const removeJob = () => {
+    if (jobs.length > 1) {
+      setJobs(jobs.slice(0, -1));
+      setDueDates(dueDates.slice(0, -1));
+      setDueDateTimes(dueDateTimes.slice(0, -1));
+      setJobNames(jobNames.slice(0, -1));
+    }
+  };
+
+  const addTaskToAllJobs = () => {
+    const updatedJobs = jobs.map(job => [...job, { machine: String(job.length), duration: "1" }]);
+    setJobs(updatedJobs);
+    setMachineNames([...machineNames, `Machine ${machineNames.length}`]);
+  };
+
+  const removeTaskFromAllJobs = () => {
+    if (jobs[0].length > 1) {
+      const updatedJobs = jobs.map(job => job.slice(0, -1));
+      setJobs(updatedJobs);
+      setMachineNames(machineNames.slice(0, -1));
+    }
+  };
+
   const handleSubmit = () => {
-    const formattedJobs = (showAdvanced ? advancedJobs : jobs).map(job =>
-      job.map(op => [parseInt(op.machine, 10), parseFloat(op.duration.replace(",", "."))])
-    );
-    const payload = {
-      jobs_data: formattedJobs,
-      due_dates: showAdvanced ? dueDates.map(() => 9999) : dueDates.map(d => parseFloat(d.replace(",", "."))),
-      unite,
-      job_names: jobNames,
-      machine_names: machineNames,
-      agenda_start_datetime: startDateTime,
-      opening_hours: openingHours,
-      weekend_days: Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k),
-      jours_feries: feries.filter(f => f),
-      due_date_times: dueDateTimes
-    };
-    // ...fetch logic...
+    setError(null);
+    setGanttUrl(null);
+
+    try {
+      const formattedJobs = jobs.map(job =>
+        job.map(op => [parseInt(op.machine, 10), parseFloat(op.duration.replace(",", "."))])
+      );
+      const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
+
+      const payload = {
+        jobs_data: formattedJobs,
+        due_dates: formattedDueDates,
+        unite,
+        job_names: jobNames,
+        machine_names: machineNames,
+        agenda_start_datetime: startDateTime,
+        opening_hours: openingHours,
+        weekend_days: Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k),
+        jours_feries: feries.filter(f => f),
+        due_date_times: dueDateTimes
+      };
+
+      fetch(`${API_URL}/spt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("Erreur API");
+          return res.json();
+        })
+        .then(data => {
+          setResult(data);
+          return fetch(`${API_URL}/spt/gantt_reel`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+        })
+        .then(res => {
+          if (!res.ok) throw new Error("Erreur Gantt API");
+          return res.blob();
+        })
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          setGanttUrl(url);
+        })
+        .catch(err => setError(err.message));
+    } catch (e) {
+      setError("Erreur dans les données saisies.");
+    }
   };
 
-  const handleChangeJobName = (index, value) => {
-    const updated = [...jobNames];
-    updated[index] = value;
-    setJobNames(updated);
-  };
-
-  const handleChangeMachineName = (index, value) => {
-    const updated = [...machineNames];
-    updated[index] = value;
-    setMachineNames(updated);
+  const handleDownloadGantt = () => {
+    if (!ganttUrl) return;
+    const link = document.createElement("a");
+    link.href = ganttUrl;
+    link.download = "diagramme_gantt.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -65,19 +131,44 @@ function FlowshopSPTForm() {
         </select>
       </div>
 
+      <div className={styles.buttonGroup}>
+        <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
+        <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
+        <button className={styles.button} onClick={addTaskToAllJobs}>+ Ajouter une tâche</button>
+        <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une tâche</button>
+      </div>
+
       <h4 className={styles.subtitle}>Noms des machines</h4>
       {machineNames.map((name, i) => (
         <div key={i} className={styles.taskRow}>
           Machine {i} :
-          <input type="text" value={name} onChange={e => handleChangeMachineName(i, e.target.value)} />
+          <input
+            type="text"
+            value={name}
+            onChange={e => {
+              const newNames = [...machineNames];
+              newNames[i] = e.target.value;
+              setMachineNames(newNames);
+            }}
+          />
         </div>
       ))}
 
-      <h4 className={styles.subtitle}>Noms des jobs</h4>
-      {jobNames.map((name, i) => (
-        <div key={i} className={styles.taskRow}>
-          Job {i} :
-          <input type="text" value={name} onChange={e => handleChangeJobName(i, e.target.value)} />
+      {jobs.map((job, jobIdx) => (
+        <div key={jobIdx} className={styles.jobBlock}>
+          <h4>Job {jobIdx}</h4>
+          <div className={styles.taskRow}>
+            Nom du job :
+            <input
+              type="text"
+              value={jobNames[jobIdx]}
+              onChange={e => {
+                const newNames = [...jobNames];
+                newNames[jobIdx] = e.target.value;
+                setJobNames(newNames);
+              }}
+            />
+          </div>
         </div>
       ))}
 
@@ -90,18 +181,8 @@ function FlowshopSPTForm() {
 
       {!showAdvanced && (
         <>
-          <h4 className={styles.subtitle}>Tâches et durées</h4>
-          {/* ancienne saisie jobs */}
-          {/* ancienne saisie dueDates */}
-        </>
-      )}
-
-      {showAdvanced && (
-        <>
-          <h4 className={styles.subtitle}>Tâches (saisie avancée)</h4>
-          {advancedJobs.map((job, jobIdx) => (
+          {jobs.map((job, jobIdx) => (
             <div key={jobIdx} className={styles.jobBlock}>
-              <h4>{jobNames[jobIdx]}</h4>
               {job.map((op, opIdx) => (
                 <div key={opIdx} className={styles.taskRow}>
                   Machine :
@@ -109,19 +190,20 @@ function FlowshopSPTForm() {
                     type="number"
                     value={op.machine}
                     onChange={e => {
-                      const newJobs = [...advancedJobs];
+                      const newJobs = [...jobs];
                       newJobs[jobIdx][opIdx].machine = e.target.value;
-                      setAdvancedJobs(newJobs);
+                      setJobs(newJobs);
                     }}
                   />
                   Durée ({unite}) :
                   <input
                     type="text"
+                    inputMode="decimal"
                     value={op.duration}
                     onChange={e => {
-                      const newJobs = [...advancedJobs];
+                      const newJobs = [...jobs];
                       newJobs[jobIdx][opIdx].duration = e.target.value;
-                      setAdvancedJobs(newJobs);
+                      setJobs(newJobs);
                     }}
                   />
                 </div>
@@ -129,9 +211,30 @@ function FlowshopSPTForm() {
             </div>
           ))}
 
+          <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
+          {dueDates.map((d, i) => (
+            <div key={i} className={styles.taskRow}>
+              Job {i} :
+              <input
+                type="text"
+                inputMode="decimal"
+                value={d}
+                onChange={e => {
+                  const newDates = [...dueDates];
+                  newDates[i] = e.target.value;
+                  setDueDates(newDates);
+                }}
+              />
+            </div>
+          ))}
+        </>
+      )}
+
+      {showAdvanced && (
+        <div className={styles.advancedSection}>
           <h4 className={styles.subtitle}>Horaire réel de l’usine</h4>
           <div className={styles.taskRow}>
-            Début de l’agenda :
+            Début de l’agenda (date + heure) :
             <input type="datetime-local" value={startDateTime} onChange={e => setStartDateTime(e.target.value)} />
           </div>
           <div className={styles.taskRow}>
@@ -142,9 +245,13 @@ function FlowshopSPTForm() {
           </div>
           <div className={styles.taskRow}>
             Jours de congé :
-            {["samedi", "dimanche"].map(day => (
-              <label key={day}>
-                <input type="checkbox" checked={weekendDays[day]} onChange={() => setWeekendDays({ ...weekendDays, [day]: !weekendDays[day] })} />
+            {Object.keys(weekendDays).map(day => (
+              <label key={day} style={{ marginLeft: "10px" }}>
+                <input
+                  type="checkbox"
+                  checked={weekendDays[day]}
+                  onChange={() => setWeekendDays({ ...weekendDays, [day]: !weekendDays[day] })}
+                />
                 {day.charAt(0).toUpperCase() + day.slice(1)}
               </label>
             ))}
@@ -152,35 +259,79 @@ function FlowshopSPTForm() {
           <div className={styles.taskRow}>
             Jours fériés :
             {feries.map((date, i) => (
-              <input
-                key={i}
-                type="date"
-                value={date}
-                onChange={e => {
+              <div key={i}>
+                <input type="date" value={date} onChange={e => {
                   const updated = [...feries];
                   updated[i] = e.target.value;
                   setFeries(updated);
-                }}
-              />
+                }} />
+              </div>
             ))}
             <button className={styles.button} onClick={() => setFeries([...feries, ""])}>+ Ajouter un jour férié</button>
           </div>
 
-          <h4 className={styles.subtitle}>Dates dues avec heure</h4>
-          {jobNames.map((name, idx) => (
-            <div key={idx} className={styles.taskRow}>
-              {name} :
-              <input type="datetime-local" value={dueDateTimes[idx]} onChange={e => {
-                const updated = [...dueDateTimes];
-                updated[idx] = e.target.value;
-                setDueDateTimes(updated);
-              }} />
+          <h4 className={styles.subtitle}>Dates dues avec heure (par job)</h4>
+          {jobs.map((_, jobIdx) => (
+            <div key={jobIdx} className={styles.taskRow}>
+              {jobNames[jobIdx] || `Job ${jobIdx}`} :
+              <input
+                type="datetime-local"
+                value={dueDateTimes[jobIdx]}
+                onChange={e => {
+                  const newTimes = [...dueDateTimes];
+                  newTimes[jobIdx] = e.target.value;
+                  setDueDateTimes(newTimes);
+                }}
+              />
             </div>
           ))}
-        </>
+        </div>
       )}
 
       <button className={styles.submitButton} onClick={handleSubmit}>Lancer l'algorithme</button>
+      {error && <p className={styles.error}>{error}</p>}
+
+      {result && (
+        <div className={styles.resultBlock}>
+          <h3>Résultats</h3>
+          <div><strong>Makespan :</strong> {result.makespan}</div>
+          <div><strong>Flowtime :</strong> {result.flowtime}</div>
+          <div><strong>Retard cumulé :</strong> {result.retard_cumule}</div>
+
+          <h4>Temps de complétion</h4>
+          <ul>
+            {Object.entries(result.completion_times).map(([job, time]) => (
+              <li key={job}>{job} : {time}</li>
+            ))}
+          </ul>
+
+          <h4>Planification</h4>
+          <ul>
+            {Object.entries(result.planification).map(([machine, tasks]) => (
+              <li key={machine}>
+                <strong>{machine}</strong>
+                <ul>
+                  {tasks.map((t, i) => (
+                    <li key={i}>Job {t.job} - Tâche {t.task} : {t.start} → {t.start + t.duration}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+
+          {ganttUrl && (
+            <>
+              <h4>Diagramme de Gantt</h4>
+              <img
+                src={ganttUrl}
+                alt="Gantt"
+                style={{ width: "100%", maxWidth: "700px", marginTop: "1rem", borderRadius: "0.5rem" }}
+              />
+              <button className={styles.downloadButton} onClick={handleDownloadGantt}>Télécharger le diagramme de Gantt</button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

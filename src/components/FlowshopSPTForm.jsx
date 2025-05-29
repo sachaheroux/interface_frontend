@@ -70,7 +70,13 @@ function FlowshopSPTForm() {
         due_dates: formattedDueDates,
         unite,
         job_names: jobNames,
-        machine_names: machineNames
+        machine_names: machineNames,
+        // Saisies avancées (non utilisées côté algo, mais disponibles si besoin)
+        agenda_start_datetime: startDateTime,
+        opening_hours: openingHours,
+        weekend_days: Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k),
+        jours_feries: feries.filter(f => f),
+        due_date_times: dueDateTimes
       };
 
       fetch(`${API_URL}/spt`, {
@@ -190,20 +196,6 @@ function FlowshopSPTForm() {
               />
             </div>
           ))}
-          {showAdvanced && (
-            <div className={styles.taskRow}>
-              Due date + heure :
-              <input
-                type="datetime-local"
-                value={dueDateTimes[jobIdx]}
-                onChange={e => {
-                  const newDueDateTimes = [...dueDateTimes];
-                  newDueDateTimes[jobIdx] = e.target.value;
-                  setDueDateTimes(newDueDateTimes);
-                }}
-              />
-            </div>
-          )}
         </div>
       ))}
 
@@ -224,7 +216,6 @@ function FlowshopSPTForm() {
         </div>
       ))}
 
-      {/* CASE À COCHER */}
       <div className={styles.advancedToggle}>
         <label>
           <input type="checkbox" checked={showAdvanced} onChange={() => setShowAdvanced(!showAdvanced)} />
@@ -232,7 +223,6 @@ function FlowshopSPTForm() {
         </label>
       </div>
 
-      {/* SECTION AVANCÉE */}
       {showAdvanced && (
         <div className={styles.advancedSection}>
           <h4 className={styles.subtitle}>Horaire réel de l’usine</h4>
@@ -287,6 +277,22 @@ function FlowshopSPTForm() {
               + Ajouter un jour férié
             </button>
           </div>
+
+          <h4 className={styles.subtitle}>Dates dues avec heure (par job)</h4>
+          {jobs.map((_, jobIdx) => (
+            <div key={jobIdx} className={styles.taskRow}>
+              {jobNames[jobIdx] || `Job ${jobIdx}`} :
+              <input
+                type="datetime-local"
+                value={dueDateTimes[jobIdx]}
+                onChange={e => {
+                  const newTimes = [...dueDateTimes];
+                  newTimes[jobIdx] = e.target.value;
+                  setDueDateTimes(newTimes);
+                }}
+              />
+            </div>
+          ))}
         </div>
       )}
 
@@ -342,6 +348,7 @@ function FlowshopSPTForm() {
 }
 
 export default FlowshopSPTForm;
+
 
 
 

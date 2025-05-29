@@ -62,6 +62,9 @@ function JobshopSPTForm() {
         machine_names: machineNames
       };
 
+      console.log(JSON.stringify(payload, null, 2));
+
+
       fetch(`${API_URL}/jobshop/spt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

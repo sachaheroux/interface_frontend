@@ -158,7 +158,7 @@ function FlowshopEDDForm() {
           </div>
           {job.map((op, opIdx) => (
             <div key={opIdx} className={styles.taskRow}>
-              {machineNames[opIdx] || `Machine ${opIdx}`} :
+              {machineNames[opIdx] || `Machine ${opIdx}`} - Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"

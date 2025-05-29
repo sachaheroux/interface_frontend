@@ -7,18 +7,19 @@ function FlowshopSPTForm() {
     [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
-  const [dueDateTimes, setDueDateTimes] = useState(["", ""]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
   const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1"]);
   const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
+
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [startDateTime, setStartDateTime] = useState("");
   const [openingHours, setOpeningHours] = useState({ start: "08:00", end: "17:00" });
   const [weekendDays, setWeekendDays] = useState({ samedi: false, dimanche: false });
   const [feries, setFeries] = useState([""]);
+  const [dueDateTimes, setDueDateTimes] = useState(["", ""]);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -62,24 +63,30 @@ function FlowshopSPTForm() {
       const formattedJobs = jobs.map(job =>
         job.map(op => [parseInt(op.machine, 10), parseFloat(op.duration.replace(",", "."))])
       );
-      const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
+
+      const formattedDueDates = dueDates.map(d => {
+        const parsed = parseFloat(d.replace(",", "."));
+        if (isNaN(parsed)) throw new Error("Date due invalide");
+        return parsed;
+      });
 
       const payload = {
-       jobs_data: formattedJobs,
-       due_dates: formattedDueDates,
-       unite,
-       job_names: jobNames,
-       machine_names: machineNames
+        jobs_data: formattedJobs,
+        due_dates: formattedDueDates,
+        unite,
+        job_names: jobNames,
+        machine_names: machineNames,
       };
 
       if (showAdvanced) {
-       payload.agenda_start_datetime = startDateTime;
-       payload.opening_hours = openingHours;
-       payload.weekend_days = Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k);
-       payload.jours_feries = feries.filter(f => f);
-       payload.due_date_times = dueDateTimes;
+        payload.agenda_start_datetime = startDateTime;
+        payload.opening_hours = openingHours;
+        payload.weekend_days = Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k);
+        payload.jours_feries = feries.filter(f => f);
+        payload.due_date_times = dueDateTimes;
       }
 
+      console.log("Payload envoyé :", payload);
 
       fetch(`${API_URL}/spt`, {
         method: "POST",
@@ -92,14 +99,14 @@ function FlowshopSPTForm() {
         })
         .then(data => {
           setResult(data);
-          return fetch(`${API_URL}/spt/gantt_reel`, {
+          return fetch(`${API_URL}${showAdvanced ? "/spt/agenda" : "/spt/gantt"}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
           });
         })
         .then(res => {
-          if (!res.ok) throw new Error("Erreur Gantt API");
+          if (!res.ok) throw new Error("Erreur Gantt");
           return res.blob();
         })
         .then(blob => {

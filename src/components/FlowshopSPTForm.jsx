@@ -16,6 +16,7 @@ function FlowshopSPTForm() {
   const [ganttUrl, setGanttUrl] = useState(null);
   const [saisieAvancee, setSaisieAvancee] = useState(false);
   const [agendaData, setAgendaData] = useState(null);
+
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
@@ -51,6 +52,7 @@ function FlowshopSPTForm() {
     setError(null);
     setGanttUrl(null);
     setAgendaData(null);
+
     try {
       const formattedJobs = jobs.map(job =>
         job.map((duration, i) => [i, parseFloat(duration.replace(",", "."))])
@@ -159,7 +161,7 @@ function FlowshopSPTForm() {
           </div>
           {job.map((duration, taskIdx) => (
             <div key={taskIdx} className={styles.taskRow}>
-              Machine {taskIdx + 1} - Durée ({unite}) :
+              {machineNames[taskIdx] || `Machine ${taskIdx + 1}`} - Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"
@@ -236,6 +238,13 @@ function FlowshopSPTForm() {
               <button className={styles.downloadButton} onClick={handleDownloadGantt}>
                 Télécharger le diagramme de Gantt
               </button>
+            </>
+          )}
+
+          {agendaData && (
+            <>
+              <h4>Agenda de production</h4>
+              <AgendaGrid data={agendaData} unite={unite} />
             </>
           )}
         </div>

@@ -141,7 +141,7 @@ function FlowshopJohnsonModifieForm() {
           </div>
           {job.map((duration, taskIdx) => (
             <div key={taskIdx} className={styles.taskRow}>
-              Tâche {taskIdx} (durée {unite}) :
+              {machineNames[taskIdx] || `Machine ${taskIdx}`} - Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"

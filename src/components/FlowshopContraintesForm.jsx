@@ -17,7 +17,7 @@ function FlowshopContraintesForm() {
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    const newJob = Array.from({ length: machineNames.length }, () => "1");
+    const newJob = machineNames.map(() => "1");
     setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
@@ -49,7 +49,7 @@ function FlowshopContraintesForm() {
 
     try {
       const formattedJobs = jobs.map(job =>
-        job.map((duration, idx) => [idx, parseFloat(duration.replace(",", "."))])
+        job.map((duration, i) => [i, parseFloat(duration.replace(",", "."))])
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
 
@@ -155,7 +155,7 @@ function FlowshopContraintesForm() {
           </div>
           {job.map((duration, opIdx) => (
             <div key={opIdx} className={styles.taskRow}>
-              Durée ({unite}) :
+              {machineNames[opIdx] || `Machine ${opIdx}`} - Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"

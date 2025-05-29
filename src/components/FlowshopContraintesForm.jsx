@@ -3,8 +3,8 @@ import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopContraintesForm() {
   const [jobs, setJobs] = useState([
-    [{ machine: "0", duration: "3" }, { machine: "1", duration: "2" }],
-    [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
+    ["3", "2"],
+    ["2", "4"]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
@@ -17,8 +17,7 @@ function FlowshopContraintesForm() {
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    const machineCount = jobs[0].length;
-    const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: "1" }));
+    const newJob = Array.from({ length: machineNames.length }, () => "1");
     setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
@@ -32,16 +31,14 @@ function FlowshopContraintesForm() {
     }
   };
 
-  const addTaskToAllJobs = () => {
-    const updatedJobs = jobs.map(job => [...job, { machine: String(job.length), duration: "1" }]);
-    setJobs(updatedJobs);
+  const addTask = () => {
+    setJobs(jobs.map(job => [...job, "1"]));
     setMachineNames([...machineNames, `Machine ${machineNames.length}`]);
   };
 
-  const removeTaskFromAllJobs = () => {
-    if (jobs[0].length > 1) {
-      const updatedJobs = jobs.map(job => job.slice(0, -1));
-      setJobs(updatedJobs);
+  const removeTask = () => {
+    if (machineNames.length > 1) {
+      setJobs(jobs.map(job => job.slice(0, -1)));
       setMachineNames(machineNames.slice(0, -1));
     }
   };
@@ -52,7 +49,7 @@ function FlowshopContraintesForm() {
 
     try {
       const formattedJobs = jobs.map(job =>
-        job.map(op => [parseInt(op.machine, 10), parseFloat(op.duration.replace(",", "."))])
+        job.map((duration, idx) => [idx, parseFloat(duration.replace(",", "."))])
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
 
@@ -121,8 +118,8 @@ function FlowshopContraintesForm() {
       <div className={styles.buttonGroup}>
         <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
         <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
-        <button className={styles.button} onClick={addTaskToAllJobs}>+ Ajouter une tâche</button>
-        <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une tâche</button>
+        <button className={styles.button} onClick={addTask}>+ Ajouter une tâche</button>
+        <button className={styles.button} onClick={removeTask}>- Supprimer une tâche</button>
       </div>
 
       <h4 className={styles.subtitle}>Noms des machines</h4>
@@ -156,26 +153,16 @@ function FlowshopContraintesForm() {
               }}
             />
           </div>
-          {job.map((op, opIdx) => (
+          {job.map((duration, opIdx) => (
             <div key={opIdx} className={styles.taskRow}>
-              Machine :
-              <input
-                type="number"
-                value={op.machine}
-                onChange={e => {
-                  const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].machine = e.target.value;
-                  setJobs(newJobs);
-                }}
-              />
               Durée ({unite}) :
               <input
                 type="text"
                 inputMode="decimal"
-                value={op.duration}
+                value={duration}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].duration = e.target.value;
+                  newJobs[jobIdx][opIdx] = e.target.value;
                   setJobs(newJobs);
                 }}
               />

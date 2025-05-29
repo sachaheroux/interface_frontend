@@ -17,7 +17,8 @@ function FlowshopJohnsonForm() {
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    setJobs([...jobs, ["1", "1"]]);
+    const newJob = Array.from({ length: jobs[0].length }, () => "1");
+    setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
   };
@@ -138,7 +139,7 @@ function FlowshopJohnsonForm() {
           </div>
           {job.map((val, idx) => (
             <div key={idx} className={styles.taskRow}>
-              Tâche {idx} :
+              {machineNames[idx] || `Machine ${idx}`} :
               <input
                 type="text"
                 inputMode="decimal"
@@ -224,6 +225,7 @@ function FlowshopJohnsonForm() {
 }
 
 export default FlowshopJohnsonForm;
+
 
 
 

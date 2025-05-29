@@ -3,12 +3,12 @@ import styles from "./FlowshopSPTForm.module.css";
 
 function FlowshopJohnsonModifieForm() {
   const [jobs, setJobs] = useState([
-    [{ machine: "0", duration: "3" }, { machine: "1", duration: "2" }],
-    [{ machine: "0", duration: "2" }, { machine: "1", duration: "4" }]
+    ["3", "2", "1"],
+    ["2", "4", "3"]
   ]);
   const [dueDates, setDueDates] = useState(["10", "9"]);
   const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
-  const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1"]);
+  const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1", "Machine 2"]);
   const [unite, setUnite] = useState("heures");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -17,11 +17,7 @@ function FlowshopJohnsonModifieForm() {
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    const machineCount = machineNames.length;
-    const newJob = Array.from({ length: machineCount }, () => ({
-      machine: "0",
-      duration: "1"
-    }));
+    const newJob = machineNames.map(() => "1");
     setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
@@ -41,10 +37,7 @@ function FlowshopJohnsonModifieForm() {
 
     try {
       const formattedJobs = jobs.map(job =>
-        job.map(op => [
-          parseInt(op.machine, 10),
-          parseFloat(op.duration.replace(",", "."))
-        ])
+        job.map((duration, i) => [i, parseFloat(duration.replace(",", "."))])
       );
       const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
 
@@ -146,28 +139,16 @@ function FlowshopJohnsonModifieForm() {
               }}
             />
           </div>
-          {job.map((op, opIdx) => (
-            <div key={opIdx} className={styles.taskRow}>
-              Machine :
-              <input
-                type="number"
-                min="0"
-                max={machineNames.length - 1}
-                value={op.machine}
-                onChange={e => {
-                  const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].machine = e.target.value;
-                  setJobs(newJobs);
-                }}
-              />
-              Durée ({unite}) :
+          {job.map((duration, taskIdx) => (
+            <div key={taskIdx} className={styles.taskRow}>
+              Tâche {taskIdx} (durée {unite}) :
               <input
                 type="text"
                 inputMode="decimal"
-                value={op.duration}
+                value={duration}
                 onChange={e => {
                   const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].duration = e.target.value;
+                  newJobs[jobIdx][taskIdx] = e.target.value;
                   setJobs(newJobs);
                 }}
               />

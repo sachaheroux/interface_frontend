@@ -18,4 +18,4 @@ export default function AlgorithmFormAndResult({ algorithm }) {
       </div>
     </div>
   );
-}
+} 

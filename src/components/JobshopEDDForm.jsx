@@ -1,8 +1,8 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
-import JobshopSPTInfo from "./JobshopSPTInfo";
+import JobshopEDDInfo from "./JobshopEDDInfo";
 
-function JobshopSPTForm() {
+function JobshopEDDForm() {
   const [jobs, setJobs] = useState([
     [{ machine: "0", duration: "4" }, { machine: "1", duration: "2" }],
     [{ machine: "1", duration: "3" }, { machine: "0", duration: "2" }]
@@ -64,7 +64,7 @@ function JobshopSPTForm() {
         unite: unite
       };
 
-      fetch(`${API_URL}/jobshop/spt`, {
+      fetch(`${API_URL}/jobshop/edd`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -75,7 +75,7 @@ function JobshopSPTForm() {
         })
         .then(data => {
           setResult(data);
-          return fetch(`${API_URL}/jobshop/spt/gantt`, {
+          return fetch(`${API_URL}/jobshop/edd/gantt`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
@@ -89,7 +89,6 @@ function JobshopSPTForm() {
          const url = URL.createObjectURL(blob);
          setGanttUrl(url);
         })
-
         .catch(err => setError(err.message));
     } catch (e) {
       setError("Erreur dans les données saisies.");
@@ -109,7 +108,7 @@ function JobshopSPTForm() {
   return (
     <div className={styles.formContainer}>
       <div className={styles.form}>
-        <h2 className={styles.title}>Ordonnancement Jobshop - Règle SPT</h2>
+        <h2 className={styles.title}>Ordonnancement Jobshop - Règle EDD</h2>
 
         <div className={styles.unitSelector}>
           <label>Unité de temps :</label>
@@ -203,43 +202,34 @@ function JobshopSPTForm() {
           </div>
         ))}
 
-        <button className={styles.submitButton} onClick={handleSubmit}>Lancer l'algorithme</button>
+        <button className={styles.submitButton} onClick={handleSubmit}>
+          Calculer l'ordonnancement
+        </button>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <div className={styles.error}>{error}</div>}
 
         {result && (
-          <div className={styles.resultBlock}>
-            <h3>Résultats</h3>
-            <div><strong>Makespan :</strong> {result.metrics.makespan}</div>
-            <div><strong>Flowtime :</strong> {result.metrics.flowtime}</div>
-            <div><strong>Retard cumulé :</strong> {result.metrics.retard_cumule}</div>
+          <div className={styles.results}>
+            <h3>Résultats :</h3>
+            <p>Makespan (Cmax) : {result.metrics.makespan} {unite}</p>
+            <p>Flowtime (F) : {result.metrics.flowtime} {unite}</p>
+            <p>Retard cumulé (Rc) : {result.metrics.retard_cumule} {unite}</p>
+          </div>
+        )}
 
-            <h4>Planification</h4>
-            <ul>
-              {result.schedule.map((t, i) => (
-                <li key={i}>{t.job} - {t.machine} : {t.start} → {t.end}</li>
-              ))}
-            </ul>
-
-            {ganttUrl && (
-              <>
-                <h4>Diagramme de Gantt</h4>
-                <img
-                  src={ganttUrl}
-                  alt="Gantt"
-                  style={{ width: "100%", maxWidth: "700px", marginTop: "1rem", borderRadius: "0.5rem" }}
-                />
-                <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-                  Télécharger le diagramme de Gantt
-                </button>
-              </>
-            )}
+        {ganttUrl && (
+          <div className={styles.ganttContainer}>
+            <h3>Diagramme de Gantt :</h3>
+            <img src={ganttUrl} alt="Diagramme de Gantt" className={styles.gantt} />
+            <button className={styles.downloadButton} onClick={handleDownloadGantt}>
+              Télécharger le diagramme
+            </button>
           </div>
         )}
       </div>
-      <JobshopSPTInfo />
+      <JobshopEDDInfo />
     </div>
   );
 }
 
-export default JobshopSPTForm;
+export default JobshopEDDForm; 

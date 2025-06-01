@@ -121,13 +121,21 @@ function App() {
         </div>
 
         {/* Info à droite */}
-        {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTInfo />}
-        {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDInfo />}
-        {systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonInfo />}
-        {systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
-        {systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithInfo />}
-        {systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesInfo />}
-        {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDInfo />}
+        {(systeme === "Flowshop" || systeme === "Jobshop") && (
+          <div style={{ marginLeft: "2rem", minWidth: "400px" }}>
+            {systeme === "Flowshop" && (
+              <>
+                {algorithme === "SPT" && <FlowshopSPTInfo />}
+                {algorithme === "EDD" && <FlowshopEDDInfo />}
+                {algorithme === "Johnson" && <FlowshopJohnsonInfo />}
+                {algorithme === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
+                {algorithme === "Smith" && <FlowshopSmithInfo />}
+                {algorithme === "Contraintes" && <FlowshopContraintesInfo />}
+              </>
+            )}
+            {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDInfo />}
+          </div>
+        )}
       </div>
     </div>
   );

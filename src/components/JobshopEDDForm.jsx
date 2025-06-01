@@ -1,6 +1,5 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
-import JobshopEDDInfo from "./JobshopEDDInfo";
 
 function JobshopEDDForm() {
   const [jobs, setJobs] = useState([
@@ -227,7 +226,6 @@ function JobshopEDDForm() {
           </div>
         )}
       </div>
-      <JobshopEDDInfo />
     </div>
   );
 }

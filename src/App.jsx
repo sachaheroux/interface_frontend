@@ -15,6 +15,8 @@ import FlowshopSmithInfo from "./components/FlowshopSmithInfo";
 import FlowshopContraintesForm from "./components/FlowshopContraintesForm";
 import FlowshopContraintesInfo from "./components/FlowshopContraintesInfo";
 import JobshopSPTForm from "./components/JobshopSPTForm";
+import JobshopEDDForm from "./components/JobshopEDDForm";
+import JobshopEDDInfo from "./components/JobshopEDDInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -112,7 +114,8 @@ function App() {
           {systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithForm />}
           {systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesForm />}
           {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && algorithme === "SPT") && (
+          {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDForm />}
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD")) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -124,6 +127,7 @@ function App() {
         {systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
         {systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithInfo />}
         {systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesInfo />}
+        {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDInfo />}
       </div>
     </div>
   );

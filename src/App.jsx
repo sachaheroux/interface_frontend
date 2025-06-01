@@ -15,6 +15,7 @@ import FlowshopSmithInfo from "./components/FlowshopSmithInfo";
 import FlowshopContraintesForm from "./components/FlowshopContraintesForm";
 import FlowshopContraintesInfo from "./components/FlowshopContraintesInfo";
 import JobshopSPTForm from "./components/JobshopSPTForm";
+import JobshopSPTInfo from "./components/JobshopSPTInfo";
 import JobshopEDDForm from "./components/JobshopEDDForm";
 import JobshopEDDInfo from "./components/JobshopEDDInfo";
 
@@ -30,9 +31,58 @@ function App() {
     "FMS": ["Sac à dos", "Glouton", "Lots de chargement"]
   };
 
+  const renderMainContent = () => {
+    if (!systeme) return <WelcomeView />;
+    if (!algorithme) return <SystemDescription system={systeme} />;
+    
+    if (systeme === "Flowshop") {
+      switch (algorithme) {
+        case "SPT": return <FlowshopSPTForm />;
+        case "EDD": return <FlowshopEDDForm />;
+        case "Johnson": return <FlowshopJohnsonForm />;
+        case "Johnson modifié": return <FlowshopJohnsonModifieForm />;
+        case "Smith": return <FlowshopSmithForm />;
+        case "Contraintes": return <FlowshopContraintesForm />;
+      }
+    }
+    
+    if (systeme === "Jobshop") {
+      switch (algorithme) {
+        case "SPT": return <JobshopSPTForm />;
+        case "EDD": return <JobshopEDDForm />;
+      }
+    }
+    
+    return <AlgorithmFormAndResult algorithm={algorithme} />;
+  };
+
+  const renderInfo = () => {
+    if (!systeme || !algorithme) return null;
+    
+    if (systeme === "Flowshop") {
+      switch (algorithme) {
+        case "SPT": return <FlowshopSPTInfo />;
+        case "EDD": return <FlowshopEDDInfo />;
+        case "Johnson": return <FlowshopJohnsonInfo />;
+        case "Johnson modifié": return <FlowshopJohnsonModifieInfo />;
+        case "Smith": return <FlowshopSmithInfo />;
+        case "Contraintes": return <FlowshopContraintesInfo />;
+      }
+    }
+    
+    if (systeme === "Jobshop") {
+      switch (algorithme) {
+        case "SPT": return <JobshopSPTInfo />;
+        case "EDD": return <JobshopEDDInfo />;
+      }
+    }
+    
+    return null;
+  };
+
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#eef2f8", fontFamily: "Segoe UI, sans-serif" }}>
-      {/* MENU GAUCHE */}
+      {/* Menu gauche */}
       <div style={{
         width: "300px",
         background: "#ffffff",
@@ -95,7 +145,7 @@ function App() {
         )}
       </div>
 
-      {/* CONTENU CENTRAL + INFO */}
+      {/* Contenu principal + Info */}
       <div style={{ flex: 1, display: "flex", padding: "2rem", background: "#f9fafc" }}>
         {/* Partie principale */}
         <div style={{
@@ -105,32 +155,11 @@ function App() {
           borderRadius: "1rem",
           boxShadow: "0 2px 10px rgba(0,0,0,0.05)"
         }}>
-          {!systeme && !algorithme && <WelcomeView />}
-          {systeme && !algorithme && <SystemDescription system={systeme} />}
-          {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTForm />}
-          {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDForm />}
-          {systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonForm />}
-          {systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieForm />}
-          {systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithForm />}
-          {systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesForm />}
-          {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTForm />}
-          {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD")) && (
-            <AlgorithmFormAndResult algorithm={algorithme} />
-          )}
+          {renderMainContent()}
         </div>
 
-        {/* Info à droite */}
-        <div style={{ marginLeft: "2rem", minWidth: "400px" }}>
-          {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTInfo />}
-          {systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDInfo />}
-          {systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonInfo />}
-          {systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
-          {systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithInfo />}
-          {systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesInfo />}
-          {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTInfo />}
-          {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDInfo />}
-        </div>
+        {/* Panneau d'information */}
+        {renderInfo()}
       </div>
     </div>
   );

@@ -28,6 +28,8 @@ import LigneAssemblageLPTForm from "./components/LigneAssemblageLPTForm";
 import LigneAssemblageLPTInfo from "./components/LigneAssemblageLPTInfo";
 import LigneAssemblagePLForm from "./components/LigneAssemblagePLForm";
 import LigneAssemblagePLInfo from "./components/LigneAssemblagePLInfo";
+import LigneAssemblageMixteGoulotForm from "./components/LigneAssemblageMixteGoulotForm";
+import LigneAssemblageMixteGoulotInfo from "./components/LigneAssemblageMixteGoulotInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -37,6 +39,7 @@ function App() {
     "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Smith"],
     "Jobshop": ["SPT", "EDD", "Contraintes"],
     "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL"],
+    "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte"],
     "Ligne de transfert": ["Markov", "LIBA"],
     "FMS": ["Sac à dos", "Glouton", "Lots de chargement"]
   };
@@ -131,13 +134,14 @@ function App() {
           {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && <LigneAssemblageCOMSOALForm />}
           {systeme === "Ligne d'assemblage" && algorithme === "LPT" && <LigneAssemblageLPTForm />}
           {systeme === "Ligne d'assemblage" && algorithme === "PL" && <LigneAssemblagePLForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && (
+          {systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotForm />}
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot") && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
 
         {/* Info à droite */}
-        {(systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage") && (
+        {(systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage" || systeme === "Ligne d'assemblage mixte") && (
           <div style={{ marginLeft: "2rem", minWidth: "400px" }}>
             {systeme === "Flowshop" && (
               <>
@@ -156,6 +160,7 @@ function App() {
             {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && <LigneAssemblageCOMSOALInfo />}
             {systeme === "Ligne d'assemblage" && algorithme === "LPT" && <LigneAssemblageLPTInfo />}
             {systeme === "Ligne d'assemblage" && algorithme === "PL" && <LigneAssemblagePLInfo />}
+            {systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotInfo />}
           </div>
         )}
       </div>

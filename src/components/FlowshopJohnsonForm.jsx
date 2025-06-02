@@ -14,7 +14,7 @@ function FlowshopJohnsonForm() {
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
 
-  const API_URL = "https://interface-backend-1jgi.onrender.com";
+  const API_URL = "/api";
 
   const addJob = () => {
     const newJob = Array.from({ length: jobs[0].length }, () => "1");

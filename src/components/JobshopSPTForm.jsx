@@ -14,7 +14,7 @@ function JobshopSPTForm() {
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
 
-  const API_URL = "https://interface-backend-1jgi.onrender.com";
+  const API_URL = "/api";
 
   const addJob = () => {
     const newJob = jobs[0].map((_, i) => ({ machine: String(i), duration: "1" }));

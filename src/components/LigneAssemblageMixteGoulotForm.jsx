@@ -15,7 +15,7 @@ function LigneAssemblageMixteGoulotForm() {
   const [chartUrl, setChartUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const API_URL = "https://interface-backend-1jgi.onrender.com";
+  const API_URL = "/api";
 
   const addModel = () => {
     const newModelsDemand = [...modelsDemand, 4];

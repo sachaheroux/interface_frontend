@@ -61,7 +61,7 @@ export default function FMSLotsProductionMIPForm() {
     const nouveauxProduits = produits.map(p => ({
       ...p,
       tempsOperations: [...p.tempsOperations, 1.0],
-      outils: [...p.outils, nouvelleMachine.outilsDisponibles[0]]
+      outils: [...p.outils, (nouvelleMachine.outilsDisponibles || [])[0] || ""]
     }));
     setProduits(nouveauxProduits);
   };
@@ -100,7 +100,7 @@ export default function FMSLotsProductionMIPForm() {
       nom: `Produit ${produits.length + 1}`, 
       grandeurCommande: 50, 
       tempsOperations: new Array(machines.length).fill(2.0), 
-      outils: machines.map((machine, index) => machine.outilsDisponibles[0] || ""), 
+      outils: machines.map((machine, index) => (machine.outilsDisponibles || [])[0] || ""), 
       dateDue: 2,
       coutInventaire: 100
     };
@@ -358,7 +358,7 @@ export default function FMSLotsProductionMIPForm() {
               <label>Outils disponibles (séparés par virgule) :</label>
               <input
                 type="text"
-                value={machine.outilsDisponibles.join(", ")}
+                value={(machine.outilsDisponibles || []).join(", ")}
                 onChange={(e) => handleMachineChange(index, "outilsDisponibles", e.target.value)}
                 className={styles.input}
                 placeholder="A1, A2, A3"
@@ -369,7 +369,7 @@ export default function FMSLotsProductionMIPForm() {
               <label>Espace requis par outil (séparés par virgule) :</label>
               <input
                 type="text"
-                value={machine.espaceOutils.join(", ")}
+                value={(machine.espaceOutils || []).join(", ")}
                 onChange={(e) => handleMachineChange(index, "espaceOutils", e.target.value)}
                 className={styles.input}
                 placeholder="1, 1, 1"
@@ -378,7 +378,7 @@ export default function FMSLotsProductionMIPForm() {
 
             <small className={styles.helpText}>
               <strong>Capacité totale :</strong> {calculateCapaciteTotale(index).toFixed(0)} {uniteTemps} | 
-              <strong> Outils:</strong> {machine.outilsDisponibles.length} définis
+              <strong> Outils:</strong> {(machine.outilsDisponibles || []).length} définis
             </small>
           </div>
         ))}
@@ -464,7 +464,7 @@ export default function FMSLotsProductionMIPForm() {
                     className={styles.select}
                   >
                     <option value="">-- Aucun outil --</option>
-                    {machine.outilsDisponibles.map((outil, outilIndex) => (
+                    {(machine.outilsDisponibles || []).map((outil, outilIndex) => (
                       <option key={outilIndex} value={outil}>{outil}</option>
                     ))}
                   </select>

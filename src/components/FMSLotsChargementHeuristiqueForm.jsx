@@ -286,7 +286,7 @@ export default function FMSLotsChargementHeuristiqueForm() {
         <div className={styles.jobBlock}>
           <h4>Outils disponibles</h4>
           
-          {Object.entries(outilsEspace).map(([outil, espace]) => (
+          {Object.entries(outilsEspace || {}).map(([outil, espace]) => (
             <div key={outil} className={styles.taskRow}>
               <label>Outil {outil} - Espace requis :</label>
               <input

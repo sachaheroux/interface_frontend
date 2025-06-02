@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
+import JobshopContraintesInfo from "./JobshopContraintesInfo";
 
 function JobshopContraintesForm() {
   const [jobs, setJobs] = useState([
@@ -233,6 +234,7 @@ function JobshopContraintesForm() {
           </div>
         )}
       </div>
+      <JobshopContraintesInfo />
     </div>
   );
 }

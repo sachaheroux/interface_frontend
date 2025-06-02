@@ -208,7 +208,7 @@ function JobshopSPTForm() {
         {error && <p className={styles.error}>{error}</p>}
 
         {result && (
-          <div className={styles.resultBlock}>
+          <div className={styles.results}>
             <h3>Résultats</h3>
             <div><strong>Makespan :</strong> {result.metrics.makespan}</div>
             <div><strong>Flowtime :</strong> {result.metrics.flowtime}</div>

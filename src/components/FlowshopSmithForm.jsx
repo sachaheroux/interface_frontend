@@ -149,7 +149,7 @@ function FlowshopSmithForm() {
       {error && <p className={styles.error}>{error}</p>}
 
       {result && (
-        <div className={styles.resultBlock}>
+        <div className={styles.results}>
           <h3>Résultats</h3>
           <div><strong>Séquence :</strong> {result.sequence.join(" → ")}</div>
           <div><strong>Flowtime :</strong> {result.flowtime}</div>

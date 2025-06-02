@@ -34,7 +34,7 @@ export default function FMSSacADosPLInfo() {
       <div style={{ marginBottom: "1rem" }}>
         <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Formulation mathématique</h4>
         <p style={{ marginBottom: "0.5rem" }}>
-          Variables binaires x[i] ∈ {0,1} pour chaque produit :
+          Variables binaires x[i] de valeur 0 ou 1 pour chaque produit :
         </p>
         <div style={{ backgroundColor: "#e2e8f0", padding: "0.5rem", borderRadius: "0.375rem", fontFamily: "monospace", fontSize: "0.85rem" }}>
           Max: Σ(profit[i] × demande[i] × x[i])

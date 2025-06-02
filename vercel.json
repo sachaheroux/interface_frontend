@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://interface-backend-1jgi.onrender.com/$1"
+    }
+  ]
+} 

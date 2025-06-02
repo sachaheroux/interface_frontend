@@ -38,6 +38,8 @@ import FMSSacADosForm from "./components/FMSSacADosForm";
 import FMSSacADosInfo from "./components/FMSSacADosInfo";
 import FMSSacADosPLForm from "./components/FMSSacADosPLForm";
 import FMSSacADosPLInfo from "./components/FMSSacADosPLInfo";
+import FMSSacADosGloutonForm from "./components/FMSSacADosGloutonForm";
+import FMSSacADosGloutonInfo from "./components/FMSSacADosGloutonInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -112,6 +114,9 @@ function App() {
               {systemes[systeme].map((a) => (
                 <option key={a} value={a}>{a}</option>
               ))}
+              <option value="sac_a_dos">Sac à dos (Prog. Dynamique)</option>
+              <option value="sac_a_dos_pl">Sac à dos (Prog. Linéaire)</option>
+              <option value="sac_a_dos_glouton">Sac à dos (Algorithme Glouton)</option>
             </select>
           </div>
         )}
@@ -147,7 +152,8 @@ function App() {
           {systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottForm />}
           {systeme === "FMS" && algorithme === "Sac à dos (Prog. Dynamique)" && <FMSSacADosForm />}
           {systeme === "FMS" && algorithme === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && (algorithme === "Sac à dos (Prog. Dynamique)" || algorithme === "Sac à dos (Prog. Linéaire)")) && (
+          {systeme === "FMS" && algorithme === "Sac à dos (Algorithme Glouton)" && <FMSSacADosGloutonForm />}
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && (algorithme === "Sac à dos (Prog. Dynamique)" || algorithme === "Sac à dos (Prog. Linéaire)" || algorithme === "Sac à dos (Algorithme Glouton)")) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -177,6 +183,7 @@ function App() {
             {systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottInfo />}
             {systeme === "FMS" && algorithme === "Sac à dos (Prog. Dynamique)" && <FMSSacADosInfo />}
             {systeme === "FMS" && algorithme === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLInfo />}
+            {systeme === "FMS" && algorithme === "Sac à dos (Algorithme Glouton)" && <FMSSacADosGloutonInfo />}
           </div>
         )}
       </div>

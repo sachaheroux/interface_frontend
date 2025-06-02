@@ -24,6 +24,8 @@ import LigneAssemblagePrecedenceForm from "./components/LigneAssemblagePrecedenc
 import LigneAssemblagePrecedenceInfo from "./components/LigneAssemblagePrecedenceInfo";
 import LigneAssemblageCOMSOALForm from "./components/LigneAssemblageCOMSOALForm";
 import LigneAssemblageCOMSOALInfo from "./components/LigneAssemblageCOMSOALInfo";
+import LigneAssemblageLPTForm from "./components/LigneAssemblageLPTForm";
+import LigneAssemblageLPTInfo from "./components/LigneAssemblageLPTInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -125,7 +127,8 @@ function App() {
           {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesForm />}
           {systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceForm />}
           {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && <LigneAssemblageCOMSOALForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL")) && (
+          {systeme === "Ligne d'assemblage" && algorithme === "LPT" && <LigneAssemblageLPTForm />}
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT")) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -148,6 +151,7 @@ function App() {
             {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesInfo />}
             {systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceInfo />}
             {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && <LigneAssemblageCOMSOALInfo />}
+            {systeme === "Ligne d'assemblage" && algorithme === "LPT" && <LigneAssemblageLPTInfo />}
           </div>
         )}
       </div>

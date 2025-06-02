@@ -51,7 +51,7 @@ function App() {
     "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL"],
     "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte"],
     "Ligne de transfert": ["Buffer Buzzacott"],
-    "FMS": ["Sac à dos (Prog. Dynamique)", "Sac à dos (Prog. Linéaire)", "Glouton", "Lots de chargement"]
+    "FMS": ["Sac à dos (Prog. Dynamique)", "Sac à dos (Prog. Linéaire)", "Sac à dos (Algorithme Glouton)"]
   };
 
   return (
@@ -114,9 +114,6 @@ function App() {
               {systemes[systeme].map((a) => (
                 <option key={a} value={a}>{a}</option>
               ))}
-              <option value="sac_a_dos">Sac à dos (Prog. Dynamique)</option>
-              <option value="sac_a_dos_pl">Sac à dos (Prog. Linéaire)</option>
-              <option value="sac_a_dos_glouton">Sac à dos (Algorithme Glouton)</option>
             </select>
           </div>
         )}

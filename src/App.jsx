@@ -17,6 +17,8 @@ import FlowshopContraintesInfo from "./components/FlowshopContraintesInfo";
 import JobshopSPTForm from "./components/JobshopSPTForm";
 import JobshopEDDForm from "./components/JobshopEDDForm";
 import JobshopEDDInfo from "./components/JobshopEDDInfo";
+import JobshopContraintesForm from './components/JobshopContraintesForm';
+import JobshopContraintesInfo from './components/JobshopContraintesInfo';
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -137,6 +139,8 @@ function App() {
           </div>
         )}
       </div>
+      <JobshopContraintesInfo />
+      <JobshopContraintesForm />
     </div>
   );
 }

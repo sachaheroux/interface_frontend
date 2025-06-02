@@ -20,49 +20,14 @@ export default function LigneAssemblageMixteEquilibrageForm() {
     { 
       id: 3, 
       models: [
-        { predecessors: "1", time: 2 },
-        { predecessors: "1", time: 3 }
-      ] 
-    },
-    { 
-      id: 4, 
-      models: [
-        { predecessors: "1", time: 6 },
-        { predecessors: "1", time: 5 }
-      ] 
-    },
-    { 
-      id: 5, 
-      models: [
-        { predecessors: "2", time: 3 },
-        { predecessors: "2", time: 0 }
-      ] 
-    },
-    { 
-      id: 6, 
-      models: [
-        { predecessors: "3", time: 4 },
-        { predecessors: "3", time: 2 }
-      ] 
-    },
-    { 
-      id: 7, 
-      models: [
-        { predecessors: null, time: 0 },
-        { predecessors: "4", time: 4 }
-      ] 
-    },
-    { 
-      id: 8, 
-      models: [
-        { predecessors: "5, 6", time: 5 },
-        { predecessors: "7", time: 4 }
+        { predecessors: "2", time: 2 },
+        { predecessors: "2", time: 3 }
       ] 
     }
   ]);
 
   const [models, setModels] = useState([4, 6]); // Demande par modèle
-  const [cycleTime, setCycleTime] = useState("60");
+  const [cycleTime, setCycleTime] = useState("10");
   const [unite, setUnite] = useState("minutes");
   const [result, setResult] = useState(null);
   const [chartUrl, setChartUrl] = useState(null);

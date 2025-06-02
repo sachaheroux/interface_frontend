@@ -52,7 +52,7 @@ export default function FMSLotsChargementHeuristiqueInfo() {
           &nbsp;&nbsp;Pour chaque opération (nom, temps, outil) :<br />
           &nbsp;&nbsp;&nbsp;&nbsp;Si (piece == piece_courante OU piece_courante == null)<br />
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ET temps_cluster + temps ≤ Pj[j]<br />
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ET |outils_cluster ∪ {outil}| ≤ Kj[j] :<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ET |outils_cluster ∪ &#123;outil&#125;| ≤ Kj[j] :<br />
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ajouter à cluster_courant<br />
           &nbsp;&nbsp;&nbsp;&nbsp;Sinon :<br />
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fermer cluster_courant<br />

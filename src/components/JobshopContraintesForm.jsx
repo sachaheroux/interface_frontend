@@ -223,10 +223,10 @@ function JobshopContraintesForm() {
 
             {ganttUrl && (
               <div className={styles.ganttContainer}>
-                <h4>Diagramme de Gantt :</h4>
-                <img src={ganttUrl} alt="Diagramme de Gantt" className={styles.ganttImage} />
+                <h4>Diagramme de Gantt</h4>
+                <img src={ganttUrl} alt="Diagramme de Gantt" className={styles.gantt} />
                 <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-                  Télécharger le diagramme
+                  Télécharger le diagramme de Gantt
                 </button>
               </div>
             )}

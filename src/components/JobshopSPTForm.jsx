@@ -222,17 +222,17 @@ function JobshopSPTForm() {
             </ul>
 
             {ganttUrl && (
-              <>
+              <div className={styles.ganttContainer}>
                 <h4>Diagramme de Gantt</h4>
                 <img
                   src={ganttUrl}
                   alt="Gantt"
-                  style={{ width: "100%", maxWidth: "700px", marginTop: "1rem", borderRadius: "0.5rem" }}
+                  className={styles.gantt}
                 />
                 <button className={styles.downloadButton} onClick={handleDownloadGantt}>
                   Télécharger le diagramme de Gantt
                 </button>
-              </>
+              </div>
             )}
           </div>
         )}

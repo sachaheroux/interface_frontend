@@ -169,20 +169,24 @@ export default function LigneAssemblageMixteEquilibrageForm() {
 
       // Transformer les données au format attendu par le backend
       const tasksData = tasks.map(task => {
-        const formatted = [task.id];
-        task.models.forEach(model => {
-          let predecessors = null;
-          if (model.predecessors) {
-            if (typeof model.predecessors === 'string') {
-              const predecessorIds = model.predecessors.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
-              predecessors = predecessorIds.length === 1 ? predecessorIds[0] : predecessorIds;
-            } else {
-              predecessors = model.predecessors;
+        return {
+          id: task.id,
+          models: task.models.map(model => {
+            let predecessors = null;
+            if (model.predecessors) {
+              if (typeof model.predecessors === 'string') {
+                const predecessorIds = model.predecessors.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
+                predecessors = predecessorIds.length === 1 ? predecessorIds[0] : predecessorIds;
+              } else {
+                predecessors = model.predecessors;
+              }
             }
-          }
-          formatted.push([predecessors, model.time]);
-        });
-        return formatted;
+            return {
+              predecessors: predecessors,
+              time: model.time
+            };
+          })
+        };
       });
 
       const requestData = {

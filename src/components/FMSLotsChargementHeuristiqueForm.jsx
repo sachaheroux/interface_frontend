@@ -59,13 +59,14 @@ export default function FMSLotsChargementHeuristiqueForm() {
 
   // Fonctions pour gérer les machines
   const addMachine = () => {
+    const premierOutil = Object.keys(outilsEspace || {})[0] || "Y1";
     const nouvelleMachine = { 
       nom: `Machine ${machines.length + 1}`, 
       nombre: 1, 
       capaciteTemps: 800, 
       capaciteOutils: 2,
       operations: [
-        [`o${machines.length + 1}1`, 300, "Y1"]
+        [`o${machines.length + 1}1`, 300, premierOutil]
       ]
     };
     setMachines([...machines, nouvelleMachine]);
@@ -91,7 +92,8 @@ export default function FMSLotsChargementHeuristiqueForm() {
   const addOperation = (machineIndex) => {
     const nouvellesMachines = [...machines];
     const nouveauNom = `o${machineIndex + 1}${nouvellesMachines[machineIndex].operations.length + 1}`;
-    nouvellesMachines[machineIndex].operations.push([nouveauNom, 300, "Y1"]);
+    const premierOutil = Object.keys(outilsEspace || {})[0] || "Y1";
+    nouvellesMachines[machineIndex].operations.push([nouveauNom, 300, premierOutil]);
     setMachines(nouvellesMachines);
   };
 
@@ -135,6 +137,18 @@ export default function FMSLotsChargementHeuristiqueForm() {
     const nouveauxOutils = { ...outilsEspace };
     delete nouveauxOutils[outilASupprimer];
     setOutilsEspace(nouveauxOutils);
+
+    // Mettre à jour les opérations qui utilisent cet outil
+    const premierOutilRestant = Object.keys(nouveauxOutils)[0] || "Y1";
+    const nouvellesMachines = machines.map(machine => ({
+      ...machine,
+      operations: machine.operations.map(operation => 
+        operation[2] === outilASupprimer 
+          ? [operation[0], operation[1], premierOutilRestant]
+          : operation
+      )
+    }));
+    setMachines(nouvellesMachines);
   };
 
   const handleSubmit = () => {

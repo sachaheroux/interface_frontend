@@ -34,6 +34,8 @@ import LigneAssemblageMixteEquilibrageForm from "./components/LigneAssemblageMix
 import LigneAssemblageMixteEquilibrageInfo from "./components/LigneAssemblageMixteEquilibrageInfo";
 import LigneTransfertBufferBuzzacottForm from "./components/LigneTransfertBufferBuzzacottForm";
 import LigneTransfertBufferBuzzacottInfo from "./components/LigneTransfertBufferBuzzacottInfo";
+import FMSSacADosForm from "./components/FMSSacADosForm";
+import FMSSacADosInfo from "./components/FMSSacADosInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -141,13 +143,14 @@ function App() {
           {systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotForm />}
           {systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageForm />}
           {systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && (
+          {systeme === "FMS" && algorithme === "Sac à dos" && <FMSSacADosForm />}
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && algorithme === "Sac à dos") && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
 
         {/* Info à droite */}
-        {(systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage" || systeme === "Ligne d'assemblage mixte" || systeme === "Ligne de transfert") && (
+        {(systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage" || systeme === "Ligne d'assemblage mixte" || systeme === "Ligne de transfert" || systeme === "FMS") && (
           <div style={{ marginLeft: "2rem", minWidth: "400px" }}>
             {systeme === "Flowshop" && (
               <>
@@ -169,6 +172,7 @@ function App() {
             {systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotInfo />}
             {systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageInfo />}
             {systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottInfo />}
+            {systeme === "FMS" && algorithme === "Sac à dos" && <FMSSacADosInfo />}
           </div>
         )}
       </div>

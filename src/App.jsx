@@ -44,6 +44,8 @@ import FMSLotsProductionGloutonForm from "./components/FMSLotsProductionGloutonF
 import FMSLotsProductionGloutonInfo from "./components/FMSLotsProductionGloutonInfo";
 import FMSLotsProductionMIPForm from "./components/FMSLotsProductionMIPForm";
 import FMSLotsProductionMIPInfo from "./components/FMSLotsProductionMIPInfo";
+import FMSLotsChargementHeuristiqueForm from "./components/FMSLotsChargementHeuristiqueForm";
+import FMSLotsChargementHeuristiqueInfo from "./components/FMSLotsChargementHeuristiqueInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -55,7 +57,7 @@ function App() {
     "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL"],
     "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte"],
     "Ligne de transfert": ["Buffer Buzzacott"],
-    "FMS": ["Sac à dos (Prog. Dynamique)", "Sac à dos (Prog. Linéaire)", "Sac à dos (Algorithme Glouton)", "Lots de production (Glouton)", "Lots de production (MIP)"]
+    "FMS": ["Sac à dos (Prog. Dynamique)", "Sac à dos (Prog. Linéaire)", "Sac à dos (Algorithme Glouton)", "Lots de production (Glouton)", "Lots de production (MIP)", "Lots de chargement (Heuristique)"]
   };
 
   return (
@@ -156,7 +158,8 @@ function App() {
           {systeme === "FMS" && algorithme === "Sac à dos (Algorithme Glouton)" && <FMSSacADosGloutonForm />}
           {systeme === "FMS" && algorithme === "Lots de production (Glouton)" && <FMSLotsProductionGloutonForm />}
           {systeme === "FMS" && algorithme === "Lots de production (MIP)" && <FMSLotsProductionMIPForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && (algorithme === "Sac à dos (Prog. Dynamique)" || algorithme === "Sac à dos (Prog. Linéaire)" || algorithme === "Sac à dos (Algorithme Glouton)" || algorithme === "Lots de production (Glouton)" || algorithme === "Lots de production (MIP)")) && (
+          {systeme === "FMS" && algorithme === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueForm />}
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && (algorithme === "Sac à dos (Prog. Dynamique)" || algorithme === "Sac à dos (Prog. Linéaire)" || algorithme === "Sac à dos (Algorithme Glouton)" || algorithme === "Lots de production (Glouton)" || algorithme === "Lots de production (MIP)" || algorithme === "Lots de chargement (Heuristique)")) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -189,6 +192,7 @@ function App() {
             {systeme === "FMS" && algorithme === "Sac à dos (Algorithme Glouton)" && <FMSSacADosGloutonInfo />}
             {systeme === "FMS" && algorithme === "Lots de production (Glouton)" && <FMSLotsProductionGloutonInfo />}
             {systeme === "FMS" && algorithme === "Lots de production (MIP)" && <FMSLotsProductionMIPInfo />}
+            {systeme === "FMS" && algorithme === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueInfo />}
           </div>
         )}
       </div>

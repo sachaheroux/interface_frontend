@@ -69,7 +69,7 @@ export default function LigneAssemblageMixteEquilibrageForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_URL = "http://localhost:8000";
+  const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addTask = () => {
     const newId = Math.max(...tasks.map(t => t.id)) + 1;

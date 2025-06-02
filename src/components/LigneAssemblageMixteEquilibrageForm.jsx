@@ -27,7 +27,7 @@ export default function LigneAssemblageMixteEquilibrageForm() {
   ]);
 
   const [models, setModels] = useState([4, 6]); // Demande par modèle
-  const [cycleTime, setCycleTime] = useState("10");
+  const [cycleTime, setCycleTime] = useState("50");
   const [unite, setUnite] = useState("minutes");
   const [result, setResult] = useState(null);
   const [chartUrl, setChartUrl] = useState(null);

@@ -31,6 +31,20 @@ function FlowshopJohnsonModifieForm() {
     }
   };
 
+  const addTaskToAllJobs = () => {
+    const updatedJobs = jobs.map(job => [...job, "1"]);
+    setJobs(updatedJobs);
+    setMachineNames([...machineNames, `Machine ${machineNames.length}`]);
+  };
+
+  const removeTaskFromAllJobs = () => {
+    if (machineNames.length > 3) { // Minimum 3 machines pour Johnson modifié
+      const updatedJobs = jobs.map(job => job.slice(0, -1));
+      setJobs(updatedJobs);
+      setMachineNames(machineNames.slice(0, -1));
+    }
+  };
+
   const handleSubmit = () => {
     setError(null);
     setGanttUrl(null);
@@ -106,6 +120,8 @@ function FlowshopJohnsonModifieForm() {
       <div className={styles.buttonGroup}>
         <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
         <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
+        <button className={styles.button} onClick={addTaskToAllJobs}>+ Ajouter une machine</button>
+        <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une machine</button>
       </div>
 
       <h4 className={styles.subtitle}>Noms des machines</h4>

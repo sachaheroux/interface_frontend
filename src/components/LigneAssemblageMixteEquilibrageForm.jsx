@@ -41,7 +41,7 @@ export default function LigneAssemblageMixteEquilibrageForm() {
     { 
       id: 6, 
       models: [
-        { predecessors: [3, 4], time: 4 },
+        { predecessors: [3], time: 4 },
         { predecessors: [3], time: 2 }
       ] 
     },
@@ -63,103 +63,76 @@ export default function LigneAssemblageMixteEquilibrageForm() {
 
   const [models, setModels] = useState([4, 6]);
   const [cycleTime, setCycleTime] = useState(60);
-  const [unite, setUnite] = useState("minutes");
-  const [results, setResults] = useState(null);
-  const [chartUrl, setChartUrl] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
+  const [chartData, setChartData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleTaskChange = (taskIndex, modelIndex, field, value) => {
-    const newTasks = [...tasks];
-    if (field === "id") {
-      newTasks[taskIndex].id = parseInt(value) || 1;
-    } else if (field === "predecessors") {
-      // Traitement intelligent de la saisie des prédécesseurs
-      let processedValue = null;
-      if (value && value.trim() !== "") {
-        if (value.includes(",")) {
-          // Plusieurs prédécesseurs séparés par des virgules
-          processedValue = value.split(",").map(p => parseInt(p.trim())).filter(p => !isNaN(p));
-        } else {
-          // Un seul prédécesseur
-          const singlePred = parseInt(value.trim());
-          if (!isNaN(singlePred)) {
-            processedValue = [singlePred];
-          }
-        }
-      }
-      newTasks[taskIndex].models[modelIndex].predecessors = processedValue;
-    } else if (field === "time") {
-      newTasks[taskIndex].models[modelIndex].time = parseInt(value) || 0;
-    }
-    setTasks(newTasks);
+  const addTask = () => {
+    const newId = Math.max(...tasks.map(t => t.id)) + 1;
+    setTasks([...tasks, { 
+      id: newId, 
+      models: [
+        { predecessors: null, time: 0 },
+        { predecessors: null, time: 0 }
+      ] 
+    }]);
   };
 
-  const handleModelDemandChange = (index, value) => {
+  const removeTask = (id) => {
+    if (tasks.length > 1) {
+      setTasks(tasks.filter(t => t.id !== id));
+    }
+  };
+
+  const updateTask = (id, modelIndex, field, value) => {
+    setTasks(tasks.map(task => 
+      task.id === id 
+        ? {
+            ...task, 
+            models: task.models.map((model, idx) => 
+              idx === modelIndex 
+                ? { ...model, [field]: field === 'predecessors' && value ? value.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x)) : (field === 'time' ? parseFloat(value) || 0 : value) }
+                : model
+            )
+          }
+        : task
+    ));
+  };
+
+  const updateModel = (index, value) => {
     const newModels = [...models];
     newModels[index] = parseInt(value) || 0;
     setModels(newModels);
   };
 
-  const addTask = () => {
-    const newTask = {
-      id: tasks.length + 1,
-      models: models.map(() => ({ predecessors: null, time: 1 }))
-    };
-    setTasks([...tasks, newTask]);
-  };
-
-  const removeTask = (index) => {
-    if (tasks.length > 1) {
-      setTasks(tasks.filter((_, i) => i !== index));
-    }
-  };
-
-  const addModel = () => {
-    setModels([...models, 1]);
-    const newTasks = tasks.map(task => ({
-      ...task,
-      models: [...task.models, { predecessors: null, time: 1 }]
-    }));
-    setTasks(newTasks);
-  };
-
-  const removeModel = (modelIndex) => {
-    if (models.length > 2) {
-      setModels(models.filter((_, i) => i !== modelIndex));
-      const newTasks = tasks.map(task => ({
-        ...task,
-        models: task.models.filter((_, i) => i !== modelIndex)
-      }));
-      setTasks(newTasks);
-    }
-  };
-
-  const formatPredecessors = (predecessors) => {
-    if (!predecessors || predecessors.length === 0) return "";
-    return predecessors.join(", ");
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setResults(null);
-    setChartUrl(null);
-
+    setIsLoading(true);
+    
     try {
+      // Transformer les données au format attendu par le backend
+      const tasksData = tasks.map(task => {
+        const formatted = [task.id];
+        task.models.forEach(model => {
+          formatted.push([
+            model.predecessors === null ? null : (Array.isArray(model.predecessors) ? model.predecessors : [model.predecessors]),
+            model.time
+          ]);
+        });
+        return formatted;
+      });
+
       const requestData = {
         models: models,
-        tasks_data: tasks,
-        cycle_time: cycleTime,
-        unite: unite
+        tasks_data: tasksData,
+        cycle_time: cycleTime
       };
 
-      // Requête pour les résultats
+      // Appel API pour les résultats
       const response = await fetch("http://localhost:8000/ligne_assemblage_mixte/equilibrage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(requestData)
       });
 
       if (!response.ok) {
@@ -167,206 +140,205 @@ export default function LigneAssemblageMixteEquilibrageForm() {
       }
 
       const data = await response.json();
-      setResults(data);
+      setResult(data);
 
-      // Requête pour le graphique
+      // Appel API pour le graphique
       const chartResponse = await fetch("http://localhost:8000/ligne_assemblage_mixte/equilibrage/chart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(requestData)
       });
 
       if (chartResponse.ok) {
         const chartBlob = await chartResponse.blob();
         const chartUrl = URL.createObjectURL(chartBlob);
-        setChartUrl(chartUrl);
+        setChartData(chartUrl);
       }
-    } catch (err) {
-      setError(`Erreur lors du calcul: ${err.message}`);
+
+    } catch (error) {
+      console.error("Erreur:", error);
+      alert("Erreur lors du calcul: " + error.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
     <div className={styles.container}>
-      <h2>Équilibrage de Ligne d'Assemblage Mixte</h2>
+      <h2 className={styles.title}>🏭 Équilibrage de Ligne d'Assemblage Mixte</h2>
       
-      <form onSubmit={handleSubmit} className={styles.form}>
-        {/* Configuration des modèles */}
+      <form onSubmit={handleSubmit}>
+        {/* Section des modèles */}
         <div className={styles.modelsSection}>
-          <h3>Demande par Modèle</h3>
+          <h3>Configuration des modèles</h3>
           <div className={styles.modelsGrid}>
             {models.map((demand, index) => (
               <div key={index} className={styles.modelInput}>
-                <label>Modèle {index + 1}:</label>
+                <label>Modèle {index + 1} :</label>
                 <input
                   type="number"
                   value={demand}
-                  onChange={(e) => handleModelDemandChange(index, e.target.value)}
-                  min="1"
+                  onChange={(e) => updateModel(index, e.target.value)}
+                  min="0"
+                  step="1"
+                  placeholder="Demande"
                 />
-                {models.length > 2 && (
-                  <button type="button" onClick={() => removeModel(index)} className={styles.removeBtn}>
-                    ✕
-                  </button>
-                )}
               </div>
             ))}
-            <button type="button" onClick={addModel} className={styles.addBtn}>
-              + Ajouter Modèle
-            </button>
           </div>
         </div>
 
-        {/* Configuration des tâches */}
+        {/* Section du temps de cycle */}
+        <div className={styles.inputGroup}>
+          <label htmlFor="cycleTime">
+            ⏱️ Temps de cycle (minutes)
+          </label>
+          <input
+            id="cycleTime"
+            type="number"
+            value={cycleTime}
+            onChange={(e) => setCycleTime(parseFloat(e.target.value) || 0)}
+            min="0"
+            step="0.1"
+            placeholder="Temps de cycle"
+          />
+        </div>
+
+        {/* Section des tâches */}
         <div className={styles.tasksSection}>
-          <h3>Configuration des Tâches</h3>
+          <h3>Configuration des tâches</h3>
           <div className={styles.tasksGrid}>
             <div className={styles.taskHeader}>
-              <span>Tâche</span>
-              {models.map((_, index) => (
-                <span key={index}>Modèle {index + 1}</span>
+              <div>Tâche</div>
+              {models.map((_, idx) => (
+                <div key={idx}>Modèle {idx + 1}</div>
               ))}
-              <span>Actions</span>
+              <div>Action</div>
             </div>
             
-            {tasks.map((task, taskIndex) => (
-              <div key={taskIndex} className={styles.taskRow}>
+            {tasks.map((task) => (
+              <div key={task.id} className={styles.taskRow}>
                 <input
                   type="number"
                   value={task.id}
-                  onChange={(e) => handleTaskChange(taskIndex, 0, "id", e.target.value)}
-                  min="1"
+                  readOnly
                   className={styles.taskIdInput}
                 />
                 
                 {task.models.map((model, modelIndex) => (
                   <div key={modelIndex} className={styles.modelData}>
                     <div className={styles.modelField}>
-                      <label>Prédécesseurs:</label>
+                      <label>Prédécesseurs</label>
                       <input
                         type="text"
-                        value={formatPredecessors(model.predecessors)}
-                        onChange={(e) => handleTaskChange(taskIndex, modelIndex, "predecessors", e.target.value)}
+                        value={model.predecessors === null ? "" : (Array.isArray(model.predecessors) ? model.predecessors.join(", ") : model.predecessors)}
+                        onChange={(e) => updateTask(task.id, modelIndex, 'predecessors', e.target.value || null)}
                         placeholder="Ex: 1, 2"
                       />
                     </div>
                     <div className={styles.modelField}>
-                      <label>Temps:</label>
+                      <label>Temps (min)</label>
                       <input
                         type="number"
                         value={model.time}
-                        onChange={(e) => handleTaskChange(taskIndex, modelIndex, "time", e.target.value)}
+                        onChange={(e) => updateTask(task.id, modelIndex, 'time', e.target.value)}
                         min="0"
+                        step="0.1"
+                        placeholder="Temps"
                       />
                     </div>
                   </div>
                 ))}
                 
-                <button 
-                  type="button" 
-                  onClick={() => removeTask(taskIndex)}
+                <button
+                  type="button"
+                  onClick={() => removeTask(task.id)}
                   disabled={tasks.length <= 1}
                   className={styles.removeBtn}
+                  title="Supprimer la tâche"
                 >
-                  ✕
+                  ×
                 </button>
               </div>
             ))}
           </div>
           
-          <button type="button" onClick={addTask} className={styles.addBtn}>
-            + Ajouter Tâche
+          <button
+            type="button"
+            onClick={addTask}
+            className={styles.addBtn}
+          >
+            ➕ Ajouter une tâche
           </button>
         </div>
 
-        {/* Paramètres globaux */}
-        <div className={styles.inputGroup}>
-          <label>Temps de cycle:</label>
-          <input
-            type="number"
-            value={cycleTime}
-            onChange={(e) => setCycleTime(parseInt(e.target.value) || 60)}
-            min="1"
-          />
-        </div>
-
-        <div className={styles.inputGroup}>
-          <label>Unité de temps:</label>
-          <select value={unite} onChange={(e) => setUnite(e.target.value)}>
-            <option value="minutes">Minutes</option>
-            <option value="heures">Heures</option>
-            <option value="secondes">Secondes</option>
-          </select>
-        </div>
-
-        <button type="submit" disabled={loading} className={styles.submitBtn}>
-          {loading ? "Optimisation en cours..." : "Lancer l'équilibrage"}
+        <button 
+          type="submit" 
+          disabled={isLoading}
+          className={styles.submitBtn}
+        >
+          {isLoading ? "Optimisation en cours..." : "🚀 Calculer l'équilibrage optimal"}
         </button>
       </form>
 
-      {error && <div className={styles.error}>{error}</div>}
-
-      {results && (
-        <div className={styles.results}>
-          <h3>Résultats de l'Équilibrage</h3>
+      {/* Affichage des résultats */}
+      {result && (
+        <div className={styles.resultBlock}>
+          <h3>📊 Résultats de l'optimisation</h3>
           
           <div className={styles.metricsGrid}>
             <div className={styles.metric}>
-              <span className={styles.metricLabel}>Statut:</span>
-              <span className={`${styles.metricValue} ${results.optimal ? styles.optimal : styles.suboptimal}`}>
-                {results.status}
-              </span>
+              <span className={styles.metricLabel}>Stations utilisées</span>
+              <div className={styles.metricValue}>{result.stations_used}</div>
             </div>
-            
             <div className={styles.metric}>
-              <span className={styles.metricLabel}>Stations utilisées:</span>
-              <span className={styles.metricValue}>{results.used_stations}</span>
+              <span className={styles.metricLabel}>Minimum théorique</span>
+              <div className={styles.metricValue}>{result.theoretical_minimum.toFixed(2)}</div>
             </div>
-            
             <div className={styles.metric}>
-              <span className={styles.metricLabel}>Minimum théorique:</span>
-              <span className={styles.metricValue}>{results.theoretical_min_stations}</span>
+              <span className={styles.metricLabel}>Efficacité</span>
+              <div className={`${styles.metricValue} ${result.efficiency >= 90 ? styles.optimal : styles.suboptimal}`}>
+                {result.efficiency.toFixed(1)}%
+              </div>
             </div>
-            
             <div className={styles.metric}>
-              <span className={styles.metricLabel}>Efficacité:</span>
-              <span className={styles.metricValue}>{results.efficiency}%</span>
+              <span className={styles.metricLabel}>Statut</span>
+              <div className={`${styles.metricValue} ${result.status === "Optimal" ? styles.optimal : styles.suboptimal}`}>
+                {result.status}
+              </div>
             </div>
-            
             <div className={styles.metric}>
-              <span className={styles.metricLabel}>Utilisation moyenne:</span>
-              <span className={styles.metricValue}>{results.avg_utilization}%</span>
+              <span className={styles.metricLabel}>Utilisation moyenne</span>
+              <div className={styles.metricValue}>{result.average_utilization.toFixed(1)}%</div>
             </div>
-            
             <div className={styles.metric}>
-              <span className={styles.metricLabel}>Utilisation max:</span>
-              <span className={styles.metricValue}>{results.max_utilization}%</span>
-            </div>
-            
-            <div className={styles.metric}>
-              <span className={styles.metricLabel}>Variance utilisation:</span>
-              <span className={styles.metricValue}>{results.utilization_variance}</span>
+              <span className={styles.metricLabel}>Variance utilisation</span>
+              <div className={styles.metricValue}>{result.utilization_variance.toFixed(2)}</div>
             </div>
           </div>
 
-          <h4>Détail des Stations</h4>
+          {/* Affichage de l'assignation des tâches */}
           <div className={styles.stationsSection}>
-            {results.stations.map((station, index) => (
-              <div key={index} className={styles.stationBlock}>
-                <h5>Station {station.station}</h5>
-                <p><strong>Tâches:</strong> {station.tasks.join(", ")}</p>
-                <p><strong>Charge:</strong> {station.load} {unite}</p>
-                <p><strong>Utilisation:</strong> {station.utilization}%</p>
+            <h4>Assignation des tâches aux stations</h4>
+            {Object.entries(result.station_assignments).map(([station, data]) => (
+              <div key={station} className={styles.stationBlock}>
+                <strong>Station {station}</strong>
+                <div>Tâches : {data.tasks.join(", ")}</div>
+                <div>Charge : {data.load.toFixed(1)} min</div>
+                <div>Utilisation : {data.utilization.toFixed(1)}%</div>
               </div>
             ))}
           </div>
 
-          {chartUrl && (
+          {/* Affichage du graphique */}
+          {chartData && (
             <div className={styles.chartSection}>
-              <h4>Visualisation de l'Équilibrage</h4>
-              <img src={chartUrl} alt="Graphique d'équilibrage" className={styles.chart} />
+              <h4>Graphique d'utilisation des stations</h4>
+              <img 
+                src={chartData} 
+                alt="Graphique d'utilisation des stations" 
+                className={styles.chart}
+              />
             </div>
           )}
         </div>

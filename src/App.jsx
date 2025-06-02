@@ -22,6 +22,8 @@ import JobshopContraintesForm from "./components/JobshopContraintesForm";
 import JobshopContraintesInfo from "./components/JobshopContraintesInfo";
 import LigneAssemblagePrecedenceForm from "./components/LigneAssemblagePrecedenceForm";
 import LigneAssemblagePrecedenceInfo from "./components/LigneAssemblagePrecedenceInfo";
+import LigneAssemblageCOMSOALForm from "./components/LigneAssemblageCOMSOALForm";
+import LigneAssemblageCOMSOALInfo from "./components/LigneAssemblageCOMSOALInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -122,7 +124,8 @@ function App() {
           {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDForm />}
           {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesForm />}
           {systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && algorithme === "Précédence") && (
+          {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && <LigneAssemblageCOMSOALForm />}
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL")) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -144,6 +147,7 @@ function App() {
             {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDInfo />}
             {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesInfo />}
             {systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceInfo />}
+            {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && <LigneAssemblageCOMSOALInfo />}
           </div>
         )}
       </div>

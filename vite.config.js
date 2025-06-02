@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: process.env.NODE_ENV === 'production' 
-          ? 'https://interface-systeme-prod-backend.onrender.com'
+          ? 'https://interface-backend-1jgi.onrender.com'
           : 'http://127.0.0.1:8000',
         changeOrigin: true,
         secure: false,

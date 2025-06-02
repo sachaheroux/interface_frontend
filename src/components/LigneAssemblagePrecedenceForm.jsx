@@ -4,17 +4,17 @@ import styles from "./FlowshopSPTForm.module.css";
 function LigneAssemblagePrecedenceForm() {
   const [tasks, setTasks] = useState([
     { id: 1, predecessors: null, duration: "20" },
-    { id: 2, predecessors: [1], duration: "6" },
-    { id: 3, predecessors: [2], duration: "5" },
+    { id: 2, predecessors: "1", duration: "6" },
+    { id: 3, predecessors: "2", duration: "5" },
     { id: 4, predecessors: null, duration: "21" },
     { id: 5, predecessors: null, duration: "8" },
     { id: 6, predecessors: null, duration: "35" },
-    { id: 7, predecessors: [3, 4], duration: "15" },
-    { id: 8, predecessors: [7], duration: "10" },
-    { id: 9, predecessors: [5, 8], duration: "15" },
-    { id: 10, predecessors: [3], duration: "5" },
-    { id: 11, predecessors: [6, 10], duration: "46" },
-    { id: 12, predecessors: [10, 11], duration: "16" }
+    { id: 7, predecessors: "3, 4", duration: "15" },
+    { id: 8, predecessors: "7", duration: "10" },
+    { id: 9, predecessors: "5, 8", duration: "15" },
+    { id: 10, predecessors: "3", duration: "5" },
+    { id: 11, predecessors: "6, 10", duration: "46" },
+    { id: 12, predecessors: "10, 11", duration: "16" }
   ]);
   const [unite, setUnite] = useState("minutes");
   const [result, setResult] = useState(null);
@@ -32,14 +32,26 @@ function LigneAssemblagePrecedenceForm() {
     if (tasks.length > 1) {
       const taskToRemove = tasks[tasks.length - 1];
       // Supprimer toutes les références à cette tâche dans les prédécesseurs
-      const updatedTasks = tasks.slice(0, -1).map(task => ({
-        ...task,
-        predecessors: task.predecessors 
-          ? (Array.isArray(task.predecessors) 
-              ? task.predecessors.filter(p => p !== taskToRemove.id)
-              : (task.predecessors === taskToRemove.id ? null : task.predecessors))
-          : null
-      }));
+      const updatedTasks = tasks.slice(0, -1).map(task => {
+        if (!task.predecessors) return task;
+        
+        let updatedPredecessors = task.predecessors;
+        
+        if (typeof task.predecessors === 'string') {
+          // Traiter les prédécesseurs sous forme de chaîne
+          const predecessorIds = task.predecessors.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
+          const filteredIds = predecessorIds.filter(p => p !== taskToRemove.id);
+          updatedPredecessors = filteredIds.length === 0 ? null : filteredIds.join(', ');
+        } else if (Array.isArray(task.predecessors)) {
+          // Traiter les prédécesseurs sous forme d'array (pour compatibilité)
+          const filteredIds = task.predecessors.filter(p => p !== taskToRemove.id);
+          updatedPredecessors = filteredIds.length === 0 ? null : filteredIds.join(', ');
+        } else if (task.predecessors === taskToRemove.id) {
+          updatedPredecessors = null;
+        }
+        
+        return { ...task, predecessors: updatedPredecessors };
+      });
       setTasks(updatedTasks);
     }
   };
@@ -47,13 +59,8 @@ function LigneAssemblagePrecedenceForm() {
   const handleTaskChange = (index, field, value) => {
     const newTasks = [...tasks];
     if (field === 'predecessors') {
-      if (value === '' || value === null) {
-        newTasks[index][field] = null;
-      } else {
-        // Convertir en array d'entiers
-        const predecessorIds = value.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
-        newTasks[index][field] = predecessorIds.length === 0 ? null : predecessorIds;
-      }
+      // Stocker directement la valeur texte pendant la saisie
+      newTasks[index][field] = value === '' ? null : value;
     } else if (field === 'duration') {
       newTasks[index][field] = value;
     }
@@ -63,7 +70,17 @@ function LigneAssemblagePrecedenceForm() {
   const formatPredecessorsForDisplay = (predecessors) => {
     if (!predecessors) return '';
     if (Array.isArray(predecessors)) return predecessors.join(', ');
+    if (typeof predecessors === 'string') return predecessors;
     return predecessors.toString();
+  };
+
+  const parsePredecessors = (predecessorsValue) => {
+    if (!predecessorsValue || predecessorsValue === '') return null;
+    if (typeof predecessorsValue === 'string') {
+      const predecessorIds = predecessorsValue.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
+      return predecessorIds.length === 0 ? null : (predecessorIds.length === 1 ? predecessorIds[0] : predecessorIds);
+    }
+    return predecessorsValue;
   };
 
   const getAvailablePredecessors = (currentTaskId) => {
@@ -81,7 +98,7 @@ function LigneAssemblagePrecedenceForm() {
       // Préparer les données pour l'API
       const tasksData = tasks.map(task => ({
         id: task.id,
-        predecessors: task.predecessors,
+        predecessors: parsePredecessors(task.predecessors),
         duration: parseFloat(task.duration.replace(",", "."))
       }));
 

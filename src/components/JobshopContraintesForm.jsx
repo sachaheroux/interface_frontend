@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
 const JobshopContraintesForm = () => {
     const [jobNames, setJobNames] = useState([]);
@@ -10,17 +9,7 @@ const JobshopContraintesForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const response = await axios.post('/jobshop/contraintes', {
-                job_names: jobNames,
-                machine_names: machineNames,
-                jobs_data: jobsData,
-                due_dates: dueDates
-            });
-            setResult(response.data);
-        } catch (error) {
-            console.error('Error scheduling jobs:', error);
-        }
+        console.log('Form submitted with:', { jobNames, machineNames, jobsData, dueDates });
     };
 
     return (

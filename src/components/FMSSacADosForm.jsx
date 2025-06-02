@@ -166,7 +166,6 @@ export default function FMSSacADosForm() {
         </select>
       </div>
 
-      {/* Paramètres globaux */}
       <div className={styles.taskRow}>
         <label><strong>Coût d'opération ($/heure) :</strong></label>
         <input
@@ -202,7 +201,7 @@ export default function FMSSacADosForm() {
         
         {produits.map((produit, index) => (
           <div key={index} className={styles.jobBlock}>
-            <h4>Produit {index + 1}</h4>
+            <h4>{produit.nom}</h4>
             
             <div className={styles.taskRow}>
               <label>Nom du produit :</label>
@@ -261,18 +260,11 @@ export default function FMSSacADosForm() {
               />
             </div>
 
-            {/* Calculs automatiques */}
-            <div className={styles.helpText} style={{ 
-              marginTop: "0.5rem", 
-              padding: "0.5rem", 
-              background: "#f0f9ff", 
-              borderRadius: "0.25rem",
-              fontSize: "0.85rem"
-            }}>
+            <small className={styles.helpText}>
               <strong>Profit unitaire :</strong> ${calculateProfitUnitaire(produit).toFixed(2)} | 
               <strong> Temps requis total :</strong> {calculateTempsRequis(produit).toFixed(1)} {unite} |
               <strong> Profit total potentiel :</strong> ${(calculateProfitUnitaire(produit) * produit.demandePeriode).toFixed(2)}
-            </div>
+            </small>
           </div>
         ))}
       </div>

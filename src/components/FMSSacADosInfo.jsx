@@ -1,108 +1,155 @@
 export default function FMSSacADosInfo() {
   return (
-    <div style={{ 
-      padding: "1.5rem", 
-      background: "#f8fafc", 
-      borderRadius: "0.5rem", 
-      fontSize: "0.9rem", 
-      lineHeight: "1.6",
-      border: "1px solid #e2e8f0"
+    <div style={{
+      background: "#f1f5f9",
+      borderLeft: "4px solid #8b5cf6",
+      borderRadius: "0.75rem",
+      padding: "1.5rem",
+      marginLeft: "2rem",
+      maxWidth: "400px",
+      color: "#1e293b",
+      fontSize: "0.95rem"
     }}>
-      <h3 style={{ color: "#1e40af", marginBottom: "1rem", fontSize: "1.1rem" }}>
-        🎒 FMS - Algorithme du Sac à Dos
-      </h3>
+      <h3 style={{ marginTop: 0, color: "#8b5cf6", fontSize: "1.2rem" }}>FMS - Algorithme du Sac à Dos</h3>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#374151", marginBottom: "0.5rem" }}>📖 Description</h4>
-        <p style={{ margin: "0.5rem 0" }}>
-          L'algorithme du sac à dos appliqué aux systèmes FMS (Flexible Manufacturing System) 
-          optimise la sélection de produits à fabriquer selon leur rentabilité et les contraintes 
-          de capacité de production.
-        </p>
-        <p style={{ margin: "0.5rem 0" }}>
-          Utilise la <strong>programmation dynamique</strong> pour trouver la solution optimale 
-          qui maximise le profit total sous contrainte de capacité.
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Principe de l'algorithme</h4>
+        <p style={{ marginBottom: "0.5rem" }}>
+          L'algorithme du sac à dos utilise la <strong>programmation dynamique</strong> pour 
+          optimiser la sélection de produits à fabriquer dans un système FMS 
+          sous contrainte de <strong>capacité limitée</strong>.
         </p>
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#374151", marginBottom: "0.5rem" }}>🎯 Objectif</h4>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Contexte FMS</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
-          <li>Maximiser le profit total de production</li>
-          <li>Respecter la capacité maximale de la machine</li>
-          <li>Sélectionner les produits les plus rentables</li>
-          <li>Optimiser l'utilisation des ressources</li>
+          <li><strong>Flexibilité :</strong> Système de fabrication flexible</li>
+          <li><strong>Multi-produits :</strong> Plusieurs produits candidats</li>
+          <li><strong>Capacité limitée :</strong> Temps de production contraint</li>
+          <li><strong>Optimisation profit :</strong> Maximiser le retour sur investissement</li>
         </ul>
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#374151", marginBottom: "0.5rem" }}>📊 Paramètres d'entrée</h4>
-        <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
-          <li><strong>Prix de vente</strong> : Prix unitaire de chaque produit</li>
-          <li><strong>Coût MP</strong> : Coût de la matière première par unité</li>
-          <li><strong>Demande</strong> : Nombre d'unités demandées</li>
-          <li><strong>Temps fabrication</strong> : Temps machine requis par unité</li>
-          <li><strong>Coût opération</strong> : Coût machine par heure</li>
-          <li><strong>Capacité max</strong> : Limite de temps machine disponible</li>
-        </ul>
-      </div>
-
-      <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#374151", marginBottom: "0.5rem" }}>⚡ Algorithme</h4>
-        <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
-          <li>Calcul du profit unitaire par produit</li>
-          <li>Calcul du temps total requis par produit</li>
-          <li>Application de la programmation dynamique</li>
-          <li>Construction du tableau DP (produit × capacité)</li>
-          <li>Reconstruction de la solution optimale</li>
-        </ol>
-        <div style={{ 
-          background: "#fef3c7", 
-          padding: "0.8rem", 
-          borderRadius: "0.375rem", 
-          marginTop: "0.8rem",
-          border: "1px solid #fcd34d"
-        }}>
-          <strong>Formule clé :</strong><br />
-          Profit unitaire = Prix vente - (Coût opération × Temps fab. + Coût MP)
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Calcul du profit unitaire</h4>
+        <p style={{ marginBottom: "0.5rem" }}>
+          Pour chaque produit, le profit est calculé comme :
+        </p>
+        <div style={{ backgroundColor: "#e2e8f0", padding: "0.5rem", borderRadius: "0.375rem", fontFamily: "monospace", fontSize: "0.85rem" }}>
+          Profit = Prix_vente - (Coût_MP + Coût_opération × Temps_fabrication)
         </div>
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#374151", marginBottom: "0.5rem" }}>📈 Résultats</h4>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Modélisation mathématique</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
-          <li><strong>Profit maximal</strong> : Revenus optimaux possibles</li>
-          <li><strong>Produits sélectionnés</strong> : Liste des produits à fabriquer</li>
-          <li><strong>Utilisation capacité</strong> : Pourcentage d'utilisation machine</li>
-          <li><strong>Efficacité</strong> : Ratio profit/coût de capacité</li>
-          <li><strong>Analyse graphique</strong> : Visualisation des résultats</li>
+          <li><strong>Variables :</strong> x[i] = 1 si produit i sélectionné, 0 sinon</li>
+          <li><strong>Objectif :</strong> Maximiser Σ(profit[i] × demande[i] × x[i])</li>
+          <li><strong>Contrainte :</strong> Σ(temps[i] × demande[i] × x[i]) ≤ Capacité</li>
+          <li><strong>Méthode :</strong> Programmation dynamique</li>
         </ul>
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#374151", marginBottom: "0.5rem" }}>✅ Avantages</h4>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Paramètres d'entrée</h4>
+        <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
+          <li><strong>Prix de vente :</strong> Revenus par unité vendue</li>
+          <li><strong>Coût matière première :</strong> Coût des matériaux par unité</li>
+          <li><strong>Demande :</strong> Quantité demandée par produit</li>
+          <li><strong>Temps fabrication :</strong> Temps machine par unité</li>
+          <li><strong>Coût d'opération :</strong> Coût machine par heure</li>
+          <li><strong>Capacité maximale :</strong> Temps total disponible</li>
+        </ol>
+      </div>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Algorithme dynamique</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
-          <li>Solution optimale garantie</li>
-          <li>Complexité raisonnable O(n×C)</li>
-          <li>Applicable à tout type de produit</li>
-          <li>Prise en compte des coûts réels</li>
-          <li>Analyse de sensibilité possible</li>
+          <li><strong>Tableau DP :</strong> dp[i][j] = profit maximal avec i premiers produits et capacité j</li>
+          <li><strong>Récurrence :</strong> dp[i][j] = max(dp[i-1][j], profit[i] + dp[i-1][j-temps[i]])</li>
+          <li><strong>Reconstruction :</strong> Remontée pour identifier les produits sélectionnés</li>
+          <li><strong>Complexité :</strong> O(n × capacité)</li>
         </ul>
       </div>
 
-      <div style={{ 
-        background: "#e0f2fe", 
-        padding: "1rem", 
-        borderRadius: "0.375rem", 
-        marginTop: "1rem",
-        border: "1px solid #81d4fa"
-      }}>
-        <h4 style={{ color: "#0277bd", margin: "0 0 0.5rem 0" }}>💡 Cas d'usage</h4>
-        <p style={{ margin: 0, fontSize: "0.85rem" }}>
-          Idéal pour les entreprises manufacturières qui doivent sélectionner 
-          les produits les plus rentables à fabriquer avec des ressources limitées. 
-          Particulièrement utile en planification de production à court terme.
-        </p>
+      <div style={{ marginBottom: "1rem" }}>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages</h4>
+        <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
+          <li><strong>Optimalité :</strong> Solution mathématiquement optimale garantie</li>
+          <li><strong>Efficacité :</strong> Temps polynomial en capacité</li>
+          <li><strong>Précision :</strong> Prise en compte de tous les coûts</li>
+          <li><strong>Flexibilité :</strong> Adaptation facile à différents contextes</li>
+          <li><strong>Décisionnel :</strong> Aide à la planification de production</li>
+        </ul>
+      </div>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Métriques d'évaluation</h4>
+        <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
+          <li><strong>Profit maximal :</strong> Retour financier total optimisé</li>
+          <li><strong>Utilisation capacité :</strong> Pourcentage de temps utilisé</li>
+          <li><strong>Efficacité :</strong> Ratio profit/coût opérationnel</li>
+          <li><strong>Produits sélectionnés :</strong> Nombre et détails des choix</li>
+        </ul>
+      </div>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Visualisations incluses</h4>
+        <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
+          <li><strong>Profits par produit :</strong> Comparaison des gains sélectionnés</li>
+          <li><strong>Utilisation capacité :</strong> Répartition temps utilisé/disponible</li>
+          <li><strong>Analyse profit/temps :</strong> Scatter plot des performances</li>
+          <li><strong>Métriques globales :</strong> Tableau de bord synthétique</li>
+        </ul>
+      </div>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Limites</h4>
+        <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
+          <li><strong>Capacité entière :</strong> Temps discrétisé en unités entières</li>
+          <li><strong>Demande fixe :</strong> Pas de modulation des quantités</li>
+          <li><strong>Mémoire :</strong> Tableau de taille n × capacité</li>
+          <li><strong>Prérequis :</strong> Profits et temps bien définis</li>
+        </ul>
+      </div>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Cas d'usage FMS</h4>
+        <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
+          <li><strong>Usines intelligentes :</strong> Sélection automatique de produits</li>
+          <li><strong>Production à la demande :</strong> Optimisation commandes client</li>
+          <li><strong>Prototypage :</strong> Choix de variants à développer</li>
+          <li><strong>Planification :</strong> Allocation de ressources limitées</li>
+          <li><strong>ROI :</strong> Maximisation du retour sur investissement</li>
+        </ul>
+      </div>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Différences avec autres algorithmes</h4>
+        <div style={{ fontSize: "0.9rem" }}>
+          <div style={{ marginBottom: "0.5rem" }}>
+            <strong>Glouton :</strong> Rapide mais non optimal
+            <br />
+            <strong>Sac à dos :</strong> Optimal mais plus complexe
+          </div>
+          <div style={{ marginBottom: "0.5rem" }}>
+            <strong>Planification :</strong> Ordre des tâches
+            <br />
+            <strong>Sac à dos :</strong> Sélection binaire (tout ou rien)
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: "0" }}>
+        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Conseils d'utilisation</h4>
+        <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
+          <li>Vérifiez la cohérence des données de coûts</li>
+          <li>Adaptez la capacité selon vos contraintes réelles</li>
+          <li>Analysez les produits exclus pour comprendre pourquoi</li>
+          <li>Utilisez les métriques pour valider la rentabilité</li>
+          <li>Comparez avec des approches gloutones pour la rapidité</li>
+        </ul>
       </div>
     </div>
   );

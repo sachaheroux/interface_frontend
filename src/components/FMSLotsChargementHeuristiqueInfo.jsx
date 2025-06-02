@@ -78,7 +78,7 @@ export default function FMSLotsChargementHeuristiqueInfo() {
           gⱼ = min(gⱼ, mⱼ)  // Ajustement contrainte machines<br />
           <br />
           Machines par groupe :<br />
-          &nbsp;&nbsp;Groupe i: ⌊mⱼ / gⱼ⌋ + (1 si i < mⱼ mod gⱼ, 0 sinon)
+          &nbsp;&nbsp;Groupe i: ⌊mⱼ / gⱼ⌋ + (1 si i &lt; mⱼ mod gⱼ, 0 sinon)
         </div>
       </div>
 

@@ -30,6 +30,8 @@ import LigneAssemblagePLForm from "./components/LigneAssemblagePLForm";
 import LigneAssemblagePLInfo from "./components/LigneAssemblagePLInfo";
 import LigneAssemblageMixteGoulotForm from "./components/LigneAssemblageMixteGoulotForm";
 import LigneAssemblageMixteGoulotInfo from "./components/LigneAssemblageMixteGoulotInfo";
+import LigneAssemblageMixteEquilibrageForm from "./components/LigneAssemblageMixteEquilibrageForm";
+import LigneAssemblageMixteEquilibrageInfo from "./components/LigneAssemblageMixteEquilibrageInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -135,7 +137,8 @@ function App() {
           {systeme === "Ligne d'assemblage" && algorithme === "LPT" && <LigneAssemblageLPTForm />}
           {systeme === "Ligne d'assemblage" && algorithme === "PL" && <LigneAssemblagePLForm />}
           {systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot") && (
+          {systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageForm />}
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -161,6 +164,7 @@ function App() {
             {systeme === "Ligne d'assemblage" && algorithme === "LPT" && <LigneAssemblageLPTInfo />}
             {systeme === "Ligne d'assemblage" && algorithme === "PL" && <LigneAssemblagePLInfo />}
             {systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotInfo />}
+            {systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageInfo />}
           </div>
         )}
       </div>

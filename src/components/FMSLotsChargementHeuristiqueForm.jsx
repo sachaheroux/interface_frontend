@@ -279,47 +279,31 @@ export default function FMSLotsChargementHeuristiqueForm() {
         </select>
       </div>
 
-      {/* Configuration des outils */}
+      {/* Configuration système */}
       <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Configuration des outils</h4>
+        <h4 className={styles.subtitle}>Configuration du système</h4>
         
         <div className={styles.jobBlock}>
-          <h4>Outils disponibles</h4>
+          <h4>Ressources disponibles</h4>
           
-          {Object.entries(outilsEspace || {}).map(([outil, espace]) => (
-            <div key={outil} className={styles.taskRow}>
-              <label>Outil {outil} - Espace requis :</label>
-              <input
-                type="number"
-                min="1"
-                value={espace}
-                onChange={(e) => handleOutilEspaceChange(outil, e.target.value)}
-                className={styles.input}
-                style={{ width: "80px", marginRight: "10px" }}
-              />
-              <button 
-                className={styles.button}
-                onClick={() => removeOutil(outil)}
-                style={{ backgroundColor: "#ef4444", padding: "0.3rem 0.8rem" }}
-              >
-                Supprimer
-              </button>
-            </div>
-          ))}
+          <small className={styles.helpText}>
+            <strong>Capacités machines :</strong> {machines.map((machine, index) => 
+              `${machine.nom}: ${machine.capaciteTemps * machine.nombre} ${uniteTemps} | ${machine.capaciteOutils * machine.nombre} outils`
+            ).join(' | ')}
+          </small>
 
-          <button className={styles.button} onClick={addOutil}>+ Ajouter un outil</button>
+          <small className={styles.helpText} style={{ display: 'block', marginTop: '0.5rem' }}>
+            <strong>Outils configurés :</strong> {Object.keys(outilsEspace).length} types | 
+            <strong> Espace total requis :</strong> {Object.values(outilsEspace).reduce((sum, espace) => sum + espace, 0)} unités
+          </small>
         </div>
-      </div>
 
-      <div className={styles.buttonGroup}>
-        <button className={styles.button} onClick={addMachine}>+ Ajouter un type de machine</button>
-        <button className={styles.button} onClick={removeMachine}>- Supprimer un type de machine</button>
-      </div>
+        <div className={styles.buttonGroup}>
+          <button className={styles.button} onClick={addMachine}>+ Ajouter un type de machine</button>
+          <button className={styles.button} onClick={removeMachine}>- Supprimer un type de machine</button>
+        </div>
 
-      {/* Configuration des machines */}
-      <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Configuration des machines et opérations</h4>
-        
+        {/* Configuration des machines */}
         {machines.map((machine, machineIndex) => (
           <div key={machineIndex} className={styles.jobBlock}>
             <h4>{machine.nom}</h4>
@@ -427,6 +411,61 @@ export default function FMSLotsChargementHeuristiqueForm() {
               <strong>Temps total :</strong> {calculateTempsTotal(machineIndex)} {uniteTemps} | 
               <strong> Capacité totale :</strong> {machine.capaciteTemps * machine.nombre} {uniteTemps} | 
               <strong> Opérations :</strong> {machine.operations.length}
+            </small>
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.buttonGroup}>
+        <button className={styles.button} onClick={addOutil}>+ Ajouter un outil</button>
+      </div>
+
+      {/* Configuration des outils */}
+      <div className={styles.tasksContainer}>
+        <h4 className={styles.subtitle}>Configuration des outils</h4>
+        
+        {Object.entries(outilsEspace || {}).map(([outil, espace]) => (
+          <div key={outil} className={styles.jobBlock}>
+            <h4>Outil {outil}</h4>
+            
+            <div className={styles.taskRow}>
+              <label>Nom de l'outil :</label>
+              <input
+                type="text"
+                value={outil}
+                className={styles.input}
+                disabled
+                style={{ backgroundColor: "#f3f4f6" }}
+              />
+            </div>
+
+            <div className={styles.taskRow}>
+              <label>Espace requis :</label>
+              <input
+                type="number"
+                min="1"
+                value={espace}
+                onChange={(e) => handleOutilEspaceChange(outil, e.target.value)}
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.buttonGroup} style={{ marginTop: "0.5rem" }}>
+              <button 
+                className={styles.button}
+                onClick={() => removeOutil(outil)}
+                style={{ backgroundColor: "#ef4444", padding: "0.3rem 0.8rem" }}
+              >
+                Supprimer cet outil
+              </button>
+            </div>
+
+            <small className={styles.helpText}>
+              <strong>Utilisation :</strong> Outil utilisé dans {
+                machines.reduce((total, machine) => 
+                  total + machine.operations.filter(op => op[2] === outil).length, 0
+                )
+              } opération(s)
             </small>
           </div>
         ))}

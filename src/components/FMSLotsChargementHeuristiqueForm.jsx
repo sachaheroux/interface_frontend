@@ -384,7 +384,7 @@ export default function FMSLotsChargementHeuristiqueForm() {
                     className={styles.select}
                     style={{ width: "100px" }}
                   >
-                    {Object.keys(outilsEspace).map(outil => (
+                    {Object.keys(outilsEspace || {}).map(outil => (
                       <option key={outil} value={outil}>{outil}</option>
                     ))}
                   </select>

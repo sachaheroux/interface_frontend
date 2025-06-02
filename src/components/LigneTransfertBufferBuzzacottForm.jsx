@@ -209,7 +209,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
             className={styles.input}
             placeholder="1100"
           />
-          <small className={styles.helpText">Pièces par jour</small>
+          <small className={styles.helpText}>Pièces par jour</small>
         </div>
 
         <div className={styles.taskRow}>
@@ -223,7 +223,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
             className={styles.input}
             placeholder="250"
           />
-          <small className={styles.helpText">Jours ouvrés annuels</small>
+          <small className={styles.helpText}>Jours ouvrés annuels</small>
         </div>
 
         <div className={styles.taskRow}>

@@ -9,7 +9,7 @@ export default defineConfig({
       '/api': {
         target: process.env.NODE_ENV === 'production' 
           ? 'https://interface-backend-1jgi.onrender.com'
-          : 'http://127.0.0.1:8000',
+          : 'http://127.0.0.1:8001',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '')

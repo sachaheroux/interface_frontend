@@ -155,7 +155,7 @@ export default function FMSSacADosForm() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>FMS - Algorithme du Sac à Dos (Programmation Dynamique)</h2>
+      <h2 className={styles.title}>FMS - Algorithme du Sac à Dos</h2>
       
       <div className={styles.unitSelector}>
         <label>Unité de temps :</label>
@@ -167,32 +167,28 @@ export default function FMSSacADosForm() {
       </div>
 
       {/* Paramètres globaux */}
-      <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Paramètres de production</h4>
-        
-        <div className={styles.taskRow}>
-          <label><strong>Coût d'opération ($/heure) :</strong></label>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={coutOp}
-            onChange={e => setCoutOp(e.target.value)}
-            className={styles.input}
-            placeholder="50"
-          />
-        </div>
+      <div className={styles.taskRow}>
+        <label><strong>Coût d'opération ($/heure) :</strong></label>
+        <input
+          type="text"
+          inputMode="decimal"
+          value={coutOp}
+          onChange={e => setCoutOp(e.target.value)}
+          className={styles.input}
+          placeholder="50"
+        />
+      </div>
 
-        <div className={styles.taskRow}>
-          <label><strong>Capacité maximale ({unite}) :</strong></label>
-          <input
-            type="number"
-            min="1"
-            value={capaciteMax}
-            onChange={e => setCapaciteMax(e.target.value)}
-            className={styles.input}
-            placeholder="250"
-          />
-        </div>
+      <div className={styles.taskRow}>
+        <label><strong>Capacité maximale ({unite}) :</strong></label>
+        <input
+          type="number"
+          min="1"
+          value={capaciteMax}
+          onChange={e => setCapaciteMax(e.target.value)}
+          className={styles.input}
+          placeholder="250"
+        />
       </div>
 
       <div className={styles.buttonGroup}>
@@ -206,7 +202,7 @@ export default function FMSSacADosForm() {
         
         {produits.map((produit, index) => (
           <div key={index} className={styles.jobBlock}>
-            <h4>{produit.nom}</h4>
+            <h4>Produit {index + 1}</h4>
             
             <div className={styles.taskRow}>
               <label>Nom du produit :</label>
@@ -218,62 +214,64 @@ export default function FMSSacADosForm() {
               />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-              <div className={styles.taskRow}>
-                <label>Prix vente ($/unité) :</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={produit.venteUnite}
-                  onChange={(e) => handleProduitChange(index, "venteUnite", e.target.value)}
-                  className={styles.input}
-                />
-              </div>
+            <div className={styles.taskRow}>
+              <label>Prix de vente ($/unité) :</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={produit.venteUnite}
+                onChange={(e) => handleProduitChange(index, "venteUnite", e.target.value)}
+                className={styles.input}
+              />
+            </div>
 
-              <div className={styles.taskRow}>
-                <label>Coût MP ($/unité) :</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={produit.coutMPUnite}
-                  onChange={(e) => handleProduitChange(index, "coutMPUnite", e.target.value)}
-                  className={styles.input}
-                />
-              </div>
+            <div className={styles.taskRow}>
+              <label>Coût matière première ($/unité) :</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={produit.coutMPUnite}
+                onChange={(e) => handleProduitChange(index, "coutMPUnite", e.target.value)}
+                className={styles.input}
+              />
+            </div>
 
-              <div className={styles.taskRow}>
-                <label>Demande (unités) :</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={produit.demandePeriode}
-                  onChange={(e) => handleProduitChange(index, "demandePeriode", e.target.value)}
-                  className={styles.input}
-                />
-              </div>
+            <div className={styles.taskRow}>
+              <label>Demande (unités) :</label>
+              <input
+                type="number"
+                min="1"
+                value={produit.demandePeriode}
+                onChange={(e) => handleProduitChange(index, "demandePeriode", e.target.value)}
+                className={styles.input}
+              />
+            </div>
 
-              <div className={styles.taskRow}>
-                <label>Temps fab. ({unite}/unité) :</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  value={produit.tempsFabrication}
-                  onChange={(e) => handleProduitChange(index, "tempsFabrication", e.target.value)}
-                  className={styles.input}
-                />
-              </div>
+            <div className={styles.taskRow}>
+              <label>Temps de fabrication ({unite}/unité) :</label>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={produit.tempsFabrication}
+                onChange={(e) => handleProduitChange(index, "tempsFabrication", e.target.value)}
+                className={styles.input}
+              />
             </div>
 
             {/* Calculs automatiques */}
-            <div style={{ marginTop: "0.5rem", padding: "0.5rem", background: "#f0f9ff", borderRadius: "0.25rem" }}>
-              <small>
-                <strong>Profit unitaire :</strong> ${calculateProfitUnitaire(produit).toFixed(2)} | 
-                <strong> Temps requis total :</strong> {calculateTempsRequis(produit).toFixed(1)} {unite} |
-                <strong> Profit total potentiel :</strong> ${(calculateProfitUnitaire(produit) * produit.demandePeriode).toFixed(2)}
-              </small>
+            <div className={styles.helpText} style={{ 
+              marginTop: "0.5rem", 
+              padding: "0.5rem", 
+              background: "#f0f9ff", 
+              borderRadius: "0.25rem",
+              fontSize: "0.85rem"
+            }}>
+              <strong>Profit unitaire :</strong> ${calculateProfitUnitaire(produit).toFixed(2)} | 
+              <strong> Temps requis total :</strong> {calculateTempsRequis(produit).toFixed(1)} {unite} |
+              <strong> Profit total potentiel :</strong> ${(calculateProfitUnitaire(produit) * produit.demandePeriode).toFixed(2)}
             </div>
           </div>
         ))}
@@ -329,7 +327,7 @@ export default function FMSSacADosForm() {
                   Profit total : ${produit.profit_total} | 
                   Temps requis : {produit.temps_requis} {result.unite}
                   <br />
-                  <small>
+                  <small className={styles.helpText}>
                     Demande : {produit.demande} unités | 
                     Prix vente : ${produit.prix_vente} | 
                     Coût MP : ${produit.cout_mp} | 
@@ -354,7 +352,7 @@ export default function FMSSacADosForm() {
                 }}>
                   <strong>{produit.nom}</strong> - Profit unitaire : ${produit.profit_unitaire}
                   <br />
-                  <small>Raison : {produit.raison_exclusion}</small>
+                  <small className={styles.helpText}>Raison : {produit.raison_exclusion}</small>
                 </div>
               ))}
             </div>

@@ -20,6 +20,8 @@ import JobshopEDDForm from "./components/JobshopEDDForm";
 import JobshopEDDInfo from "./components/JobshopEDDInfo";
 import JobshopContraintesForm from "./components/JobshopContraintesForm";
 import JobshopContraintesInfo from "./components/JobshopContraintesInfo";
+import LigneAssemblagePrecedenceForm from "./components/LigneAssemblagePrecedenceForm";
+import LigneAssemblagePrecedenceInfo from "./components/LigneAssemblagePrecedenceInfo";
 
 function App() {
   const [systeme, setSysteme] = useState("");
@@ -28,7 +30,7 @@ function App() {
   const systemes = {
     "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Smith"],
     "Jobshop": ["SPT", "EDD", "Contraintes"],
-    "Ligne d'assemblage": ["COMSOAL", "LPT", "PL"],
+    "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL"],
     "Ligne de transfert": ["Markov", "LIBA"],
     "FMS": ["Sac à dos", "Glouton", "Lots de chargement"]
   };
@@ -119,13 +121,14 @@ function App() {
           {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTForm />}
           {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDForm />}
           {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesForm />}
-          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && (
+          {systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceForm />}
+          {algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && algorithme === "Précédence") && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
 
         {/* Info à droite */}
-        {(systeme === "Flowshop" || systeme === "Jobshop") && (
+        {(systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage") && (
           <div style={{ marginLeft: "2rem", minWidth: "400px" }}>
             {systeme === "Flowshop" && (
               <>
@@ -140,6 +143,7 @@ function App() {
             {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTInfo />}
             {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDInfo />}
             {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesInfo />}
+            {systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceInfo />}
           </div>
         )}
       </div>

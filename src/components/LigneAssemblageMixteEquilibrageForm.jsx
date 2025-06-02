@@ -104,6 +104,26 @@ export default function LigneAssemblageMixteEquilibrageForm() {
     }
   };
 
+  const addModel = () => {
+    setModels([...models, 1]);
+    const newTasks = tasks.map(task => ({
+      ...task, 
+      models: [...task.models, { predecessors: null, time: 0 }]
+    }));
+    setTasks(newTasks);
+  };
+
+  const removeModel = () => {
+    if (models.length > 2) {
+      setModels(models.slice(0, -1));
+      const newTasks = tasks.map(task => ({
+        ...task,
+        models: task.models.slice(0, -1)
+      }));
+      setTasks(newTasks);
+    }
+  };
+
   const handleTaskChange = (taskIndex, modelIndex, field, value) => {
     const newTasks = [...tasks];
     if (field === 'predecessors') {
@@ -120,30 +140,17 @@ export default function LigneAssemblageMixteEquilibrageForm() {
     setModels(newModels);
   };
 
-  const addModel = () => {
-    setModels([...models, 1]);
-    const newTasks = tasks.map(task => ({
-      ...task, 
-      models: [...task.models, { predecessors: null, time: 0 }]
-    }));
-    setTasks(newTasks);
-  };
-
-  const removeModel = (modelIndex) => {
-    if (models.length > 2) {
-      setModels(models.filter((_, i) => i !== modelIndex));
-      const newTasks = tasks.map(task => ({
-        ...task,
-        models: task.models.filter((_, i) => i !== modelIndex)
-      }));
-      setTasks(newTasks);
-    }
-  };
-
   const formatPredecessors = (predecessors) => {
     if (!predecessors || predecessors.length === 0) return "";
     if (Array.isArray(predecessors)) return predecessors.join(", ");
     return predecessors.toString();
+  };
+
+  const getAvailablePredecessors = (currentTaskId) => {
+    return tasks
+      .filter(t => t.id < currentTaskId)
+      .map(t => t.id)
+      .join(', ');
   };
 
   const handleSubmit = () => {
@@ -255,33 +262,27 @@ export default function LigneAssemblageMixteEquilibrageForm() {
         />
       </div>
 
-      {/* Configuration des modèles */}
+      {/* Configuration des modèles - Style variation du goulot */}
       <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Demande par modèle</h4>
-        
-        {models.map((demand, index) => (
-          <div key={index} className={styles.jobBlock}>
-            <h4>Modèle {index + 1}</h4>
-            <div className={styles.taskRow}>
-              <label>Demande :</label>
-              <input
-                type="number"
-                value={demand}
-                onChange={(e) => handleModelDemandChange(index, e.target.value)}
-                min="1"
-                className={styles.input}
-              />
-              {models.length > 2 && (
-                <button type="button" onClick={() => removeModel(index)} className={styles.button}>
-                  Supprimer modèle
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-        
+        <h4 className={styles.subtitle}>Demande par modèle (par période/cycle)</h4>
         <div className={styles.buttonGroup}>
           <button className={styles.button} onClick={addModel}>+ Ajouter un modèle</button>
+          <button className={styles.button} onClick={removeModel}>- Supprimer un modèle</button>
+        </div>
+        
+        <div className={styles.modelDemandsContainer}>
+          {models.map((demand, index) => (
+            <div key={index} className={styles.taskRow}>
+              <label>Modèle {index + 1} :</label>
+              <input
+                type="number"
+                min="1"
+                value={demand}
+                onChange={e => handleModelDemandChange(index, e.target.value)}
+                className={styles.input}
+              />
+            </div>
+          ))}
         </div>
       </div>
 
@@ -290,7 +291,7 @@ export default function LigneAssemblageMixteEquilibrageForm() {
         <button className={styles.button} onClick={removeTask}>- Supprimer une tâche</button>
       </div>
 
-      {/* Configuration des tâches */}
+      {/* Configuration des tâches - Style LPT */}
       <div className={styles.tasksContainer}>
         <h4 className={styles.subtitle}>Configuration des tâches</h4>
         
@@ -299,22 +300,8 @@ export default function LigneAssemblageMixteEquilibrageForm() {
             <h4>Tâche {task.id}</h4>
             
             {task.models.map((model, modelIndex) => (
-              <div key={modelIndex} style={{ marginBottom: "1rem", padding: "0.5rem", border: "1px solid #e2e8f0", borderRadius: "0.375rem" }}>
+              <div key={modelIndex} style={{ marginBottom: "1rem" }}>
                 <h5 style={{ margin: "0 0 0.5rem 0", color: "#1e40af" }}>Modèle {modelIndex + 1}</h5>
-                
-                <div className={styles.taskRow}>
-                  <label>Prédécesseurs :</label>
-                  <input
-                    type="text"
-                    value={formatPredecessors(model.predecessors)}
-                    onChange={(e) => handleTaskChange(taskIndex, modelIndex, "predecessors", e.target.value)}
-                    placeholder="Ex: 1, 2"
-                    className={styles.input}
-                  />
-                  <span className={styles.helpText}>
-                    (Tâches disponibles: {tasks.filter(t => t.id < task.id).map(t => t.id).join(', ') || 'aucune'})
-                  </span>
-                </div>
                 
                 <div className={styles.taskRow}>
                   <label>Temps ({unite}) :</label>
@@ -326,6 +313,20 @@ export default function LigneAssemblageMixteEquilibrageForm() {
                     onChange={(e) => handleTaskChange(taskIndex, modelIndex, "time", e.target.value)}
                     className={styles.input}
                   />
+                </div>
+                
+                <div className={styles.taskRow}>
+                  <label>Prédécesseurs immédiats :</label>
+                  <input
+                    type="text"
+                    value={formatPredecessors(model.predecessors)}
+                    onChange={(e) => handleTaskChange(taskIndex, modelIndex, "predecessors", e.target.value)}
+                    placeholder="Ex: 1, 2 ou laissez vide si aucun"
+                    className={styles.input}
+                  />
+                  <small className={styles.helpText}>
+                    Disponibles: {getAvailablePredecessors(task.id) || "Aucun"}
+                  </small>
                 </div>
               </div>
             ))}
@@ -369,14 +370,13 @@ export default function LigneAssemblageMixteEquilibrageForm() {
           </div>
 
           {/* Affichage de l'assignation des tâches */}
-          <h4>Assignation des tâches aux stations</h4>
           <div className={styles.stationsSection}>
+            <h4>Configuration des stations :</h4>
             {result.station_assignments && Object.entries(result.station_assignments).map(([station, data]) => (
               <div key={station} className={styles.stationBlock}>
-                <strong>Station {station}</strong>
-                <div>Tâches : {data.tasks.join(", ")}</div>
-                <div>Charge : {data.load?.toFixed(1)} {unite}</div>
-                <div>Utilisation : {data.utilization?.toFixed(1)}%</div>
+                <strong>Station {station}</strong> - Utilisation : {data.utilization?.toFixed(1)}%
+                <br />
+                Tâches : {data.tasks.join(", ")} - Charge : {data.load?.toFixed(1)} {unite}
               </div>
             ))}
           </div>

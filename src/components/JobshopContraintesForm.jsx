@@ -1,6 +1,5 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
-import JobshopContraintesInfo from "./JobshopContraintesInfo";
 
 function JobshopContraintesForm() {
   const [jobs, setJobs] = useState([
@@ -106,135 +105,132 @@ function JobshopContraintesForm() {
   };
 
   return (
-    <div className={styles.formContainer}>
-      <div className={styles.form}>
-        <h2 className={styles.title}>Ordonnancement Jobshop - Programmation par contraintes</h2>
+    <div className={styles.container}>
+      <h2 className={styles.title}>Ordonnancement Jobshop - Programmation par contraintes</h2>
 
-        <div className={styles.unitSelector}>
-          <label>Unité de temps :</label>
-          <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
-            <option value="minutes">minutes</option>
-            <option value="heures">heures</option>
-            <option value="jours">jours</option>
-          </select>
+      <div className={styles.unitSelector}>
+        <label>Unité de temps :</label>
+        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
+          <option value="minutes">minutes</option>
+          <option value="heures">heures</option>
+          <option value="jours">jours</option>
+        </select>
+      </div>
+
+      <div className={styles.buttonGroup}>
+        <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
+        <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
+        <button className={styles.button} onClick={addTaskToAllJobs}>+ Ajouter une tâche</button>
+        <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une tâche</button>
+      </div>
+
+      <h4 className={styles.subtitle}>Noms des machines</h4>
+      {machineNames.map((name, i) => (
+        <div key={i} className={styles.taskRow}>
+          Machine {i} :
+          <input
+            type="text"
+            value={name}
+            onChange={e => {
+              const newNames = [...machineNames];
+              newNames[i] = e.target.value;
+              setMachineNames(newNames);
+            }}
+          />
         </div>
+      ))}
 
-        <div className={styles.buttonGroup}>
-          <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
-          <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
-          <button className={styles.button} onClick={addTaskToAllJobs}>+ Ajouter une tâche</button>
-          <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une tâche</button>
-        </div>
-
-        <h4 className={styles.subtitle}>Noms des machines</h4>
-        {machineNames.map((name, i) => (
-          <div key={i} className={styles.taskRow}>
-            Machine {i} :
+      {jobs.map((job, jobIdx) => (
+        <div key={jobIdx} className={styles.jobBlock}>
+          <h4>Job {jobIdx}</h4>
+          <div className={styles.taskRow}>
+            Nom du job :
             <input
               type="text"
-              value={name}
+              value={jobNames[jobIdx]}
               onChange={e => {
-                const newNames = [...machineNames];
-                newNames[i] = e.target.value;
-                setMachineNames(newNames);
+                const newNames = [...jobNames];
+                newNames[jobIdx] = e.target.value;
+                setJobNames(newNames);
               }}
             />
           </div>
-        ))}
-
-        {jobs.map((job, jobIdx) => (
-          <div key={jobIdx} className={styles.jobBlock}>
-            <h4>Job {jobIdx}</h4>
-            <div className={styles.taskRow}>
-              Nom du job :
+          {job.map((op, opIdx) => (
+            <div key={opIdx} className={styles.taskRow}>
+              Machine :
               <input
                 type="text"
-                value={jobNames[jobIdx]}
+                value={op.machine}
                 onChange={e => {
-                  const newNames = [...jobNames];
-                  newNames[jobIdx] = e.target.value;
-                  setJobNames(newNames);
+                  const newJobs = [...jobs];
+                  newJobs[jobIdx][opIdx].machine = e.target.value;
+                  setJobs(newJobs);
+                }}
+              />
+              Durée ({unite}) :
+              <input
+                type="text"
+                inputMode="decimal"
+                value={op.duration}
+                onChange={e => {
+                  const newJobs = [...jobs];
+                  newJobs[jobIdx][opIdx].duration = e.target.value;
+                  setJobs(newJobs);
                 }}
               />
             </div>
-            {job.map((op, opIdx) => (
-              <div key={opIdx} className={styles.taskRow}>
-                Machine :
-                <input
-                  type="text"
-                  value={op.machine}
-                  onChange={e => {
-                    const newJobs = [...jobs];
-                    newJobs[jobIdx][opIdx].machine = e.target.value;
-                    setJobs(newJobs);
-                  }}
-                />
-                Durée ({unite}) :
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={op.duration}
-                  onChange={e => {
-                    const newJobs = [...jobs];
-                    newJobs[jobIdx][opIdx].duration = e.target.value;
-                    setJobs(newJobs);
-                  }}
-                />
-              </div>
+          ))}
+        </div>
+      ))}
+
+      <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
+      {dueDates.map((d, i) => (
+        <div key={i} className={styles.taskRow}>
+          Job {i} :
+          <input
+            type="text"
+            inputMode="decimal"
+            value={d}
+            onChange={e => {
+              const newDates = [...dueDates];
+              newDates[i] = e.target.value;
+              setDueDates(newDates);
+            }}
+          />
+        </div>
+      ))}
+
+      <button className={styles.submitButton} onClick={handleSubmit}>
+        Calculer l'ordonnancement
+      </button>
+
+      {error && <div className={styles.error}>Erreur : {error}</div>}
+
+      {result && (
+        <div className={styles.results}>
+          <h3>Résultats</h3>
+          <p><strong>Makespan (temps total) :</strong> {result.makespan} {unite}</p>
+          <p><strong>Flowtime (temps moyen) :</strong> {result.flowtime?.toFixed(2)} {unite}</p>
+          <p><strong>Retard cumulé :</strong> {result.retard_cumule} {unite}</p>
+          
+          <h4>Temps de complétion :</h4>
+          <ul>
+            {Object.entries(result.completion_times || {}).map(([job, time]) => (
+              <li key={job}>{job} : {time} {unite}</li>
             ))}
-          </div>
-        ))}
+          </ul>
 
-        <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
-        {dueDates.map((d, i) => (
-          <div key={i} className={styles.taskRow}>
-            Job {i} :
-            <input
-              type="text"
-              inputMode="decimal"
-              value={d}
-              onChange={e => {
-                const newDates = [...dueDates];
-                newDates[i] = e.target.value;
-                setDueDates(newDates);
-              }}
-            />
-          </div>
-        ))}
-
-        <button className={styles.submitButton} onClick={handleSubmit}>
-          Calculer l'ordonnancement
-        </button>
-
-        {error && <div className={styles.error}>Erreur : {error}</div>}
-
-        {result && (
-          <div className={styles.results}>
-            <h3>Résultats</h3>
-            <p><strong>Makespan (temps total) :</strong> {result.makespan} {unite}</p>
-            <p><strong>Flowtime (temps moyen) :</strong> {result.flowtime?.toFixed(2)} {unite}</p>
-            <p><strong>Retard cumulé :</strong> {result.retard_cumule} {unite}</p>
-            
-            <h4>Temps de complétion :</h4>
-            <ul>
-              {Object.entries(result.completion_times || {}).map(([job, time]) => (
-                <li key={job}>{job} : {time} {unite}</li>
-              ))}
-            </ul>
-
-            {ganttUrl && (
-              <div className={styles.ganttContainer}>
-                <h4>Diagramme de Gantt</h4>
-                <img src={ganttUrl} alt="Diagramme de Gantt" className={styles.gantt} />
-                <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-                  Télécharger le diagramme de Gantt
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      <JobshopContraintesInfo />
+          {ganttUrl && (
+            <div className={styles.ganttContainer}>
+              <h4>Diagramme de Gantt</h4>
+              <img src={ganttUrl} alt="Diagramme de Gantt" className={styles.gantt} />
+              <button className={styles.downloadButton} onClick={handleDownloadGantt}>
+                Télécharger le diagramme de Gantt
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

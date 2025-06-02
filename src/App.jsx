@@ -15,6 +15,7 @@ import FlowshopSmithInfo from "./components/FlowshopSmithInfo";
 import FlowshopContraintesForm from "./components/FlowshopContraintesForm";
 import FlowshopContraintesInfo from "./components/FlowshopContraintesInfo";
 import JobshopSPTForm from "./components/JobshopSPTForm";
+import JobshopSPTInfo from "./components/JobshopSPTInfo";
 import JobshopEDDForm from "./components/JobshopEDDForm";
 import JobshopEDDInfo from "./components/JobshopEDDInfo";
 import JobshopContraintesForm from "./components/JobshopContraintesForm";
@@ -136,6 +137,7 @@ function App() {
                 {algorithme === "Contraintes" && <FlowshopContraintesInfo />}
               </>
             )}
+            {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTInfo />}
             {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDInfo />}
             {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesInfo />}
           </div>

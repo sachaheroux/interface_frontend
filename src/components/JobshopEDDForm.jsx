@@ -1,6 +1,5 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
-import JobshopEDDInfo from "./JobshopEDDInfo";
 
 function JobshopEDDForm() {
   const [jobs, setJobs] = useState([
@@ -106,128 +105,125 @@ function JobshopEDDForm() {
   };
 
   return (
-    <div className={styles.formContainer}>
-      <div className={styles.form}>
-        <h2 className={styles.title}>Ordonnancement Jobshop - Règle EDD</h2>
+    <div className={styles.container}>
+      <h2 className={styles.title}>Ordonnancement Jobshop - Règle EDD</h2>
 
-        <div className={styles.unitSelector}>
-          <label>Unité de temps :</label>
-          <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
-            <option value="minutes">minutes</option>
-            <option value="heures">heures</option>
-            <option value="jours">jours</option>
-          </select>
+      <div className={styles.unitSelector}>
+        <label>Unité de temps :</label>
+        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
+          <option value="minutes">minutes</option>
+          <option value="heures">heures</option>
+          <option value="jours">jours</option>
+        </select>
+      </div>
+
+      <div className={styles.buttonGroup}>
+        <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
+        <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
+        <button className={styles.button} onClick={addTaskToAllJobs}>+ Ajouter une tâche</button>
+        <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une tâche</button>
+      </div>
+
+      <h4 className={styles.subtitle}>Noms des machines</h4>
+      {machineNames.map((name, i) => (
+        <div key={i} className={styles.taskRow}>
+          Machine {i} :
+          <input
+            type="text"
+            value={name}
+            onChange={e => {
+              const newNames = [...machineNames];
+              newNames[i] = e.target.value;
+              setMachineNames(newNames);
+            }}
+          />
         </div>
+      ))}
 
-        <div className={styles.buttonGroup}>
-          <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
-          <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
-          <button className={styles.button} onClick={addTaskToAllJobs}>+ Ajouter une tâche</button>
-          <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une tâche</button>
-        </div>
-
-        <h4 className={styles.subtitle}>Noms des machines</h4>
-        {machineNames.map((name, i) => (
-          <div key={i} className={styles.taskRow}>
-            Machine {i} :
+      {jobs.map((job, jobIdx) => (
+        <div key={jobIdx} className={styles.jobBlock}>
+          <h4>Job {jobIdx}</h4>
+          <div className={styles.taskRow}>
+            Nom du job :
             <input
               type="text"
-              value={name}
+              value={jobNames[jobIdx]}
               onChange={e => {
-                const newNames = [...machineNames];
-                newNames[i] = e.target.value;
-                setMachineNames(newNames);
+                const newNames = [...jobNames];
+                newNames[jobIdx] = e.target.value;
+                setJobNames(newNames);
               }}
             />
           </div>
-        ))}
-
-        {jobs.map((job, jobIdx) => (
-          <div key={jobIdx} className={styles.jobBlock}>
-            <h4>Job {jobIdx}</h4>
-            <div className={styles.taskRow}>
-              Nom du job :
+          {job.map((op, opIdx) => (
+            <div key={opIdx} className={styles.taskRow}>
+              Machine :
               <input
                 type="text"
-                value={jobNames[jobIdx]}
+                value={op.machine}
                 onChange={e => {
-                  const newNames = [...jobNames];
-                  newNames[jobIdx] = e.target.value;
-                  setJobNames(newNames);
+                  const newJobs = [...jobs];
+                  newJobs[jobIdx][opIdx].machine = e.target.value;
+                  setJobs(newJobs);
+                }}
+              />
+              Durée ({unite}) :
+              <input
+                type="text"
+                inputMode="decimal"
+                value={op.duration}
+                onChange={e => {
+                  const newJobs = [...jobs];
+                  newJobs[jobIdx][opIdx].duration = e.target.value;
+                  setJobs(newJobs);
                 }}
               />
             </div>
-            {job.map((op, opIdx) => (
-              <div key={opIdx} className={styles.taskRow}>
-                Machine :
-                <input
-                  type="text"
-                  value={op.machine}
-                  onChange={e => {
-                    const newJobs = [...jobs];
-                    newJobs[jobIdx][opIdx].machine = e.target.value;
-                    setJobs(newJobs);
-                  }}
-                />
-                Durée ({unite}) :
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={op.duration}
-                  onChange={e => {
-                    const newJobs = [...jobs];
-                    newJobs[jobIdx][opIdx].duration = e.target.value;
-                    setJobs(newJobs);
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        ))}
+          ))}
+        </div>
+      ))}
 
-        <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
-        {dueDates.map((d, i) => (
-          <div key={i} className={styles.taskRow}>
-            Job {i} :
-            <input
-              type="text"
-              inputMode="decimal"
-              value={d}
-              onChange={e => {
-                const newDates = [...dueDates];
-                newDates[i] = e.target.value;
-                setDueDates(newDates);
-              }}
-            />
-          </div>
-        ))}
+      <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
+      {dueDates.map((d, i) => (
+        <div key={i} className={styles.taskRow}>
+          Job {i} :
+          <input
+            type="text"
+            inputMode="decimal"
+            value={d}
+            onChange={e => {
+              const newDates = [...dueDates];
+              newDates[i] = e.target.value;
+              setDueDates(newDates);
+            }}
+          />
+        </div>
+      ))}
 
-        <button className={styles.submitButton} onClick={handleSubmit}>
-          Calculer l'ordonnancement
-        </button>
+      <button className={styles.submitButton} onClick={handleSubmit}>
+        Calculer l'ordonnancement
+      </button>
 
-        {error && <div className={styles.error}>{error}</div>}
+      {error && <div className={styles.error}>{error}</div>}
 
-        {result && (
-          <div className={styles.results}>
-            <h3>Résultats :</h3>
-            <p>Makespan (Cmax) : {result.metrics.makespan} {unite}</p>
-            <p>Flowtime (F) : {result.metrics.flowtime} {unite}</p>
-            <p>Retard cumulé (Rc) : {result.metrics.retard_cumule} {unite}</p>
-          </div>
-        )}
+      {result && (
+        <div className={styles.results}>
+          <h3>Résultats :</h3>
+          <p>Makespan (Cmax) : {result.metrics.makespan} {unite}</p>
+          <p>Flowtime (F) : {result.metrics.flowtime} {unite}</p>
+          <p>Retard cumulé (Rc) : {result.metrics.retard_cumule} {unite}</p>
+        </div>
+      )}
 
-        {ganttUrl && (
-          <div className={styles.ganttContainer}>
-            <h4>Diagramme de Gantt</h4>
-            <img src={ganttUrl} alt="Diagramme de Gantt" className={styles.gantt} />
-            <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-              Télécharger le diagramme de Gantt
-            </button>
-          </div>
-        )}
-      </div>
-      <JobshopEDDInfo />
+      {ganttUrl && (
+        <div className={styles.ganttContainer}>
+          <h4>Diagramme de Gantt</h4>
+          <img src={ganttUrl} alt="Diagramme de Gantt" className={styles.gantt} />
+          <button className={styles.downloadButton} onClick={handleDownloadGantt}>
+            Télécharger le diagramme de Gantt
+          </button>
+        </div>
+      )}
     </div>
   );
 }

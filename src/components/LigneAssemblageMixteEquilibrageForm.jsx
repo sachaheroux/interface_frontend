@@ -69,7 +69,7 @@ export default function LigneAssemblageMixteEquilibrageForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_URL = "https://interface-backend-1jgi.onrender.com";
+  const API_URL = "/api";
 
   const addTask = () => {
     const newId = Math.max(...tasks.map(t => t.id)) + 1;
@@ -196,6 +196,8 @@ export default function LigneAssemblageMixteEquilibrageForm() {
         unite
       };
 
+      console.log("Sending data to API:", JSON.stringify(requestData, null, 2));
+
       // Appel API pour les résultats
       fetch(`${API_URL}/ligne_assemblage_mixte/equilibrage`, {
         method: "POST",
@@ -203,7 +205,13 @@ export default function LigneAssemblageMixteEquilibrageForm() {
         body: JSON.stringify(requestData)
       })
         .then(res => {
-          if (!res.ok) throw new Error("Erreur API");
+          console.log("Response status:", res.status);
+          if (!res.ok) {
+            return res.text().then(text => {
+              console.error("Error response:", text);
+              throw new Error(`Erreur API: ${res.status} - ${text}`);
+            });
+          }
           return res.json();
         })
         .then(data => {

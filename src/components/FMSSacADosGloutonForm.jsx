@@ -198,182 +198,178 @@ export default function FMSSacADosGloutonForm() {
       {/* Configuration des produits */}
       <div className={styles.tasksContainer}>
         <h4 className={styles.subtitle}>Configuration des produits</h4>
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Nom</th>
-                <th>Prix vente ($/unité)</th>
-                <th>Coût MP ($/unité)</th>
-                <th>Demande (unités)</th>
-                <th>Temps fab. ({unite}/unité)</th>
-                <th>Profit unitaire ($)</th>
-                <th>Temps requis ({unite})</th>
-              </tr>
-            </thead>
-            <tbody>
-              {produits.map((produit, index) => (
-                <tr key={index}>
-                  <td>
-                    <input
-                      type="text"
-                      value={produit.nom}
-                      onChange={e => handleProduitChange(index, 'nom', e.target.value)}
-                      className={styles.tableInput}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={produit.venteUnite}
-                      onChange={e => handleProduitChange(index, 'venteUnite', e.target.value)}
-                      className={styles.tableInput}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={produit.coutMPUnite}
-                      onChange={e => handleProduitChange(index, 'coutMPUnite', e.target.value)}
-                      className={styles.tableInput}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      min="1"
-                      value={produit.demandePeriode}
-                      onChange={e => handleProduitChange(index, 'demandePeriode', e.target.value)}
-                      className={styles.tableInput}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0.1"
-                      value={produit.tempsFabrication}
-                      onChange={e => handleProduitChange(index, 'tempsFabrication', e.target.value)}
-                      className={styles.tableInput}
-                    />
-                  </td>
-                  <td className={styles.calculatedValue}>
-                    {calculateProfitUnitaire(produit).toFixed(2)}
-                  </td>
-                  <td className={styles.calculatedValue}>
-                    {calculateTempsRequis(produit).toFixed(1)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className={styles.submitContainer}>
-        <button className={styles.submitButton} onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? "Calcul en cours..." : "Lancer l'algorithme glouton"}
-        </button>
-      </div>
-
-      {error && (
-        <div className={styles.error}>
-          {error}
-        </div>
-      )}
-
-      {result && (
-        <div className={styles.resultsContainer}>
-          <h3 className={styles.resultsTitle}>Résultats de l'algorithme glouton</h3>
-          
-          <div className={styles.metricsGrid}>
-            <div className={styles.metricCard}>
-              <h4>Performance</h4>
-              <p><strong>Statut :</strong> {result.status}</p>
-              <p><strong>Méthode :</strong> {result.methode}</p>
-              <p><strong>Critère :</strong> {result.critere_selection}</p>
-              <p><strong>Profit maximal :</strong> ${result.profit_maximal}</p>
-              <p><strong>Efficacité :</strong> {result.efficacite}%</p>
+        
+        {produits.map((produit, index) => (
+          <div key={index} className={styles.jobBlock}>
+            <h4>{produit.nom}</h4>
+            
+            <div className={styles.taskRow}>
+              <label>Nom du produit :</label>
+              <input
+                type="text"
+                value={produit.nom}
+                onChange={(e) => handleProduitChange(index, "nom", e.target.value)}
+                className={styles.input}
+              />
             </div>
 
-            <div className={styles.metricCard}>
-              <h4>Utilisation des ressources</h4>
-              <p><strong>Capacité utilisée :</strong> {result.capacite_utilisee}/{result.capacite_totale} {result.unite}</p>
-              <p><strong>Utilisation :</strong> {result.utilisation_capacite}%</p>
-              <p><strong>Produits sélectionnés :</strong> {result.nombre_produits_selectionnes}</p>
-              <p><strong>Coût opération :</strong> ${result.cout_operation_horaire}/{result.unite}</p>
+            <div className={styles.taskRow}>
+              <label>Prix de vente ($/unité) :</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={produit.venteUnite}
+                onChange={(e) => handleProduitChange(index, "venteUnite", e.target.value)}
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.taskRow}>
+              <label>Coût matière première ($/unité) :</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={produit.coutMPUnite}
+                onChange={(e) => handleProduitChange(index, "coutMPUnite", e.target.value)}
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.taskRow}>
+              <label>Demande (unités) :</label>
+              <input
+                type="number"
+                min="1"
+                value={produit.demandePeriode}
+                onChange={(e) => handleProduitChange(index, "demandePeriode", e.target.value)}
+                className={styles.input}
+              />
+            </div>
+
+            <div className={styles.taskRow}>
+              <label>Temps de fabrication ({unite}/unité) :</label>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={produit.tempsFabrication}
+                onChange={(e) => handleProduitChange(index, "tempsFabrication", e.target.value)}
+                className={styles.input}
+              />
+            </div>
+
+            <small className={styles.helpText}>
+              <strong>Profit unitaire :</strong> ${calculateProfitUnitaire(produit).toFixed(2)} | 
+              <strong> Temps requis total :</strong> {calculateTempsRequis(produit).toFixed(1)} {unite} |
+              <strong> Profit total potentiel :</strong> ${(calculateProfitUnitaire(produit) * produit.demandePeriode).toFixed(2)}
+            </small>
+          </div>
+        ))}
+      </div>
+
+      <button 
+        onClick={handleSubmit} 
+        disabled={isLoading}
+        className={styles.submitButton}
+      >
+        {isLoading ? "Optimisation en cours..." : "Résoudre avec l'algorithme glouton"}
+      </button>
+
+      {error && <div className={styles.error}>{error}</div>}
+
+      {result && (
+        <div className={styles.results}>
+          <h3>Résultats de l'algorithme glouton</h3>
+          
+          <div className={styles.metricsGrid}>
+            <div>
+              <strong>Statut :</strong> 
+              <span style={{ color: result.status === 'Optimal' ? '#10b981' : '#f59e0b' }}>
+                {result.status}
+              </span>
+            </div>
+            <div>
+              <strong>Méthode :</strong> {result.methode}
+            </div>
+            <div>
+              <strong>Critère :</strong> {result.critere_selection}
+            </div>
+            <div>
+              <strong>Profit maximal :</strong> ${result.profit_maximal}
+            </div>
+            <div>
+              <strong>Capacité utilisée :</strong> {result.capacite_utilisee}/{result.capacite_totale} {result.unite}
+            </div>
+            <div>
+              <strong>Utilisation :</strong> {result.utilisation_capacite}%
+            </div>
+            <div>
+              <strong>Efficacité :</strong> {result.efficacite}%
+            </div>
+            <div>
+              <strong>Produits sélectionnés :</strong> {result.nombre_produits_selectionnes}
             </div>
           </div>
 
+          {/* Produits sélectionnés */}
           {result.produits_selectionnes && result.produits_selectionnes.length > 0 && (
-            <div className={styles.selectedProductsContainer}>
-              <h4>Produits sélectionnés ({result.produits_selectionnes.length})</h4>
-              <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Produit</th>
-                      <th>Profit total ($)</th>
-                      <th>Désirabilité ($/h)</th>
-                      <th>Temps requis ({result.unite})</th>
-                      <th>Demande</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.produits_selectionnes.map((produit, index) => (
-                      <tr key={index}>
-                        <td><strong>{produit.nom}</strong></td>
-                        <td>{produit.profit_total}</td>
-                        <td>{produit.desirabilite}</td>
-                        <td>{produit.temps_requis}</td>
-                        <td>{produit.demande}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <div className={styles.stationsSection}>
+              <h4>Produits sélectionnés pour la production :</h4>
+              {result.produits_selectionnes.map((produit, index) => (
+                <div key={index} className={styles.stationBlock}>
+                  <strong>{produit.nom}</strong>
+                  <br />
+                  Désirabilité : {produit.desirabilite} $/h | 
+                  Profit total : ${produit.profit_total} | 
+                  Temps requis : {produit.temps_requis} {result.unite}
+                  <br />
+                  <small className={styles.helpText}>
+                    Demande : {produit.demande} unités | 
+                    Ordre de sélection : {index + 1}
+                  </small>
+                </div>
+              ))}
             </div>
           )}
 
+          {/* Produits non sélectionnés */}
           {result.produits_non_selectionnes && result.produits_non_selectionnes.length > 0 && (
-            <div className={styles.rejectedProductsContainer}>
-              <h4>Produits non sélectionnés ({result.produits_non_selectionnes.length})</h4>
-              <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Produit</th>
-                      <th>Raison d'exclusion</th>
-                      <th>Désirabilité ($/h)</th>
-                      <th>Profit total ($)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.produits_non_selectionnes.map((produit, index) => (
-                      <tr key={index}>
-                        <td><strong>{produit.nom}</strong></td>
-                        <td>{produit.raison_exclusion}</td>
-                        <td>{produit.desirabilite}</td>
-                        <td>{produit.profit_total}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <div className={styles.stationsSection}>
+              <h4>Produits non sélectionnés :</h4>
+              {result.produits_non_selectionnes.map((produit, index) => (
+                <div key={index} style={{ 
+                  padding: "0.5rem", 
+                  margin: "0.5rem 0", 
+                  border: "1px solid #fecaca", 
+                  borderRadius: "0.375rem", 
+                  backgroundColor: "#fef2f2" 
+                }}>
+                  <strong>{produit.nom}</strong> - Désirabilité : {produit.desirabilite} $/h
+                  <br />
+                  <small className={styles.helpText}>Raison : {produit.raison_exclusion}</small>
+                </div>
+              ))}
             </div>
           )}
 
           {chartUrl && (
-            <div className={styles.chartContainer}>
-              <div className={styles.chartHeader}>
-                <h4>Analyse graphique</h4>
-                <button onClick={handleDownloadChart} className={styles.downloadButton}>
-                  Télécharger le graphique
-                </button>
-              </div>
-              <img src={chartUrl} alt="Analyse FMS Glouton" className={styles.chart} />
+            <div className={styles.ganttContainer}>
+              <h4>Analyse graphique de l'algorithme glouton</h4>
+              <img 
+                src={chartUrl} 
+                alt="Graphiques FMS Glouton" 
+                className={styles.gantt}
+                style={{ width: "100%", maxWidth: "800px" }}
+              />
+              <button 
+                onClick={handleDownloadChart}
+                className={styles.button}
+                style={{ marginTop: "1rem" }}
+              >
+                Télécharger le graphique
+              </button>
             </div>
           )}
         </div>

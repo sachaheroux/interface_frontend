@@ -92,6 +92,9 @@
   background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   border: 2px solid var(--primary-color);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .configRow {
@@ -99,6 +102,7 @@
   flex-direction: column;
   gap: var(--spacing-lg);
   align-items: center;
+  width: 100%;
 }
 
 .inputGroup {
@@ -132,6 +136,7 @@
   gap: var(--spacing-sm);
   width: 100%;
   max-width: 600px;
+  justify-self: center;
 }
 
 /* ===== BOUTONS ===== */
@@ -214,12 +219,16 @@
   background: var(--primary-color);
   color: white;
   border: none;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-xl);
   border-radius: var(--border-radius);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
+  width: 100%;
+  max-width: 300px;
+  margin: var(--spacing-lg) auto 0 auto;
+  display: block;
 }
 
 .downloadButton:hover {

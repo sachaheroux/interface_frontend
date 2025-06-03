@@ -211,7 +211,7 @@ function FlowshopSPTForm() {
                 <th className={styles.jobNameHeader}>Job</th>
                 {machineNames.map((name, i) => (
                   <th key={i} className={styles.machineHeader}>
-                    {name || `M${i}`}
+                    Durée sur {name || `Machine ${i}`} ({unite})
                   </th>
                 ))}
                 <th className={styles.dueDateHeader}>Date due ({unite})</th>
@@ -439,12 +439,12 @@ function FlowshopSPTForm() {
         <div className={styles.chartSection}>
           <div className={styles.chartHeader}>
             <h3>Diagramme de Gantt</h3>
-            <button onClick={handleDownloadGantt} className={styles.downloadButton}>
-              Télécharger
-            </button>
           </div>
           <div className={styles.chartContainer}>
             <img src={ganttUrl} alt="Diagramme de Gantt" className={styles.chart} />
+            <button onClick={handleDownloadGantt} className={styles.downloadButton}>
+              Télécharger le diagramme
+            </button>
           </div>
         </div>
       )}

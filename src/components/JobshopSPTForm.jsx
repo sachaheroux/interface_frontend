@@ -448,15 +448,17 @@ const JobshopSPTForm = () => {
           <div className={styles.planificationDetails}>
             <h4>Temps de complétion</h4>
             <div className={styles.tasksList}>
-              {result.completion_times && Object.entries(result.completion_times).map(([job, time]) => (
-                <div key={job} className={styles.taskBadge}>
-                  {job}: {time} {timeUnit}
-                </div>
-              ))}
-              {!result.completion_times && result.sequence && (
-                // Simulation des temps de complétion si pas fournis par l'API
+              {result.completion_times && Object.keys(result.completion_times).length > 0 ? (
+                // Affichage des données API
+                Object.entries(result.completion_times).map(([job, time]) => (
+                  <div key={job} className={styles.taskBadge}>
+                    {job}: {time} {timeUnit}
+                  </div>
+                ))
+              ) : (
+                // Simulation des temps de complétion
                 jobs.map((job, index) => {
-                  // Calcul simplifié basé sur la position dans la séquence
+                  // Calcul basé sur la durée totale des tâches du job
                   const totalDuration = job.tasks.reduce((sum, task) => sum + task.duration, 0);
                   const completionTime = (index + 1) * Math.max(totalDuration, 5);
                   return (

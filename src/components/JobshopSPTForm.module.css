@@ -655,16 +655,21 @@
   
   .jobsHeader,
   .compactJobRow {
-    grid-template-columns: 50px 120px 80px 150px 60px;
-    min-width: 460px;
+    grid-template-columns: 150px 100px 180px 60px;
+    min-width: 490px;
   }
   
   .compactSelect {
-    width: 50px;
+    min-width: 70px;
+    max-width: 100px;
   }
   
   .compactNumberInput {
     width: 40px;
+  }
+  
+  .dueDateInput {
+    width: 90px;
   }
   
   .taskCompact {
@@ -690,13 +695,23 @@
   /* Vue compacte ultra-responsive */
   .jobsHeader,
   .compactJobRow {
-    grid-template-columns: 40px 100px 70px 120px 50px;
-    min-width: 380px;
+    grid-template-columns: 120px 80px 150px 50px;
+    min-width: 400px;
     font-size: 0.75rem;
   }
   
   .compactInput {
     font-size: 0.75rem;
+  }
+  
+  .dueDateInput {
+    width: 70px;
+    font-size: 0.75rem;
+  }
+  
+  .compactSelect {
+    min-width: 60px;
+    max-width: 80px;
   }
 }
 
@@ -710,7 +725,7 @@
 
 .jobsHeader {
   display: grid;
-  grid-template-columns: 60px 1fr 100px 2fr 80px;
+  grid-template-columns: 1fr 120px 2fr 80px;
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
   background: var(--primary-color);
@@ -728,7 +743,7 @@
 
 .compactJobRow {
   display: grid;
-  grid-template-columns: 60px 1fr 100px 2fr 80px;
+  grid-template-columns: 1fr 120px 2fr 80px;
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
@@ -766,7 +781,8 @@
 }
 
 .compactSelect {
-  width: 60px;
+  min-width: 80px;
+  max-width: 120px;
   padding: var(--spacing-xs);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
@@ -793,11 +809,26 @@
 .taskCompact {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   background: var(--background-section);
-  padding: 2px;
+  padding: 3px;
   border-radius: var(--border-radius);
   border: 1px solid var(--border-color);
+  margin-bottom: 2px;
+}
+
+.taskNumber {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .miniButton {
@@ -830,4 +861,32 @@
 .jobActionsCompact {
   display: flex;
   justify-content: center;
+}
+
+.jobNameContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+}
+
+.jobNumber {
+  background: var(--primary-color);
+  color: white;
+  padding: 2px 8px;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.dueDateInput {
+  width: 100px;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  font-weight: 500;
 } 

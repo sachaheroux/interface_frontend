@@ -282,8 +282,7 @@ const JobshopSPTForm = () => {
         <div className={styles.compactJobsContainer}>
           <div className={styles.jobsHeader}>
             <div className={styles.jobHeaderCell}>Job</div>
-            <div className={styles.jobHeaderCell}>Nom</div>
-            <div className={styles.jobHeaderCell}>Date due</div>
+            <div className={styles.jobHeaderCell}>Date due<br/>({timeUnit})</div>
             <div className={styles.jobHeaderCell}>Tâches</div>
             <div className={styles.jobHeaderCell}>Actions</div>
           </div>
@@ -291,17 +290,16 @@ const JobshopSPTForm = () => {
           {jobs.map((job, jobIndex) => (
             <div key={jobIndex} className={styles.compactJobRow}>
               <div className={styles.jobCell}>
-                <strong>J{jobIndex + 1}</strong>
-              </div>
-              
-              <div className={styles.jobCell}>
-                <input
-                  type="text"
-                  value={job.name}
-                  onChange={(e) => updateJobName(jobIndex, e.target.value)}
-                  className={styles.compactInput}
-                  placeholder={`Job ${jobIndex + 1}`}
-                />
+                <div className={styles.jobNameContainer}>
+                  <div className={styles.jobNumber}>J{jobIndex + 1}</div>
+                  <input
+                    type="text"
+                    value={job.name}
+                    onChange={(e) => updateJobName(jobIndex, e.target.value)}
+                    className={styles.compactInput}
+                    placeholder={`Job ${jobIndex + 1}`}
+                  />
+                </div>
               </div>
               
               <div className={styles.jobCell}>
@@ -309,7 +307,7 @@ const JobshopSPTForm = () => {
                   type="number"
                   value={job.dueDate}
                   onChange={(e) => updateJobDueDate(jobIndex, e.target.value)}
-                  className={styles.compactNumberInput}
+                  className={styles.dueDateInput}
                   min="0"
                   step="0.1"
                   placeholder="0"
@@ -320,14 +318,16 @@ const JobshopSPTForm = () => {
                 <div className={styles.tasksCompact}>
                   {job.tasks.map((task, taskIndex) => (
                     <div key={taskIndex} className={styles.taskCompact}>
+                      <div className={styles.taskNumber}>{taskIndex + 1}</div>
                       <select
                         value={task.machine}
                         onChange={(e) => updateTask(jobIndex, taskIndex, 'machine', e.target.value)}
                         className={styles.compactSelect}
+                        title={`Tâche ${taskIndex + 1}: ${machineNames[task.machine]}`}
                       >
                         {machineNames.map((name, index) => (
                           <option key={index} value={index}>
-                            M{index}
+                            {name}
                           </option>
                         ))}
                       </select>
@@ -339,6 +339,7 @@ const JobshopSPTForm = () => {
                         min="0"
                         step="0.1"
                         placeholder="0"
+                        title={`Durée en ${timeUnit}`}
                       />
                       <button
                         onClick={() => removeTaskFromJob(jobIndex, taskIndex)}

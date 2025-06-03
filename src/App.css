@@ -161,9 +161,10 @@
 }
 
 .infoPanel {
-  min-width: 400px;
+  min-width: 320px;
+  max-width: 380px;
   background: var(--background-main);
-  padding: var(--spacing-xl);
+  padding: var(--spacing-lg);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-color);
@@ -185,6 +186,8 @@
   
   .infoPanel {
     min-width: auto;
+    max-width: none;
+    padding: var(--spacing-md);
   }
 }
 

@@ -138,6 +138,26 @@
   max-width: 700px;
   justify-self: center;
   margin: 0 auto;
+  overflow-x: auto;
+  padding-bottom: var(--spacing-xs);
+}
+
+.actionButtons::-webkit-scrollbar {
+  height: 4px;
+}
+
+.actionButtons::-webkit-scrollbar-track {
+  background: var(--background-section);
+  border-radius: 2px;
+}
+
+.actionButtons::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 2px;
+}
+
+.actionButtons::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
 }
 
 /* ===== BOUTONS ===== */
@@ -525,7 +545,10 @@
   }
   
   .actionButtons {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, minmax(140px, 1fr));
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-right: var(--spacing-sm);
   }
   
   .metricsGrid {
@@ -550,6 +573,15 @@
   }
   
   .actionButtons {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: var(--spacing-xs);
+  }
+  
+  .addButton,
+  .removeButton {
+    font-size: 0.75rem;
+    padding: var(--spacing-sm);
+    min-width: 120px;
+    white-space: nowrap;
   }
 }

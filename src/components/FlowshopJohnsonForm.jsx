@@ -266,7 +266,7 @@ function FlowshopJohnsonForm() {
           
           {/* Séquence optimale */}
           <div className={styles.sequenceSection}>
-            <div className={styles.sequenceTitle}>Séquence optimale</div>
+            <div className={styles.sequenceTitle}>Séquence calculée par l'algo</div>
             <div className={styles.sequenceValue}>
               {result.sequence.join(" → ")}
             </div>

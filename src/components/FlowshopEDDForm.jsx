@@ -271,14 +271,14 @@ function FlowshopEDDForm() {
             
             {/* Séquence optimale */}
             <div className={styles.sequenceSection}>
-              <div className={styles.sequenceTitle}>Séquence optimale</div>
+              <div className={styles.sequenceTitle}>Séquence calculée par l'algo</div>
               <div className={styles.sequenceValue}>
                 {(() => {
                   // Extraire la séquence à partir de la première machine
                   const firstMachine = Object.keys(result.planification)[0];
                   const sequence = result.planification[firstMachine]
                     .sort((a, b) => a.start - b.start)
-                    .map(task => `Job ${task.job}`);
+                    .map(task => task.job + 1);
                   return sequence.join(" → ");
                 })()}
               </div>

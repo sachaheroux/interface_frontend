@@ -152,7 +152,7 @@ function FlowshopEDDForm() {
                 onClick={removeTaskFromAllJobs}
                 disabled={jobs[0].length <= 1}
               >
-                - Supprimer une tâche
+                - Supprimer une machine
               </button>
             </div>
           </div>
@@ -302,24 +302,24 @@ function FlowshopEDDForm() {
 
             {/* Détails de planification */}
             <div className={styles.planificationDetails}>
-              <h4>Temps de complétion par job</h4>
+              <h4>Temps de complétion</h4>
               <div className={styles.tasksList}>
                 {Object.entries(result.completion_times).map(([job, time]) => (
-                  <span key={job} className={styles.taskBadge}>
-                    {job}: {time}
-                  </span>
+                  <div key={job} className={styles.taskBadge}>
+                    {job}: {time} {unite}
+                  </div>
                 ))}
               </div>
 
-              <h4>Planification détaillée par machine</h4>
+              <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
               {Object.entries(result.planification).map(([machine, tasks]) => (
                 <div key={machine} className={styles.machineDetail}>
                   <strong>{machine}</strong>
                   <div className={styles.tasksList}>
                     {tasks.map((t, i) => (
-                      <span key={i} className={styles.taskBadge}>
-                        Job {t.job} - Tâche {t.task}: {t.start} → {t.start + t.duration}
-                      </span>
+                      <div key={i} className={styles.taskBadge}>
+                        {jobNames[t.job] || `Job ${t.job}`}: {t.start} → {t.start + t.duration}
+                      </div>
                     ))}
                   </div>
                 </div>

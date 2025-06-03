@@ -171,7 +171,7 @@ function FlowshopSPTForm() {
                 + Ajouter une machine
               </button>
               <button className={styles.removeButton} onClick={removeTaskFromAllJobs} disabled={jobs[0].length <= 1}>
-                - Supprimer une tâche
+                - Supprimer une machine
               </button>
             </div>
           </div>
@@ -432,8 +432,18 @@ function FlowshopSPTForm() {
               </div>
             </div>
 
+            {/* Détails de planification */}
             <div className={styles.planificationDetails}>
-              <h4>Planification détaillée :</h4>
+              <h4>Temps de complétion</h4>
+              <div className={styles.tasksList}>
+                {result.completion_times && Object.entries(result.completion_times).map(([job, time]) => (
+                  <div key={job} className={styles.taskBadge}>
+                    {job}: {time} {unite}
+                  </div>
+                ))}
+              </div>
+
+              <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
               {Object.entries(result.planification).map(([machine, tasks]) => (
                 <div key={machine} className={styles.machineDetail}>
                   <strong>{machine} :</strong>

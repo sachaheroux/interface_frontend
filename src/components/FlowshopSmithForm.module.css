@@ -486,6 +486,47 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* ===== PLANIFICATION DÉTAILLÉE ===== */
+.planificationDetails {
+  margin-top: var(--spacing-xl);
+}
+
+.planificationDetails h4 {
+  color: var(--primary-color);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-md) 0;
+  text-align: left;
+}
+
+.tasksList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.taskBadge {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border: 1px solid var(--primary-color);
+}
+
+.machineDetail {
+  margin-bottom: var(--spacing-lg);
+}
+
+.machineDetail strong {
+  color: var(--primary-color);
+  font-size: var(--font-size-base);
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .algorithmContainer {

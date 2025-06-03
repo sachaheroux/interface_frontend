@@ -278,6 +278,32 @@ const FlowshopSmithForm = () => {
               </div>
             </div>
           </div>
+
+          {/* Détails de planification */}
+          <div className={styles.planificationDetails}>
+            <h4>Temps de complétion</h4>
+            <div className={styles.tasksList}>
+              {result.completion_times && Object.entries(result.completion_times).map(([job, time]) => (
+                <div key={job} className={styles.taskBadge}>
+                  {job}: {time} {timeUnit}
+                </div>
+              ))}
+            </div>
+
+            <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
+            {result.planification && Object.entries(result.planification).map(([machine, tasks]) => (
+              <div key={machine} className={styles.machineDetail}>
+                <strong>{machine}</strong>
+                <div className={styles.tasksList}>
+                  {tasks.map((t, i) => (
+                    <div key={i} className={styles.taskBadge}>
+                      {jobs[t.job]?.name || `Job ${t.job}`}: {t.start} → {t.start + t.duration}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

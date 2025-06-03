@@ -128,9 +128,21 @@ function App() {
           {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDForm />}
           {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesForm />}
           {systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceForm />}
-          {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && <LigneAssemblageCOMSOALForm />}
-          {systeme === "Ligne d'assemblage" && algorithme === "LPT" && <LigneAssemblageLPTForm />}
-          {systeme === "Ligne d'assemblage" && algorithme === "PL" && <LigneAssemblagePLForm />}
+          {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && (
+            <div className="algorithmContent">
+              <LigneAssemblageCOMSOALForm />
+            </div>
+          )}
+          {systeme === "Ligne d'assemblage" && algorithme === "LPT" && (
+            <div className="algorithmContent">
+              <LigneAssemblageLPTForm />
+            </div>
+          )}
+          {systeme === "Ligne d'assemblage" && algorithme === "PL" && (
+            <div className="algorithmContent">
+              <LigneAssemblagePLForm />
+            </div>
+          )}
           {systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotForm />}
           {systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageForm />}
           {systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottForm />}

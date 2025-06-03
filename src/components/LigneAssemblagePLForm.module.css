@@ -39,22 +39,15 @@
   --error-color: #ef4444;
 }
 
-/* ===== CONTAINER PRINCIPAL ===== */
-.algorithmContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--spacing-xl);
-  background: var(--background-main);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-lg);
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-}
+/* ===== CONTENEUR PRINCIPAL ===== */
+/* Le composant s'affiche maintenant directement dans contentArea */
+/* On ajoute du padding au niveau du wrapper dans App.jsx via algorithmContent */
 
 /* ===== HEADER ===== */
 .header {
   text-align: center;
   margin-bottom: var(--spacing-2xl);
-  padding-bottom: var(--spacing-lg);
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg) var(--spacing-xl);
   border-bottom: 2px solid var(--background-section);
 }
 
@@ -74,7 +67,7 @@
 
 /* ===== SECTIONS ===== */
 .section {
-  margin-bottom: var(--spacing-xl);
+  margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
   padding: var(--spacing-lg);
   background: var(--background-section);
   border-radius: var(--border-radius);
@@ -213,7 +206,8 @@
 }
 
 .calculateButton {
-  width: 100%;
+  width: calc(100% - 4rem);
+  margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
   color: white;
   border: none;
@@ -357,7 +351,7 @@
 
 /* ===== GESTION ERREURS ===== */
 .errorSection {
-  margin-bottom: var(--spacing-xl);
+  margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
 }
 
 .errorBox {
@@ -588,10 +582,6 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .algorithmContainer {
-    padding: var(--spacing-md);
-  }
-  
   .actionButtons {
     grid-template-columns: 1fr;
   }

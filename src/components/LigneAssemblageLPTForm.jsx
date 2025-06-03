@@ -189,7 +189,7 @@ const LigneAssemblageLPTForm = () => {
   };
 
   return (
-    <div className={styles.algorithmContainer}>
+    <>
       {/* Header */}
       <div className={styles.header}>
         <h1 className={styles.title}>Ligne d'assemblage - LPT</h1>
@@ -440,7 +440,7 @@ const LigneAssemblageLPTForm = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

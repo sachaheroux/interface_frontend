@@ -196,7 +196,7 @@ const LigneAssemblageCOMSOALForm = () => {
   };
 
   return (
-    <div className={styles.algorithmContainer}>
+    <>
       {/* Header */}
       <div className={styles.header}>
         <h1 className={styles.title}>Ligne d'assemblage - COMSOAL</h1>
@@ -473,7 +473,7 @@ const LigneAssemblageCOMSOALForm = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

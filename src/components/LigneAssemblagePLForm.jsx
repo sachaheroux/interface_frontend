@@ -189,7 +189,7 @@ const LigneAssemblagePLForm = () => {
   };
 
   return (
-    <div className={styles.algorithmContainer}>
+    <>
       {/* Header */}
       <div className={styles.header}>
         <h1 className={styles.title}>Ligne d'assemblage - Programmation linéaire</h1>
@@ -448,7 +448,7 @@ const LigneAssemblagePLForm = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

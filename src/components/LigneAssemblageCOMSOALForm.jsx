@@ -388,24 +388,6 @@ const LigneAssemblageCOMSOALForm = () => {
 
             <div className={styles.metric}>
               <div className={styles.metricValue}>
-                {result.metrics?.utilisation_moyenne || result.utilisation_moyenne || 0}%
-              </div>
-              <div className={styles.metricLabel}>
-                Utilisation moyenne
-              </div>
-            </div>
-
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>
-                {result.metrics?.taux_equilibrage || result.taux_equilibrage || 0}%
-              </div>
-              <div className={styles.metricLabel}>
-                Taux d'équilibrage
-              </div>
-            </div>
-
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>
                 {cycleTime} {timeUnit}
               </div>
               <div className={styles.metricLabel}>

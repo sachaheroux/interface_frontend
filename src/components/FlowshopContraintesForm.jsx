@@ -125,7 +125,7 @@ const FlowshopContraintesForm = () => {
 
       console.log("Données envoyées:", requestData);
 
-      const response = await fetch(`${API_URL}/flowshop/contraintes`, {
+      const response = await fetch(`${API_URL}/contraintes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

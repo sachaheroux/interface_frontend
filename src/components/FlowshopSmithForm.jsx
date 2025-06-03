@@ -1,179 +1,311 @@
-import { useState } from "react";
-import styles from "./FlowshopSPTForm.module.css";
+import React, { useState } from 'react';
+import styles from './FlowshopSmithForm.module.css';
 
-function FlowshopSmithForm() {
+const FlowshopSmithForm = () => {
   const [jobs, setJobs] = useState([
-    ["10", "25"],
-    ["8", "20"]
+    { name: 'Job 1', duration: 10, dueDate: 25 },
+    { name: 'Job 2', duration: 8, dueDate: 20 }
   ]);
-  const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
-  const [unite, setUnite] = useState("heures");
+  const [timeUnit, setTimeUnit] = useState('heures');
   const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
+  const [isCalculating, setIsCalculating] = useState(false);
   const [ganttUrl, setGanttUrl] = useState(null);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
   const addJob = () => {
-    setJobs([...jobs, ["1", "10"]]);
-    setJobNames([...jobNames, `Job ${jobs.length}`]);
+    const newJobNumber = jobs.length + 1;
+    setJobs([...jobs, {
+      name: `Job ${newJobNumber}`,
+      duration: 1,
+      dueDate: 10
+    }]);
   };
 
   const removeJob = () => {
     if (jobs.length > 1) {
       setJobs(jobs.slice(0, -1));
-      setJobNames(jobNames.slice(0, -1));
     }
   };
 
-  const handleSubmit = () => {
-    setError(null);
+  const updateJob = (index, field, value) => {
+    const newJobs = [...jobs];
+    if (field === 'name') {
+      newJobs[index][field] = value;
+    } else {
+      newJobs[index][field] = parseFloat(value) || 0;
+    }
+    setJobs(newJobs);
+  };
+
+  const calculateOptimization = async () => {
+    setIsCalculating(true);
+    setError('');
     setResult(null);
     setGanttUrl(null);
 
     try {
-      const formattedJobs = jobs.map(([duration, due]) => [
-        parseFloat(duration.replace(",", ".")),
-        parseFloat(due.replace(",", "."))
+      const formattedJobs = jobs.map(job => [
+        parseFloat(job.duration) || 0,
+        parseFloat(job.dueDate) || 0
       ]);
 
-      const payload = {
+      const requestData = {
         jobs: formattedJobs,
-        job_names: jobNames,
-        unite
+        job_names: jobs.map(job => job.name),
+        unite: timeUnit
       };
 
-      fetch(`${API_URL}/smith`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      })
-        .then(res => {
-          if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
-          return res.json();
-        })
-        .then(data => {
-          setResult(data);
-          return fetch(`${API_URL}/smith/gantt`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-        })
-        .then(res => {
-          if (!res.ok) throw new Error("Erreur Gantt API");
-          return res.blob();
-        })
-        .then(blob => {
+      console.log("Données envoyées:", requestData);
+
+      const response = await fetch(`${API_URL}/smith`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Données reçues:", data);
+      setResult(data);
+
+      // Récupération du diagramme de Gantt
+      try {
+        const ganttResponse = await fetch(`${API_URL}/smith/gantt`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData)
+        });
+
+        if (ganttResponse.ok) {
+          const blob = await ganttResponse.blob();
           const url = URL.createObjectURL(blob);
           setGanttUrl(url);
-        })
-        .catch(err => setError(err.message));
-    } catch (e) {
-      setError("Erreur dans les données saisies.");
+        }
+      } catch (ganttError) {
+        console.log("Pas de diagramme de Gantt disponible");
+      }
+
+    } catch (err) {
+      console.error('Erreur:', err);
+      setError(`Erreur lors du calcul: ${err.message}`);
+    } finally {
+      setIsCalculating(false);
     }
   };
 
-  const handleDownloadGantt = () => {
-    if (!ganttUrl) return;
-    const link = document.createElement("a");
-    link.href = ganttUrl;
-    link.download = "diagramme_gantt.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadGanttChart = () => {
+    if (ganttUrl) {
+      const link = document.createElement('a');
+      link.href = ganttUrl;
+      link.download = 'diagramme_gantt_smith.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Planification Flowshop - Smith</h2>
-
-      <div className={styles.unitSelector}>
-        <label>Unité de temps :</label>
-        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
-          <option value="minutes">minutes</option>
-          <option value="heures">heures</option>
-          <option value="jours">jours</option>
-        </select>
+    <div className={styles.algorithmContainer}>
+      {/* Header */}
+      <div className={styles.header}>
+        <h1 className={styles.title}>Algorithme de Smith</h1>
+        <p className={styles.subtitle}>
+          Minimisation du nombre moyen de jobs dans le système pour une machine unique
+        </p>
       </div>
 
-      <div className={styles.buttonGroup}>
-        <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
-        <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
-      </div>
-
-      {jobs.map((job, idx) => (
-        <div key={idx} className={styles.jobBlock}>
-          <h4>Job {idx}</h4>
-          <div className={styles.taskRow}>
-            Nom du job :
-            <input
-              type="text"
-              value={jobNames[idx]}
-              onChange={e => {
-                const newNames = [...jobNames];
-                newNames[idx] = e.target.value;
-                setJobNames(newNames);
-              }}
-            />
+      {/* Configuration */}
+      <div className={`${styles.section} ${styles.configSection}`}>
+        <h2 className={styles.sectionTitle}>Configuration</h2>
+        <div className={styles.configRow}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="timeUnit">Unité de temps</label>
+            <select
+              id="timeUnit"
+              value={timeUnit}
+              onChange={(e) => setTimeUnit(e.target.value)}
+              className={styles.select}
+            >
+              <option value="heures">Heures</option>
+              <option value="minutes">Minutes</option>
+              <option value="jours">Jours</option>
+            </select>
           </div>
-          <div className={styles.taskRow}>
-            Durée ({unite}) :
-            <input
-              type="text"
-              inputMode="decimal"
-              value={job[0]}
-              onChange={e => {
-                const newJobs = [...jobs];
-                newJobs[idx][0] = e.target.value;
-                setJobs(newJobs);
-              }}
-            />
-            Date due ({unite}) :
-            <input
-              type="text"
-              inputMode="decimal"
-              value={job[1]}
-              onChange={e => {
-                const newJobs = [...jobs];
-                newJobs[idx][1] = e.target.value;
-                setJobs(newJobs);
-              }}
-            />
+          
+          <div className={styles.actionButtons}>
+            <button
+              onClick={addJob}
+              className={styles.addButton}
+              type="button"
+            >
+              + Ajouter un job
+            </button>
+            
+            <button
+              onClick={removeJob}
+              disabled={jobs.length <= 1}
+              className={styles.removeButton}
+              type="button"
+            >
+              - Supprimer un job
+            </button>
           </div>
         </div>
-      ))}
+      </div>
 
-      <button className={styles.submitButton} onClick={handleSubmit}>Lancer l'algorithme</button>
+      {/* Tableau des données */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Jobs à ordonnancer</h2>
+        <div className={styles.dataTable}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.jobNameHeader}>Job</th>
+                <th className={styles.durationHeader}>Durée ({timeUnit})</th>
+                <th className={styles.dueDateHeader}>Date due ({timeUnit})</th>
+              </tr>
+            </thead>
+            <tbody>
+              {jobs.map((job, jobIndex) => (
+                <tr key={jobIndex} className={styles.jobRow}>
+                  <td className={styles.jobNameCell}>
+                    <input
+                      type="text"
+                      value={job.name}
+                      onChange={(e) => updateJob(jobIndex, 'name', e.target.value)}
+                      className={styles.jobNameInput}
+                      placeholder={`Job ${jobIndex + 1}`}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      value={job.duration}
+                      onChange={(e) => updateJob(jobIndex, 'duration', e.target.value)}
+                      className={styles.durationInput}
+                      min="0"
+                      step="0.1"
+                      placeholder="0"
+                    />
+                  </td>
+                  <td className={styles.dueDateCell}>
+                    <input
+                      type="number"
+                      value={job.dueDate}
+                      onChange={(e) => updateJob(jobIndex, 'dueDate', e.target.value)}
+                      className={styles.dueDateInput}
+                      min="0"
+                      step="0.1"
+                      placeholder="0"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      {error && <p className={styles.error}>{error}</p>}
+      {/* Gestion d'erreur */}
+      {error && (
+        <div className={styles.errorSection}>
+          <div className={styles.errorBox}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorText}>{error}</span>
+          </div>
+        </div>
+      )}
 
+      {/* Bouton de calcul */}
+      <button
+        onClick={calculateOptimization}
+        disabled={isCalculating}
+        className={styles.calculateButton}
+        type="button"
+      >
+        {isCalculating ? 'Calcul en cours...' : 'Calculer l\'optimisation'}
+      </button>
+
+      {/* Résultats */}
       {result && (
-        <div className={styles.results}>
-          <h3>Résultats</h3>
-          <div><strong>Séquence :</strong> {result.sequence.join(" → ")}</div>
-          <div><strong>Flowtime :</strong> {result.flowtime}</div>
-          <div><strong>Nombre moyen de jobs (N) :</strong> {result.N}</div>
-          <div><strong>Retard cumulé :</strong> {result.cumulative_delay}</div>
+        <div className={`${styles.section} ${styles.resultsSection}`}>
+          <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
 
-          {ganttUrl && (
-            <div className={styles.ganttContainer}>
-              <h4>Diagramme de Gantt</h4>
-              <img
-                src={ganttUrl}
-                alt="Gantt"
-                className={styles.gantt}
-              />
-              <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-                Télécharger le diagramme de Gantt
-              </button>
+          {/* Séquence calculée */}
+          <div className={styles.sequenceSection}>
+            <h3 className={styles.sequenceTitle}>Séquence optimale calculée</h3>
+            <div className={styles.sequenceValue}>
+              {result.sequence ? result.sequence.join(' → ') : 'Non disponible'}
             </div>
-          )}
+          </div>
+
+          {/* Métriques */}
+          <div className={styles.metricsGrid}>
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.flowtime || 0}
+              </div>
+              <div className={styles.metricLabel}>
+                Flowtime ({timeUnit})
+              </div>
+            </div>
+            
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.N ? result.N.toFixed(2) : '0.00'}
+              </div>
+              <div className={styles.metricLabel}>
+                Nombre moyen de jobs (N)
+              </div>
+            </div>
+            
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.cumulative_delay || 0}
+              </div>
+              <div className={styles.metricLabel}>
+                Retard cumulé ({timeUnit})
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Diagramme de Gantt */}
+      {ganttUrl && (
+        <div className={`${styles.section} ${styles.chartSection}`}>
+          <div className={styles.chartHeader}>
+            <h3>Diagramme de Gantt</h3>
+          </div>
+          <div className={styles.chartContainer}>
+            <img
+              src={ganttUrl}
+              alt="Diagramme de Gantt"
+              className={styles.chart}
+            />
+            <button
+              onClick={downloadGanttChart}
+              className={styles.downloadButton}
+              type="button"
+            >
+              Télécharger le diagramme
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default FlowshopSmithForm;
 

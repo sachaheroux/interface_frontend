@@ -135,8 +135,9 @@
   grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-sm);
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   justify-self: center;
+  margin: 0 auto;
 }
 
 /* ===== BOUTONS ===== */
@@ -144,7 +145,7 @@
   background: var(--primary-color);
   color: white;
   border: none;
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-sm);
   border-radius: var(--border-radius);
   font-weight: 500;
   cursor: pointer;
@@ -156,6 +157,8 @@
   font-size: var(--font-size-sm);
   min-height: 45px;
   white-space: nowrap;
+  width: 100%;
+  min-width: 160px;
 }
 
 .addButton:hover {
@@ -168,7 +171,7 @@
   background: var(--primary-color);
   color: white;
   border: none;
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-sm);
   border-radius: var(--border-radius);
   font-weight: 500;
   cursor: pointer;
@@ -180,6 +183,8 @@
   font-size: var(--font-size-sm);
   min-height: 45px;
   white-space: nowrap;
+  width: 100%;
+  min-width: 160px;
 }
 
 .removeButton:hover:not(:disabled) {

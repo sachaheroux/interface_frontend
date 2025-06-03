@@ -128,15 +128,36 @@
   padding: var(--spacing-xl);
   background: var(--background-section);
   gap: var(--spacing-xl);
+  height: calc(100vh - 4rem);
+  overflow: hidden;
 }
 
 .contentArea {
   flex: 1;
   background: var(--background-main);
-  padding: var(--spacing-xl);
+  padding: 0;
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-color);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.contentAreaFullWidth {
+  width: 100%;
+  background: var(--background-main);
+  padding: 0;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Classe pour les algorithmes qui ont besoin de padding */
+.algorithmContent {
+  padding: var(--spacing-xl);
+  height: 100%;
 }
 
 .infoPanel {
@@ -146,6 +167,8 @@
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-color);
+  height: 100%;
+  overflow-y: auto;
 }
 
 /* ===== RESPONSIVE ===== */

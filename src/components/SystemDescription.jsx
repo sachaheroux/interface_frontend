@@ -217,7 +217,8 @@ export default function SystemDescription({ system }) {
         backgroundSize: "cover",
         backgroundPosition: "center",
         padding: "3rem 0",
-        minHeight: "100vh"
+        height: "100%",
+        minHeight: "600px"
       }}
     >
       <div

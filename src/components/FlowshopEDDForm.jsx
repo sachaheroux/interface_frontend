@@ -106,230 +106,232 @@ function FlowshopEDDForm() {
   };
 
   return (
-    <div className={styles.algorithmContainer}>
-      {/* Header */}
-      <div className={styles.header}>
-        <h1 className={styles.title}>Planification Flowshop - EDD</h1>
-        <p className={styles.subtitle}>
-          Algorithme EDD (Earliest Due Date) pour l'ordonnancement en flowshop avec dates d'échéance
-        </p>
-      </div>
+    <div className="algorithmContent">
+      <div className={styles.algorithmContainer}>
+        {/* Header */}
+        <div className={styles.header}>
+          <h1 className={styles.title}>Planification Flowshop - EDD</h1>
+          <p className={styles.subtitle}>
+            Algorithme EDD (Earliest Due Date) pour l'ordonnancement en flowshop avec dates d'échéance
+          </p>
+        </div>
 
-      {/* Section Configuration */}
-      <div className={`${styles.section} ${styles.configSection}`}>
-        <div className={styles.configRow}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="unite">Unité de temps</label>
-            <select 
-              id="unite"
-              value={unite} 
-              onChange={(e) => setUnite(e.target.value)} 
-              className={styles.select}
-            >
-              <option value="minutes">Minutes</option>
-              <option value="heures">Heures</option>
-              <option value="jours">Jours</option>
-            </select>
-          </div>
+        {/* Section Configuration */}
+        <div className={`${styles.section} ${styles.configSection}`}>
+          <div className={styles.configRow}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="unite">Unité de temps</label>
+              <select 
+                id="unite"
+                value={unite} 
+                onChange={(e) => setUnite(e.target.value)} 
+                className={styles.select}
+              >
+                <option value="minutes">Minutes</option>
+                <option value="heures">Heures</option>
+                <option value="jours">Jours</option>
+              </select>
+            </div>
 
-          <div className={styles.actionButtons}>
-            <button className={styles.addButton} onClick={addJob}>
-              + Ajouter un job
-            </button>
-            <button 
-              className={styles.removeButton} 
-              onClick={removeJob}
-              disabled={jobs.length <= 1}
-            >
-              - Supprimer un job
-            </button>
-            <button className={styles.addButton} onClick={addTaskToAllJobs}>
-              + Ajouter une machine
-            </button>
-            <button 
-              className={styles.removeButton} 
-              onClick={removeTaskFromAllJobs}
-              disabled={jobs[0].length <= 1}
-            >
-              - Supprimer une tâche
-            </button>
+            <div className={styles.actionButtons}>
+              <button className={styles.addButton} onClick={addJob}>
+                + Ajouter un job
+              </button>
+              <button 
+                className={styles.removeButton} 
+                onClick={removeJob}
+                disabled={jobs.length <= 1}
+              >
+                - Supprimer un job
+              </button>
+              <button className={styles.addButton} onClick={addTaskToAllJobs}>
+                + Ajouter une machine
+              </button>
+              <button 
+                className={styles.removeButton} 
+                onClick={removeTaskFromAllJobs}
+                disabled={jobs[0].length <= 1}
+              >
+                - Supprimer une tâche
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Configuration des machines */}
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Configuration des machines</h2>
-        <div className={styles.machinesTable}>
-          <div className={styles.tableRow}>
-            {machineNames.map((name, i) => (
-              <div key={i} className={styles.machineInput}>
-                <label htmlFor={`machine-${i}`}>Machine {i}</label>
-                <input
-                  id={`machine-${i}`}
-                  type="text"
-                  value={name}
-                  onChange={e => {
-                    const newNames = [...machineNames];
-                    newNames[i] = e.target.value;
-                    setMachineNames(newNames);
-                  }}
-                  className={styles.input}
-                />
-              </div>
-            ))}
+        {/* Configuration des machines */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Configuration des machines</h2>
+          <div className={styles.machinesTable}>
+            <div className={styles.tableRow}>
+              {machineNames.map((name, i) => (
+                <div key={i} className={styles.machineInput}>
+                  <label htmlFor={`machine-${i}`}>Machine {i}</label>
+                  <input
+                    id={`machine-${i}`}
+                    type="text"
+                    value={name}
+                    onChange={e => {
+                      const newNames = [...machineNames];
+                      newNames[i] = e.target.value;
+                      setMachineNames(newNames);
+                    }}
+                    className={styles.input}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Tableau principal des données */}
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Matrice des temps de traitement</h2>
-        <div className={styles.dataTable}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th className={styles.jobNameHeader}>Job</th>
-                {machineNames.map((name, i) => (
-                  <th key={i} className={styles.machineHeader}>
-                    Durée sur {name} ({unite})
-                  </th>
-                ))}
-                <th className={styles.dueDateHeader}>Date due ({unite})</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jobs.map((job, jobIdx) => (
-                <tr key={jobIdx} className={styles.jobRow}>
-                  <td className={styles.jobNameCell}>
-                    <input
-                      type="text"
-                      value={jobNames[jobIdx]}
-                      onChange={e => {
-                        const newNames = [...jobNames];
-                        newNames[jobIdx] = e.target.value;
-                        setJobNames(newNames);
-                      }}
-                      className={styles.jobNameInput}
-                    />
-                  </td>
-                  {job.map((op, opIdx) => (
-                    <td key={opIdx}>
+        {/* Tableau principal des données */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Matrice des temps de traitement</h2>
+          <div className={styles.dataTable}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th className={styles.jobNameHeader}>Job</th>
+                  {machineNames.map((name, i) => (
+                    <th key={i} className={styles.machineHeader}>
+                      Durée sur {name} ({unite})
+                    </th>
+                  ))}
+                  <th className={styles.dueDateHeader}>Date due ({unite})</th>
+                </tr>
+              </thead>
+              <tbody>
+                {jobs.map((job, jobIdx) => (
+                  <tr key={jobIdx} className={styles.jobRow}>
+                    <td className={styles.jobNameCell}>
+                      <input
+                        type="text"
+                        value={jobNames[jobIdx]}
+                        onChange={e => {
+                          const newNames = [...jobNames];
+                          newNames[jobIdx] = e.target.value;
+                          setJobNames(newNames);
+                        }}
+                        className={styles.jobNameInput}
+                      />
+                    </td>
+                    {job.map((op, opIdx) => (
+                      <td key={opIdx}>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          value={op.duration}
+                          onChange={e => {
+                            const newJobs = [...jobs];
+                            newJobs[jobIdx][opIdx].duration = e.target.value;
+                            setJobs(newJobs);
+                          }}
+                          className={styles.durationInput}
+                        />
+                      </td>
+                    ))}
+                    <td className={styles.dueDateCell}>
                       <input
                         type="text"
                         inputMode="decimal"
-                        value={op.duration}
+                        value={dueDates[jobIdx]}
                         onChange={e => {
-                          const newJobs = [...jobs];
-                          newJobs[jobIdx][opIdx].duration = e.target.value;
-                          setJobs(newJobs);
+                          const newDates = [...dueDates];
+                          newDates[jobIdx] = e.target.value;
+                          setDueDates(newDates);
                         }}
-                        className={styles.durationInput}
+                        className={styles.dueDateInput}
                       />
                     </td>
-                  ))}
-                  <td className={styles.dueDateCell}>
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={dueDates[jobIdx]}
-                      onChange={e => {
-                        const newDates = [...dueDates];
-                        newDates[jobIdx] = e.target.value;
-                        setDueDates(newDates);
-                      }}
-                      className={styles.dueDateInput}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Bouton de calcul */}
-      <button className={styles.calculateButton} onClick={handleSubmit}>
-        Calculer l'ordonnancement EDD
-      </button>
-
-      {/* Gestion des erreurs */}
-      {error && (
-        <div className={styles.errorSection}>
-          <div className={styles.errorBox}>
-            <span className={styles.errorIcon}>⚠️</span>
-            <span className={styles.errorText}>{error}</span>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      )}
 
-      {/* Résultats */}
-      {result && (
-        <div className={`${styles.section} ${styles.resultsSection}`}>
-          <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
-          
-          {/* Métriques principales */}
-          <div className={styles.metricsGrid}>
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>{result.makespan}</div>
-              <div className={styles.metricLabel}>Makespan</div>
-            </div>
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>{result.flowtime}</div>
-              <div className={styles.metricLabel}>Flowtime</div>
-            </div>
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>{result.retard_cumule}</div>
-              <div className={styles.metricLabel}>Retard cumulé</div>
+        {/* Bouton de calcul */}
+        <button className={styles.calculateButton} onClick={handleSubmit}>
+          Calculer l'ordonnancement EDD
+        </button>
+
+        {/* Gestion des erreurs */}
+        {error && (
+          <div className={styles.errorSection}>
+            <div className={styles.errorBox}>
+              <span className={styles.errorIcon}>⚠️</span>
+              <span className={styles.errorText}>{error}</span>
             </div>
           </div>
+        )}
 
-          {/* Détails de planification */}
-          <div className={styles.planificationDetails}>
-            <h4>Temps de complétion par job</h4>
-            <div className={styles.tasksList}>
-              {Object.entries(result.completion_times).map(([job, time]) => (
-                <span key={job} className={styles.taskBadge}>
-                  {job}: {time}
-                </span>
-              ))}
-            </div>
-
-            <h4>Planification détaillée par machine</h4>
-            {Object.entries(result.planification).map(([machine, tasks]) => (
-              <div key={machine} className={styles.machineDetail}>
-                <strong>{machine}</strong>
-                <div className={styles.tasksList}>
-                  {tasks.map((t, i) => (
-                    <span key={i} className={styles.taskBadge}>
-                      Job {t.job} - Tâche {t.task}: {t.start} → {t.start + t.duration}
-                    </span>
-                  ))}
-                </div>
+        {/* Résultats */}
+        {result && (
+          <div className={`${styles.section} ${styles.resultsSection}`}>
+            <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
+            
+            {/* Métriques principales */}
+            <div className={styles.metricsGrid}>
+              <div className={styles.metric}>
+                <div className={styles.metricValue}>{result.makespan}</div>
+                <div className={styles.metricLabel}>Makespan</div>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+              <div className={styles.metric}>
+                <div className={styles.metricValue}>{result.flowtime}</div>
+                <div className={styles.metricLabel}>Flowtime</div>
+              </div>
+              <div className={styles.metric}>
+                <div className={styles.metricValue}>{result.retard_cumule}</div>
+                <div className={styles.metricLabel}>Retard cumulé</div>
+              </div>
+            </div>
 
-      {/* Diagramme de Gantt */}
-      {ganttUrl && (
-        <div className={`${styles.section} ${styles.chartSection}`}>
-          <div className={styles.chartHeader}>
-            <h3>Diagramme de Gantt</h3>
+            {/* Détails de planification */}
+            <div className={styles.planificationDetails}>
+              <h4>Temps de complétion par job</h4>
+              <div className={styles.tasksList}>
+                {Object.entries(result.completion_times).map(([job, time]) => (
+                  <span key={job} className={styles.taskBadge}>
+                    {job}: {time}
+                  </span>
+                ))}
+              </div>
+
+              <h4>Planification détaillée par machine</h4>
+              {Object.entries(result.planification).map(([machine, tasks]) => (
+                <div key={machine} className={styles.machineDetail}>
+                  <strong>{machine}</strong>
+                  <div className={styles.tasksList}>
+                    {tasks.map((t, i) => (
+                      <span key={i} className={styles.taskBadge}>
+                        Job {t.job} - Tâche {t.task}: {t.start} → {t.start + t.duration}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className={styles.chartContainer}>
-            <img
-              src={ganttUrl}
-              alt="Diagramme de Gantt"
-              className={styles.chart}
-            />
+        )}
+
+        {/* Diagramme de Gantt */}
+        {ganttUrl && (
+          <div className={`${styles.section} ${styles.chartSection}`}>
+            <div className={styles.chartHeader}>
+              <h3>Diagramme de Gantt</h3>
+            </div>
+            <div className={styles.chartContainer}>
+              <img
+                src={ganttUrl}
+                alt="Diagramme de Gantt"
+                className={styles.chart}
+              />
+            </div>
+            <button className={styles.downloadButton} onClick={handleDownloadGantt}>
+              Télécharger le gantt
+            </button>
           </div>
-          <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-            Télécharger le gantt
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

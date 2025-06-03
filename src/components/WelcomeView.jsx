@@ -6,7 +6,8 @@ export default function WelcomeView() {
         backgroundSize: "cover",
         backgroundPosition: "center",
         padding: "3rem",
-        minHeight: "100vh",
+        height: "100%",
+        minHeight: "600px",
         color: "white",
         display: "flex",
         justifyContent: "center",
@@ -24,14 +25,14 @@ export default function WelcomeView() {
         }}
       >
         <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
-          Bienvenue dans l’interface de planification des systèmes de production
+          Bienvenue dans l'interface de modélisation des systèmes industriels
         </h2>
 
         <p style={{ fontSize: "1.1rem", lineHeight: "1.6", marginBottom: "1rem" }}>
           Cet outil interactif est conçu pour accompagner les ingénieurs et les planificateurs dans
-          l’analyse, la modélisation et l’ordonnancement des systèmes de production industriels.
-          Il permet d’exécuter automatiquement des algorithmes reconnus afin d’optimiser la performance
-          des ateliers selon leur structure (flowshop, jobshop, ligne d’assemblage, etc.).
+          l'analyse, la modélisation et l'ordonnancement des systèmes de production industriels.
+          Il permet d'exécuter automatiquement des algorithmes reconnus afin d'optimiser la performance
+          des ateliers selon leur structure (flowshop, jobshop, ligne d'assemblage, etc.).
         </p>
 
         <p style={{ fontSize: "1.05rem", lineHeight: "1.6", marginBottom: "1rem" }}>

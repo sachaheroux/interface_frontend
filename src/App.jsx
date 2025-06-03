@@ -111,7 +111,11 @@ function App() {
       {/* Contenu principal + Info */}
       <div className="mainContent">
         {/* Partie principale */}
-        <div className="contentArea">
+        <div className={
+          (systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage" || systeme === "Ligne d'assemblage mixte" || systeme === "Ligne de transfert" || systeme === "FMS") && algorithme
+            ? "contentArea" 
+            : "contentAreaFullWidth"
+        }>
           {!systeme && !algorithme && <WelcomeView />}
           {systeme && !algorithme && <SystemDescription system={systeme} />}
           {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTForm />}
@@ -142,7 +146,7 @@ function App() {
         </div>
 
         {/* Info à droite */}
-        {(systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage" || systeme === "Ligne d'assemblage mixte" || systeme === "Ligne de transfert" || systeme === "FMS") && (
+        {(systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage" || systeme === "Ligne d'assemblage mixte" || systeme === "Ligne de transfert" || systeme === "FMS") && algorithme && (
           <div className="infoPanel">
             {systeme === "Flowshop" && (
               <>

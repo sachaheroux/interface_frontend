@@ -3,18 +3,18 @@ import styles from './LigneAssemblagePLForm.module.css';
 
 const LigneAssemblagePLForm = () => {
   const [tasks, setTasks] = useState([
-    { id: 1, predecessors: '', duration: 20 },
-    { id: 2, predecessors: '1', duration: 6 },
-    { id: 3, predecessors: '2', duration: 5 },
-    { id: 4, predecessors: '', duration: 21 },
-    { id: 5, predecessors: '', duration: 8 },
-    { id: 6, predecessors: '', duration: 35 },
-    { id: 7, predecessors: '3,4', duration: 15 },
-    { id: 8, predecessors: '7', duration: 10 },
-    { id: 9, predecessors: '5,8', duration: 15 },
-    { id: 10, predecessors: '3', duration: 5 },
-    { id: 11, predecessors: '6,9', duration: 46 },
-    { id: 12, predecessors: '10,11', duration: 16 }
+    { id: 1, name: 'Tâche 1', predecessors: '', duration: 20 },
+    { id: 2, name: 'Tâche 2', predecessors: '1', duration: 6 },
+    { id: 3, name: 'Tâche 3', predecessors: '2', duration: 5 },
+    { id: 4, name: 'Tâche 4', predecessors: '', duration: 21 },
+    { id: 5, name: 'Tâche 5', predecessors: '', duration: 8 },
+    { id: 6, name: 'Tâche 6', predecessors: '', duration: 35 },
+    { id: 7, name: 'Tâche 7', predecessors: '3,4', duration: 15 },
+    { id: 8, name: 'Tâche 8', predecessors: '7', duration: 10 },
+    { id: 9, name: 'Tâche 9', predecessors: '5,8', duration: 15 },
+    { id: 10, name: 'Tâche 10', predecessors: '3', duration: 5 },
+    { id: 11, name: 'Tâche 11', predecessors: '6,10', duration: 46 },
+    { id: 12, name: 'Tâche 12', predecessors: '10,11', duration: 16 }
   ]);
   const [cycleTime, setCycleTime] = useState(70);
   const [timeUnit, setTimeUnit] = useState('minutes');
@@ -30,6 +30,7 @@ const LigneAssemblagePLForm = () => {
     const newId = Math.max(...tasks.map(t => t.id)) + 1;
     setTasks([...tasks, {
       id: newId,
+      name: `Tâche ${newId}`,
       predecessors: '',
       duration: 10
     }]);
@@ -60,6 +61,8 @@ const LigneAssemblagePLForm = () => {
       newTasks[taskIndex].duration = parseFloat(value) || 0;
     } else if (field === 'predecessors') {
       newTasks[taskIndex].predecessors = value;
+    } else if (field === 'name') {
+      newTasks[taskIndex].name = value;
     }
     setTasks(newTasks);
   };
@@ -255,14 +258,23 @@ const LigneAssemblagePLForm = () => {
           <div className={styles.tasksHeader}>
             <div className={styles.taskHeaderCell}>Tâche</div>
             <div className={styles.taskHeaderCell}>Durée<br/>({timeUnit})</div>
-            <div className={styles.taskHeaderCell}>Prédécesseurs immédiats</div>
+            <div className={styles.taskHeaderCell}>Prédécesseurs</div>
             <div className={styles.taskHeaderCell}>Disponibles</div>
           </div>
           
           {tasks.map((task, taskIndex) => (
             <div key={task.id} className={styles.compactTaskRow}>
               <div className={styles.taskCell}>
-                <div className={styles.taskNumber}>T{task.id}</div>
+                <div className={styles.taskNameContainer}>
+                  <div className={styles.taskNumber}>T{task.id}</div>
+                  <input
+                    type="text"
+                    value={task.name}
+                    onChange={(e) => updateTask(taskIndex, 'name', e.target.value)}
+                    className={styles.taskNameInput}
+                    placeholder={`Tâche ${task.id}`}
+                  />
+                </div>
               </div>
               
               <div className={styles.taskCell}>
@@ -283,7 +295,7 @@ const LigneAssemblagePLForm = () => {
                   value={task.predecessors}
                   onChange={(e) => updateTask(taskIndex, 'predecessors', e.target.value)}
                   className={styles.predecessorsInput}
-                  placeholder="Ex: 1,2 ou vide"
+                  placeholder="Ex: 1,2"
                   title="IDs des tâches prédécesseurs séparés par des virgules"
                 />
               </div>

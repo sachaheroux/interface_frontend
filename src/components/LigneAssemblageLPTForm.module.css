@@ -242,7 +242,7 @@
 
 .tasksHeader {
   display: grid;
-  grid-template-columns: 100px 120px 2fr 1fr;
+  grid-template-columns: 220px 120px 150px 120px;
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
   background: var(--primary-color);
@@ -260,7 +260,7 @@
 
 .compactTaskRow {
   display: grid;
-  grid-template-columns: 100px 120px 2fr 1fr;
+  grid-template-columns: 220px 120px 150px 120px;
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
@@ -283,6 +283,14 @@
   padding: var(--spacing-xs);
 }
 
+.taskNameContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
 .taskNumber {
   background: var(--primary-color);
   color: white;
@@ -292,6 +300,16 @@
   font-size: var(--font-size-sm);
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.taskNameInput {
+  flex: 1;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  height: 36px;
 }
 
 .durationInput {
@@ -329,6 +347,7 @@
 /* ===== FOCUS STATES ===== */
 .input:focus,
 .select:focus,
+.taskNameInput:focus,
 .durationInput:focus,
 .predecessorsInput:focus {
   outline: none;
@@ -563,8 +582,8 @@
   
   .tasksHeader,
   .compactTaskRow {
-    grid-template-columns: 80px 100px 150px 120px;
-    min-width: 450px;
+    grid-template-columns: 180px 100px 120px 100px;
+    min-width: 500px;
   }
   
   .durationInput {
@@ -585,11 +604,12 @@
   /* Vue compacte ultra-responsive */
   .tasksHeader,
   .compactTaskRow {
-    grid-template-columns: 60px 80px 120px 100px;
-    min-width: 360px;
+    grid-template-columns: 140px 80px 100px 80px;
+    min-width: 400px;
     font-size: 0.75rem;
   }
   
+  .taskNameInput,
   .durationInput,
   .predecessorsInput {
     font-size: 0.75rem;

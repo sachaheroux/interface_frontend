@@ -107,12 +107,17 @@ const FlowshopContraintesForm = () => {
     setError('');
     
     try {
+      // Format des données cohérent avec SPT/EDD
+      const formattedJobs = jobs.map(job =>
+        job.durations.map((duration, machineIndex) => [machineIndex, parseFloat(duration) || 0])
+      );
+      const formattedDueDates = jobs.map(job => parseFloat(job.dueDate) || 0);
+
       const requestData = {
-        jobs: jobs.map(job => ({
-          name: job.name,
-          durations: job.durations,
-          due_date: job.dueDate
-        })),
+        jobs_data: formattedJobs,
+        due_dates: formattedDueDates,
+        unite: timeUnit,
+        job_names: jobs.map(job => job.name),
         machine_names: machineNames
       };
 

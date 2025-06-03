@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./FlowshopSPTForm.module.css";
+import styles from "./FlowshopJohnsonModifieForm.module.css";
 
 function FlowshopJohnsonModifieForm() {
   const [jobs, setJobs] = useState([
@@ -14,10 +14,10 @@ function FlowshopJohnsonModifieForm() {
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
 
-  const API_URL = "https://interface-backend-1jgi.onrender.com";
+  const API_URL = "/api";
 
   const addJob = () => {
-    const newJob = machineNames.map(() => "1");
+    const newJob = Array.from({ length: machineNames.length }, () => "1");
     setJobs([...jobs, newJob]);
     setDueDates([...dueDates, "10"]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
@@ -47,6 +47,7 @@ function FlowshopJohnsonModifieForm() {
 
   const handleSubmit = () => {
     setError(null);
+    setResult(null);
     setGanttUrl(null);
 
     try {
@@ -98,146 +99,260 @@ function FlowshopJohnsonModifieForm() {
     if (!ganttUrl) return;
     const link = document.createElement("a");
     link.href = ganttUrl;
-    link.download = "diagramme_gantt.png";
+    link.download = "diagramme_gantt_johnson_modifie.png";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  const updateJobDuration = (jobIdx, machineIdx, value) => {
+    const newJobs = [...jobs];
+    newJobs[jobIdx][machineIdx] = value;
+    setJobs(newJobs);
+  };
+
+  const updateJobName = (jobIdx, value) => {
+    const newNames = [...jobNames];
+    newNames[jobIdx] = value;
+    setJobNames(newNames);
+  };
+
+  const updateDueDate = (jobIdx, value) => {
+    const newDates = [...dueDates];
+    newDates[jobIdx] = value;
+    setDueDates(newDates);
+  };
+
+  const updateMachineName = (machineIdx, value) => {
+    const newNames = [...machineNames];
+    newNames[machineIdx] = value;
+    setMachineNames(newNames);
+  };
+
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Planification Flowshop - Johnson Modifié</h2>
-
-      <div className={styles.unitSelector}>
-        <label>Unité de temps :</label>
-        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
-          <option value="minutes">minutes</option>
-          <option value="heures">heures</option>
-          <option value="jours">jours</option>
-        </select>
-      </div>
-
-      <div className={styles.buttonGroup}>
-        <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
-        <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
-        <button className={styles.button} onClick={addTaskToAllJobs}>+ Ajouter une machine</button>
-        <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une machine</button>
-      </div>
-
-      <h4 className={styles.subtitle}>Noms des machines</h4>
-      {machineNames.map((name, i) => (
-        <div key={i} className={styles.taskRow}>
-          Machine {i} :
-          <input
-            type="text"
-            value={name}
-            onChange={e => {
-              const newNames = [...machineNames];
-              newNames[i] = e.target.value;
-              setMachineNames(newNames);
-            }}
-          />
+    <div className="algorithmContent">
+      <div className={styles.algorithmContainer}>
+        {/* ===== HEADER ===== */}
+        <div className={styles.header}>
+          <h1 className={styles.title}>Algorithme de Johnson Modifié</h1>
+          <p className={styles.subtitle}>
+            Extension de l'algorithme de Johnson pour flowshops avec plus de 2 machines
+          </p>
         </div>
-      ))}
 
-      {jobs.map((job, jobIdx) => (
-        <div key={jobIdx} className={styles.jobBlock}>
-          <h4>Job {jobIdx}</h4>
-          <div className={styles.taskRow}>
-            Nom du job :
-            <input
-              type="text"
-              value={jobNames[jobIdx]}
-              onChange={e => {
-                const newNames = [...jobNames];
-                newNames[jobIdx] = e.target.value;
-                setJobNames(newNames);
-              }}
-            />
-          </div>
-          {job.map((duration, taskIdx) => (
-            <div key={taskIdx} className={styles.taskRow}>
-              {machineNames[taskIdx] || `Machine ${taskIdx}`} - Durée ({unite}) :
-              <input
-                type="text"
-                inputMode="decimal"
-                value={duration}
-                onChange={e => {
-                  const newJobs = [...jobs];
-                  newJobs[jobIdx][taskIdx] = e.target.value;
-                  setJobs(newJobs);
-                }}
-              />
+        {/* ===== CONFIGURATION ===== */}
+        <div className={`${styles.section} ${styles.configSection}`}>
+          <div className={styles.configRow}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="unite">Unité de temps</label>
+              <select 
+                id="unite"
+                value={unite} 
+                onChange={(e) => setUnite(e.target.value)} 
+                className={styles.select}
+              >
+                <option value="minutes">Minutes</option>
+                <option value="heures">Heures</option>
+                <option value="jours">Jours</option>
+              </select>
             </div>
-          ))}
-        </div>
-      ))}
-
-      <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
-      {dueDates.map((d, i) => (
-        <div key={i} className={styles.taskRow}>
-          Job {i} :
-          <input
-            type="text"
-            inputMode="decimal"
-            value={d}
-            onChange={e => {
-              const newDates = [...dueDates];
-              newDates[i] = e.target.value;
-              setDueDates(newDates);
-            }}
-          />
-        </div>
-      ))}
-
-      <button className={styles.submitButton} onClick={handleSubmit}>Lancer l'algorithme</button>
-
-      {error && <p className={styles.error}>{error}</p>}
-
-      {result && (
-        <div className={styles.results}>
-          <h3>Résultats</h3>
-          <div><strong>Séquence :</strong> {result.sequence.join(" → ")}</div>
-          <div><strong>Makespan :</strong> {result.makespan}</div>
-          <div><strong>Flowtime :</strong> {result.flowtime}</div>
-          <div><strong>Retard cumulé :</strong> {result.retard_cumule}</div>
-
-          <h4>Temps de complétion</h4>
-          <ul>
-            {Object.entries(result.completion_times).map(([job, time]) => (
-              <li key={job}>{job} : {time}</li>
-            ))}
-          </ul>
-
-          <h4>Planification</h4>
-          <ul>
-            {Object.entries(result.planification).map(([machine, tasks]) => (
-              <li key={machine}>
-                <strong>{machine}</strong>
-                <ul>
-                  {tasks.map((t, i) => (
-                    <li key={i}>Job {t.job} - Tâche {t.task} : {t.start} → {t.start + t.duration}</li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-
-          {ganttUrl && (
-            <div className={styles.ganttContainer}>
-              <h4>Diagramme de Gantt</h4>
-              <img
-                src={ganttUrl}
-                alt="Gantt"
-                className={styles.gantt}
-              />
-              <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-                Télécharger le diagramme de Gantt
+            
+            <div className={styles.actionButtons}>
+              <button className={styles.addButton} onClick={addJob}>
+                + Ajouter un job
+              </button>
+              <button 
+                className={styles.removeButton} 
+                onClick={removeJob}
+                disabled={jobs.length <= 1}
+              >
+                - Supprimer un job
+              </button>
+              <button className={styles.addButton} onClick={addTaskToAllJobs}>
+                + Ajouter une machine
+              </button>
+              <button 
+                className={styles.removeButton} 
+                onClick={removeTaskFromAllJobs}
+                disabled={machineNames.length <= 3}
+              >
+                - Supprimer une machine
               </button>
             </div>
-          )}
+          </div>
         </div>
-      )}
+
+        {/* ===== CONFIGURATION MACHINES ===== */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Configuration des machines</h3>
+          <div className={`${styles.machinesTable} ${styles.tableRow}`}>
+            {machineNames.map((name, i) => (
+              <div key={i} className={styles.machineInput}>
+                <label>{`Machine ${i}`}</label>
+                <input
+                  type="text"
+                  className={styles.input}
+                  value={name}
+                  onChange={(e) => updateMachineName(i, e.target.value)}
+                  placeholder={`Machine ${i}`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ===== TABLEAU PRINCIPAL ===== */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Matrice des temps de traitement</h3>
+          <div className={styles.dataTable}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th className={styles.jobNameHeader}>Nom du Job</th>
+                  {machineNames.map((name, i) => (
+                    <th key={i} className={styles.machineHeader}>
+                      Durée sur {name} ({unite})
+                    </th>
+                  ))}
+                  <th className={styles.dueDateHeader}>
+                    Date due ({unite})
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {jobs.map((job, jobIdx) => (
+                  <tr key={jobIdx} className={styles.jobRow}>
+                    <td className={styles.jobNameCell}>
+                      <input
+                        type="text"
+                        className={styles.jobNameInput}
+                        value={jobNames[jobIdx]}
+                        onChange={(e) => updateJobName(jobIdx, e.target.value)}
+                        placeholder={`Job ${jobIdx}`}
+                      />
+                    </td>
+                    {job.map((duration, machineIdx) => (
+                      <td key={machineIdx}>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          className={styles.durationInput}
+                          value={duration}
+                          onChange={(e) => updateJobDuration(jobIdx, machineIdx, e.target.value)}
+                          placeholder="0"
+                        />
+                      </td>
+                    ))}
+                    <td className={styles.dueDateCell}>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        className={styles.dueDateInput}
+                        value={dueDates[jobIdx]}
+                        onChange={(e) => updateDueDate(jobIdx, e.target.value)}
+                        placeholder="0"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* ===== BOUTON CALCUL ===== */}
+        <div className={styles.section}>
+          <button className={styles.calculateButton} onClick={handleSubmit}>
+            Calculer l'ordonnancement Johnson Modifié
+          </button>
+        </div>
+
+        {/* ===== GESTION ERREURS ===== */}
+        {error && (
+          <div className={styles.errorSection}>
+            <div className={styles.errorBox}>
+              <span className={styles.errorIcon}>⚠️</span>
+              <span className={styles.errorText}>{error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* ===== RÉSULTATS ===== */}
+        {result && (
+          <div className={`${styles.section} ${styles.resultsSection}`}>
+            <h3 className={styles.resultsTitle}>Résultats de l'optimisation</h3>
+            
+            {/* Séquence optimale */}
+            <div className={styles.sequenceSection}>
+              <div className={styles.sequenceTitle}>Séquence calculée par l'algo</div>
+              <div className={styles.sequenceValue}>
+                {result.sequence.join(" → ")}
+              </div>
+            </div>
+
+            {/* Métriques principales */}
+            <div className={styles.metricsGrid}>
+              <div className={styles.metric}>
+                <div className={styles.metricValue}>{result.makespan}</div>
+                <div className={styles.metricLabel}>Makespan ({unite})</div>
+              </div>
+              <div className={styles.metric}>
+                <div className={styles.metricValue}>{result.flowtime}</div>
+                <div className={styles.metricLabel}>Flowtime ({unite})</div>
+              </div>
+              <div className={styles.metric}>
+                <div className={styles.metricValue}>{result.retard_cumule}</div>
+                <div className={styles.metricLabel}>Retard cumulé ({unite})</div>
+              </div>
+            </div>
+
+            {/* Détails de planification */}
+            <div className={styles.planificationDetails}>
+              <h4>Temps de complétion</h4>
+              <div className={styles.tasksList}>
+                {Object.entries(result.completion_times).map(([job, time]) => (
+                  <div key={job} className={styles.taskBadge}>
+                    {job}: {time} {unite}
+                  </div>
+                ))}
+              </div>
+
+              <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
+              {Object.entries(result.planification).map(([machine, tasks]) => (
+                <div key={machine} className={styles.machineDetail}>
+                  <strong>{machine}</strong>
+                  <div className={styles.tasksList}>
+                    {tasks.map((t, i) => (
+                      <div key={i} className={styles.taskBadge}>
+                        {jobNames[t.job] || `Job ${t.job}`}: {t.start} → {t.start + t.duration}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ===== DIAGRAMME DE GANTT ===== */}
+        {ganttUrl && (
+          <div className={`${styles.section} ${styles.chartSection}`}>
+            <div className={styles.chartHeader}>
+              <h3>Diagramme de Gantt</h3>
+            </div>
+            <div className={styles.chartContainer}>
+              <img
+                src={ganttUrl}
+                alt="Diagramme de Gantt - Johnson Modifié"
+                className={styles.chart}
+              />
+              <button className={styles.downloadButton} onClick={handleDownloadGantt}>
+                Télécharger le gantt
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

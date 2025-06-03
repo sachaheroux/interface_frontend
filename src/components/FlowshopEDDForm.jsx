@@ -117,8 +117,6 @@ function FlowshopEDDForm() {
 
       {/* Section Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
-        <h2 className={styles.sectionTitle}>Configuration</h2>
-        
         <div className={styles.configRow}>
           <div className={styles.inputGroup}>
             <label htmlFor="unite">Unité de temps</label>
@@ -252,7 +250,7 @@ function FlowshopEDDForm() {
 
       {/* Bouton de calcul */}
       <button className={styles.calculateButton} onClick={handleSubmit}>
-        Lancer l'algorithme EDD
+        Calculer l'ordonnancement EDD
       </button>
 
       {/* Gestion des erreurs */}
@@ -328,7 +326,7 @@ function FlowshopEDDForm() {
             />
           </div>
           <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-            Télécharger le diagramme de Gantt
+            Télécharger le gantt
           </button>
         </div>
       )}

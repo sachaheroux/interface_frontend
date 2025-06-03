@@ -161,16 +161,16 @@ function FlowshopSPTForm() {
           
           <div className={styles.actionButtons}>
             <button className={styles.addButton} onClick={addJob}>
-              <span>+</span> Job
+              Ajouter un job
             </button>
             <button className={styles.removeButton} onClick={removeJob} disabled={jobs.length <= 1}>
-              <span>−</span> Job
+              Retirer un job
             </button>
             <button className={styles.addButton} onClick={addTaskToAllJobs}>
-              <span>+</span> Machine
+              Ajouter une machine
             </button>
             <button className={styles.removeButton} onClick={removeTaskFromAllJobs} disabled={jobs[0].length <= 1}>
-              <span>−</span> Machine
+              Retirer une machine
             </button>
           </div>
         </div>
@@ -178,7 +178,7 @@ function FlowshopSPTForm() {
 
       {/* Tableau des noms de machines */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>🏭 Configuration des machines</h3>
+        <h3 className={styles.sectionTitle}>Configuration des machines</h3>
         <div className={styles.machinesTable}>
           <div className={styles.tableRow}>
             {machineNames.map((name, i) => (
@@ -203,7 +203,7 @@ function FlowshopSPTForm() {
 
       {/* Tableau principal des jobs */}
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>⚙️ Matrice des temps de traitement</h3>
+        <h3 className={styles.sectionTitle}>Matrice des temps de traitement</h3>
         <div className={styles.dataTable}>
           <table className={styles.table}>
             <thead>
@@ -289,7 +289,7 @@ function FlowshopSPTForm() {
 
         {showAdvanced && (
           <div className={styles.advancedSection}>
-            <h4 className={styles.advancedTitle}>🕒 Paramètres temporels</h4>
+            <h4 className={styles.advancedTitle}>Paramètres temporels</h4>
             <div className={styles.advancedGrid}>
               <div className={styles.inputGroup}>
                 <label>Début de l'agenda</label>
@@ -382,7 +382,7 @@ function FlowshopSPTForm() {
           onClick={handleSubmit} 
           className={styles.calculateButton}
         >
-          🚀 Calculer l'ordonnancement SPT
+          Calculer l'ordonnancement SPT
         </button>
       </div>
 
@@ -390,7 +390,7 @@ function FlowshopSPTForm() {
       {error && (
         <div className={styles.errorSection}>
           <div className={styles.errorBox}>
-            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorIcon}>!</span>
             <span className={styles.errorText}>{error}</span>
           </div>
         </div>
@@ -399,7 +399,7 @@ function FlowshopSPTForm() {
       {/* Résultats */}
       {result && (
         <div className={styles.resultsSection}>
-          <h3 className={styles.resultsTitle}>📊 Résultats de l'optimisation</h3>
+          <h3 className={styles.resultsTitle}>Résultats de l'optimisation</h3>
           
           <div className={styles.metricsGrid}>
             <div className={styles.metric}>
@@ -438,9 +438,9 @@ function FlowshopSPTForm() {
       {ganttUrl && (
         <div className={styles.chartSection}>
           <div className={styles.chartHeader}>
-            <h3>📈 Diagramme de Gantt</h3>
+            <h3>Diagramme de Gantt</h3>
             <button onClick={handleDownloadGantt} className={styles.downloadButton}>
-              💾 Télécharger
+              Télécharger
             </button>
           </div>
           <div className={styles.chartContainer}>
@@ -452,7 +452,7 @@ function FlowshopSPTForm() {
       {/* Agenda réel */}
       {agendaData && (
         <div className={styles.agendaSection}>
-          <h3 className={styles.agendaTitle}>🗓️ Agenda réel de l'usine</h3>
+          <h3 className={styles.agendaTitle}>Agenda réel de l'usine</h3>
           <AgendaGrid agendaData={agendaData} />
         </div>
       )}

@@ -1,19 +1,16 @@
 /* ===== VARIABLES GLOBALES ===== */
 :root {
-  --primary-color: #6366f1;
-  --primary-hover: #4f46e5;
-  --secondary-color: #94a3b8;
-  --success-color: #10b981;
-  --success-hover: #059669;
-  --danger-color: #f87171;
-  --danger-hover: #ef4444;
-  --warning-color: #fbbf24;
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #93c5fd;
+  --primary-dark: #1d4ed8;
+  --accent-color: #1e40af;
   
   --background-main: #ffffff;
   --background-section: #f8fafc;
   --background-hover: #f1f5f9;
   --border-color: #e5e7eb;
-  --border-focus: #a78bfa;
+  --border-focus: #60a5fa;
   --text-primary: #374151;
   --text-secondary: #6b7280;
   --text-muted: #9ca3af;
@@ -92,7 +89,7 @@
 
 /* ===== CONFIGURATION ===== */
 .configSection {
-  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   border: 2px solid var(--primary-color);
   text-align: center;
 }
@@ -100,7 +97,7 @@
 .configRow {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-lg);
   align-items: center;
 }
 
@@ -109,7 +106,6 @@
   flex-direction: column;
   gap: var(--spacing-sm);
   align-items: center;
-  width: 100%;
 }
 
 .inputGroup label {
@@ -121,72 +117,76 @@
 }
 
 .select {
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   border: 2px solid var(--border-color);
   border-radius: var(--border-radius);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   background: white;
-  min-width: 200px;
+  min-width: 150px;
   font-weight: 500;
 }
 
 .actionButtons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-sm);
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
 }
 
 /* ===== BOUTONS ===== */
 .addButton {
-  background: var(--success-color);
+  background: var(--primary-color);
   color: white;
   border: none;
-  padding: var(--spacing-lg) var(--spacing-xl);
+  padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-base);
-  min-height: 50px;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .addButton:hover {
-  background: var(--success-hover);
+  background: var(--primary-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .removeButton {
-  background: var(--danger-color);
-  color: white;
+  background: var(--primary-light);
+  color: var(--primary-dark);
   border: none;
-  padding: var(--spacing-lg) var(--spacing-xl);
+  padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-base);
-  min-height: 50px;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .removeButton:hover:not(:disabled) {
-  background: var(--danger-hover);
+  background: var(--primary-color);
+  color: white;
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .removeButton:disabled {
   background: var(--text-muted);
+  color: white;
   cursor: not-allowed;
   transform: none;
 }
@@ -212,7 +212,7 @@
 }
 
 .downloadButton {
-  background: var(--warning-color);
+  background: var(--primary-color);
   color: white;
   border: none;
   padding: var(--spacing-sm) var(--spacing-md);
@@ -224,7 +224,7 @@
 }
 
 .downloadButton:hover {
-  background: #f59e0b;
+  background: var(--primary-hover);
   transform: translateY(-1px);
 }
 
@@ -284,7 +284,7 @@
 }
 
 .jobNameHeader {
-  background: var(--success-color) !important;
+  background: var(--primary-dark) !important;
   min-width: 150px;
 }
 
@@ -293,7 +293,7 @@
 }
 
 .dueDateHeader {
-  background: var(--warning-color) !important;
+  background: var(--primary-dark) !important;
   min-width: 120px;
 }
 
@@ -306,12 +306,12 @@
 }
 
 .jobNameCell {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(59, 130, 246, 0.1);
   font-weight: 500;
 }
 
 .dueDateCell {
-  background: rgba(251, 191, 36, 0.1);
+  background: rgba(59, 130, 246, 0.1);
 }
 
 /* ===== INPUTS ===== */
@@ -337,7 +337,7 @@
 .timeInput:focus {
   outline: none;
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
 .durationInput,
@@ -462,8 +462,8 @@
 
 .errorBox {
   background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: var(--danger-color);
+  border: 1px solid var(--primary-light);
+  color: var(--primary-dark);
   padding: var(--spacing-lg);
   border-radius: var(--border-radius);
   display: flex;
@@ -615,7 +615,7 @@
   }
   
   .actionButtons {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .metricsGrid {
@@ -652,5 +652,9 @@
   .calculateButton {
     padding: var(--spacing-md) var(--spacing-lg);
     font-size: var(--font-size-base);
+  }
+  
+  .actionButtons {
+    grid-template-columns: 1fr;
   }
 }

@@ -655,8 +655,8 @@
   
   .jobsHeader,
   .compactJobRow {
-    grid-template-columns: 150px 100px 180px 60px;
-    min-width: 490px;
+    grid-template-columns: 180px 100px 180px 60px;
+    min-width: 520px;
   }
   
   .compactSelect {
@@ -695,23 +695,30 @@
   /* Vue compacte ultra-responsive */
   .jobsHeader,
   .compactJobRow {
-    grid-template-columns: 120px 80px 150px 50px;
-    min-width: 400px;
+    grid-template-columns: 140px 80px 150px 50px;
+    min-width: 420px;
     font-size: 0.75rem;
   }
   
   .compactInput {
     font-size: 0.75rem;
+    height: 32px;
   }
   
   .dueDateInput {
     width: 70px;
     font-size: 0.75rem;
+    height: 32px;
   }
   
   .compactSelect {
     min-width: 60px;
     max-width: 80px;
+  }
+  
+  .jobNumber {
+    font-size: 0.7rem;
+    padding: 2px 6px;
   }
 }
 
@@ -725,7 +732,7 @@
 
 .jobsHeader {
   display: grid;
-  grid-template-columns: 1fr 120px 2fr 80px;
+  grid-template-columns: 200px 120px 2fr 80px;
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
   background: var(--primary-color);
@@ -743,7 +750,7 @@
 
 .compactJobRow {
   display: grid;
-  grid-template-columns: 1fr 120px 2fr 80px;
+  grid-template-columns: 200px 120px 2fr 80px;
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
@@ -771,13 +778,44 @@
   font-weight: 600;
 }
 
-.compactInput {
+.jobNameContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sm);
   width: 100%;
+}
+
+.jobNumber {
+  background: var(--primary-color);
+  color: white;
   padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.compactInput {
+  flex: 1;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  height: 36px;
+}
+
+.dueDateInput {
+  width: 100px;
+  padding: var(--spacing-sm);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   font-size: var(--font-size-sm);
   text-align: center;
+  font-weight: 500;
+  height: 36px;
 }
 
 .compactSelect {
@@ -861,32 +899,4 @@
 .jobActionsCompact {
   display: flex;
   justify-content: center;
-}
-
-.jobNameContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-xs);
-  width: 100%;
-}
-
-.jobNumber {
-  background: var(--primary-color);
-  color: white;
-  padding: 2px 8px;
-  border-radius: var(--border-radius);
-  font-weight: 600;
-  font-size: 0.75rem;
-  white-space: nowrap;
-}
-
-.dueDateInput {
-  width: 100px;
-  padding: var(--spacing-sm);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  font-size: var(--font-size-sm);
-  text-align: center;
-  font-weight: 500;
 } 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./App.css";
 import WelcomeView from "./components/WelcomeView";
 import SystemDescription from "./components/SystemDescription";
 import AlgorithmFormAndResult from "./components/AlgorithmFormAndResult";
@@ -61,22 +62,16 @@ function App() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#eef2f8", fontFamily: "Segoe UI, sans-serif" }}>
+    <div className="appContainer">
       {/* Menu gauche */}
-      <div style={{
-        width: "300px",
-        background: "#ffffff",
-        padding: "2rem",
-        borderRight: "1px solid #e0e0e0",
-        boxShadow: "2px 0 5px rgba(0,0,0,0.05)"
-      }}>
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <img src="/logo.png" alt="Logo" style={{ width: "180px", marginBottom: "1.5rem" }} />
-          <h1 style={{ fontSize: "1.4rem", color: "#1e3a8a", margin: 0 }}>Planification</h1>
+      <div className="sidebar">
+        <div className="sidebarHeader">
+          <img src="/logo.png" alt="Logo" className="logo" />
+          <h1 className="appTitle">Modélisation des systèmes industriels</h1>
         </div>
 
-        <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ fontWeight: "600", fontSize: "0.95rem", marginBottom: "0.5rem", display: "block" }}>
+        <div className="selectGroup">
+          <label className="selectLabel">
             Système de production
           </label>
           <select
@@ -85,13 +80,7 @@ function App() {
               setSysteme(e.target.value);
               setAlgorithme("");
             }}
-            style={{
-              width: "100%",
-              padding: "0.5rem",
-              borderRadius: "0.375rem",
-              border: "1px solid #ccc",
-              background: "#f9f9f9"
-            }}
+            className="select"
           >
             <option value="">-- Choisir un système --</option>
             {Object.keys(systemes).map((s) => (
@@ -101,20 +90,14 @@ function App() {
         </div>
 
         {systeme && (
-          <div>
-            <label style={{ fontWeight: "600", fontSize: "0.95rem", marginBottom: "0.5rem", display: "block" }}>
+          <div className="selectGroup">
+            <label className="selectLabel">
               Algorithme
             </label>
             <select
               value={algorithme}
               onChange={(e) => setAlgorithme(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.5rem",
-                borderRadius: "0.375rem",
-                border: "1px solid #ccc",
-                background: "#f9f9f9"
-              }}
+              className="select"
             >
               <option value="">-- Choisir un algorithme --</option>
               {systemes[systeme].map((a) => (
@@ -126,15 +109,9 @@ function App() {
       </div>
 
       {/* Contenu principal + Info */}
-      <div style={{ flex: 1, display: "flex", padding: "2rem", background: "#f9fafc" }}>
+      <div className="mainContent">
         {/* Partie principale */}
-        <div style={{
-          flex: 1,
-          background: "#fff",
-          padding: "2rem",
-          borderRadius: "1rem",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.05)"
-        }}>
+        <div className="contentArea">
           {!systeme && !algorithme && <WelcomeView />}
           {systeme && !algorithme && <SystemDescription system={systeme} />}
           {systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTForm />}
@@ -166,7 +143,7 @@ function App() {
 
         {/* Info à droite */}
         {(systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage" || systeme === "Ligne d'assemblage mixte" || systeme === "Ligne de transfert" || systeme === "FMS") && (
-          <div style={{ marginLeft: "2rem", minWidth: "400px" }}>
+          <div className="infoPanel">
             {systeme === "Flowshop" && (
               <>
                 {algorithme === "SPT" && <FlowshopSPTInfo />}

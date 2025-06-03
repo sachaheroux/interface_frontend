@@ -1,42 +1,195 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* ===== VARIABLES GLOBALES ===== */
+:root {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #93c5fd;
+  --primary-dark: #1d4ed8;
+  
+  --background-main: #ffffff;
+  --background-section: #f8fafc;
+  --background-hover: #f1f5f9;
+  --border-color: #e5e7eb;
+  --border-focus: #60a5fa;
+  --text-primary: #374151;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  
+  --border-radius: 0.5rem;
+  --border-radius-lg: 0.75rem;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 2.5rem;
+}
+
+/* ===== LAYOUT PRINCIPAL ===== */
+.appContainer {
+  display: flex;
+  min-height: 100vh;
+  background: var(--background-section);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 320px;
+  background: var(--background-main);
+  padding: var(--spacing-xl);
+  border-right: 2px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+.sidebarHeader {
   text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--background-section);
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+  width: 180px;
+  margin-bottom: var(--spacing-lg);
+  transition: all 0.2s ease;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  transform: scale(1.02);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.appTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* ===== SELECTS ===== */
+.selectGroup {
+  margin-bottom: var(--spacing-lg);
+}
+
+.selectLabel {
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.select {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--background-main);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.select:hover {
+  border-color: var(--primary-light);
+  background: var(--background-hover);
+}
+
+.select option {
+  padding: var(--spacing-sm);
+  background: var(--background-main);
+  color: var(--text-primary);
+}
+
+/* ===== CONTENU PRINCIPAL ===== */
+.mainContent {
+  flex: 1;
+  display: flex;
+  padding: var(--spacing-xl);
+  background: var(--background-section);
+  gap: var(--spacing-xl);
+}
+
+.contentArea {
+  flex: 1;
+  background: var(--background-main);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+}
+
+.infoPanel {
+  min-width: 400px;
+  background: var(--background-main);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 280px;
+    padding: var(--spacing-lg);
   }
-  to {
-    transform: rotate(360deg);
+  
+  .mainContent {
+    flex-direction: column;
+    padding: var(--spacing-lg);
+  }
+  
+  .infoPanel {
+    min-width: auto;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@media (max-width: 768px) {
+  .appContainer {
+    flex-direction: column;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+  
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid var(--border-color);
+  }
+  
+  .sidebarHeader {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .selectGroup {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .mainContent {
+    padding: var(--spacing-md);
+  }
+  
+  .contentArea,
+  .infoPanel {
+    padding: var(--spacing-lg);
+  }
 }

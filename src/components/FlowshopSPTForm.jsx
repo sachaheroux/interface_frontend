@@ -161,16 +161,16 @@ function FlowshopSPTForm() {
           
           <div className={styles.actionButtons}>
             <button className={styles.addButton} onClick={addJob}>
-              Ajouter un job
+              + Ajouter un job
             </button>
             <button className={styles.removeButton} onClick={removeJob} disabled={jobs.length <= 1}>
-              Retirer un job
+              - Supprimer un job
             </button>
             <button className={styles.addButton} onClick={addTaskToAllJobs}>
-              Ajouter une machine
+              + Ajouter une machine
             </button>
             <button className={styles.removeButton} onClick={removeTaskFromAllJobs} disabled={jobs[0].length <= 1}>
-              Retirer une machine
+              - Supprimer une tâche
             </button>
           </div>
         </div>

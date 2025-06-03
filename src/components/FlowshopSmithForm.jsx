@@ -74,6 +74,35 @@ const FlowshopSmithForm = () => {
 
       const data = await response.json();
       console.log("Données reçues:", data);
+      console.log("completion_times:", data.completion_times);
+      console.log("planification:", data.planification);
+      
+      // Si l'API ne fournit pas de temps de complétion ou planification, on les simule
+      if (!data.completion_times && data.sequence) {
+        const simulatedCompletionTimes = {};
+        const simulatedPlanification = {
+          "Machine 0": []
+        };
+        
+        let currentTime = 0;
+        data.sequence.forEach((jobName, index) => {
+          const jobIndex = jobs.findIndex(job => job.name === jobName);
+          const duration = parseFloat(jobs[jobIndex]?.duration) || 0;
+          
+          simulatedCompletionTimes[jobName] = currentTime + duration;
+          simulatedPlanification["Machine 0"].push({
+            job: jobIndex,
+            start: currentTime,
+            duration: duration
+          });
+          
+          currentTime += duration;
+        });
+        
+        data.completion_times = simulatedCompletionTimes;
+        data.planification = simulatedPlanification;
+      }
+      
       setResult(data);
 
       // Récupération du diagramme de Gantt

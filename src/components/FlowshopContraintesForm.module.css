@@ -486,43 +486,40 @@
   padding: var(--spacing-lg);
   border-radius: var(--border-radius);
   border: 1px solid var(--border-color);
-  margin-top: var(--spacing-xl);
 }
 
 .planificationDetails h4 {
-  color: var(--primary-color);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-lg) 0;
   font-size: var(--font-size-lg);
-  font-weight: 600;
-  margin: 0 0 var(--spacing-md) 0;
-  text-align: left;
 }
 
 .tasksList {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
+  margin-top: var(--spacing-sm);
 }
 
 .taskBadge {
-  background: var(--primary-light);
-  color: var(--primary-dark);
-  padding: var(--spacing-xs) var(--spacing-md);
-  border-radius: var(--border-radius);
+  background: var(--primary-color);
+  color: white;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 9999px;
   font-size: var(--font-size-sm);
   font-weight: 500;
-  border: 1px solid var(--primary-color);
 }
 
 .machineDetail {
   margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--background-section);
+  border-radius: var(--border-radius);
 }
 
 .machineDetail strong {
   color: var(--primary-color);
   font-size: var(--font-size-base);
-  display: block;
-  margin-bottom: var(--spacing-sm);
 }
 
 /* ===== GRAPHIQUES ===== */

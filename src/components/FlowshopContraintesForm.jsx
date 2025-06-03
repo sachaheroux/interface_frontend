@@ -368,16 +368,7 @@ const FlowshopContraintesForm = () => {
                 {result.makespan || 0}
               </div>
               <div className={styles.metricLabel}>
-                Makespan ({timeUnit})
-              </div>
-            </div>
-            
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>
-                {result.flowtime ? (result.flowtime * jobs.length).toFixed(2) : 0}
-              </div>
-              <div className={styles.metricLabel}>
-                Temps de flux total ({timeUnit})
+                Makespan (temps total) ({timeUnit})
               </div>
             </div>
             
@@ -386,7 +377,7 @@ const FlowshopContraintesForm = () => {
                 {result.flowtime ? result.flowtime.toFixed(2) : '0.00'}
               </div>
               <div className={styles.metricLabel}>
-                Temps de flux moyen ({timeUnit})
+                Flowtime (temps moyen) ({timeUnit})
               </div>
             </div>
             
@@ -395,41 +386,23 @@ const FlowshopContraintesForm = () => {
                 {result.retard_cumule || 0}
               </div>
               <div className={styles.metricLabel}>
-                Retard total ({timeUnit})
-              </div>
-            </div>
-            
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>
-                {result.completion_times && jobs.length > 0
-                  ? Object.entries(result.completion_times).filter(([jobName, completionTime]) => {
-                      const job = jobs.find(j => j.name === jobName);
-                      return job && completionTime > job.dueDate;
-                    }).length
-                  : 0
-                }
-              </div>
-              <div className={styles.metricLabel}>
-                Jobs en retard
+                Retard cumulé ({timeUnit})
               </div>
             </div>
           </div>
 
-          {/* Détails de la planification */}
+          {/* Temps de complétion */}
           <div className={styles.planificationDetails}>
-            <h4>Détails de la planification</h4>
-            {result.planification && Object.entries(result.planification).map(([machine, tasks]) => (
-              <div key={machine} className={styles.machineDetail}>
-                <strong>{machine}:</strong>
-                <div className={styles.tasksList}>
-                  {Array.isArray(tasks) && tasks.map((task, index) => (
-                    <span key={index} className={styles.taskBadge}>
-                      {task.job} ({task.start}-{task.end} {timeUnit})
-                    </span>
-                  ))}
-                </div>
+            <h4>Temps de complétion</h4>
+            {result.completion_times && (
+              <div className={styles.completionList}>
+                {Object.entries(result.completion_times).map(([job, time]) => (
+                  <div key={job} className={styles.completionItem}>
+                    <strong>{job}:</strong> {time} {timeUnit}
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}

@@ -553,6 +553,25 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* ===== TEMPS DE COMPLÉTION ===== */
+.completionList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.completionItem {
+  background: var(--background-section);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  font-size: var(--font-size-sm);
+}
+
+.completionItem strong {
+  color: var(--primary-color);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .algorithmContainer {

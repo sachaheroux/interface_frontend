@@ -1,0 +1,670 @@
+/* ===== VARIABLES GLOBALES ===== */
+:root {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #93c5fd;
+  --primary-dark: #1d4ed8;
+  --accent-color: #1e40af;
+  
+  --background-main: #ffffff;
+  --background-section: #f8fafc;
+  --background-hover: #f1f5f9;
+  --border-color: #e5e7eb;
+  --border-focus: #60a5fa;
+  --text-primary: #374151;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  
+  --border-radius: 0.5rem;
+  --border-radius-lg: 0.75rem;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 2.5rem;
+  
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+}
+
+/* ===== CONTENEUR PRINCIPAL ===== */
+/* Le composant s'affiche maintenant directement dans contentArea */
+/* On ajoute du padding au niveau du wrapper dans App.jsx via algorithmContent */
+
+/* ===== HEADER ===== */
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 2px solid var(--background-section);
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: var(--background-section);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-lg) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* ===== CONFIGURATION ===== */
+.configSection {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 2px solid var(--primary-color);
+  text-align: center;
+}
+
+.configRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  align-items: center;
+  width: 100%;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.inputGroup label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.select {
+  padding: var(--spacing-sm);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  background: white;
+  min-width: 150px;
+  font-weight: 500;
+}
+
+.input {
+  padding: var(--spacing-sm);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  background: white;
+  min-width: 120px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.actionButtons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+  width: 100%;
+  max-width: 400px;
+  justify-self: center;
+  margin: 0 auto;
+}
+
+/* ===== BOUTONS ===== */
+.addButton {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  min-height: 45px;
+  white-space: nowrap;
+  width: 100%;
+  min-width: 160px;
+}
+
+.addButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.removeButton {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  min-height: 45px;
+  white-space: nowrap;
+  width: 100%;
+  min-width: 160px;
+}
+
+.removeButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.removeButton:disabled {
+  background: var(--text-muted);
+  color: white;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== CONFIGURATION TÂCHES COMPACTE ===== */
+.compactTasksContainer {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow-x: auto;
+}
+
+.tasksHeader {
+  display: grid;
+  grid-template-columns: 220px 120px 150px 120px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+}
+
+.taskHeaderCell {
+  text-align: center;
+  padding: var(--spacing-xs);
+}
+
+.compactTaskRow {
+  display: grid;
+  grid-template-columns: 220px 120px 150px 120px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.compactTaskRow:hover {
+  background: var(--background-hover);
+}
+
+.compactTaskRow:last-child {
+  border-bottom: none;
+}
+
+.taskCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs);
+}
+
+.taskNameContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.taskNumber {
+  background: var(--primary-color);
+  color: white;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.taskNameInput {
+  flex: 1;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  height: 36px;
+}
+
+.durationInput {
+  width: 100px;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  font-weight: 500;
+  height: 36px;
+}
+
+.predecessorsInput {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  height: 36px;
+}
+
+.availablePredecessors {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-xs);
+  background: var(--background-section);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+/* ===== FOCUS STATES ===== */
+.input:focus,
+.select:focus,
+.taskNameInput:focus,
+.durationInput:focus,
+.predecessorsInput:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+/* ===== GESTION ERREURS ===== */
+.errorSection {
+  margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+}
+
+.errorBox {
+  background: #fef2f2;
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.errorIcon {
+  font-size: var(--font-size-lg);
+}
+
+.errorText {
+  font-weight: 500;
+}
+
+/* ===== RÉSULTATS ===== */
+.resultsSection {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 2px solid var(--primary-color);
+}
+
+.resultsTitle {
+  color: var(--primary-color);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin: 0 0 var(--spacing-lg) 0;
+  text-align: center;
+}
+
+/* ===== MÉTRIQUES ===== */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.metric {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.metric:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.metricValue {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-xs);
+}
+
+.metricLabel {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ===== DÉTAILS DES TÂCHES ===== */
+.taskDetails {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  margin-bottom: var(--spacing-xl);
+}
+
+.taskDetails h4 {
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-lg) 0;
+  font-size: var(--font-size-lg);
+}
+
+.taskDetailsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.taskDetailCard {
+  background: var(--background-section);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.taskDetailCard:hover {
+  background: var(--background-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.taskDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.taskDetailHeader strong {
+  color: var(--primary-color);
+  font-size: var(--font-size-base);
+}
+
+.taskDuration {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 9999px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.taskDetailInfo {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.taskDetailInfo div {
+  margin-bottom: var(--spacing-xs);
+}
+
+.taskDetailInfo div:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== CHEMIN CRITIQUE ===== */
+.criticalPath {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  margin-bottom: var(--spacing-xl);
+}
+
+.criticalPath h4 {
+  color: var(--error-color);
+  margin: 0 0 var(--spacing-lg) 0;
+  font-size: var(--font-size-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.criticalPath h4::before {
+  content: "⚡";
+  font-size: var(--font-size-lg);
+}
+
+.criticalPathInfo {
+  color: var(--text-primary);
+}
+
+.criticalTasks {
+  background: #fef2f2;
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+  font-size: var(--font-size-lg);
+}
+
+.criticalNote {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* ===== GRAPHIQUES ===== */
+.chartSection {
+  background: white;
+  border: 1px solid var(--border-color);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.chartHeader h3 {
+  color: var(--primary-color);
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin: 0;
+}
+
+.chartContainer {
+  text-align: center;
+}
+
+.chart {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.downloadButton {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: var(--font-size-base);
+  width: 100%;
+  max-width: 300px;
+  margin: var(--spacing-lg) auto 0 auto;
+  display: block;
+}
+
+.downloadButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .actionButtons {
+    grid-template-columns: 1fr;
+  }
+  
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .taskDetailsList {
+    grid-template-columns: 1fr;
+  }
+  
+  .chartHeader {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    align-items: stretch;
+  }
+  
+  .taskDetailHeader {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: stretch;
+  }
+  
+  /* Vue compacte responsive */
+  .compactTasksContainer {
+    overflow-x: auto;
+  }
+  
+  .tasksHeader,
+  .compactTaskRow {
+    grid-template-columns: 180px 100px 120px 100px;
+    min-width: 500px;
+  }
+  
+  .durationInput {
+    width: 90px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: var(--font-size-xl);
+  }
+  
+  .calculateButton {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+  }
+  
+  /* Vue compacte ultra-responsive */
+  .tasksHeader,
+  .compactTaskRow {
+    grid-template-columns: 140px 80px 100px 80px;
+    min-width: 400px;
+    font-size: 0.75rem;
+  }
+  
+  .taskNameInput,
+  .durationInput,
+  .predecessorsInput {
+    font-size: 0.75rem;
+    height: 32px;
+  }
+  
+  .durationInput {
+    width: 70px;
+  }
+  
+  .taskNumber {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
+}
+
+/* ===== BOUTON DE CALCUL ===== */
+.calculateButton {
+  width: calc(100% - 4rem);
+  margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+  color: white;
+  border: none;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calculateButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+} 

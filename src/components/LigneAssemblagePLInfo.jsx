@@ -2,7 +2,7 @@ function LigneAssemblagePLInfo() {
   return (
     <div style={{
       background: "#f1f5f9",
-      borderLeft: "4px solid #10b981",
+      borderLeft: "4px solid #3b82f6",
       borderRadius: "0.75rem",
       padding: "1.5rem",
       marginLeft: "2rem",
@@ -10,10 +10,10 @@ function LigneAssemblagePLInfo() {
       color: "#1e293b",
       fontSize: "0.95rem"
     }}>
-      <h3 style={{ marginTop: 0, color: "#059669", fontSize: "1.2rem" }}>PL - Programmation Linéaire</h3>
+      <h3 style={{ marginTop: 0, color: "#3b82f6", fontSize: "1.2rem" }}>PL - Programmation Linéaire</h3>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Principe de l'algorithme</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Principe de l'algorithme</h4>
         <p style={{ marginBottom: "0.5rem" }}>
           L'algorithme PL utilise la <strong>programmation linéaire en nombres entiers</strong> pour 
           trouver la solution <strong>mathématiquement optimale</strong> à l'équilibrage de ligne d'assemblage. 
@@ -22,7 +22,7 @@ function LigneAssemblagePLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Modélisation mathématique</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Modélisation mathématique</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Variables binaires :</strong> y[i,j] = 1 si tâche i assignée à station j</li>
           <li><strong>Fonction objective :</strong> Minimiser le nombre de stations</li>
@@ -32,7 +32,7 @@ function LigneAssemblagePLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Fonctionnement</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Fonctionnement</h4>
         <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li>Formuler le problème comme un programme linéaire en nombres entiers</li>
           <li>Définir les variables binaires d'assignation</li>
@@ -43,7 +43,7 @@ function LigneAssemblagePLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages majeurs</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages majeurs</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Optimalité garantie :</strong> Solution mathématiquement optimale</li>
           <li><strong>Nombre minimal de stations :</strong> Pas de gaspillage</li>
@@ -54,7 +54,7 @@ function LigneAssemblagePLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Contraintes modélisées</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Contraintes modélisées</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Assignation unique :</strong> Chaque tâche dans une seule station</li>
           <li><strong>Temps de cycle :</strong> Somme des temps ≤ temps de cycle</li>
@@ -64,7 +64,7 @@ function LigneAssemblagePLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Métriques avancées</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Métriques avancées</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Efficacité :</strong> Utilisation réelle vs théorique</li>
           <li><strong>Écart à l'optimal :</strong> Distance du minimum théorique</li>
@@ -74,7 +74,7 @@ function LigneAssemblagePLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Inconvénients</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Inconvénients</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Temps de calcul :</strong> Plus long que les heuristiques</li>
           <li><strong>Complexité :</strong> Exponentielle avec le nombre de tâches</li>
@@ -84,7 +84,7 @@ function LigneAssemblagePLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Comparaison avec les heuristiques</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Comparaison avec les heuristiques</h4>
         <div style={{ fontSize: "0.9rem" }}>
           <div style={{ marginBottom: "0.5rem" }}>
             <strong>PL vs COMSOAL :</strong>
@@ -100,7 +100,7 @@ function LigneAssemblagePLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Cas d'utilisation idéaux</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Cas d'utilisation idéaux</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li>Ligne d'assemblage à fort enjeu économique</li>
           <li>Besoin de garantie d'optimalité</li>
@@ -111,7 +111,7 @@ function LigneAssemblagePLInfo() {
       </div>
 
       <div style={{ marginBottom: "0" }}>
-        <h4 style={{ color: "#059669", marginBottom: "0.5rem", fontSize: "1rem" }}>Conseils d'utilisation</h4>
+        <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Conseils d'utilisation</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li>Utilisez pour valider et comparer avec COMSOAL/LPT</li>
           <li>Surveillez le statut d'optimisation (Optimal/Feasible)</li>

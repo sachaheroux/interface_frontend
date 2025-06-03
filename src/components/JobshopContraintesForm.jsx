@@ -231,6 +231,23 @@ const JobshopContraintesForm = () => {
             >
               - Supprimer un job
             </button>
+            
+            <button
+              onClick={addMachine}
+              className={styles.addButton}
+              type="button"
+            >
+              + Ajouter une machine
+            </button>
+            
+            <button
+              onClick={removeMachine}
+              disabled={machineNames.length <= 1}
+              className={styles.removeButton}
+              type="button"
+            >
+              - Supprimer une machine
+            </button>
           </div>
         </div>
       </div>
@@ -254,24 +271,6 @@ const JobshopContraintesForm = () => {
               </div>
             ))}
           </div>
-        </div>
-        <div className={styles.actionButtons} style={{ marginTop: 'var(--spacing-lg)' }}>
-          <button
-            onClick={addMachine}
-            className={styles.addButton}
-            type="button"
-          >
-            + Ajouter une machine
-          </button>
-          
-          <button
-            onClick={removeMachine}
-            disabled={machineNames.length <= 1}
-            className={styles.removeButton}
-            type="button"
-          >
-            - Supprimer une machine
-          </button>
         </div>
       </div>
 

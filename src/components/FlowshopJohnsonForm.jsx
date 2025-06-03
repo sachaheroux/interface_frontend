@@ -276,15 +276,15 @@ function FlowshopJohnsonForm() {
           <div className={styles.metricsGrid}>
             <div className={styles.metric}>
               <div className={styles.metricValue}>{result.makespan}</div>
-              <div className={styles.metricLabel}>Makespan</div>
+              <div className={styles.metricLabel}>Makespan ({unite})</div>
             </div>
             <div className={styles.metric}>
               <div className={styles.metricValue}>{result.flowtime}</div>
-              <div className={styles.metricLabel}>Flowtime</div>
+              <div className={styles.metricLabel}>Flowtime ({unite})</div>
             </div>
             <div className={styles.metric}>
               <div className={styles.metricValue}>{result.retard_cumule}</div>
-              <div className={styles.metricLabel}>Retard cumulé</div>
+              <div className={styles.metricLabel}>Retard cumulé ({unite})</div>
             </div>
           </div>
 

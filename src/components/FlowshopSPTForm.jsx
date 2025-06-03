@@ -402,6 +402,21 @@ function FlowshopSPTForm() {
           <div className={styles.resultsSection}>
             <h3 className={styles.resultsTitle}>Résultats de l'optimisation</h3>
             
+            {/* Séquence optimale */}
+            <div className={styles.sequenceSection}>
+              <div className={styles.sequenceTitle}>Séquence optimale</div>
+              <div className={styles.sequenceValue}>
+                {(() => {
+                  // Extraire la séquence à partir de la première machine
+                  const firstMachine = Object.keys(result.planification)[0];
+                  const sequence = result.planification[firstMachine]
+                    .sort((a, b) => a.start - b.start)
+                    .map(task => jobNames[task.job] || `Job ${task.job}`);
+                  return sequence.join(" → ");
+                })()}
+              </div>
+            </div>
+            
             <div className={styles.metricsGrid}>
               <div className={styles.metric}>
                 <div className={styles.metricValue}>{result.makespan}</div>
@@ -409,11 +424,11 @@ function FlowshopSPTForm() {
               </div>
               <div className={styles.metric}>
                 <div className={styles.metricValue}>{result.flowtime.toFixed(2)}</div>
-                <div className={styles.metricLabel}>Temps de cycle moyen</div>
+                <div className={styles.metricLabel}>Temps de cycle moyen ({unite})</div>
               </div>
               <div className={styles.metric}>
                 <div className={styles.metricValue}>{result.retard_cumule}</div>
-                <div className={styles.metricLabel}>Retard cumulé</div>
+                <div className={styles.metricLabel}>Retard cumulé ({unite})</div>
               </div>
             </div>
 

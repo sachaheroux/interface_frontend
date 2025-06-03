@@ -269,19 +269,34 @@ function FlowshopEDDForm() {
           <div className={`${styles.section} ${styles.resultsSection}`}>
             <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
             
+            {/* Séquence optimale */}
+            <div className={styles.sequenceSection}>
+              <div className={styles.sequenceTitle}>Séquence optimale</div>
+              <div className={styles.sequenceValue}>
+                {(() => {
+                  // Extraire la séquence à partir de la première machine
+                  const firstMachine = Object.keys(result.planification)[0];
+                  const sequence = result.planification[firstMachine]
+                    .sort((a, b) => a.start - b.start)
+                    .map(task => `Job ${task.job}`);
+                  return sequence.join(" → ");
+                })()}
+              </div>
+            </div>
+            
             {/* Métriques principales */}
             <div className={styles.metricsGrid}>
               <div className={styles.metric}>
                 <div className={styles.metricValue}>{result.makespan}</div>
-                <div className={styles.metricLabel}>Makespan</div>
+                <div className={styles.metricLabel}>Makespan ({unite})</div>
               </div>
               <div className={styles.metric}>
                 <div className={styles.metricValue}>{result.flowtime}</div>
-                <div className={styles.metricLabel}>Flowtime</div>
+                <div className={styles.metricLabel}>Flowtime ({unite})</div>
               </div>
               <div className={styles.metric}>
                 <div className={styles.metricValue}>{result.retard_cumule}</div>
-                <div className={styles.metricLabel}>Retard cumulé</div>
+                <div className={styles.metricLabel}>Retard cumulé ({unite})</div>
               </div>
             </div>
 

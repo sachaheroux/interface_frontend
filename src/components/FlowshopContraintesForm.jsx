@@ -3,9 +3,9 @@ import styles from './FlowshopContraintesForm.module.css';
 
 const FlowshopContraintesForm = () => {
   const [jobs, setJobs] = useState([
-    { name: 'Job 1', durations: [8, 6], dueDate: '2024-01-15' },
-    { name: 'Job 2', durations: [4, 5], dueDate: '2024-01-18' },
-    { name: 'Job 3', durations: [7, 9], dueDate: '2024-01-20' }
+    { name: 'Job 1', durations: [8, 6], dueDate: 10 },
+    { name: 'Job 2', durations: [4, 5], dueDate: 15 },
+    { name: 'Job 3', durations: [7, 9], dueDate: 20 }
   ]);
   const [numMachines, setNumMachines] = useState(2);
   const [timeUnit, setTimeUnit] = useState('heures');
@@ -15,7 +15,7 @@ const FlowshopContraintesForm = () => {
   const [isCalculating, setIsCalculating] = useState(false);
 
   const adjustMachineCount = (newCount) => {
-    if (newCount >= 2 && newCount <= 10) {
+    if (newCount >= 1 && newCount <= 10) {
       setNumMachines(newCount);
       
       const newNames = Array.from({ length: newCount }, (_, i) => 
@@ -36,7 +36,7 @@ const FlowshopContraintesForm = () => {
     setJobs([...jobs, {
       name: `Job ${newJobNumber}`,
       durations: Array(numMachines).fill(0),
-      dueDate: ''
+      dueDate: 0
     }]);
   };
 
@@ -220,7 +220,7 @@ const FlowshopContraintesForm = () => {
             
             <button
               onClick={() => adjustMachineCount(numMachines - 1)}
-              disabled={numMachines <= 2}
+              disabled={numMachines <= 1}
               className={styles.removeButton}
               type="button"
             >
@@ -265,7 +265,7 @@ const FlowshopContraintesForm = () => {
                     Durée sur {name} ({timeUnit})
                   </th>
                 ))}
-                <th className={styles.dueDateHeader}>Date due</th>
+                <th className={styles.dueDateHeader}>Date due ({timeUnit})</th>
               </tr>
             </thead>
             <tbody>
@@ -295,10 +295,13 @@ const FlowshopContraintesForm = () => {
                   ))}
                   <td className={styles.dueDateCell}>
                     <input
-                      type="date"
+                      type="number"
                       value={job.dueDate}
-                      onChange={(e) => updateJob(jobIndex, 'dueDate', e.target.value)}
+                      onChange={(e) => updateJob(jobIndex, 'dueDate', parseFloat(e.target.value) || 0)}
                       className={styles.dueDateInput}
+                      min="0"
+                      step="0.1"
+                      placeholder="0"
                     />
                   </td>
                 </tr>

@@ -647,6 +647,30 @@
     gap: var(--spacing-md);
     align-items: stretch;
   }
+  
+  /* Vue compacte responsive */
+  .compactJobsContainer {
+    overflow-x: auto;
+  }
+  
+  .jobsHeader,
+  .compactJobRow {
+    grid-template-columns: 50px 120px 80px 150px 60px;
+    min-width: 460px;
+  }
+  
+  .compactSelect {
+    width: 50px;
+  }
+  
+  .compactNumberInput {
+    width: 40px;
+  }
+  
+  .taskCompact {
+    flex-direction: column;
+    gap: 1px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -662,4 +686,148 @@
   .actionButtons {
     gap: var(--spacing-xs);
   }
+  
+  /* Vue compacte ultra-responsive */
+  .jobsHeader,
+  .compactJobRow {
+    grid-template-columns: 40px 100px 70px 120px 50px;
+    min-width: 380px;
+    font-size: 0.75rem;
+  }
+  
+  .compactInput {
+    font-size: 0.75rem;
+  }
+}
+
+/* ===== CONFIGURATION JOBS COMPACTE ===== */
+.compactJobsContainer {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow-x: auto;
+}
+
+.jobsHeader {
+  display: grid;
+  grid-template-columns: 60px 1fr 100px 2fr 80px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+}
+
+.jobHeaderCell {
+  text-align: center;
+  padding: var(--spacing-xs);
+}
+
+.compactJobRow {
+  display: grid;
+  grid-template-columns: 60px 1fr 100px 2fr 80px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.compactJobRow:hover {
+  background: var(--background-hover);
+}
+
+.compactJobRow:last-child {
+  border-bottom: none;
+}
+
+.jobCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs);
+}
+
+.jobCell strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.compactInput {
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.compactSelect {
+  width: 60px;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.75rem;
+  background: white;
+}
+
+.compactNumberInput {
+  width: 50px;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.tasksCompact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  justify-content: center;
+}
+
+.taskCompact {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--background-section);
+  padding: 2px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.miniButton {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.miniButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: scale(1.1);
+}
+
+.miniButton:disabled {
+  background: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.jobActionsCompact {
+  display: flex;
+  justify-content: center;
 } 

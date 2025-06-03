@@ -199,7 +199,6 @@ const JobshopSPTForm = () => {
 
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
-        <h2 className={styles.sectionTitle}>Configuration</h2>
         <div className={styles.configRow}>
           <div className={styles.inputGroup}>
             <label htmlFor="timeUnit">Unité de temps</label>
@@ -276,93 +275,100 @@ const JobshopSPTForm = () => {
         </div>
       </div>
 
-      {/* Jobs */}
+      {/* Jobs - Vue compacte tabulaire */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Configuration des jobs</h2>
+        <h2 className={styles.sectionTitle}>Configuration des jobs ({jobs.length} jobs)</h2>
         
-        {jobs.map((job, jobIndex) => (
-          <div key={jobIndex} className={styles.jobCard}>
-            <div className={styles.jobHeader}>
-              <h3 className={styles.jobTitle}>Job {jobIndex + 1}</h3>
-              <div className={styles.jobActions}>
-                <button
-                  onClick={() => addTaskToJob(jobIndex)}
-                  className={styles.smallButton}
-                  type="button"
-                  title="Ajouter une tâche"
-                >
-                  +
-                </button>
+        <div className={styles.compactJobsContainer}>
+          <div className={styles.jobsHeader}>
+            <div className={styles.jobHeaderCell}>Job</div>
+            <div className={styles.jobHeaderCell}>Nom</div>
+            <div className={styles.jobHeaderCell}>Date due</div>
+            <div className={styles.jobHeaderCell}>Tâches</div>
+            <div className={styles.jobHeaderCell}>Actions</div>
+          </div>
+          
+          {jobs.map((job, jobIndex) => (
+            <div key={jobIndex} className={styles.compactJobRow}>
+              <div className={styles.jobCell}>
+                <strong>J{jobIndex + 1}</strong>
               </div>
-            </div>
-
-            <div className={styles.jobNameGroup}>
-              <label className={styles.jobNameLabel}>Nom du job :</label>
-              <input
-                type="text"
-                value={job.name}
-                onChange={(e) => updateJobName(jobIndex, e.target.value)}
-                className={styles.jobNameInput}
-                placeholder={`Job ${jobIndex + 1}`}
-              />
-            </div>
-
-            <div className={styles.dueDateGroup}>
-              <label className={styles.dueDateLabel}>Date due ({timeUnit}) :</label>
-              <input
-                type="number"
-                value={job.dueDate}
-                onChange={(e) => updateJobDueDate(jobIndex, e.target.value)}
-                className={styles.dueDateInput}
-                min="0"
-                step="0.1"
-                placeholder="0"
-              />
-            </div>
-
-            <div className={styles.tasksContainer}>
-              <div className={styles.tasksTitle}>Tâches ({job.tasks.length})</div>
               
-              {job.tasks.map((task, taskIndex) => (
-                <div key={taskIndex} className={styles.taskRow}>
-                  <div className={styles.taskLabel}>Tâche {taskIndex + 1}</div>
-                  
-                  <select
-                    value={task.machine}
-                    onChange={(e) => updateTask(jobIndex, taskIndex, 'machine', e.target.value)}
-                    className={styles.machineSelect}
-                  >
-                    {machineNames.map((name, index) => (
-                      <option key={index} value={index}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                  
-                  <input
-                    type="number"
-                    value={task.duration}
-                    onChange={(e) => updateTask(jobIndex, taskIndex, 'duration', e.target.value)}
-                    className={styles.durationInput}
-                    min="0"
-                    step="0.1"
-                    placeholder="Durée"
-                  />
-                  
+              <div className={styles.jobCell}>
+                <input
+                  type="text"
+                  value={job.name}
+                  onChange={(e) => updateJobName(jobIndex, e.target.value)}
+                  className={styles.compactInput}
+                  placeholder={`Job ${jobIndex + 1}`}
+                />
+              </div>
+              
+              <div className={styles.jobCell}>
+                <input
+                  type="number"
+                  value={job.dueDate}
+                  onChange={(e) => updateJobDueDate(jobIndex, e.target.value)}
+                  className={styles.compactNumberInput}
+                  min="0"
+                  step="0.1"
+                  placeholder="0"
+                />
+              </div>
+              
+              <div className={styles.jobCell}>
+                <div className={styles.tasksCompact}>
+                  {job.tasks.map((task, taskIndex) => (
+                    <div key={taskIndex} className={styles.taskCompact}>
+                      <select
+                        value={task.machine}
+                        onChange={(e) => updateTask(jobIndex, taskIndex, 'machine', e.target.value)}
+                        className={styles.compactSelect}
+                      >
+                        {machineNames.map((name, index) => (
+                          <option key={index} value={index}>
+                            M{index}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        value={task.duration}
+                        onChange={(e) => updateTask(jobIndex, taskIndex, 'duration', e.target.value)}
+                        className={styles.compactNumberInput}
+                        min="0"
+                        step="0.1"
+                        placeholder="0"
+                      />
+                      <button
+                        onClick={() => removeTaskFromJob(jobIndex, taskIndex)}
+                        disabled={job.tasks.length <= 1}
+                        className={styles.miniButton}
+                        type="button"
+                        title="Supprimer cette tâche"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className={styles.jobCell}>
+                <div className={styles.jobActionsCompact}>
                   <button
-                    onClick={() => removeTaskFromJob(jobIndex, taskIndex)}
-                    disabled={job.tasks.length <= 1}
-                    className={styles.smallButton}
+                    onClick={() => addTaskToJob(jobIndex)}
+                    className={styles.miniButton}
                     type="button"
-                    title="Supprimer cette tâche"
+                    title="Ajouter une tâche"
                   >
-                    -
+                    +
                   </button>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Gestion d'erreur */}

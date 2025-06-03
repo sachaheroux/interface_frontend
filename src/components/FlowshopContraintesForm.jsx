@@ -1,243 +1,441 @@
-import { useState } from "react";
-import styles from "./FlowshopSPTForm.module.css";
+import React, { useState } from 'react';
+import styles from './FlowshopContraintesForm.module.css';
 
-function FlowshopContraintesForm() {
+const FlowshopContraintesForm = () => {
   const [jobs, setJobs] = useState([
-    ["3", "2"],
-    ["2", "4"]
+    { name: 'Job 1', durations: [8, 6], dueDate: '2024-01-15' },
+    { name: 'Job 2', durations: [4, 5], dueDate: '2024-01-18' },
+    { name: 'Job 3', durations: [7, 9], dueDate: '2024-01-20' }
   ]);
-  const [dueDates, setDueDates] = useState(["10", "9"]);
-  const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
-  const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1"]);
-  const [unite, setUnite] = useState("heures");
+  const [numMachines, setNumMachines] = useState(2);
+  const [timeUnit, setTimeUnit] = useState('heures');
+  const [machineNames, setMachineNames] = useState(['Machine 0', 'Machine 1']);
   const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [ganttUrl, setGanttUrl] = useState(null);
+  const [error, setError] = useState('');
+  const [isCalculating, setIsCalculating] = useState(false);
 
-  const API_URL = "https://interface-backend-1jgi.onrender.com";
+  const adjustMachineCount = (newCount) => {
+    if (newCount >= 2 && newCount <= 10) {
+      setNumMachines(newCount);
+      
+      const newNames = Array.from({ length: newCount }, (_, i) => 
+        machineNames[i] || `Machine ${i}`
+      );
+      setMachineNames(newNames);
+      
+      setJobs(jobs.map(job => ({
+        ...job,
+        durations: job.durations.slice(0, newCount).concat(
+          Array(Math.max(0, newCount - job.durations.length)).fill(0)  )
+      })));
+    }
+  };
 
   const addJob = () => {
-    const newJob = machineNames.map(() => "1");
-    setJobs([...jobs, newJob]);
-    setDueDates([...dueDates, "10"]);
-    setJobNames([...jobNames, `Job ${jobs.length}`]);
+    const newJobNumber = jobs.length + 1;
+    setJobs([...jobs, {
+      name: `Job ${newJobNumber}`,
+      durations: Array(numMachines).fill(0),
+      dueDate: ''
+    }]);
   };
 
   const removeJob = () => {
     if (jobs.length > 1) {
       setJobs(jobs.slice(0, -1));
-      setDueDates(dueDates.slice(0, -1));
-      setJobNames(jobNames.slice(0, -1));
     }
   };
 
-  const addTask = () => {
-    setJobs(jobs.map(job => [...job, "1"]));
-    setMachineNames([...machineNames, `Machine ${machineNames.length}`]);
-  };
-
-  const removeTask = () => {
-    if (machineNames.length > 1) {
-      setJobs(jobs.map(job => job.slice(0, -1)));
-      setMachineNames(machineNames.slice(0, -1));
+  const updateJob = (index, field, value) => {
+    const newJobs = [...jobs];
+    if (field === 'name' || field === 'dueDate') {
+      newJobs[index][field] = value;
+    } else if (field === 'duration') {
+      const [jobIndex, machineIndex] = value;
+      newJobs[jobIndex].durations[machineIndex] = parseFloat(value.duration) || 0;
     }
+    setJobs(newJobs);
   };
 
-  const handleSubmit = () => {
-    setError(null);
-    setGanttUrl(null);
+  const updateJobDuration = (jobIndex, machineIndex, value) => {
+    const newJobs = [...jobs];
+    newJobs[jobIndex].durations[machineIndex] = parseFloat(value) || 0;
+    setJobs(newJobs);
+  };
 
+  const updateMachineName = (index, name) => {
+    const newNames = [...machineNames];
+    newNames[index] = name;
+    setMachineNames(newNames);
+  };
+
+  const extractSequenceFromSchedule = (planification) => {
+    if (!planification || typeof planification !== 'object') return [];
+
+    const allTasks = [];
+    Object.entries(planification).forEach(([machineName, tasks]) => {
+      if (Array.isArray(tasks)) {
+        tasks.forEach(task => {
+          if (task && typeof task === 'object' && task.job) {
+            allTasks.push({
+              job: task.job,
+              start: task.start || 0,
+              machine: machineName
+            });
+          }
+        });
+      }
+    });
+
+    allTasks.sort((a, b) => a.start - b.start);
+    
+    const sequence = [];
+    const addedJobs = new Set();
+    
+    allTasks.forEach(task => {
+      if (!addedJobs.has(task.job)) {
+        sequence.push(task.job);
+        addedJobs.add(task.job);
+      }
+    });
+
+    return sequence;
+  };
+
+  const calculateOptimization = async () => {
+    setIsCalculating(true);
+    setError('');
+    
     try {
-      const formattedJobs = jobs.map(job =>
-        job.map((duration, i) => [i, parseFloat(duration.replace(",", "."))])
-      );
-      const formattedDueDates = dueDates.map(d => parseFloat(d.replace(",", ".")));
-
-      const payload = {
-        jobs_data: formattedJobs,
-        due_dates: formattedDueDates,
-        unite,
-        job_names: jobNames,
+      const requestData = {
+        jobs: jobs.map(job => ({
+          name: job.name,
+          durations: job.durations,
+          due_date: job.dueDate
+        })),
         machine_names: machineNames
       };
 
-      fetch(`${API_URL}/contraintes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      })
-        .then(res => {
-          if (!res.ok) return res.json().then(err => { throw new Error(err.detail); });
-          return res.json();
-        })
-        .then(data => {
-          setResult(data);
-          return fetch(`${API_URL}/contraintes/gantt`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-        })
-        .then(res => {
-          if (!res.ok) throw new Error("Erreur Gantt API");
-          return res.blob();
-        })
-        .then(blob => {
-          const url = URL.createObjectURL(blob);
-          setGanttUrl(url);
-        })
-        .catch(err => setError(err.message));
-    } catch (e) {
-      setError("Erreur dans les données saisies.");
+      console.log("Données envoyées:", requestData);
+
+      const response = await fetch('http://localhost:8000/contraintes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Données reçues:", data);
+      setResult(data);
+
+      if (data.gantt_chart) {
+        setTimeout(() => {
+          const img = document.getElementById('gantt-chart-img');
+          if (img) {
+            img.src = `data:image/png;base64,${data.gantt_chart}`;
+          }
+        }, 100);
+      }
+
+    } catch (err) {
+      console.error('Erreur:', err);
+      setError(`Erreur lors du calcul: ${err.message}`);
+    } finally {
+      setIsCalculating(false);
     }
   };
 
-  const handleDownloadGantt = () => {
-    if (!ganttUrl) return;
-    const link = document.createElement("a");
-    link.href = ganttUrl;
-    link.download = "diagramme_gantt.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadGanttChart = () => {
+    if (result && result.gantt_chart) {
+      const link = document.createElement('a');
+      link.href = `data:image/png;base64,${result.gantt_chart}`;
+      link.download = 'diagramme_gantt_contraintes.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Planification Flowshop - Contraintes (CP)</h2>
-
-      <div className={styles.unitSelector}>
-        <label>Unité de temps :</label>
-        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
-          <option value="minutes">minutes</option>
-          <option value="heures">heures</option>
-          <option value="jours">jours</option>
-        </select>
+    <div className={styles.algorithmContainer}>
+      {/* Header */}
+      <div className={styles.header}>
+        <h1 className={styles.title}>Programmation par Contraintes</h1>
+        <p className={styles.subtitle}>
+          Optimisation avancée utilisant la programmation par contraintes pour résoudre le problème de flowshop
+        </p>
       </div>
 
-      <div className={styles.buttonGroup}>
-        <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
-        <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
-        <button className={styles.button} onClick={addTask}>+ Ajouter une tâche</button>
-        <button className={styles.button} onClick={removeTask}>- Supprimer une tâche</button>
-      </div>
-
-      <h4 className={styles.subtitle}>Noms des machines</h4>
-      {machineNames.map((name, i) => (
-        <div key={i} className={styles.taskRow}>
-          Machine {i} :
-          <input
-            type="text"
-            value={name}
-            onChange={e => {
-              const newNames = [...machineNames];
-              newNames[i] = e.target.value;
-              setMachineNames(newNames);
-            }}
-          />
-        </div>
-      ))}
-
-      {jobs.map((job, jobIdx) => (
-        <div key={jobIdx} className={styles.jobBlock}>
-          <h4>Job {jobIdx}</h4>
-          <div className={styles.taskRow}>
-            Nom du job :
-            <input
-              type="text"
-              value={jobNames[jobIdx]}
-              onChange={e => {
-                const newNames = [...jobNames];
-                newNames[jobIdx] = e.target.value;
-                setJobNames(newNames);
-              }}
-            />
+      {/* Configuration */}
+      <div className={`${styles.section} ${styles.configSection}`}>
+        <h2 className={styles.sectionTitle}>Configuration</h2>
+        <div className={styles.configRow}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="timeUnit">Unité de temps</label>
+            <select
+              id="timeUnit"
+              value={timeUnit}
+              onChange={(e) => setTimeUnit(e.target.value)}
+              className={styles.select}
+            >
+              <option value="heures">Heures</option>
+              <option value="minutes">Minutes</option>
+              <option value="jours">Jours</option>
+            </select>
           </div>
-          {job.map((duration, opIdx) => (
-            <div key={opIdx} className={styles.taskRow}>
-              {machineNames[opIdx] || `Machine ${opIdx}`} - Durée ({unite}) :
-              <input
-                type="text"
-                inputMode="decimal"
-                value={duration}
-                onChange={e => {
-                  const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx] = e.target.value;
-                  setJobs(newJobs);
-                }}
-              />
-            </div>
-          ))}
+          
+          <div className={styles.actionButtons}>
+            <button
+              onClick={addJob}
+              className={styles.addButton}
+              type="button"
+            >
+              + Ajouter un job
+            </button>
+            
+            <button
+              onClick={removeJob}
+              disabled={jobs.length <= 1}
+              className={styles.removeButton}
+              type="button"
+            >
+              - Supprimer un job
+            </button>
+            
+            <button
+              onClick={() => adjustMachineCount(numMachines + 1)}
+              disabled={numMachines >= 10}
+              className={styles.addButton}
+              type="button"
+            >
+              + Ajouter une machine
+            </button>
+            
+            <button
+              onClick={() => adjustMachineCount(numMachines - 1)}
+              disabled={numMachines <= 2}
+              className={styles.removeButton}
+              type="button"
+            >
+              - Supprimer une machine
+            </button>
+          </div>
         </div>
-      ))}
+      </div>
 
-      <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
-      {dueDates.map((d, i) => (
-        <div key={i} className={styles.taskRow}>
-          Job {i} :
-          <input
-            type="text"
-            inputMode="decimal"
-            value={d}
-            onChange={e => {
-              const newDates = [...dueDates];
-              newDates[i] = e.target.value;
-              setDueDates(newDates);
-            }}
-          />
-        </div>
-      ))}
-
-      <button className={styles.submitButton} onClick={handleSubmit}>Lancer l'algorithme</button>
-
-      {error && <p className={styles.error}>{error}</p>}
-
-      {result && (
-        <div className={styles.results}>
-          <h3>Résultats</h3>
-          <div><strong>Makespan :</strong> {result.makespan}</div>
-          <div><strong>Flowtime :</strong> {result.flowtime}</div>
-          <div><strong>Retard cumulé :</strong> {result.retard_cumule}</div>
-
-          <h4>Temps de complétion</h4>
-          <ul>
-            {Object.entries(result.completion_times).map(([job, time]) => (
-              <li key={job}>{job} : {time}</li>
+      {/* Configuration des machines */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Noms des machines</h2>
+        <div className={styles.machinesTable}>
+          <div className={styles.tableRow}>
+            {machineNames.map((name, index) => (
+              <div key={index} className={styles.machineInput}>
+                <label htmlFor={`machine-${index}`}>Machine {index}</label>
+                <input
+                  id={`machine-${index}`}
+                  type="text"
+                  value={name}
+                  onChange={(e) => updateMachineName(index, e.target.value)}
+                  className={styles.input}
+                  placeholder={`Machine ${index}`}
+                />
+              </div>
             ))}
-          </ul>
+          </div>
+        </div>
+      </div>
 
-          <h4>Planification</h4>
-          <ul>
-            {Object.entries(result.planification).map(([machine, tasks]) => (
-              <li key={machine}>
-                <strong>{machine}</strong>
-                <ul>
-                  {tasks.map((t, i) => (
-                    <li key={i}>Job {t.job} - Tâche {t.task} : {t.start} → {t.start + t.duration}</li>
+      {/* Tableau des données */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Matrice des temps de traitement</h2>
+        <div className={styles.dataTable}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.jobNameHeader}>Job</th>
+                {machineNames.map((name, index) => (
+                  <th key={index} className={styles.machineHeader}>
+                    Durée sur {name} ({timeUnit})
+                  </th>
+                ))}
+                <th className={styles.dueDateHeader}>Date due</th>
+              </tr>
+            </thead>
+            <tbody>
+              {jobs.map((job, jobIndex) => (
+                <tr key={jobIndex} className={styles.jobRow}>
+                  <td className={styles.jobNameCell}>
+                    <input
+                      type="text"
+                      value={job.name}
+                      onChange={(e) => updateJob(jobIndex, 'name', e.target.value)}
+                      className={styles.jobNameInput}
+                      placeholder={`Job ${jobIndex + 1}`}
+                    />
+                  </td>
+                  {job.durations.map((duration, machineIndex) => (
+                    <td key={machineIndex}>
+                      <input
+                        type="number"
+                        value={duration}
+                        onChange={(e) => updateJobDuration(jobIndex, machineIndex, e.target.value)}
+                        className={styles.durationInput}
+                        min="0"
+                        step="0.1"
+                        placeholder="0"
+                      />
+                    </td>
                   ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
+                  <td className={styles.dueDateCell}>
+                    <input
+                      type="date"
+                      value={job.dueDate}
+                      onChange={(e) => updateJob(jobIndex, 'dueDate', e.target.value)}
+                      className={styles.dueDateInput}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-          {ganttUrl && (
-            <div className={styles.ganttContainer}>
-              <h4>Diagramme de Gantt</h4>
-              <img
-                src={ganttUrl}
-                alt="Gantt"
-                className={styles.gantt}
-              />
-              <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-                Télécharger le diagramme de Gantt
-              </button>
+      {/* Gestion d'erreur */}
+      {error && (
+        <div className={styles.errorSection}>
+          <div className={styles.errorBox}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorText}>{error}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Bouton de calcul */}
+      <button
+        onClick={calculateOptimization}
+        disabled={isCalculating}
+        className={styles.calculateButton}
+        type="button"
+      >
+        {isCalculating ? 'Calcul en cours...' : 'Calculer l\'optimisation'}
+      </button>
+
+      {/* Résultats */}
+      {result && (
+        <div className={`${styles.section} ${styles.resultsSection}`}>
+          <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
+
+          {/* Séquence calculée */}
+          <div className={styles.sequenceSection}>
+            <h3 className={styles.sequenceTitle}>Séquence optimale calculée</h3>
+            <div className={styles.sequenceValue}>
+              {extractSequenceFromSchedule(result.planification).join(' → ') || 'Non disponible'}
             </div>
-          )}
+          </div>
+
+          {/* Métriques */}
+          <div className={styles.metricsGrid}>
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.metrics?.makespan || 0}
+              </div>
+              <div className={styles.metricLabel}>
+                Makespan ({timeUnit})
+              </div>
+            </div>
+            
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.metrics?.total_flow_time || 0}
+              </div>
+              <div className={styles.metricLabel}>
+                Temps de flux total ({timeUnit})
+              </div>
+            </div>
+            
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.metrics?.average_flow_time 
+                  ? result.metrics.average_flow_time.toFixed(2)
+                  : '0.00'
+                }
+              </div>
+              <div className={styles.metricLabel}>
+                Temps de flux moyen ({timeUnit})
+              </div>
+            </div>
+            
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.metrics?.total_tardiness || 0}
+              </div>
+              <div className={styles.metricLabel}>
+                Retard total ({timeUnit})
+              </div>
+            </div>
+            
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.metrics?.tardy_jobs || 0}
+              </div>
+              <div className={styles.metricLabel}>
+                Jobs en retard
+              </div>
+            </div>
+          </div>
+
+          {/* Détails de la planification */}
+          <div className={styles.planificationDetails}>
+            <h4>Détails de la planification</h4>
+            {result.planification && Object.entries(result.planification).map(([machine, tasks]) => (
+              <div key={machine} className={styles.machineDetail}>
+                <strong>{machine}:</strong>
+                <div className={styles.tasksList}>
+                  {Array.isArray(tasks) && tasks.map((task, index) => (
+                    <span key={index} className={styles.taskBadge}>
+                      {task.job} ({task.start}-{task.end} {timeUnit})
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Diagramme de Gantt */}
+      {result && result.gantt_chart && (
+        <div className={`${styles.section} ${styles.chartSection}`}>
+          <div className={styles.chartHeader}>
+            <h3>Diagramme de Gantt</h3>
+          </div>
+          <div className={styles.chartContainer}>
+            <img
+              id="gantt-chart-img"
+              alt="Diagramme de Gantt"
+              className={styles.chart}
+            />
+            <button
+              onClick={downloadGanttChart}
+              className={styles.downloadButton}
+              type="button"
+            >
+              Télécharger le diagramme
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default FlowshopContraintesForm;
 

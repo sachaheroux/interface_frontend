@@ -142,13 +142,23 @@ const FlowshopContraintesForm = () => {
       console.log("Données reçues:", data);
       setResult(data);
 
-      if (data.gantt_chart) {
-        setTimeout(() => {
-          const img = document.getElementById('gantt-chart-img');
-          if (img) {
-            img.src = `data:image/png;base64,${data.gantt_chart}`;
-          }
-        }, 100);
+      // Récupération du diagramme de Gantt séparément
+      try {
+        const ganttResponse = await fetch(`${API_URL}/contraintes/gantt`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData)
+        });
+
+        if (ganttResponse.ok) {
+          const blob = await ganttResponse.blob();
+          const url = URL.createObjectURL(blob);
+          setResult(prevResult => ({ ...prevResult, gantt_url: url }));
+        }
+      } catch (ganttError) {
+        console.log("Pas de diagramme de Gantt disponible");
       }
 
     } catch (err) {
@@ -160,9 +170,9 @@ const FlowshopContraintesForm = () => {
   };
 
   const downloadGanttChart = () => {
-    if (result && result.gantt_chart) {
+    if (result && result.gantt_url) {
       const link = document.createElement('a');
-      link.href = `data:image/png;base64,${result.gantt_chart}`;
+      link.href = result.gantt_url;
       link.download = 'diagramme_gantt_contraintes.png';
       document.body.appendChild(link);
       link.click();
@@ -355,7 +365,7 @@ const FlowshopContraintesForm = () => {
           <div className={styles.metricsGrid}>
             <div className={styles.metric}>
               <div className={styles.metricValue}>
-                {result.metrics?.makespan || 0}
+                {result.makespan || 0}
               </div>
               <div className={styles.metricLabel}>
                 Makespan ({timeUnit})
@@ -364,7 +374,7 @@ const FlowshopContraintesForm = () => {
             
             <div className={styles.metric}>
               <div className={styles.metricValue}>
-                {result.metrics?.total_flow_time || 0}
+                {result.flowtime ? (result.flowtime * jobs.length).toFixed(2) : 0}
               </div>
               <div className={styles.metricLabel}>
                 Temps de flux total ({timeUnit})
@@ -373,10 +383,7 @@ const FlowshopContraintesForm = () => {
             
             <div className={styles.metric}>
               <div className={styles.metricValue}>
-                {result.metrics?.average_flow_time 
-                  ? result.metrics.average_flow_time.toFixed(2)
-                  : '0.00'
-                }
+                {result.flowtime ? result.flowtime.toFixed(2) : '0.00'}
               </div>
               <div className={styles.metricLabel}>
                 Temps de flux moyen ({timeUnit})
@@ -385,7 +392,7 @@ const FlowshopContraintesForm = () => {
             
             <div className={styles.metric}>
               <div className={styles.metricValue}>
-                {result.metrics?.total_tardiness || 0}
+                {result.retard_cumule || 0}
               </div>
               <div className={styles.metricLabel}>
                 Retard total ({timeUnit})
@@ -394,7 +401,13 @@ const FlowshopContraintesForm = () => {
             
             <div className={styles.metric}>
               <div className={styles.metricValue}>
-                {result.metrics?.tardy_jobs || 0}
+                {result.completion_times && jobs.length > 0
+                  ? Object.entries(result.completion_times).filter(([jobName, completionTime]) => {
+                      const job = jobs.find(j => j.name === jobName);
+                      return job && completionTime > job.dueDate;
+                    }).length
+                  : 0
+                }
               </div>
               <div className={styles.metricLabel}>
                 Jobs en retard
@@ -422,14 +435,14 @@ const FlowshopContraintesForm = () => {
       )}
 
       {/* Diagramme de Gantt */}
-      {result && result.gantt_chart && (
+      {result && result.gantt_url && (
         <div className={`${styles.section} ${styles.chartSection}`}>
           <div className={styles.chartHeader}>
             <h3>Diagramme de Gantt</h3>
           </div>
           <div className={styles.chartContainer}>
             <img
-              id="gantt-chart-img"
+              src={result.gantt_url}
               alt="Diagramme de Gantt"
               className={styles.chart}
             />

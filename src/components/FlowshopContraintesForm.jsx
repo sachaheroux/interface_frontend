@@ -14,6 +14,8 @@ const FlowshopContraintesForm = () => {
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
 
+  const API_URL = "https://interface-backend-1jgi.onrender.com";
+
   const adjustMachineCount = (newCount) => {
     if (newCount >= 1 && newCount <= 10) {
       setNumMachines(newCount);
@@ -123,7 +125,7 @@ const FlowshopContraintesForm = () => {
 
       console.log("Données envoyées:", requestData);
 
-      const response = await fetch('http://localhost:8000/contraintes', {
+      const response = await fetch(`${API_URL}/flowshop/contraintes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

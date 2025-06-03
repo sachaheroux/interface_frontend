@@ -23,7 +23,7 @@ function FlowshopSPTForm() {
   const [dueDateTimes, setDueDateTimes] = useState(["", ""]);
   const [agendaData, setAgendaData] = useState(null);
 
-  const API_URL = "https://interface-backend-1jgi.onrender.com";
+  const API_URL = "/api";
 
   const addJob = () => {
     const machineCount = jobs[0].length;
@@ -136,221 +136,324 @@ function FlowshopSPTForm() {
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Planification Flowshop - SPT</h2>
-
-      <div className={styles.unitSelector}>
-        <label>Unité de temps :</label>
-        <select value={unite} onChange={e => setUnite(e.target.value)} className={styles.select}>
-          <option value="minutes">minutes</option>
-          <option value="heures">heures</option>
-          <option value="jours">jours</option>
-        </select>
+    <div className={styles.algorithmContainer}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Flowshop - Algorithme SPT</h1>
+        <p className={styles.subtitle}>
+          Ordonnancement par temps de traitement le plus court (Shortest Processing Time)
+        </p>
       </div>
 
-      <div className={styles.buttonGroup}>
-        <button className={styles.button} onClick={addJob}>+ Ajouter un job</button>
-        <button className={styles.button} onClick={removeJob}>- Supprimer un job</button>
-        <button className={styles.button} onClick={addTaskToAllJobs}>+ Ajouter une tâche</button>
-        <button className={styles.button} onClick={removeTaskFromAllJobs}>- Supprimer une tâche</button>
-      </div>
-
-      <h4 className={styles.subtitle}>Noms des machines</h4>
-      {machineNames.map((name, i) => (
-        <div key={i} className={styles.taskRow}>
-          Machine {i} :
-          <input
-            type="text"
-            value={name}
-            onChange={e => {
-              const newNames = [...machineNames];
-              newNames[i] = e.target.value;
-              setMachineNames(newNames);
-            }}
-          />
+      <div className={styles.configSection}>
+        <div className={styles.configRow}>
+          <div className={styles.inputGroup}>
+            <label>Unité de temps</label>
+            <select 
+              value={unite} 
+              onChange={e => setUnite(e.target.value)} 
+              className={styles.select}
+            >
+              <option value="minutes">minutes</option>
+              <option value="heures">heures</option>
+              <option value="jours">jours</option>
+            </select>
+          </div>
+          
+          <div className={styles.actionButtons}>
+            <button className={styles.addButton} onClick={addJob}>
+              <span>+</span> Job
+            </button>
+            <button className={styles.removeButton} onClick={removeJob} disabled={jobs.length <= 1}>
+              <span>−</span> Job
+            </button>
+            <button className={styles.addButton} onClick={addTaskToAllJobs}>
+              <span>+</span> Machine
+            </button>
+            <button className={styles.removeButton} onClick={removeTaskFromAllJobs} disabled={jobs[0].length <= 1}>
+              <span>−</span> Machine
+            </button>
+          </div>
         </div>
-      ))}
-
-      {jobs.map((job, jobIdx) => (
-        <div key={jobIdx} className={styles.jobBlock}>
-          <h4>Job {jobIdx}</h4>
-          <div className={styles.taskRow}>
-            Nom du job :
-            <input
-              type="text"
-              value={jobNames[jobIdx]}
-              onChange={e => {
-                const newNames = [...jobNames];
-                newNames[jobIdx] = e.target.value;
-                setJobNames(newNames);
-              }}
-            />
-          </div>
-          {job.map((op, opIdx) => (
-            <div key={opIdx} className={styles.taskRow}>
-              {machineNames[opIdx] || `Machine ${opIdx}`} - Durée ({unite}) :
-              <input
-                type="text"
-                inputMode="decimal"
-                value={op.duration}
-                onChange={e => {
-                  const newJobs = [...jobs];
-                  newJobs[jobIdx][opIdx].duration = e.target.value;
-                  setJobs(newJobs);
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      ))}
-
-      {!showAdvanced && (
-        <>
-          <h4 className={styles.subtitle}>Dates dues ({unite})</h4>
-          {dueDates.map((d, i) => (
-            <div key={i} className={styles.taskRow}>
-              Job {i} :
-              <input
-                type="text"
-                inputMode="decimal"
-                value={d}
-                onChange={e => {
-                  const newDates = [...dueDates];
-                  newDates[i] = e.target.value;
-                  setDueDates(newDates);
-                }}
-              />
-            </div>
-          ))}
-        </>
-      )}
-
-      <div className={styles.advancedToggle}>
-        <label>
-          <input type="checkbox" checked={showAdvanced} onChange={() => setShowAdvanced(!showAdvanced)} />
-          Saisies avancées
-        </label>
       </div>
 
-      {showAdvanced && (
-        <div className={styles.advancedSection}>
-          <h4 className={styles.subtitle}>Horaire réel de l’usine</h4>
-          <div className={styles.taskRow}>
-            Début de l’agenda (date + heure) :
-            <input
-              type="datetime-local"
-              value={startDateTime}
-              onChange={e => setStartDateTime(e.target.value)}
-            />
-          </div>
-          <div className={styles.taskRow}>
-            Heures d’ouverture :
-            <input type="time" value={openingHours.start} onChange={e => setOpeningHours({ ...openingHours, start: e.target.value })} />
-            à
-            <input type="time" value={openingHours.end} onChange={e => setOpeningHours({ ...openingHours, end: e.target.value })} />
-          </div>
-          <div className={styles.taskRow}>
-            Jours de congé :
-            {Object.keys(weekendDays).map(day => (
-              <label key={day} style={{ marginLeft: "10px" }}>
+      {/* Tableau des noms de machines */}
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>🏭 Configuration des machines</h3>
+        <div className={styles.machinesTable}>
+          <div className={styles.tableRow}>
+            {machineNames.map((name, i) => (
+              <div key={i} className={styles.machineInput}>
+                <label>M{i}</label>
                 <input
-                  type="checkbox"
-                  checked={weekendDays[day]}
-                  onChange={() => setWeekendDays({ ...weekendDays, [day]: !weekendDays[day] })}
-                />
-                {day.charAt(0).toUpperCase() + day.slice(1)}
-              </label>
-            ))}
-          </div>
-          <div className={styles.taskRow}>
-            Jours fériés :
-            {feries.map((date, i) => (
-              <div key={i}>
-                <input
-                  type="date"
-                  value={date}
+                  type="text"
+                  value={name}
                   onChange={e => {
-                    const updated = [...feries];
-                    updated[i] = e.target.value;
-                    setFeries(updated);
+                    const newNames = [...machineNames];
+                    newNames[i] = e.target.value;
+                    setMachineNames(newNames);
                   }}
+                  className={styles.input}
+                  placeholder={`Machine ${i}`}
                 />
               </div>
             ))}
-            <button className={styles.button} type="button" onClick={() => setFeries([...feries, ""])}>
-              + Ajouter un jour férié
-            </button>
           </div>
-          <h4 className={styles.subtitle}>Dates dues avec heure (par job)</h4>
-          {jobs.map((_, jobIdx) => (
-            <div key={jobIdx} className={styles.taskRow}>
-              {jobNames[jobIdx] || `Job ${jobIdx}`} :
-              <input
-                type="datetime-local"
-                value={dueDateTimes[jobIdx]}
-                onChange={e => {
-                  const newTimes = [...dueDateTimes];
-                  newTimes[jobIdx] = e.target.value;
-                  setDueDateTimes(newTimes);
-                }}
-              />
+        </div>
+      </div>
+
+      {/* Tableau principal des jobs */}
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>⚙️ Matrice des temps de traitement</h3>
+        <div className={styles.dataTable}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.jobNameHeader}>Job</th>
+                {machineNames.map((name, i) => (
+                  <th key={i} className={styles.machineHeader}>
+                    {name || `M${i}`}
+                  </th>
+                ))}
+                <th className={styles.dueDateHeader}>Date due ({unite})</th>
+              </tr>
+            </thead>
+            <tbody>
+              {jobs.map((job, jobIdx) => (
+                <tr key={jobIdx} className={styles.jobRow}>
+                  <td className={styles.jobNameCell}>
+                    <input
+                      type="text"
+                      value={jobNames[jobIdx]}
+                      onChange={e => {
+                        const newNames = [...jobNames];
+                        newNames[jobIdx] = e.target.value;
+                        setJobNames(newNames);
+                      }}
+                      className={styles.jobNameInput}
+                      placeholder={`Job ${jobIdx}`}
+                    />
+                  </td>
+                  {job.map((op, opIdx) => (
+                    <td key={opIdx} className={styles.durationCell}>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        value={op.duration}
+                        onChange={e => {
+                          const newJobs = [...jobs];
+                          newJobs[jobIdx][opIdx].duration = e.target.value;
+                          setJobs(newJobs);
+                        }}
+                        className={styles.durationInput}
+                        placeholder="0"
+                      />
+                    </td>
+                  ))}
+                  <td className={styles.dueDateCell}>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      value={dueDates[jobIdx]}
+                      onChange={e => {
+                        const newDates = [...dueDates];
+                        newDates[jobIdx] = e.target.value;
+                        setDueDates(newDates);
+                      }}
+                      className={styles.dueDateInput}
+                      placeholder="0"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Options avancées */}
+      <div className={styles.section}>
+        <div className={styles.advancedToggle}>
+          <label className={styles.toggleLabel}>
+            <input 
+              type="checkbox" 
+              checked={showAdvanced} 
+              onChange={() => setShowAdvanced(!showAdvanced)}
+              className={styles.checkbox}
+            />
+            <span className={styles.checkboxCustom}></span>
+            Options avancées (horaires réels d'usine)
+          </label>
+        </div>
+
+        {showAdvanced && (
+          <div className={styles.advancedSection}>
+            <h4 className={styles.advancedTitle}>🕒 Paramètres temporels</h4>
+            <div className={styles.advancedGrid}>
+              <div className={styles.inputGroup}>
+                <label>Début de l'agenda</label>
+                <input
+                  type="datetime-local"
+                  value={startDateTime}
+                  onChange={e => setStartDateTime(e.target.value)}
+                  className={styles.input}
+                />
+              </div>
+              
+              <div className={styles.inputGroup}>
+                <label>Heures d'ouverture</label>
+                <div className={styles.timeRange}>
+                  <input 
+                    type="time" 
+                    value={openingHours.start} 
+                    onChange={e => setOpeningHours({ ...openingHours, start: e.target.value })}
+                    className={styles.timeInput}
+                  />
+                  <span>à</span>
+                  <input 
+                    type="time" 
+                    value={openingHours.end} 
+                    onChange={e => setOpeningHours({ ...openingHours, end: e.target.value })}
+                    className={styles.timeInput}
+                  />
+                </div>
+              </div>
             </div>
-          ))}
+
+            <div className={styles.weekendSection}>
+              <label>Jours de fermeture :</label>
+              <div className={styles.checkboxGroup}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={weekendDays.samedi}
+                    onChange={e => setWeekendDays({ ...weekendDays, samedi: e.target.checked })}
+                  />
+                  Samedi
+                </label>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={weekendDays.dimanche}
+                    onChange={e => setWeekendDays({ ...weekendDays, dimanche: e.target.checked })}
+                  />
+                  Dimanche
+                </label>
+              </div>
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label>Jours fériés (dates)</label>
+              {feries.map((ferie, i) => (
+                <div key={i} className={styles.ferieRow}>
+                  <input
+                    type="date"
+                    value={ferie}
+                    onChange={e => {
+                      const newFeries = [...feries];
+                      newFeries[i] = e.target.value;
+                      setFeries(newFeries);
+                    }}
+                    className={styles.input}
+                  />
+                  <button
+                    onClick={() => setFeries(feries.filter((_, idx) => idx !== i))}
+                    className={styles.removeButton}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => setFeries([...feries, ""])}
+                className={styles.addButton}
+              >
+                + Ajouter un jour férié
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bouton de calcul */}
+      <div className={styles.section}>
+        <button 
+          onClick={handleSubmit} 
+          className={styles.calculateButton}
+        >
+          🚀 Calculer l'ordonnancement SPT
+        </button>
+      </div>
+
+      {/* Affichage des erreurs */}
+      {error && (
+        <div className={styles.errorSection}>
+          <div className={styles.errorBox}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorText}>{error}</span>
+          </div>
         </div>
       )}
 
-      <button className={styles.submitButton} onClick={handleSubmit}>Lancer l'algorithme</button>
-
-      {error && <p className={styles.error}>{error}</p>}
-
+      {/* Résultats */}
       {result && (
-        <div className={styles.resultBlock}>
-          <h3>Résultats</h3>
-          <div><strong>Makespan :</strong> {result.makespan}</div>
-          <div><strong>Flowtime :</strong> {result.flowtime}</div>
-          <div><strong>Retard cumulé :</strong> {result.retard_cumule}</div>
+        <div className={styles.resultsSection}>
+          <h3 className={styles.resultsTitle}>📊 Résultats de l'optimisation</h3>
+          
+          <div className={styles.metricsGrid}>
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>{result.makespan}</div>
+              <div className={styles.metricLabel}>Makespan ({unite})</div>
+            </div>
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>{result.flowtime.toFixed(2)}</div>
+              <div className={styles.metricLabel}>Temps de cycle moyen</div>
+            </div>
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>{result.retard_cumule}</div>
+              <div className={styles.metricLabel}>Retard cumulé</div>
+            </div>
+          </div>
 
-          <h4>Temps de complétion</h4>
-          <ul>
-            {Object.entries(result.completion_times).map(([job, time]) => (
-              <li key={job}>{job} : {time}</li>
-            ))}
-          </ul>
-
-          <h4>Planification</h4>
-          <ul>
+          <div className={styles.planificationDetails}>
+            <h4>Planification détaillée :</h4>
             {Object.entries(result.planification).map(([machine, tasks]) => (
-              <li key={machine}>
-                <strong>{machine}</strong>
-                <ul>
-                  {tasks.map((t, i) => (
-                    <li key={i}>Job {t.job} - Tâche {t.task} : {t.start} → {t.start + t.duration}</li>
+              <div key={machine} className={styles.machineDetail}>
+                <strong>{machine} :</strong>
+                <div className={styles.tasksList}>
+                  {tasks.map((task, i) => (
+                    <span key={i} className={styles.taskBadge}>
+                      {jobNames[task.job]} ({task.start}-{task.start + task.duration})
+                    </span>
                   ))}
-                </ul>
-              </li>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
+        </div>
+      )}
 
-          {ganttUrl && !showAdvanced && (
-            <>
-              <h4>Diagramme de Gantt</h4>
-              <img
-                src={ganttUrl}
-                alt="Gantt"
-                style={{ width: "100%", maxWidth: "700px", marginTop: "1rem", borderRadius: "0.5rem" }}
-              />
-              <button className={styles.downloadButton} onClick={handleDownloadGantt}>
-                Télécharger le diagramme de Gantt
-              </button>
-            </>
-          )}
+      {/* Diagramme de Gantt */}
+      {ganttUrl && (
+        <div className={styles.chartSection}>
+          <div className={styles.chartHeader}>
+            <h3>📈 Diagramme de Gantt</h3>
+            <button onClick={handleDownloadGantt} className={styles.downloadButton}>
+              💾 Télécharger
+            </button>
+          </div>
+          <div className={styles.chartContainer}>
+            <img src={ganttUrl} alt="Diagramme de Gantt" className={styles.chart} />
+          </div>
+        </div>
+      )}
 
-          {agendaData && showAdvanced && (
-            <>
-              <h4>Agenda réel</h4>
-              <AgendaGrid agendaData={agendaData} />
-            </>
-          )}
+      {/* Agenda réel */}
+      {agendaData && (
+        <div className={styles.agendaSection}>
+          <h3 className={styles.agendaTitle}>🗓️ Agenda réel de l'usine</h3>
+          <AgendaGrid agendaData={agendaData} />
         </div>
       )}
     </div>

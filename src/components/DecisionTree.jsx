@@ -32,7 +32,7 @@ const DecisionTree = ({ onSystemRecommendation }) => {
       id: 3,
       question: "Le procédé est-il très mécanisé et sujet à des pannes fréquentes ?",
       yesPath: "Ligne de transfert",  // 1.1.1.1
-      noPath: "Ligne d'assemblage"    // 1.1.1.2 → ligne dédiée
+      noPath: "Ligne dédiée"          // 1.1.1.2 → ligne dédiée (pas disponible)
     },
     {
       id: 4,
@@ -56,7 +56,7 @@ const DecisionTree = ({ onSystemRecommendation }) => {
       id: 7,
       question: "S'agit-il principalement d'un problème de séquencement des tâches ?",
       yesPath: "Flowshop",               // 1.1.2.1.1.1
-      noPath: "Ligne d'assemblage"       // 1.1.2.1.1.2 → ligne non-cadencée
+      noPath: "Ligne non-cadencée"       // 1.1.2.1.1.2 → ligne non-cadencée (pas disponible)
     },
     {
       id: 8,
@@ -67,28 +67,43 @@ const DecisionTree = ({ onSystemRecommendation }) => {
     {
       id: 9,
       question: "La demande de production est-elle fixe et prévisible ?",
-      yesPath: 11,  // 1.1.2.2.1.1
-      noPath: 12    // 1.1.2.2.1.2
+      yesPath: "Cellules fixes",         // 1.1.2.2.1.1 → cellules fixes (pas disponible)
+      noPath: 12                         // 1.1.2.2.1.2
     },
     {
       id: 10,
       question: "Le système est-il facilement automatisable ?",
       yesPath: "FMS",                    // 1.1.2.2.2.1
-      noPath: "Ligne d'assemblage"       // 1.1.2.2.2.2 → ligne dédiée par produit
+      noPath: "Ligne dédiée par produit" // 1.1.2.2.2.2 → ligne dédiée par produit (pas disponible)
     },
     {
       id: 11,
       question: "Les machines sont-elles facilement déplaçables et reconfigurables ?",
-      yesPath: "FMS",                    // 1.1.2.2.1.1.1 → cellules dynamiques
-      noPath: "Ligne d'assemblage"       // 1.1.2.2.1.1.2 → cellules virtuelles
+      yesPath: "Cellules dynamiques",    // 1.1.2.2.1.1.1 → cellules dynamiques (pas disponible)
+      noPath: "Cellules virtuelles"      // 1.1.2.2.1.1.2 → cellules virtuelles (pas disponible)
     },
     {
       id: 12,
       question: "Les machines peuvent-elles être déplacées et reconfigurées dynamiquement ?",
-      yesPath: "FMS",                    // 1.1.2.2.1.2.1
-      noPath: "Ligne d'assemblage"       // 1.1.2.2.1.2.2
+      yesPath: "Cellules dynamiques",    // 1.1.2.2.1.2.1 → cellules dynamiques (pas disponible)
+      noPath: "Cellules virtuelles"      // 1.1.2.2.1.2.2 → cellules virtuelles (pas disponible)
     }
   ];
+
+  // Systèmes disponibles dans l'interface
+  const availableSystems = [
+    "Flowshop", 
+    "Jobshop", 
+    "Ligne d'assemblage", 
+    "Ligne d'assemblage mixte", 
+    "Ligne de transfert", 
+    "FMS"
+  ];
+
+  // Vérifier si un système est disponible
+  const isSystemAvailable = (system) => {
+    return availableSystems.includes(system);
+  };
 
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
@@ -150,6 +165,8 @@ const DecisionTree = ({ onSystemRecommendation }) => {
   }
 
   if (showResult) {
+    const systemAvailable = isSystemAvailable(showResult);
+    
     return (
       <div className="decision-tree-container">
         <div className="result-container">
@@ -166,26 +183,43 @@ const DecisionTree = ({ onSystemRecommendation }) => {
             ))}
           </div>
           
-          <div className="recommendation">
+          <div className={`recommendation ${!systemAvailable ? 'unavailable' : ''}`}>
             <h3>Système recommandé :</h3>
             <div className="system-recommendation">
               <strong>{showResult}</strong>
             </div>
             
-            <div className="action-buttons">
-              <button 
-                className="go-to-system-btn"
-                onClick={() => handleRecommendation(showResult)}
-              >
-                Aller au système →
-              </button>
-              <button 
-                className="restart-btn"
-                onClick={resetTree}
-              >
-                Recommencer
-              </button>
-            </div>
+            {systemAvailable ? (
+              <div className="action-buttons">
+                <button 
+                  className="go-to-system-btn"
+                  onClick={() => handleRecommendation(showResult)}
+                >
+                  Aller au système →
+                </button>
+                <button 
+                  className="restart-btn"
+                  onClick={resetTree}
+                >
+                  Recommencer
+                </button>
+              </div>
+            ) : (
+              <div className="unavailable-system">
+                <div className="unavailable-message">
+                  <p>⚠️ Ce type de système de production n'est pas encore disponible dans cette interface.</p>
+                  <p>Les algorithmes pour <strong>{showResult}</strong> seront ajoutés dans une future version.</p>
+                </div>
+                <div className="action-buttons">
+                  <button 
+                    className="restart-btn-full"
+                    onClick={resetTree}
+                  >
+                    Recommencer l'analyse
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

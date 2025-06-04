@@ -242,6 +242,10 @@
   margin-bottom: 2rem;
 }
 
+.recommendation.unavailable {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
 .recommendation h3 {
   margin-bottom: 1rem;
 }
@@ -254,6 +258,49 @@
   background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Système non disponible */
+.unavailable-system {
+  margin-top: 1rem;
+}
+
+.unavailable-message {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.unavailable-message p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.unavailable-message p:last-child {
+  margin-bottom: 0;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.restart-btn-full {
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.restart-btn-full:hover {
+  background: white;
+  color: #f59e0b;
 }
 
 /* Boutons d'action */

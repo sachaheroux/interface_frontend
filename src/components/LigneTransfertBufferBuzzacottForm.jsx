@@ -14,6 +14,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
   const [joursAnnee, setJoursAnnee] = useState("250");
   const [profitUnitaire, setProfitUnitaire] = useState("20");
   const [timeUnit, setTimeUnit] = useState("cycles");
+  const [currency, setCurrency] = useState("CAD");
 
   // États pour les résultats
   const [result, setResult] = useState(null);
@@ -22,6 +23,14 @@ export default function LigneTransfertBufferBuzzacottForm() {
   const [error, setError] = useState("");
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
+
+  const currencySymbols = {
+    CAD: { symbol: "C$", name: "Dollar canadien" },
+    USD: { symbol: "$", name: "Dollar américain" },
+    EUR: { symbol: "€", name: "Euro" },
+    GBP: { symbol: "£", name: "Livre sterling" },
+    JPY: { symbol: "¥", name: "Yen japonais" }
+  };
 
   const calculateOptimization = async () => {
     setError("");
@@ -114,59 +123,6 @@ export default function LigneTransfertBufferBuzzacottForm() {
     }
   };
 
-  const resetForm = () => {
-    setAlpha1("0.0003623188406");
-    setAlpha2("0.0002536231884");
-    setBInv1("1605.8");
-    setBInv2("30");
-    setBufferSize("320");
-    setProduction("1100");
-    setJoursAnnee("250");
-    setProfitUnitaire("20");
-    setTimeUnit("cycles");
-    setResult(null);
-    setChartUrl(null);
-    setError("");
-  };
-
-  const loadExample = (exampleType) => {
-    switch(exampleType) {
-      case 'automotive':
-        setAlpha1("0.0001");
-        setAlpha2("0.00015");
-        setBInv1("2000");
-        setBInv2("1500");
-        setBufferSize("500");
-        setProduction("1500");
-        setJoursAnnee("250");
-        setProfitUnitaire("25");
-        break;
-      case 'electronics':
-        setAlpha1("0.0005");
-        setAlpha2("0.0003");
-        setBInv1("800");
-        setBInv2("1200");
-        setBufferSize("200");
-        setProduction("800");
-        setJoursAnnee("260");
-        setProfitUnitaire("15");
-        break;
-      case 'textile':
-        setAlpha1("0.0002");
-        setAlpha2("0.0004");
-        setBInv1("1200");
-        setBInv2("900");
-        setBufferSize("300");
-        setProduction("2000");
-        setJoursAnnee("240");
-        setProfitUnitaire("8");
-        break;
-    }
-    setResult(null);
-    setChartUrl(null);
-    setError("");
-  };
-
   return (
     <div className="algorithmContent">
       <div className={styles.algorithmContainer}>
@@ -194,20 +150,21 @@ export default function LigneTransfertBufferBuzzacottForm() {
                 <option value="heures">Heures</option>
               </select>
             </div>
-            
-            <div className={styles.actionButtons}>
-              <button className={styles.exampleButton} onClick={() => loadExample('automotive')} title="Exemple industrie automobile">
-                🚗 Automobile
-              </button>
-              <button className={styles.exampleButton} onClick={() => loadExample('electronics')} title="Exemple industrie électronique">
-                🔌 Électronique
-              </button>
-              <button className={styles.exampleButton} onClick={() => loadExample('textile')} title="Exemple industrie textile">
-                🧵 Textile
-              </button>
-              <button className={styles.resetButton} onClick={resetForm} title="Réinitialiser tous les paramètres">
-                ↻ Réinitialiser
-              </button>
+
+            <div className={styles.inputGroup}>
+              <label htmlFor="currency">Devise</label>
+              <select
+                id="currency"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className={styles.select}
+              >
+                {Object.entries(currencySymbols).map(([code, info]) => (
+                  <option key={code} value={code}>
+                    {info.symbol} {info.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
@@ -216,7 +173,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
         <div className={styles.parametersGrid}>
           {/* Paramètres de panne */}
           <div className={styles.parameterGroup}>
-            <h3 className={styles.parameterGroupTitle}>⚡ Paramètres de panne</h3>
+            <h3 className={styles.parameterGroupTitle}>Paramètres de panne</h3>
             
             <div className={styles.parameterRow}>
               <label className={styles.parameterLabel}>Taux de panne Station 1 (α₁)</label>
@@ -247,7 +204,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
 
           {/* Paramètres de réparation */}
           <div className={styles.parameterGroup}>
-            <h3 className={styles.parameterGroupTitle}>🔧 Paramètres de réparation</h3>
+            <h3 className={styles.parameterGroupTitle}>Paramètres de réparation</h3>
             
             <div className={styles.parameterRow}>
               <label className={styles.parameterLabel}>Temps de réparation Station 1 (b₁⁻¹)</label>
@@ -278,7 +235,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
 
           {/* Paramètres de production */}
           <div className={styles.parameterGroup}>
-            <h3 className={styles.parameterGroupTitle}>🏭 Paramètres de production</h3>
+            <h3 className={styles.parameterGroupTitle}>Paramètres de production</h3>
             
             <div className={styles.parameterRow}>
               <label className={styles.parameterLabel}>Taille du buffer (Z)</label>
@@ -309,7 +266,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
 
           {/* Paramètres économiques */}
           <div className={styles.parameterGroup}>
-            <h3 className={styles.parameterGroupTitle}>💰 Paramètres économiques</h3>
+            <h3 className={styles.parameterGroupTitle}>Paramètres économiques</h3>
             
             <div className={styles.parameterRow}>
               <label className={styles.parameterLabel}>Jours travaillés par année</label>
@@ -326,7 +283,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
             </div>
 
             <div className={styles.parameterRow}>
-              <label className={styles.parameterLabel}>Profit unitaire</label>
+              <label className={styles.parameterLabel}>Profit unitaire ({currencySymbols[currency].symbol})</label>
               <input
                 type="text"
                 inputMode="decimal"
@@ -335,7 +292,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
                 className={styles.parameterInput}
                 placeholder="20"
               />
-              <span className={styles.helpText}>Profit par pièce (€ ou $)</span>
+              <span className={styles.helpText}>Profit par pièce</span>
             </div>
           </div>
         </div>
@@ -357,13 +314,13 @@ export default function LigneTransfertBufferBuzzacottForm() {
           className={styles.calculateButton}
           type="button"
         >
-          {isCalculating ? "🔄 Analyse en cours..." : "📊 Analyser l'efficacité du buffer"}
+          {isCalculating ? "Analyse en cours..." : "Analyser l'efficacité du buffer"}
         </button>
 
         {/* Résultats */}
         {result && (
           <div className={`${styles.section} ${styles.resultsSection}`}>
-            <h2 className={styles.resultsTitle}>📈 Résultats de l'analyse Buffer Buzzacott</h2>
+            <h2 className={styles.resultsTitle}>Résultats de l'analyse Buffer Buzzacott</h2>
 
             {/* Métriques principales */}
             <div className={styles.metricsGrid}>
@@ -424,7 +381,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
 
             {/* Détails techniques */}
             <div className={styles.technicalDetails}>
-              <h4>🔬 Paramètres calculés</h4>
+              <h4>Paramètres calculés</h4>
               <div className={styles.technicalGrid}>
                 <div className={styles.technicalItem}>
                   <strong>x₁:</strong> {result.x1?.toFixed(6)}
@@ -443,7 +400,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
 
             {/* ROI mis en avant */}
             <div className={styles.roiHighlight}>
-              💰 Retour sur investissement: {result.profit_annuel_supplementaire?.toFixed(0)} {result.devise || '€'}/an
+              Retour sur investissement: {currencySymbols[currency].symbol}{result.profit_annuel_supplementaire?.toFixed(0)}/an
             </div>
           </div>
         )}
@@ -452,7 +409,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
         {chartUrl && (
           <div className={`${styles.section} ${styles.chartSection}`}>
             <div className={styles.chartHeader}>
-              <h3>📊 Graphique d'analyse du buffer</h3>
+              <h3>Graphique d'analyse du buffer</h3>
             </div>
             <div className={styles.chartContainer}>
               <img
@@ -465,7 +422,7 @@ export default function LigneTransfertBufferBuzzacottForm() {
                 className={styles.downloadButton}
                 type="button"
               >
-                📥 Télécharger le graphique
+                Télécharger le graphique
               </button>
             </div>
           </div>

@@ -1,7 +1,13 @@
-import { useState } from "react";
-import styles from "./FlowshopSPTForm.module.css";
+import React, { useState } from "react";
+import styles from "./FMSSacADosForm.module.css";
+import config from "../config.js";
 
 export default function FMSLotsProductionMIPForm() {
+  // Configuration système
+  const [tempsDisponibleJour, setTempsDisponibleJour] = useState("420");
+  const [uniteTemps, setUniteTemps] = useState("minutes");
+  const [devise, setDevise] = useState("CAD");
+  
   // État des machines avec données par défaut du collègue
   const [machines, setMachines] = useState([
     { nom: "Machine A", nombre: 1, capaciteOutils: 2, outilsDisponibles: ["A1", "A2", "A3"], espaceOutils: [1, 1, 1] },
@@ -34,16 +40,19 @@ export default function FMSLotsProductionMIPForm() {
       coutInventaire: 150
     }
   ]);
-
-  const [tempsDisponibleJour, setTempsDisponibleJour] = useState("420");
-  const [uniteTemps, setUniteTemps] = useState("minutes");
   
   const [result, setResult] = useState(null);
   const [chartUrl, setChartUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_URL = "/api";
+  const devises = {
+    "CAD": { symbole: "$", nom: "Dollar Canadien" },
+    "USD": { symbole: "$", nom: "Dollar Américain" },
+    "EUR": { symbole: "€", nom: "Euro" },
+    "GBP": { symbole: "£", nom: "Livre Sterling" },
+    "JPY": { symbole: "¥", nom: "Yen Japonais" }
+  };
 
   // Fonctions pour gérer les machines
   const addMachine = () => {
@@ -131,6 +140,16 @@ export default function FMSLotsProductionMIPForm() {
     setProduits(nouveauxProduits);
   };
 
+  const calculateCapaciteTotale = (machineIndex) => {
+    return parseFloat(tempsDisponibleJour || 0) * machines[machineIndex].nombre;
+  };
+
+  const calculateTempsRequisProduit = (produit) => {
+    return produit.tempsOperations.reduce((total, temps, index) => 
+      total + (temps * produit.grandeurCommande), 0
+    );
+  };
+
   const handleSubmit = () => {
     setError(null);
     setChartUrl(null);
@@ -200,10 +219,10 @@ export default function FMSLotsProductionMIPForm() {
         unite_temps: uniteTemps
       };
 
-      console.log("Sending data to API:", JSON.stringify(requestData, null, 2));
+      console.log("Données envoyées au backend:", requestData);
 
       // Appel API pour les résultats
-      fetch(`${API_URL}/fms/lots_production_mip`, {
+      fetch(`${config.API_URL}/fms/lots_production_mip`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestData)
@@ -219,9 +238,10 @@ export default function FMSLotsProductionMIPForm() {
           return res.json();
         })
         .then(data => {
+          console.log("Résultats reçus:", data);
           setResult(data);
           // Récupérer le graphique
-          return fetch(`${API_URL}/fms/lots_production_mip/chart`, {
+          return fetch(`${config.API_URL}/fms/lots_production_mip/chart`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestData)
@@ -243,61 +263,83 @@ export default function FMSLotsProductionMIPForm() {
     }
   };
 
-  const handleDownloadChart = () => {
-    if (!chartUrl) return;
-    const link = document.createElement("a");
-    link.href = chartUrl;
-    link.download = "fms_lots_production_mip.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const calculateCapaciteTotale = (machineIndex) => {
-    return parseFloat(tempsDisponibleJour || 0) * machines[machineIndex].nombre;
-  };
-
-  const calculateTempsRequisProduit = (produit) => {
-    return produit.tempsOperations.reduce((total, temps, index) => 
-      total + (temps * produit.grandeurCommande), 0
-    );
-  };
-
   const renderResultsForMachine = (nom_machine, result) => {
     const machine_key = nom_machine.toLowerCase().replace(' ', '_');
     const temps_utilise = result[`temps_utilise_${machine_key}`] || 0;
     const temps_total = result[`temps_disponible_total_${machine_key}`] || 0;
     const utilisation = result[`utilisation_${machine_key}`] || 0;
     
-    return `${temps_utilise}min / ${temps_total}min (${utilisation}%)`;
+    return `${temps_utilise}${uniteTemps} / ${temps_total}${uniteTemps} (${utilisation}%)`;
+  };
+
+  const renderProduitsAssignes = (produits_assignes) => {
+    return produits_assignes.map((produit, index) => (
+      <div key={index} className={styles.solutionDetails} style={{ marginBottom: "1rem" }}>
+        <strong>{produit.nom}</strong> (Date due: Jour {produit.date_due})
+        <br />
+        Quantité assignée : {produit.quantite_assignee}/{produit.quantite_totale} unités ({produit.pourcentage_assigne}%)
+        <br />
+        Coût d'inventaire : {devises[devise].symbole}{produit.cout_inventaire_total || 0}
+        <br />
+        {machines.map((machine, machineIndex) => {
+          const machine_key = machine.nom.toLowerCase().replace(' ', '_');
+          const temps = produit[`temps_${machine_key}`];
+          const outil = produit[`outil_${machine_key}`];
+          return (
+            <span key={machineIndex}>
+              {machine.nom}: {temps || 0}{uniteTemps}{outil ? ` (${outil})` : ''} | 
+            </span>
+          );
+        })}
+        <br />
+        <small style={{ color: "#6b7280", fontStyle: "italic" }}>
+          Outils utilisés par machine
+        </small>
+      </div>
+    ));
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>FMS - Lots de Production (MIP)</h2>
-      
-      <div className={styles.unitSelector}>
-        <label>Unité de temps :</label>
-        <select value={uniteTemps} onChange={(e) => setUniteTemps(e.target.value)} className={styles.select}>
-          <option value="minutes">minutes</option>
-          <option value="heures">heures</option>
-          <option value="jours">jours</option>
-        </select>
+    <div className={styles.algorithmContainer}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>FMS - Lots de Production avec Programmation Linéaire Mixte (MIP)</h1>
+        <p className={styles.subtitle}>
+          Optimisation exacte par programmation mathématique avec contraintes d'outils et d'inventaire
+        </p>
       </div>
 
-      {/* Configuration système */}
-      <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Configuration du système</h4>
+      {error && (
+        <div className={styles.errorSection}>
+          <div className={styles.errorBox}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorText}>{error}</span>
+          </div>
+        </div>
+      )}
+
+      <div className={`${styles.section} ${styles.configSection}`}>
+        <h2 className={styles.sectionTitle}>Paramètres du Système</h2>
         
-        <div className={styles.jobBlock}>
-          <h4>Ressources disponibles</h4>
+        <div className={styles.configRow}>
+          <div className={styles.inputGroup}>
+            <label>Unité de temps</label>
+            <select
+              value={uniteTemps}
+              onChange={(e) => setUniteTemps(e.target.value)}
+              className={styles.select}
+            >
+              <option value="minutes">Minutes</option>
+              <option value="heures">Heures</option>
+              <option value="jours">Jours</option>
+            </select>
+          </div>
           
-          <div className={styles.taskRow}>
-            <label>Temps disponible par jour ({uniteTemps}) :</label>
+          <div className={styles.inputGroup}>
+            <label>Temps disponible/jour<br/><span style={{fontSize: "0.8em", color: "#6b7280"}}>({uniteTemps})</span></label>
             <input
               type="number"
               step="1"
-              min="1"
+              min="0"
               value={tempsDisponibleJour}
               onChange={e => setTempsDisponibleJour(e.target.value)}
               className={styles.input}
@@ -305,275 +347,369 @@ export default function FMSLotsProductionMIPForm() {
             />
           </div>
 
-          <small className={styles.helpText}>
-            <strong>Capacité totale :</strong> {machines.map((machine, index) => 
-              `${machine.nom}: ${calculateCapaciteTotale(index).toFixed(0)} ${uniteTemps}`
-            ).join(' | ')}
-          </small>
-        </div>
-
-        <div className={styles.buttonGroup}>
-          <button className={styles.button} onClick={addMachine}>+ Ajouter un type de machine</button>
-          <button className={styles.button} onClick={removeMachine}>- Supprimer un type de machine</button>
-        </div>
-
-        {/* Configuration des machines */}
-        {machines.map((machine, index) => (
-          <div key={index} className={styles.jobBlock}>
-            <h4>{machine.nom}</h4>
-            
-            <div className={styles.taskRow}>
-              <label>Nom de la machine :</label>
-              <input
-                type="text"
-                value={machine.nom}
-                onChange={(e) => handleMachineChange(index, "nom", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <div className={styles.taskRow}>
-              <label>Nombre de machines :</label>
-              <input
-                type="number"
-                min="1"
-                value={machine.nombre}
-                onChange={(e) => handleMachineChange(index, "nombre", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <div className={styles.taskRow}>
-              <label>Capacité d'outils :</label>
-              <input
-                type="number"
-                min="1"
-                value={machine.capaciteOutils}
-                onChange={(e) => handleMachineChange(index, "capaciteOutils", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <div className={styles.taskRow}>
-              <label>Outils disponibles (séparés par virgule) :</label>
-              <input
-                type="text"
-                value={(machine.outilsDisponibles || []).join(", ")}
-                onChange={(e) => handleMachineChange(index, "outilsDisponibles", e.target.value)}
-                className={styles.input}
-                placeholder="A1, A2, A3"
-              />
-            </div>
-
-            <div className={styles.taskRow}>
-              <label>Espace requis par outil (séparés par virgule) :</label>
-              <input
-                type="text"
-                value={(machine.espaceOutils || []).join(", ")}
-                onChange={(e) => handleMachineChange(index, "espaceOutils", e.target.value)}
-                className={styles.input}
-                placeholder="1, 1, 1"
-              />
-            </div>
-
-            <small className={styles.helpText}>
-              <strong>Capacité totale :</strong> {calculateCapaciteTotale(index).toFixed(0)} {uniteTemps} | 
-              <strong> Outils:</strong> {(machine.outilsDisponibles || []).length} définis
-            </small>
+          <div className={styles.inputGroup}>
+            <label>Devise</label>
+            <select
+              value={devise}
+              onChange={(e) => setDevise(e.target.value)}
+              className={styles.select}
+            >
+              {Object.entries(devises).map(([code, info]) => (
+                <option key={code} value={code}>
+                  {info.symbole} {info.nom}
+                </option>
+              ))}
+            </select>
           </div>
-        ))}
-      </div>
-
-      <div className={styles.buttonGroup}>
-        <button className={styles.button} onClick={addProduit}>+ Ajouter un produit</button>
-        <button className={styles.button} onClick={removeProduit}>- Supprimer un produit</button>
-      </div>
-
-      {/* Configuration des produits */}
-      <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Configuration des produits</h4>
+        </div>
         
-        {produits.map((produit, produitIndex) => (
-          <div key={produitIndex} className={styles.jobBlock}>
-            <h4>{produit.nom}</h4>
-            
-            <div className={styles.taskRow}>
-              <label>Nom du produit :</label>
-              <input
-                type="text"
-                value={produit.nom}
-                onChange={(e) => handleProduitChange(produitIndex, "nom", e.target.value)}
-                className={styles.input}
-              />
-            </div>
+        <div className={styles.actionButtons}>
+          <button className={styles.addButton} onClick={addMachine}>
+            + Ajouter une machine
+          </button>
+          <button className={styles.removeButton} onClick={removeMachine} disabled={machines.length <= 1}>
+            - Supprimer une machine
+          </button>
+          <button className={styles.addButton} onClick={addProduit}>
+            + Ajouter un produit
+          </button>
+          <button className={styles.removeButton} onClick={removeProduit} disabled={produits.length <= 1}>
+            - Supprimer un produit
+          </button>
+        </div>
+      </div>
 
-            <div className={styles.taskRow}>
-              <label>Grandeur de commande (unités) :</label>
-              <input
-                type="number"
-                min="1"
-                value={produit.grandeurCommande}
-                onChange={(e) => handleProduitChange(produitIndex, "grandeurCommande", e.target.value)}
-                className={styles.input}
-              />
-            </div>
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Configuration des Machines</h2>
+        
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Nom de la Machine</th>
+                <th>Nombre d'Unités</th>
+                <th>Capacité d'Outils</th>
+                <th>Outils Disponibles</th>
+                <th>Espace par Outil</th>
+                <th>Capacité Totale<br/>({uniteTemps})</th>
+              </tr>
+            </thead>
+            <tbody>
+              {machines.map((machine, index) => (
+                <tr key={index}>
+                  <td>
+                    <input
+                      type="text"
+                      value={machine.nom}
+                      onChange={(e) => handleMachineChange(index, "nom", e.target.value)}
+                      className={styles.input}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="1"
+                      value={machine.nombre}
+                      onChange={(e) => handleMachineChange(index, "nombre", e.target.value)}
+                      className={styles.input}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="1"
+                      value={machine.capaciteOutils}
+                      onChange={(e) => handleMachineChange(index, "capaciteOutils", e.target.value)}
+                      className={styles.input}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={machine.outilsDisponibles.join(', ')}
+                      onChange={(e) => handleMachineChange(index, "outilsDisponibles", e.target.value)}
+                      className={styles.input}
+                      placeholder="A1, A2, A3"
+                      title="Séparez les outils par des virgules"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={machine.espaceOutils.join(', ')}
+                      onChange={(e) => handleMachineChange(index, "espaceOutils", e.target.value)}
+                      className={styles.input}
+                      placeholder="1, 1, 1"
+                      title="Espace requis pour chaque outil (séparez par des virgules)"
+                    />
+                  </td>
+                  <td>
+                    <div className={styles.metricCell} style={{ 
+                      color: "#2563eb",
+                      fontWeight: "bold"
+                    }}>
+                      {calculateCapaciteTotale(index).toFixed(1)}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-            <div className={styles.taskRow}>
-              <label>Date d'échéance (jours) :</label>
-              <input
-                type="number"
-                min="1"
-                value={produit.dateDue}
-                onChange={(e) => handleProduitChange(produitIndex, "dateDue", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <div className={styles.taskRow}>
-              <label>Coût d'inventaire (par unité) :</label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={produit.coutInventaire}
-                onChange={(e) => handleProduitChange(produitIndex, "coutInventaire", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            {/* Temps d'opération et outils pour chaque machine */}
-            {machines.map((machine, machineIndex) => (
-              <div key={machineIndex}>
-                <div className={styles.taskRow}>
-                  <label>Temps opération {machine.nom} ({uniteTemps}/unité) :</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.1"
-                    value={produit.tempsOperations[machineIndex] || 0}
-                    onChange={(e) => handleProduitChange(produitIndex, "tempsOperation", e.target.value, machineIndex)}
-                    className={styles.input}
-                  />
-                </div>
-
-                <div className={styles.taskRow}>
-                  <label>Outil requis {machine.nom} :</label>
-                  <select
-                    value={produit.outils[machineIndex] || ""}
-                    onChange={(e) => handleProduitChange(produitIndex, "outil", e.target.value, machineIndex)}
-                    className={styles.select}
-                  >
-                    <option value="">-- Aucun outil --</option>
-                    {(machine.outilsDisponibles || []).map((outil, outilIndex) => (
-                      <option key={outilIndex} value={outil}>{outil}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            ))}
-
-            <small className={styles.helpText}>
-              <strong>Temps total requis :</strong> {calculateTempsRequisProduit(produit).toFixed(2)} {uniteTemps} | 
-              <strong> Coût total inventaire max :</strong> {(produit.coutInventaire * produit.grandeurCommande * produit.dateDue).toFixed(2)}
-            </small>
-          </div>
-        ))}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Configuration des Produits</h2>
+        
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Nom du Produit</th>
+                <th>Grandeur Commande<br/>(unités)</th>
+                <th>Date d'Échéance<br/>(jours)</th>
+                <th>Coût Inventaire<br/>({devises[devise].symbole}/unité)</th>
+                {machines.map((machine, index) => (
+                  <th key={index} colSpan="2" style={{ backgroundColor: "#1e40af" }}>
+                    {machine.nom}
+                    <br/>
+                    <small style={{ fontWeight: "normal", opacity: "0.9" }}>
+                      Temps ({uniteTemps}/u) | Outil requis
+                    </small>
+                  </th>
+                ))}
+                <th>Temps Total<br/>({uniteTemps})</th>
+              </tr>
+            </thead>
+            <tbody>
+              {produits.map((produit, produitIndex) => (
+                <tr key={produitIndex}>
+                  <td>
+                    <input
+                      type="text"
+                      value={produit.nom}
+                      onChange={(e) => handleProduitChange(produitIndex, "nom", e.target.value)}
+                      className={styles.input}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="1"
+                      value={produit.grandeurCommande}
+                      onChange={(e) => handleProduitChange(produitIndex, "grandeurCommande", e.target.value)}
+                      className={styles.input}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="1"
+                      value={produit.dateDue}
+                      onChange={(e) => handleProduitChange(produitIndex, "dateDue", e.target.value)}
+                      className={styles.input}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={produit.coutInventaire}
+                      onChange={(e) => handleProduitChange(produitIndex, "coutInventaire", e.target.value)}
+                      className={styles.input}
+                    />
+                  </td>
+                  {machines.map((machine, machineIndex) => (
+                    <React.Fragment key={machineIndex}>
+                      <td style={{ backgroundColor: "#f8fafc" }}>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.1"
+                          value={produit.tempsOperations[machineIndex] || 0}
+                          onChange={(e) => handleProduitChange(produitIndex, "tempsOperation", e.target.value, machineIndex)}
+                          className={styles.input}
+                          placeholder="0.0"
+                        />
+                      </td>
+                      <td style={{ backgroundColor: "#f1f5f9" }}>
+                        <select
+                          value={produit.outils[machineIndex] || ""}
+                          onChange={(e) => handleProduitChange(produitIndex, "outil", e.target.value, machineIndex)}
+                          className={styles.select}
+                        >
+                          <option value="">Aucun outil</option>
+                          {machine.outilsDisponibles.map((outil, outilIndex) => (
+                            <option key={outilIndex} value={outil}>
+                              {outil}
+                            </option>
+                          ))}
+                        </select>
+                        <small style={{ 
+                          display: "block", 
+                          fontSize: "0.7rem", 
+                          color: "#6b7280", 
+                          marginTop: "2px",
+                          textAlign: "center"
+                        }}>
+                          {produit.outils[machineIndex] ? '✓ Sélectionné' : 'Choisir un outil'}
+                        </small>
+                      </td>
+                    </React.Fragment>
+                  ))}
+                  <td>
+                    <div className={styles.metricCell} style={{ 
+                      color: "#10b981",
+                      fontWeight: "bold"
+                    }}>
+                      {calculateTempsRequisProduit(produit).toFixed(2)}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <button 
         onClick={handleSubmit} 
         disabled={isLoading}
-        className={styles.submitButton}
+        className={styles.calculateButton}
       >
-        {isLoading ? "Optimisation MIP en cours..." : "Résoudre avec l'algorithme MIP"}
+        {isLoading ? "Optimisation en cours..." : "Optimiser avec Programmation Linéaire Mixte"}
       </button>
 
-      {error && <div className={styles.error}>{error}</div>}
-
       {result && (
-        <div className={styles.results}>
-          <h3>Résultats de l'algorithme MIP - Lots de production</h3>
+        <div className={`${styles.section} ${styles.resultsSection}`}>
+          <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
           
-          <div className={styles.metricsGrid}>
-            <div>
-              <strong>Statut :</strong> 
-              <span style={{ color: result.statut_optimal ? '#10b981' : '#f59e0b' }}>
+          <div className={styles.resultsGrid}>
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue} style={{ 
+                color: result.status === 'Optimal' ? '#10b981' : '#f59e0b' 
+              }}>
                 {result.status}
-              </span>
-            </div>
-            <div>
-              <strong>Méthode :</strong> {result.methode}
-            </div>
-            <div>
-              <strong>Critère :</strong> {result.critere_selection}
-            </div>
-            <div>
-              <strong>Coût total inventaire :</strong> {result.cout_total_inventaire}
-            </div>
-            <div>
-              <strong>Horizon planification :</strong> {result.horizon_planification} périodes
-            </div>
-            {machines.map((machine, index) => (
-              <div key={index}>
-                <strong>{machine.nom} :</strong> {renderResultsForMachine(machine.nom, result)}
               </div>
-            ))}
-            <div>
-              <strong>Efficacité globale :</strong> {result.efficacite_globale}%
+              <div className={styles.metricLabel}>Statut de la Solution</div>
+            </div>
+            
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue}>
+                {devises[devise].symbole}{result.cout_total_inventaire || 0}
+              </div>
+              <div className={styles.metricLabel}>Coût Total d'Inventaire</div>
+            </div>
+            
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue}>
+                {result.efficacite_globale}%
+              </div>
+              <div className={styles.metricLabel}>Efficacité Globale</div>
+            </div>
+            
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue}>
+                {result.nombre_produits_assignes}
+              </div>
+              <div className={styles.metricLabel}>Produits Assignés</div>
             </div>
           </div>
 
-          {/* Planification par période */}
-          {result.planification_periodes && result.planification_periodes.length > 0 && (
-            <div className={styles.stationsSection}>
-              <h4>Planification par période :</h4>
-              {result.planification_periodes.map((periode, index) => (
-                <div key={index} className={styles.stationBlock}>
-                  <strong>Période {periode.numero}</strong>
-                  {periode.produits.length > 0 ? (
-                    <div>
-                      {periode.produits.map((produit, prodIndex) => (
-                        <div key={prodIndex} style={{ marginLeft: "1rem", marginTop: "0.5rem" }}>
-                          • <strong>{produit.nom}:</strong> {produit.quantite} unités 
-                          ({produit.pourcentage}% de {produit.quantite_totale}) 
-                          - Due: Jour {produit.date_due}
-                        </div>
-                      ))}
-                      <div style={{ marginTop: "0.5rem" }}>
-                        <strong>Outils utilisés:</strong>
-                        {Object.entries(periode.outils_utilises).map(([machine, outils]) => (
-                          <span key={machine} style={{ marginLeft: "1rem" }}>
-                            {machine}: {outils.length > 0 ? outils.join(", ") : "Aucun"}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ marginLeft: "1rem", color: "#6b7280" }}>
-                      Aucune production planifiée
-                    </div>
-                  )}
-                </div>
-              ))}
+          <div className={styles.solutionDetails}>
+            <h3>Utilisation des machines</h3>
+            <div className={styles.tableContainer}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Machine</th>
+                    <th>Temps Utilisé</th>
+                    <th>Temps Total</th>
+                    <th>Utilisation (%)</th>
+                    <th>Outils Utilisés</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {machines.map((machine, index) => {
+                    const machine_key = machine.nom.toLowerCase().replace(' ', '_');
+                    const temps_utilise = result[`temps_utilise_${machine_key}`] || 0;
+                    const temps_total = result[`temps_disponible_total_${machine_key}`] || 0;
+                    const utilisation = result[`utilisation_${machine_key}`] || 0;
+                    const outils_utilises = result[`outils_utilises_${machine_key}`] || [];
+                    const capacite = result[`capacite_outils_${machine_key}`] || 0;
+                    
+                    return (
+                      <tr key={index}>
+                        <td><strong>{machine.nom}</strong></td>
+                        <td>{temps_utilise}{uniteTemps}</td>
+                        <td>{temps_total}{uniteTemps}</td>
+                        <td style={{ 
+                          color: utilisation >= 80 ? "#10b981" : utilisation >= 50 ? "#f59e0b" : "#ef4444",
+                          fontWeight: "bold"
+                        }}>
+                          {utilisation}%
+                        </td>
+                        <td>
+                          {outils_utilises.join(", ") || "Aucun"} ({outils_utilises.length}/{capacite})
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {result.produits_assignes && result.produits_assignes.length > 0 && (
+            <div className={styles.solutionDetails}>
+              <h3>Produits assignés pour la production</h3>
+              {renderProduitsAssignes(result.produits_assignes)}
             </div>
           )}
 
+          {result.produits_non_assignes && result.produits_non_assignes.length > 0 && (
+            <div className={styles.solutionDetails}>
+              <h3>Produits non assignés</h3>
+              <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Produit</th>
+                      <th>Commande (unités)</th>
+                      <th>Date Due (jours)</th>
+                      <th>Coût Inventaire ({devises[devise].symbole})</th>
+                      <th>Raison d'exclusion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result.produits_non_assignes.map((produit, index) => (
+                      <tr key={index}>
+                        <td><strong>{produit.nom}</strong></td>
+                        <td>{produit.grandeur_commande}</td>
+                        <td>{produit.date_due}</td>
+                        <td>{devises[devise].symbole}{produit.cout_inventaire}</td>
+                        <td style={{ color: "#6b7280", fontStyle: "italic" }}>
+                          {produit.raison}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          
           {chartUrl && (
-            <div className={styles.ganttContainer}>
-              <h4>Analyse graphique de la planification MIP</h4>
-              <img 
-                src={chartUrl} 
-                alt="Graphiques FMS Lots de Production MIP" 
-                className={styles.gantt}
-                style={{ width: "100%", maxWidth: "800px" }}
-              />
-              <button 
-                onClick={handleDownloadChart}
-                className={styles.button}
-                style={{ marginTop: "1rem" }}
-              >
-                Télécharger le graphique
-              </button>
+            <div className={styles.solutionDetails}>
+              <h3>Analyse graphique</h3>
+              <div className={styles.chartContainer}>
+                <img 
+                  src={chartUrl} 
+                  alt="Graphique d'analyse FMS Lots de Production MIP" 
+                  style={{ width: "100%", height: "auto", borderRadius: "0.5rem", border: "1px solid #e5e7eb" }}
+                />
+              </div>
             </div>
           )}
         </div>

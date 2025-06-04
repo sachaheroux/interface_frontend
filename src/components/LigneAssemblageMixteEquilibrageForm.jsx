@@ -339,24 +339,22 @@ const LigneAssemblageMixteEquilibrageForm = () => {
         <div className={styles.productsContainer}>
           <div className={styles.productsHeader}>
             <div className={styles.productHeaderCell}>Produit</div>
-            <div className={styles.productHeaderCell}>Nom du produit</div>
             <div className={styles.productHeaderCell}>Demande</div>
           </div>
           
           {products.map((product, index) => (
             <div key={index} className={styles.productRow}>
               <div className={styles.productCell}>
-                <div className={styles.productBadge}>P{index + 1}</div>
-              </div>
-              
-              <div className={styles.productCell}>
-                <input
-                  type="text"
-                  value={product.name}
-                  onChange={(e) => updateProduct(index, 'name', e.target.value)}
-                  className={styles.productNameInput}
-                  placeholder={`Produit ${index + 1}`}
-                />
+                <div className={styles.productBadgeContainer}>
+                  <div className={styles.productBadge}>P{index + 1}</div>
+                  <input
+                    type="text"
+                    value={product.name}
+                    onChange={(e) => updateProduct(index, 'name', e.target.value)}
+                    className={styles.productNameInput}
+                    placeholder={`Produit ${index + 1}`}
+                  />
+                </div>
               </div>
               
               <div className={styles.productCell}>

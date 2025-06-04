@@ -28,6 +28,12 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+  
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.125rem;
@@ -138,12 +144,16 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-top: 0.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .addButton,
 .removeButton {
-  height: 36px;
-  padding: 0 1rem;
+  min-height: 45px;
+  min-width: 160px;
+  padding: var(--spacing-md) var(--spacing-sm);
   border: none;
   border-radius: var(--border-radius);
   font-size: var(--font-size-sm);
@@ -153,8 +163,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: var(--spacing-xs);
   background: var(--primary-color);
   color: white;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .addButton:hover:not(:disabled),
@@ -181,7 +194,7 @@
 
 .productsHeader {
   display: grid;
-  grid-template-columns: 80px 1fr 120px;
+  grid-template-columns: 1fr 120px;
   gap: 1rem;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
@@ -200,7 +213,7 @@
 
 .productRow {
   display: grid;
-  grid-template-columns: 80px 1fr 120px;
+  grid-template-columns: 1fr 120px;
   gap: 1rem;
   margin-bottom: 0.5rem;
   align-items: center;
@@ -210,6 +223,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.productBadgeContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .productBadge {
@@ -222,11 +242,11 @@
   min-width: 3rem;
   text-align: center;
   box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
 }
 
 .productNameInput,
 .demandInput {
-  width: 100%;
   height: 36px;
   padding: 0 0.75rem;
   border: 2px solid var(--border-color);
@@ -236,16 +256,22 @@
   transition: all 0.2s ease;
 }
 
+.productNameInput {
+  flex: 1;
+  font-weight: 500;
+}
+
+.demandInput {
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+}
+
 .productNameInput:focus,
 .demandInput:focus {
   outline: none;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.demandInput {
-  text-align: center;
-  font-weight: 600;
 }
 
 /* ===== TEMPS DE TRAITEMENT ===== */
@@ -259,7 +285,7 @@
 
 .timesHeader {
   display: grid;
-  grid-template-columns: 80px 200px repeat(var(--products-count, 2), minmax(120px, 1fr));
+  grid-template-columns: 300px repeat(var(--products-count, 2), minmax(150px, 1fr));
   gap: 1rem;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
@@ -286,7 +312,7 @@
 
 .timeRow {
   display: grid;
-  grid-template-columns: 80px 200px repeat(var(--products-count, 2), minmax(120px, 1fr));
+  grid-template-columns: 300px repeat(var(--products-count, 2), minmax(150px, 1fr));
   gap: 1rem;
   margin-bottom: 0.5rem;
   align-items: center;
@@ -299,6 +325,13 @@
   align-items: center;
 }
 
+.taskBadgeContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
 .taskNumber {
   background: var(--primary-color);
   color: white;
@@ -308,11 +341,11 @@
   font-weight: 700;
   min-width: 3rem;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .taskNameInput,
 .timeInput {
-  width: 100%;
   height: 36px;
   padding: 0 0.75rem;
   border: 2px solid var(--border-color);
@@ -322,17 +355,23 @@
   transition: all 0.2s ease;
 }
 
+.taskNameInput {
+  flex: 1;
+  font-weight: 500;
+}
+
+.timeInput {
+  width: 100%;
+  max-width: 120px;
+  text-align: center;
+  font-weight: 600;
+}
+
 .taskNameInput:focus,
 .timeInput:focus {
   outline: none;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.timeInput {
-  text-align: center;
-  font-weight: 600;
-  max-width: 100px;
 }
 
 /* ===== ERREURS ===== */
@@ -582,20 +621,29 @@
   .actionButtons {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
+    max-width: 400px;
   }
 
   .productsHeader,
   .productRow {
-    grid-template-columns: 60px 1fr 80px;
+    grid-template-columns: 1fr 100px;
+  }
+
+  .productBadgeContainer,
+  .taskBadgeContainer {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+
+  .productBadge,
+  .taskNumber {
+    align-self: center;
   }
 
   .timesHeader,
   .timeRow {
-    grid-template-columns: 60px 150px 1fr;
-  }
-
-  .timeInput {
-    max-width: 80px;
+    grid-template-columns: 250px repeat(var(--products-count, 2), minmax(120px, 1fr));
   }
 
   .metricsGrid {
@@ -622,6 +670,7 @@
 
   .actionButtons {
     grid-template-columns: 1fr;
+    max-width: 300px;
   }
 
   .productsHeader,
@@ -632,8 +681,11 @@
 
   .timesHeader,
   .timeRow {
-    grid-template-columns: 1fr;
-    text-align: center;
+    grid-template-columns: 200px repeat(var(--products-count, 2), minmax(100px, 1fr));
+  }
+
+  .timeInput {
+    max-width: 80px;
   }
 
   .metricsGrid {

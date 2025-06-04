@@ -291,24 +291,22 @@ const LigneAssemblageMixteGoulotForm = () => {
         <div className={styles.productsContainer}>
           <div className={styles.productsHeader}>
             <div className={styles.productHeaderCell}>Produit</div>
-            <div className={styles.productHeaderCell}>Nom du produit</div>
             <div className={styles.productHeaderCell}>Demande</div>
           </div>
           
           {products.map((product, index) => (
             <div key={index} className={styles.productRow}>
               <div className={styles.productCell}>
-                <div className={styles.productBadge}>P{index + 1}</div>
-              </div>
-              
-              <div className={styles.productCell}>
-                <input
-                  type="text"
-                  value={product.name}
-                  onChange={(e) => updateProduct(index, 'name', e.target.value)}
-                  className={styles.productNameInput}
-                  placeholder={`Produit ${index + 1}`}
-                />
+                <div className={styles.productBadgeContainer}>
+                  <div className={styles.productBadge}>P{index + 1}</div>
+                  <input
+                    type="text"
+                    value={product.name}
+                    onChange={(e) => updateProduct(index, 'name', e.target.value)}
+                    className={styles.productNameInput}
+                    placeholder={`Produit ${index + 1}`}
+                  />
+                </div>
               </div>
               
               <div className={styles.productCell}>
@@ -333,9 +331,8 @@ const LigneAssemblageMixteGoulotForm = () => {
         </h2>
         
         <div className={styles.timesContainer}>
-          <div className={styles.timesHeader}>
+          <div className={styles.timesHeader} style={{'--products-count': products.length}}>
             <div className={styles.timeHeaderCell}>Tâche</div>
-            <div className={styles.timeHeaderCell}>Nom de la tâche</div>
             {products.map((product, index) => (
               <div key={index} className={styles.timeHeaderCell}>
                 {product.name}<br/>
@@ -345,19 +342,18 @@ const LigneAssemblageMixteGoulotForm = () => {
           </div>
           
           {tasks.map((task, taskIndex) => (
-            <div key={task.id} className={styles.timeRow}>
+            <div key={task.id} className={styles.timeRow} style={{'--products-count': products.length}}>
               <div className={styles.timeCell}>
-                <div className={styles.taskNumber}>T{task.id}</div>
-              </div>
-              
-              <div className={styles.timeCell}>
-                <input
-                  type="text"
-                  value={task.name}
-                  onChange={(e) => updateTask(taskIndex, 'name', e.target.value)}
-                  className={styles.taskNameInput}
-                  placeholder={`Tâche ${task.id}`}
-                />
+                <div className={styles.taskBadgeContainer}>
+                  <div className={styles.taskNumber}>T{task.id}</div>
+                  <input
+                    type="text"
+                    value={task.name}
+                    onChange={(e) => updateTask(taskIndex, 'name', e.target.value)}
+                    className={styles.taskNameInput}
+                    placeholder={`Tâche ${task.id}`}
+                  />
+                </div>
               </div>
               
               {task.times.map((time, productIndex) => (

@@ -28,6 +28,12 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+  
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.125rem;
@@ -131,12 +137,16 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-top: 0.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .addButton,
 .removeButton {
-  height: 36px;
-  padding: 0 1rem;
+  min-height: 45px;
+  min-width: 160px;
+  padding: var(--spacing-md) var(--spacing-sm);
   border: none;
   border-radius: var(--border-radius);
   font-size: var(--font-size-sm);
@@ -146,8 +156,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: var(--spacing-xs);
   background: var(--primary-color);
   color: white;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .addButton:hover:not(:disabled),
@@ -174,7 +187,7 @@
 
 .productsHeader {
   display: grid;
-  grid-template-columns: 80px 1fr 120px;
+  grid-template-columns: 1fr 120px;
   gap: 1rem;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
@@ -193,7 +206,7 @@
 
 .productRow {
   display: grid;
-  grid-template-columns: 80px 1fr 120px;
+  grid-template-columns: 1fr 120px;
   gap: 1rem;
   margin-bottom: 0.5rem;
   align-items: center;
@@ -203,6 +216,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.productBadgeContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .productBadge {
@@ -215,11 +235,11 @@
   min-width: 3rem;
   text-align: center;
   box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
 }
 
 .productNameInput,
 .demandInput {
-  width: 100%;
   height: 36px;
   padding: 0 0.75rem;
   border: 2px solid var(--border-color);
@@ -229,16 +249,22 @@
   transition: all 0.2s ease;
 }
 
+.productNameInput {
+  flex: 1;
+  font-weight: 500;
+}
+
+.demandInput {
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+}
+
 .productNameInput:focus,
 .demandInput:focus {
   outline: none;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.demandInput {
-  text-align: center;
-  font-weight: 600;
 }
 
 /* ===== CONFIGURATION DES TÂCHES ===== */
@@ -602,11 +628,22 @@
   .actionButtons {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
+    max-width: 400px;
   }
 
   .productsHeader,
   .productRow {
-    grid-template-columns: 60px 1fr 80px;
+    grid-template-columns: 1fr 100px;
+  }
+
+  .productBadgeContainer {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+
+  .productBadge {
+    align-self: center;
   }
 
   .productsGrid {
@@ -657,6 +694,7 @@
 
   .actionButtons {
     grid-template-columns: 1fr;
+    max-width: 300px;
   }
 
   .productsHeader,

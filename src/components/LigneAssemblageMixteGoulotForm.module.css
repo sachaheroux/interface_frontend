@@ -33,6 +33,7 @@
   --spacing-md: 0.75rem;
   --spacing-lg: 1rem;
   --spacing-xl: 1.5rem;
+  --spacing-2xl: 2rem;
   
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -44,26 +45,24 @@
 
 /* ===== HEADER ===== */
 .header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-  color: white;
-  padding: 2rem;
-  border-radius: var(--border-radius-lg);
-  margin-bottom: 2rem;
-  box-shadow: var(--shadow-lg);
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 2px solid var(--background-section);
 }
 
 .title {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-2xl);
   font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  line-height: 1.2;
+  color: var(--primary-color);
+  margin: 0 0 var(--spacing-sm) 0;
 }
 
 .subtitle {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
   margin: 0;
-  opacity: 0.9;
-  line-height: 1.5;
+  font-weight: 400;
 }
 
 /* ===== SECTIONS ===== */

@@ -249,8 +249,10 @@ const LigneAssemblageMixteGoulotForm = () => {
           <div className={styles.actionButtons}>
             <button
               onClick={addProduct}
+              disabled={products.length >= 5}
               className={styles.addButton}
               type="button"
+              title={products.length >= 5 ? "Maximum 5 produits autorisés pour cet algorithme" : "Ajouter un nouveau produit à optimiser"}
             >
               + Ajouter un produit
             </button>
@@ -260,6 +262,7 @@ const LigneAssemblageMixteGoulotForm = () => {
               disabled={products.length <= 2}
               className={styles.removeButton}
               type="button"
+              title={products.length <= 2 ? "Minimum 2 produits requis" : "Supprimer le dernier produit"}
             >
               - Supprimer un produit
             </button>
@@ -268,6 +271,7 @@ const LigneAssemblageMixteGoulotForm = () => {
               onClick={addTask}
               className={styles.addButton}
               type="button"
+              title="Ajouter une nouvelle tâche au poste goulot"
             >
               + Ajouter une tâche
             </button>
@@ -277,6 +281,7 @@ const LigneAssemblageMixteGoulotForm = () => {
               disabled={tasks.length <= 1}
               className={styles.removeButton}
               type="button"
+              title={tasks.length <= 1 ? "Minimum 1 tâche requise" : "Supprimer la dernière tâche"}
             >
               - Supprimer une tâche
             </button>

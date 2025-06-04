@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./FMSSacADosForm.module.css";
+import config from "../config.js";
 
 export default function FMSSacADosGloutonForm() {
   const [capaciteMax, setCapaciteMax] = useState("100");
@@ -124,7 +125,7 @@ export default function FMSSacADosGloutonForm() {
       
       console.log("Données envoyées au backend:", donnees);
       
-      const response = await fetch("http://127.0.0.1:8000/fms/sac_a_dos_glouton", {
+      const response = await fetch(`${config.API_URL}/fms/sac_a_dos_glouton`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(donnees)

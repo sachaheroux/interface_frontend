@@ -8,10 +8,10 @@ export default function FMSLotsProductionMIPForm() {
   const [uniteTemps, setUniteTemps] = useState("minutes");
   const [devise, setDevise] = useState("CAD");
   
-  // État des machines avec données par défaut du collègue
+  // État des machines avec données par défaut du collègue (avec gestion d'espace)
   const [machines, setMachines] = useState([
-    { nom: "Machine A", nombre: 1, capaciteOutils: 2, outilsDisponibles: ["A1", "A2", "A3"], espaceOutils: [1, 1, 1] },
-    { nom: "Machine B", nombre: 1, capaciteOutils: 2, outilsDisponibles: ["B1", "B2"], espaceOutils: [1, 1] }
+    { nom: "Machine A", nombre: 1, capaciteOutils: 5, outilsDisponibles: ["A1", "A2", "A3"], espaceOutils: [1, 2, 3] },
+    { nom: "Machine B", nombre: 1, capaciteOutils: 4, outilsDisponibles: ["B1", "B2"], espaceOutils: [2, 2] }
   ]);
 
   const [produits, setProduits] = useState([
@@ -60,9 +60,9 @@ export default function FMSLotsProductionMIPForm() {
     const nouvelleMachine = { 
       nom: nouveauNom, 
       nombre: 1, 
-      capaciteOutils: 2, 
+      capaciteOutils: 5, 
       outilsDisponibles: [`${nouveauNom.slice(-1)}1`, `${nouveauNom.slice(-1)}2`], 
-      espaceOutils: [1, 1] 
+      espaceOutils: [2, 2] 
     };
     setMachines([...machines, nouvelleMachine]);
     
@@ -183,6 +183,12 @@ export default function FMSLotsProductionMIPForm() {
           setIsLoading(false);
           return;
         }
+        const espaceTotal = m.espaceOutils.reduce((sum, espace) => sum + espace, 0);
+        if (espaceTotal > m.capaciteOutils) {
+          setError(`Machine ${m.nom}: L'espace total des outils (${espaceTotal}) dépasse la capacité (${m.capaciteOutils}).`);
+          setIsLoading(false);
+          return;
+        }
       }
 
       // Validation des produits
@@ -273,27 +279,32 @@ export default function FMSLotsProductionMIPForm() {
   };
 
   const renderProduitsAssignes = (produits_assignes) => {
+    if (!produits_assignes || produits_assignes.length === 0) {
+      return <p style={{ color: "#6b7280", fontStyle: "italic" }}>Aucun produit assigné</p>;
+    }
+    
     return produits_assignes.map((produit, index) => (
       <div key={index} className={styles.solutionDetails} style={{ marginBottom: "1rem" }}>
-        <strong>{produit.nom}</strong> (Date due: Jour {produit.date_due})
+        <strong>{produit.nom}</strong> (Date due: Jour {produit.date_due || produit.dateDue})
         <br />
-        Quantité assignée : {produit.quantite_assignee}/{produit.quantite_totale} unités ({produit.pourcentage_assigne}%)
+        Quantité assignée : {produit.quantite_assignee || produit.quantiteAssignee || produit.grandeurCommande}/{produit.quantite_totale || produit.grandeurCommande} unités
+        {produit.pourcentage_assigne && <span> ({produit.pourcentage_assigne}%)</span>}
         <br />
-        Coût d'inventaire : {devises[devise].symbole}{produit.cout_inventaire_total || 0}
+        Coût d'inventaire : {devises[devise].symbole}{produit.cout_inventaire_total || produit.coutInventaire || 0}
         <br />
         {machines.map((machine, machineIndex) => {
           const machine_key = machine.nom.toLowerCase().replace(' ', '_');
-          const temps = produit[`temps_${machine_key}`];
-          const outil = produit[`outil_${machine_key}`];
+          const temps = produit[`temps_${machine_key}`] || produit.tempsOperations?.[machineIndex] || 0;
+          const outil = produit[`outil_${machine_key}`] || produit.outils?.[machineIndex] || '';
           return (
             <span key={machineIndex}>
-              {machine.nom}: {temps || 0}{uniteTemps}{outil ? ` (${outil})` : ''} | 
+              {machine.nom}: {temps}{uniteTemps}{outil ? ` (${outil})` : ''} | 
             </span>
           );
         })}
         <br />
         <small style={{ color: "#6b7280", fontStyle: "italic" }}>
-          Outils utilisés par machine
+          Temps de traitement par machine {outil ? 'et outils utilisés' : ''}
         </small>
       </div>
     ));
@@ -381,6 +392,12 @@ export default function FMSLotsProductionMIPForm() {
 
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Configuration des Machines</h2>
+        <div className={styles.configInfo} style={{ marginBottom: "1rem", padding: "1rem", backgroundColor: "#f0f9ff", borderLeft: "4px solid #0ea5e9", fontSize: "0.9rem" }}>
+          <strong>💡 Contrainte d'Espace Outil :</strong> Chaque machine a une capacité limitée d'espace pour les outils. 
+          L'algorithme MIP optimise le choix des outils selon leur espace requis.
+          <br/>
+          <strong>Exemple :</strong> Machine avec capacité 5, outils A1(1), A2(2), A3(3) → ne peut pas tout avoir simultanément.
+        </div>
         
         <div className={styles.tableContainer}>
           <table className={styles.table}>
@@ -388,71 +405,87 @@ export default function FMSLotsProductionMIPForm() {
               <tr>
                 <th>Nom de la Machine</th>
                 <th>Nombre d'Unités</th>
-                <th>Capacité d'Outils</th>
+                <th>Capacité Espace<br/><small>(unités d'espace)</small></th>
                 <th>Outils Disponibles</th>
-                <th>Espace par Outil</th>
-                <th>Capacité Totale<br/>({uniteTemps})</th>
+                <th>Espace par Outil<br/><small>(même ordre)</small></th>
+                <th>Capacité Temps<br/>({uniteTemps})</th>
+                <th>Validation Espace</th>
               </tr>
             </thead>
             <tbody>
-              {machines.map((machine, index) => (
-                <tr key={index}>
-                  <td>
-                    <input
-                      type="text"
-                      value={machine.nom}
-                      onChange={(e) => handleMachineChange(index, "nom", e.target.value)}
-                      className={styles.input}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      min="1"
-                      value={machine.nombre}
-                      onChange={(e) => handleMachineChange(index, "nombre", e.target.value)}
-                      className={styles.input}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      min="1"
-                      value={machine.capaciteOutils}
-                      onChange={(e) => handleMachineChange(index, "capaciteOutils", e.target.value)}
-                      className={styles.input}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={machine.outilsDisponibles.join(', ')}
-                      onChange={(e) => handleMachineChange(index, "outilsDisponibles", e.target.value)}
-                      className={styles.input}
-                      placeholder="A1, A2, A3"
-                      title="Séparez les outils par des virgules"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      value={machine.espaceOutils.join(', ')}
-                      onChange={(e) => handleMachineChange(index, "espaceOutils", e.target.value)}
-                      className={styles.input}
-                      placeholder="1, 1, 1"
-                      title="Espace requis pour chaque outil (séparez par des virgules)"
-                    />
-                  </td>
-                  <td>
-                    <div className={styles.metricCell} style={{ 
-                      color: "#2563eb",
-                      fontWeight: "bold"
-                    }}>
-                      {calculateCapaciteTotale(index).toFixed(1)}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {machines.map((machine, index) => {
+                const espaceTotal = machine.espaceOutils ? machine.espaceOutils.reduce((sum, espace) => sum + espace, 0) : 0;
+                const isEspaceValid = espaceTotal <= machine.capaciteOutils;
+                return (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="text"
+                        value={machine.nom}
+                        onChange={(e) => handleMachineChange(index, "nom", e.target.value)}
+                        className={styles.input}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        min="1"
+                        value={machine.nombre}
+                        onChange={(e) => handleMachineChange(index, "nombre", e.target.value)}
+                        className={styles.input}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        min="1"
+                        value={machine.capaciteOutils}
+                        onChange={(e) => handleMachineChange(index, "capaciteOutils", e.target.value)}
+                        className={styles.input}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={machine.outilsDisponibles.join(', ')}
+                        onChange={(e) => handleMachineChange(index, "outilsDisponibles", e.target.value)}
+                        className={styles.input}
+                        placeholder="A1, A2, A3"
+                        title="Séparez les outils par des virgules"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        value={machine.espaceOutils.join(', ')}
+                        onChange={(e) => handleMachineChange(index, "espaceOutils", e.target.value)}
+                        className={styles.input}
+                        placeholder="1, 2, 3"
+                        title="Espace requis pour chaque outil (séparez par des virgules)"
+                      />
+                    </td>
+                    <td>
+                      <div className={styles.metricCell} style={{ 
+                        color: "#2563eb",
+                        fontWeight: "bold"
+                      }}>
+                        {calculateCapaciteTotale(index).toFixed(1)}
+                      </div>
+                    </td>
+                    <td>
+                      <div className={styles.metricCell} style={{ 
+                        color: isEspaceValid ? "#10b981" : "#ef4444",
+                        fontWeight: "bold",
+                        fontSize: "0.8rem"
+                      }}>
+                        {espaceTotal}/{machine.capaciteOutils}
+                        <br/>
+                        {isEspaceValid ? "✓ OK" : "⚠️ Trop"}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -540,11 +573,14 @@ export default function FMSLotsProductionMIPForm() {
                           className={styles.select}
                         >
                           <option value="">Aucun outil</option>
-                          {machine.outilsDisponibles.map((outil, outilIndex) => (
-                            <option key={outilIndex} value={outil}>
-                              {outil}
-                            </option>
-                          ))}
+                          {machine.outilsDisponibles.map((outil, outilIndex) => {
+                            const espaceOutil = machine.espaceOutils[outilIndex] || 1;
+                            return (
+                              <option key={outilIndex} value={outil}>
+                                {outil} (espace: {espaceOutil})
+                              </option>
+                            );
+                          })}
                         </select>
                         <small style={{ 
                           display: "block", 
@@ -590,30 +626,37 @@ export default function FMSLotsProductionMIPForm() {
               <div className={styles.metricValue} style={{ 
                 color: result.status === 'Optimal' ? '#10b981' : '#f59e0b' 
               }}>
-                {result.status}
+                {result.status || 'Non défini'}
               </div>
               <div className={styles.metricLabel}>Statut de la Solution</div>
             </div>
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {devises[devise].symbole}{result.cout_total_inventaire || 0}
+                {devises[devise].symbole}{result.cout_total_inventaire || result.cout_inventaire_total || 0}
               </div>
               <div className={styles.metricLabel}>Coût Total d'Inventaire</div>
             </div>
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {result.efficacite_globale}%
+                {result.efficacite_globale || '0'}%
               </div>
               <div className={styles.metricLabel}>Efficacité Globale</div>
             </div>
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {result.nombre_produits_assignes}
+                {result.nombre_produits_assignes || (result.produits_assignes ? result.produits_assignes.length : 0)}
               </div>
               <div className={styles.metricLabel}>Produits Assignés</div>
+            </div>
+            
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue}>
+                {result.nombre_produits_rejetes || (result.produits_non_assignes ? result.produits_non_assignes.length : 0)}
+              </div>
+              <div className={styles.metricLabel}>Produits Rejetés</div>
             </div>
           </div>
 
@@ -628,6 +671,7 @@ export default function FMSLotsProductionMIPForm() {
                     <th>Temps Total</th>
                     <th>Utilisation (%)</th>
                     <th>Outils Utilisés</th>
+                    <th>Espace Utilisé</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -637,7 +681,8 @@ export default function FMSLotsProductionMIPForm() {
                     const temps_total = result[`temps_disponible_total_${machine_key}`] || 0;
                     const utilisation = result[`utilisation_${machine_key}`] || 0;
                     const outils_utilises = result[`outils_utilises_${machine_key}`] || [];
-                    const capacite = result[`capacite_outils_${machine_key}`] || 0;
+                    const espace_utilise = result[`espace_utilise_${machine_key}`] || 0;
+                    const capacite = result[`capacite_outils_${machine_key}`] || machine.capaciteOutils;
                     
                     return (
                       <tr key={index}>
@@ -651,7 +696,17 @@ export default function FMSLotsProductionMIPForm() {
                           {utilisation}%
                         </td>
                         <td>
-                          {outils_utilises.join(", ") || "Aucun"} ({outils_utilises.length}/{capacite})
+                          {outils_utilises.join(", ") || "Aucun"} 
+                          <br/>
+                          <small style={{ color: "#6b7280" }}>({outils_utilises.length} outils)</small>
+                        </td>
+                        <td style={{ 
+                          color: espace_utilise <= capacite ? "#10b981" : "#ef4444",
+                          fontWeight: "bold"
+                        }}>
+                          {espace_utilise}/{capacite}
+                          <br/>
+                          <small style={{ color: "#6b7280" }}>unités</small>
                         </td>
                       </tr>
                     );

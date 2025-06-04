@@ -1,5 +1,5 @@
-import { useState } from "react";
-import styles from "./FlowshopSPTForm.module.css";
+import React, { useState } from "react";
+import styles from "./LigneTransfertBufferBuzzacottForm.module.css";
 
 export default function LigneTransfertBufferBuzzacottForm() {
   // Paramètres de panne et réparation
@@ -13,19 +13,20 @@ export default function LigneTransfertBufferBuzzacottForm() {
   const [production, setProduction] = useState("1100");
   const [joursAnnee, setJoursAnnee] = useState("250");
   const [profitUnitaire, setProfitUnitaire] = useState("20");
+  const [timeUnit, setTimeUnit] = useState("cycles");
 
   // États pour les résultats
   const [result, setResult] = useState(null);
   const [chartUrl, setChartUrl] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [error, setError] = useState("");
 
-  const API_URL = "/api";
+  const API_URL = "https://interface-backend-1jgi.onrender.com";
 
-  const handleSubmit = () => {
-    setError(null);
+  const calculateOptimization = async () => {
+    setError("");
     setChartUrl(null);
-    setIsLoading(true);
+    setIsCalculating(true);
 
     try {
       // Validation des données
@@ -40,16 +41,12 @@ export default function LigneTransfertBufferBuzzacottForm() {
 
       if (isNaN(alpha1Value) || isNaN(alpha2Value) || isNaN(bInv1Value) || isNaN(bInv2Value) ||
           isNaN(bufferSizeValue) || isNaN(productionValue) || isNaN(joursAnneeValue) || isNaN(profitUnitaireValue)) {
-        setError("Tous les champs doivent être des nombres valides.");
-        setIsLoading(false);
-        return;
+        throw new Error("Tous les champs doivent être des nombres valides.");
       }
 
       if (alpha1Value <= 0 || alpha2Value <= 0 || bInv1Value <= 0 || bInv2Value <= 0 ||
           bufferSizeValue < 0 || productionValue <= 0 || joursAnneeValue <= 0 || profitUnitaireValue <= 0) {
-        setError("Tous les paramètres doivent être positifs (buffer peut être 0).");
-        setIsLoading(false);
-        return;
+        throw new Error("Tous les paramètres doivent être positifs (buffer peut être 0).");
       }
 
       const requestData = {
@@ -63,249 +60,347 @@ export default function LigneTransfertBufferBuzzacottForm() {
         profit_unitaire: profitUnitaireValue
       };
 
-      console.log("Sending data to API:", JSON.stringify(requestData, null, 2));
+      console.log("Données envoyées:", requestData);
 
       // Appel API pour les résultats
-      fetch(`${API_URL}/ligne_transfert/buffer_buzzacott`, {
+      const response = await fetch(`${API_URL}/ligne_transfert/buffer_buzzacott`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestData)
-      })
-        .then(res => {
-          console.log("Response status:", res.status);
-          if (!res.ok) {
-            return res.text().then(text => {
-              console.error("Error response:", text);
-              throw new Error(`Erreur API: ${res.status} - ${text}`);
-            });
-          }
-          return res.json();
-        })
-        .then(data => {
-          setResult(data);
-          // Récupérer le graphique
-          return fetch(`${API_URL}/ligne_transfert/buffer_buzzacott/chart`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestData)
-          });
-        })
-        .then(res => {
-          if (!res.ok) throw new Error("Erreur Graphique API");
-          return res.blob();
-        })
-        .then(blob => {
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Données reçues:", data);
+      setResult(data);
+
+      // Récupération du graphique
+      try {
+        const chartResponse = await fetch(`${API_URL}/ligne_transfert/buffer_buzzacott/chart`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestData)
+        });
+
+        if (chartResponse.ok) {
+          const blob = await chartResponse.blob();
           const url = URL.createObjectURL(blob);
           setChartUrl(url);
-        })
-        .catch(err => setError(err.message))
-        .finally(() => setIsLoading(false));
-    } catch (e) {
-      setError("Erreur dans les données saisies.");
-      setIsLoading(false);
+        }
+      } catch (chartError) {
+        console.log("Pas de graphique disponible");
+      }
+
+    } catch (err) {
+      console.error('Erreur:', err);
+      setError(`Erreur lors du calcul: ${err.message}`);
+    } finally {
+      setIsCalculating(false);
     }
   };
 
-  const handleDownloadChart = () => {
-    if (!chartUrl) return;
-    const link = document.createElement("a");
-    link.href = chartUrl;
-    link.download = "buffer_buzzacott_analysis.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadChart = () => {
+    if (chartUrl) {
+      const link = document.createElement("a");
+      link.href = chartUrl;
+      link.download = "buffer_buzzacott_analysis.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Ligne de Transfert - Buffer Buzzacott</h2>
-      
-      {/* Paramètres de panne */}
-      <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Paramètres de Panne des Stations</h4>
-        
-        <div className={styles.taskRow}>
-          <label><strong>Taux de panne Station 1 (α₁) :</strong></label>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={alpha1}
-            onChange={e => setAlpha1(e.target.value)}
-            className={styles.input}
-            placeholder="0.0003623188406"
-          />
-          <small className={styles.helpText}>Probabilité de panne par cycle</small>
-        </div>
+    <>
+      {/* Header */}
+      <div className={styles.header}>
+        <h1 className={styles.title}>Ligne de transfert - Analyse buffer Buzzacott</h1>
+        <p className={styles.subtitle}>
+          Optimisation du dimensionnement de buffer inter-stations
+        </p>
+      </div>
 
-        <div className={styles.taskRow}>
-          <label><strong>Taux de panne Station 2 (α₂) :</strong></label>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={alpha2}
-            onChange={e => setAlpha2(e.target.value)}
-            className={styles.input}
-            placeholder="0.0002536231884"
-          />
-          <small className={styles.helpText}>Probabilité de panne par cycle</small>
+      {/* Configuration principale */}
+      <div className={`${styles.section} ${styles.configSection}`}>
+        <div className={styles.configRow}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="timeUnit">Unité de temps</label>
+            <select
+              id="timeUnit"
+              value={timeUnit}
+              onChange={(e) => setTimeUnit(e.target.value)}
+              className={styles.select}
+            >
+              <option value="cycles">Cycles</option>
+              <option value="minutes">Minutes</option>
+              <option value="heures">Heures</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Paramètres de réparation */}
-      <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Paramètres de Réparation</h4>
-        
-        <div className={styles.taskRow}>
-          <label><strong>Temps de réparation Station 1 (b₁⁻¹) :</strong></label>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={bInv1}
-            onChange={e => setBInv1(e.target.value)}
-            className={styles.input}
-            placeholder="1605.8"
-          />
-          <small className={styles.helpText}>Nombre de cycles avant réparation</small>
-        </div>
-
-        <div className={styles.taskRow}>
-          <label><strong>Temps de réparation Station 2 (b₂⁻¹) :</strong></label>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={bInv2}
-            onChange={e => setBInv2(e.target.value)}
-            className={styles.input}
-            placeholder="30"
-          />
-          <small className={styles.helpText}>Nombre de cycles avant réparation</small>
-        </div>
-      </div>
-
-      {/* Paramètres de production */}
-      <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Paramètres de Production</h4>
-        
-        <div className={styles.taskRow}>
-          <label><strong>Taille du buffer (Z) :</strong></label>
-          <input
-            type="number"
-            min="0"
-            value={bufferSize}
-            onChange={e => setBufferSize(e.target.value)}
-            className={styles.input}
-            placeholder="320"
-          />
-          <small className={styles.helpText}>Nombre de pièces stockables</small>
-        </div>
-
-        <div className={styles.taskRow}>
-          <label><strong>Production nominale :</strong></label>
-          <input
-            type="number"
-            min="1"
-            value={production}
-            onChange={e => setProduction(e.target.value)}
-            className={styles.input}
-            placeholder="1100"
-          />
-          <small className={styles.helpText}>Pièces par jour</small>
-        </div>
-
-        <div className={styles.taskRow}>
-          <label><strong>Jours travaillés par année :</strong></label>
-          <input
-            type="number"
-            min="1"
-            max="365"
-            value={joursAnnee}
-            onChange={e => setJoursAnnee(e.target.value)}
-            className={styles.input}
-            placeholder="250"
-          />
-          <small className={styles.helpText}>Jours ouvrés annuels</small>
-        </div>
-
-        <div className={styles.taskRow}>
-          <label><strong>Profit unitaire :</strong></label>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={profitUnitaire}
-            onChange={e => setProfitUnitaire(e.target.value)}
-            className={styles.input}
-            placeholder="20"
-          />
-          <small className={styles.helpText}>Profit par pièce (€ ou $)</small>
-        </div>
-      </div>
-
-      <button 
-        onClick={handleSubmit} 
-        disabled={isLoading}
-        className={styles.submitButton}
-      >
-        {isLoading ? "Calcul en cours..." : "Analyser l'efficacité du buffer"}
-      </button>
-
-      {error && <div className={styles.error}>{error}</div>}
-
-      {result && (
-        <div className={styles.results}>
-          <h3>Résultats de l'analyse Buffer Buzzacott</h3>
+      {/* Paramètres organisés en grille */}
+      <div className={styles.parametersGrid}>
+        {/* Paramètres de panne */}
+        <div className={styles.parameterGroup}>
+          <h3 className={styles.parameterGroupTitle}>Paramètres de panne</h3>
           
-          <div className={styles.metricsGrid}>
-            <div>
-              <strong>Efficacité sans buffer E(0) :</strong> {result.E_0?.toFixed(10)}
-            </div>
-            <div>
-              <strong>Efficacité avec buffer E({result.buffer_size}) :</strong> {result.E_Z?.toFixed(10)}
-            </div>
-            <div>
-              <strong>Production actuelle :</strong> {result.production_sans_buffer?.toFixed(2)} pièces/jour
-            </div>
-            <div>
-              <strong>Production avec buffer :</strong> {result.production_avec_buffer?.toFixed(2)} pièces/jour
-            </div>
-            <div>
-              <strong>Gain journalier :</strong> +{result.gain_journalier?.toFixed(2)} pièces/jour
-            </div>
-            <div>
-              <strong>Gain annuel :</strong> +{result.gain_annuel?.toFixed(2)} pièces/an
-            </div>
+          <div className={styles.parameterRow}>
+            <label className={styles.parameterLabel}>Taux de panne Station 1 (α₁)</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={alpha1}
+              onChange={(e) => setAlpha1(e.target.value)}
+              className={styles.parameterInput}
+              placeholder="0.0003623188406"
+            />
+            <span className={styles.helpText}>Probabilité de panne par {timeUnit}</span>
           </div>
 
-          <div className={styles.metricsGrid}>
-            <div>
-              <strong>Paramètres calculés :</strong>
-              <br />x₁ = {result.x1?.toFixed(6)}<br />
-              x₂ = {result.x2?.toFixed(6)}<br />
-              s = {result.s?.toFixed(6)}<br />
-              r = {result.r?.toFixed(6)}
-            </div>
-            <div>
-              <strong>Retour sur investissement :</strong>
-              <br /><span style={{color: "#059669", fontSize: "1.2rem", fontWeight: "bold"}}>
-                {result.profit_annuel_supplementaire?.toFixed(2)} {result.devise || '€'}/an
-              </span>
-            </div>
+          <div className={styles.parameterRow}>
+            <label className={styles.parameterLabel}>Taux de panne Station 2 (α₂)</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={alpha2}
+              onChange={(e) => setAlpha2(e.target.value)}
+              className={styles.parameterInput}
+              placeholder="0.0002536231884"
+            />
+            <span className={styles.helpText}>Probabilité de panne par {timeUnit}</span>
+          </div>
+        </div>
+
+        {/* Paramètres de réparation */}
+        <div className={styles.parameterGroup}>
+          <h3 className={styles.parameterGroupTitle}>Paramètres de réparation</h3>
+          
+          <div className={styles.parameterRow}>
+            <label className={styles.parameterLabel}>Temps de réparation Station 1 (b₁⁻¹)</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={bInv1}
+              onChange={(e) => setBInv1(e.target.value)}
+              className={styles.parameterInput}
+              placeholder="1605.8"
+            />
+            <span className={styles.helpText}>Nombre de {timeUnit} avant réparation</span>
           </div>
 
-          {chartUrl && (
-            <div className={styles.ganttContainer}>
-              <h4>Graphique d'analyse du buffer</h4>
-              <img 
-                src={chartUrl} 
-                alt="Graphique d'analyse du buffer Buzzacott" 
-                className={styles.gantt}
-              />
-              <button onClick={handleDownloadChart} className={styles.downloadButton}>
-                Télécharger le graphique
-              </button>
-            </div>
-          )}
+          <div className={styles.parameterRow}>
+            <label className={styles.parameterLabel}>Temps de réparation Station 2 (b₂⁻¹)</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={bInv2}
+              onChange={(e) => setBInv2(e.target.value)}
+              className={styles.parameterInput}
+              placeholder="30"
+            />
+            <span className={styles.helpText}>Nombre de {timeUnit} avant réparation</span>
+          </div>
+        </div>
+
+        {/* Paramètres de production */}
+        <div className={styles.parameterGroup}>
+          <h3 className={styles.parameterGroupTitle}>Paramètres de production</h3>
+          
+          <div className={styles.parameterRow}>
+            <label className={styles.parameterLabel}>Taille du buffer (Z)</label>
+            <input
+              type="number"
+              min="0"
+              value={bufferSize}
+              onChange={(e) => setBufferSize(e.target.value)}
+              className={styles.parameterInput}
+              placeholder="320"
+            />
+            <span className={styles.helpText}>Nombre de pièces stockables</span>
+          </div>
+
+          <div className={styles.parameterRow}>
+            <label className={styles.parameterLabel}>Production nominale</label>
+            <input
+              type="number"
+              min="1"
+              value={production}
+              onChange={(e) => setProduction(e.target.value)}
+              className={styles.parameterInput}
+              placeholder="1100"
+            />
+            <span className={styles.helpText}>Pièces par jour</span>
+          </div>
+        </div>
+
+        {/* Paramètres économiques */}
+        <div className={styles.parameterGroup}>
+          <h3 className={styles.parameterGroupTitle}>Paramètres économiques</h3>
+          
+          <div className={styles.parameterRow}>
+            <label className={styles.parameterLabel}>Jours travaillés par année</label>
+            <input
+              type="number"
+              min="1"
+              max="365"
+              value={joursAnnee}
+              onChange={(e) => setJoursAnnee(e.target.value)}
+              className={styles.parameterInput}
+              placeholder="250"
+            />
+            <span className={styles.helpText}>Jours ouvrés annuels</span>
+          </div>
+
+          <div className={styles.parameterRow}>
+            <label className={styles.parameterLabel}>Profit unitaire</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={profitUnitaire}
+              onChange={(e) => setProfitUnitaire(e.target.value)}
+              className={styles.parameterInput}
+              placeholder="20"
+            />
+            <span className={styles.helpText}>Profit par pièce (€ ou $)</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Gestion d'erreur */}
+      {error && (
+        <div className={styles.errorSection}>
+          <div className={styles.errorBox}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorText}>{error}</span>
+          </div>
         </div>
       )}
-    </div>
+
+      {/* Bouton de calcul */}
+      <button
+        onClick={calculateOptimization}
+        disabled={isCalculating}
+        className={styles.calculateButton}
+        type="button"
+      >
+        {isCalculating ? "Analyse en cours..." : "Analyser l'efficacité du buffer"}
+      </button>
+
+      {/* Résultats */}
+      {result && (
+        <div className={`${styles.section} ${styles.resultsSection}`}>
+          <h2 className={styles.resultsTitle}>Résultats de l'analyse Buffer Buzzacott</h2>
+
+          {/* Métriques principales */}
+          <div className={styles.metricsGrid}>
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.E_0?.toFixed(6)}
+              </div>
+              <div className={styles.metricLabel}>
+                Efficacité sans buffer E(0)
+              </div>
+            </div>
+            
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.E_Z?.toFixed(6)}
+              </div>
+              <div className={styles.metricLabel}>
+                Efficacité avec buffer E({result.buffer_size})
+              </div>
+            </div>
+            
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.production_sans_buffer?.toFixed(0)}
+              </div>
+              <div className={styles.metricLabel}>
+                Production actuelle (pièces/jour)
+              </div>
+            </div>
+
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                {result.production_avec_buffer?.toFixed(0)}
+              </div>
+              <div className={styles.metricLabel}>
+                Production avec buffer (pièces/jour)
+              </div>
+            </div>
+
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                +{result.gain_journalier?.toFixed(0)}
+              </div>
+              <div className={styles.metricLabel}>
+                Gain journalier (pièces/jour)
+              </div>
+            </div>
+
+            <div className={styles.metric}>
+              <div className={styles.metricValue}>
+                +{result.gain_annuel?.toFixed(0)}
+              </div>
+              <div className={styles.metricLabel}>
+                Gain annuel (pièces/an)
+              </div>
+            </div>
+          </div>
+
+          {/* Détails techniques */}
+          <div className={styles.technicalDetails}>
+            <h4>Paramètres calculés</h4>
+            <div className={styles.technicalGrid}>
+              <div className={styles.technicalItem}>
+                <strong>x₁:</strong> {result.x1?.toFixed(6)}
+              </div>
+              <div className={styles.technicalItem}>
+                <strong>x₂:</strong> {result.x2?.toFixed(6)}
+              </div>
+              <div className={styles.technicalItem}>
+                <strong>s:</strong> {result.s?.toFixed(6)}
+              </div>
+              <div className={styles.technicalItem}>
+                <strong>r:</strong> {result.r?.toFixed(6)}
+              </div>
+            </div>
+          </div>
+
+          {/* ROI mis en avant */}
+          <div className={styles.roiHighlight}>
+            Retour sur investissement: {result.profit_annuel_supplementaire?.toFixed(0)} {result.devise || '€'}/an
+          </div>
+        </div>
+      )}
+
+      {/* Graphiques */}
+      {chartUrl && (
+        <div className={`${styles.section} ${styles.chartSection}`}>
+          <div className={styles.chartHeader}>
+            <h3>Graphique d'analyse du buffer</h3>
+          </div>
+          <div className={styles.chartContainer}>
+            <img
+              src={chartUrl}
+              alt="Graphique d'analyse du buffer Buzzacott"
+              className={styles.chart}
+            />
+            <button
+              onClick={downloadChart}
+              className={styles.downloadButton}
+              type="button"
+            >
+              Télécharger le graphique
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 } 

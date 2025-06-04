@@ -1,376 +1,328 @@
-import { useState } from "react";
-import styles from "./FlowshopSPTForm.module.css";
+import React, { useState } from "react";
+import styles from "./FMSSacADosForm.module.css";
 
 export default function FMSSacADosPLForm() {
-  const [produits, setProduits] = useState([
-    { nom: "Produit 1", venteUnite: 200, coutMPUnite: 45, demandePeriode: 100, tempsFabrication: 1 },
-    { nom: "Produit 2", venteUnite: 155, coutMPUnite: 35, demandePeriode: 50, tempsFabrication: 2 },
-    { nom: "Produit 3", venteUnite: 300, coutMPUnite: 124, demandePeriode: 50, tempsFabrication: 4 },
-    { nom: "Produit 4", venteUnite: 125, coutMPUnite: 50, demandePeriode: 75, tempsFabrication: 1 },
-    { nom: "Produit 5", venteUnite: 280, coutMPUnite: 120, demandePeriode: 60, tempsFabrication: 2 },
-    { nom: "Produit 6", venteUnite: 86, coutMPUnite: 34, demandePeriode: 30, tempsFabrication: 1 },
-    { nom: "Produit 7", venteUnite: 93, coutMPUnite: 36, demandePeriode: 50, tempsFabrication: 1 },
-    { nom: "Produit 8", venteUnite: 165, coutMPUnite: 114, demandePeriode: 600, tempsFabrication: 0.5 }
+  const [capacite, setCapacite] = useState("50");
+  const [nbObjets, setNbObjets] = useState("4");
+  const [devise, setDevise] = useState("CAD");
+  const [objets, setObjets] = useState([
+    { nom: "Objet 1", poids: "10", valeur: "60" },
+    { nom: "Objet 2", poids: "20", valeur: "100" },
+    { nom: "Objet 3", poids: "30", valeur: "120" },
+    { nom: "Objet 4", poids: "15", valeur: "80" }
   ]);
+  const [resultats, setResultats] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [erreur, setErreur] = useState("");
 
-  const [coutOp, setCoutOp] = useState("50");
-  const [capaciteMax, setCapaciteMax] = useState("250");
-  const [unite, setUnite] = useState("heures");
-  const [result, setResult] = useState(null);
-  const [chartUrl, setChartUrl] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const API_URL = "/api";
-
-  const addProduit = () => {
-    setProduits([...produits, { 
-      nom: `Produit ${produits.length + 1}`, 
-      venteUnite: 100, 
-      coutMPUnite: 30, 
-      demandePeriode: 50, 
-      tempsFabrication: 1 
-    }]);
+  const devises = {
+    "CAD": { symbole: "$", nom: "Dollar Canadien" },
+    "USD": { symbole: "$", nom: "Dollar Américain" },
+    "EUR": { symbole: "€", nom: "Euro" },
+    "GBP": { symbole: "£", nom: "Livre Sterling" },
+    "JPY": { symbole: "¥", nom: "Yen Japonais" }
   };
 
-  const removeProduit = () => {
-    if (produits.length > 1) {
-      setProduits(produits.slice(0, -1));
-    }
-  };
-
-  const handleProduitChange = (index, field, value) => {
-    const newProduits = [...produits];
-    if (field === 'nom') {
-      newProduits[index][field] = value;
+  const ajusterNombreObjets = (nouveauNombre) => {
+    const nb = parseInt(nouveauNombre);
+    if (isNaN(nb) || nb < 1) return;
+    
+    setNbObjets(nouveauNombre);
+    
+    const nouveauxObjets = [...objets];
+    
+    if (nb > objets.length) {
+      for (let i = objets.length; i < nb; i++) {
+        nouveauxObjets.push({
+          nom: `Objet ${i + 1}`,
+          poids: "10",
+          valeur: "50"
+        });
+      }
     } else {
-      newProduits[index][field] = parseFloat(value) || 0;
+      nouveauxObjets.splice(nb);
     }
-    setProduits(newProduits);
+    
+    setObjets(nouveauxObjets);
   };
 
-  const handleSubmit = () => {
-    setError(null);
-    setChartUrl(null);
-    setIsLoading(true);
+  const modifierObjet = (index, champ, valeur) => {
+    const nouveauxObjets = [...objets];
+    nouveauxObjets[index][champ] = valeur;
+    setObjets(nouveauxObjets);
+  };
 
+  const calculerMetriques = () => {
+    const poidsTotal = objets.reduce((sum, obj) => sum + parseFloat(obj.poids || 0), 0);
+    const valeurTotale = objets.reduce((sum, obj) => sum + parseFloat(obj.valeur || 0), 0);
+    const ratioMoyen = objets.length > 0 ? 
+      objets.reduce((sum, obj) => {
+        const poids = parseFloat(obj.poids || 0);
+        const valeur = parseFloat(obj.valeur || 0);
+        return sum + (poids > 0 ? valeur / poids : 0);
+      }, 0) / objets.length : 0;
+
+    return { poidsTotal, valeurTotale, ratioMoyen };
+  };
+
+  const { poidsTotal, valeurTotale, ratioMoyen } = calculerMetriques();
+
+  const calculerSacADos = async () => {
+    setLoading(true);
+    setErreur("");
+    
     try {
-      // Validation
-      const coutOpValue = parseFloat(coutOp.replace(",", "."));
-      const capaciteMaxValue = parseInt(capaciteMax);
-
-      if (isNaN(coutOpValue) || coutOpValue < 0) {
-        setError("Le coût d'opération doit être un nombre positif.");
-        setIsLoading(false);
-        return;
-      }
-
-      if (isNaN(capaciteMaxValue) || capaciteMaxValue <= 0) {
-        setError("La capacité maximale doit être un nombre entier positif.");
-        setIsLoading(false);
-        return;
-      }
-
-      // Validation des produits
-      for (let i = 0; i < produits.length; i++) {
-        const p = produits[i];
-        if (p.venteUnite <= 0 || p.coutMPUnite < 0 || p.demandePeriode <= 0 || p.tempsFabrication <= 0) {
-          setError(`Produit ${i + 1}: Toutes les valeurs doivent être positives.`);
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      const requestData = {
-        vente_unite: produits.map(p => p.venteUnite),
-        cout_mp_unite: produits.map(p => p.coutMPUnite),
-        demande_periode: produits.map(p => p.demandePeriode),
-        temps_fabrication_unite: produits.map(p => p.tempsFabrication),
-        cout_op: coutOpValue,
-        capacite_max: capaciteMaxValue,
-        noms_produits: produits.map(p => p.nom),
-        unite: unite
+      const donnees = {
+        capacite: parseInt(capacite),
+        objets: objets.map((obj, index) => ({
+          nom: obj.nom,
+          poids: parseInt(obj.poids),
+          valeur: parseInt(obj.valeur)
+        }))
       };
-
-      console.log("Sending data to API:", JSON.stringify(requestData, null, 2));
-
-      // Appel API pour les résultats
-      fetch(`${API_URL}/fms/sac_a_dos_pl`, {
+      
+      const response = await fetch("http://localhost:8000/fms-sac-a-dos-pl", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestData)
-      })
-        .then(res => {
-          console.log("Response status:", res.status);
-          if (!res.ok) {
-            return res.text().then(text => {
-              console.error("Error response:", text);
-              throw new Error(`Erreur API: ${res.status} - ${text}`);
-            });
-          }
-          return res.json();
-        })
-        .then(data => {
-          setResult(data);
-          // Récupérer le graphique
-          return fetch(`${API_URL}/fms/sac_a_dos_pl/chart`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestData)
-          });
-        })
-        .then(res => {
-          if (!res.ok) throw new Error("Erreur Graphique API");
-          return res.blob();
-        })
-        .then(blob => {
-          const url = URL.createObjectURL(blob);
-          setChartUrl(url);
-        })
-        .catch(err => setError(err.message))
-        .finally(() => setIsLoading(false));
-    } catch (e) {
-      setError("Erreur dans les données saisies.");
-      setIsLoading(false);
+        body: JSON.stringify(donnees)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+      
+      const resultats = await response.json();
+      setResultats(resultats);
+    } catch (error) {
+      console.error("Erreur:", error);
+      setErreur(`Erreur lors du calcul: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDownloadChart = () => {
-    if (!chartUrl) return;
-    const link = document.createElement("a");
-    link.href = chartUrl;
-    link.download = "fms_sac_a_dos_pl.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const calculateProfitUnitaire = (produit) => {
-    return produit.venteUnite - (parseFloat(coutOp.replace(",", ".")) * produit.tempsFabrication + produit.coutMPUnite);
-  };
-
-  const calculateTempsRequis = (produit) => {
-    return produit.tempsFabrication * produit.demandePeriode;
+  const reinitialiser = () => {
+    setCapacite("50");
+    setNbObjets("4");
+    setDevise("CAD");
+    setObjets([
+      { nom: "Objet 1", poids: "10", valeur: "60" },
+      { nom: "Objet 2", poids: "20", valeur: "100" },
+      { nom: "Objet 3", poids: "30", valeur: "120" },
+      { nom: "Objet 4", poids: "15", valeur: "80" }
+    ]);
+    setResultats(null);
+    setErreur("");
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>FMS - Sac à Dos (Programmation Linéaire)</h2>
-      
-      <div className={styles.unitSelector}>
-        <label>Unité de temps :</label>
-        <select value={unite} onChange={(e) => setUnite(e.target.value)} className={styles.select}>
-          <option value="heures">heures</option>
-          <option value="minutes">minutes</option>
-          <option value="jours">jours</option>
-        </select>
+    <div className={styles.algorithmContainer}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Problème du Sac à Dos - Programmation Linéaire</h1>
+        <p className={styles.subtitle}>
+          Résolution par programmation linéaire avec PuLP
+        </p>
       </div>
 
-      <div className={styles.taskRow}>
-        <label><strong>Coût d'opération ($/heure) :</strong></label>
-        <input
-          type="text"
-          inputMode="decimal"
-          value={coutOp}
-          onChange={e => setCoutOp(e.target.value)}
-          className={styles.input}
-          placeholder="50"
-        />
-      </div>
+      {erreur && (
+        <div className={styles.errorSection}>
+          <div className={styles.errorBox}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorText}>{erreur}</span>
+          </div>
+        </div>
+      )}
 
-      <div className={styles.taskRow}>
-        <label><strong>Capacité maximale ({unite}) :</strong></label>
-        <input
-          type="number"
-          min="1"
-          value={capaciteMax}
-          onChange={e => setCapaciteMax(e.target.value)}
-          className={styles.input}
-          placeholder="250"
-        />
-      </div>
-
-      <div className={styles.buttonGroup}>
-        <button className={styles.button} onClick={addProduit}>+ Ajouter un produit</button>
-        <button className={styles.button} onClick={removeProduit}>- Supprimer un produit</button>
-      </div>
-
-      {/* Configuration des produits */}
-      <div className={styles.tasksContainer}>
-        <h4 className={styles.subtitle}>Configuration des produits</h4>
+      <div className={`${styles.section} ${styles.configSection}`}>
+        <h2 className={styles.sectionTitle}>Configuration</h2>
         
-        {produits.map((produit, index) => (
-          <div key={index} className={styles.jobBlock}>
-            <h4>{produit.nom}</h4>
-            
-            <div className={styles.taskRow}>
-              <label>Nom du produit :</label>
-              <input
-                type="text"
-                value={produit.nom}
-                onChange={(e) => handleProduitChange(index, "nom", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <div className={styles.taskRow}>
-              <label>Prix de vente ($/unité) :</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={produit.venteUnite}
-                onChange={(e) => handleProduitChange(index, "venteUnite", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <div className={styles.taskRow}>
-              <label>Coût matière première ($/unité) :</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={produit.coutMPUnite}
-                onChange={(e) => handleProduitChange(index, "coutMPUnite", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <div className={styles.taskRow}>
-              <label>Demande (unités) :</label>
-              <input
-                type="number"
-                min="1"
-                value={produit.demandePeriode}
-                onChange={(e) => handleProduitChange(index, "demandePeriode", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <div className={styles.taskRow}>
-              <label>Temps de fabrication ({unite}/unité) :</label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={produit.tempsFabrication}
-                onChange={(e) => handleProduitChange(index, "tempsFabrication", e.target.value)}
-                className={styles.input}
-              />
-            </div>
-
-            <small className={styles.helpText}>
-              <strong>Profit unitaire :</strong> ${calculateProfitUnitaire(produit).toFixed(2)} | 
-              <strong> Temps requis total :</strong> {calculateTempsRequis(produit).toFixed(1)} {unite} |
-              <strong> Profit total potentiel :</strong> ${(calculateProfitUnitaire(produit) * produit.demandePeriode).toFixed(2)}
-            </small>
+        <div className={styles.configRow}>
+          <div className={styles.inputGroup}>
+            <label>Capacité du sac à dos</label>
+            <input
+              type="number"
+              value={capacite}
+              onChange={(e) => setCapacite(e.target.value)}
+              className={styles.input}
+              min="1"
+            />
           </div>
-        ))}
+          
+          <div className={styles.inputGroup}>
+            <label>Nombre d'objets</label>
+            <input
+              type="number"
+              value={nbObjets}
+              onChange={(e) => ajusterNombreObjets(e.target.value)}
+              className={styles.input}
+              min="1"
+              max="20"
+            />
+          </div>
+          
+          <div className={styles.inputGroup}>
+            <label>Devise</label>
+            <select
+              value={devise}
+              onChange={(e) => setDevise(e.target.value)}
+              className={styles.select}
+            >
+              {Object.entries(devises).map(([code, info]) => (
+                <option key={code} value={code}>
+                  {info.symbole} {info.nom}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
-      <button 
-        onClick={handleSubmit} 
-        disabled={isLoading}
-        className={styles.submitButton}
-      >
-        {isLoading ? "Optimisation en cours..." : "Résoudre avec programmation linéaire"}
-      </button>
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Objets à considérer</h2>
+        
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Nom de l'objet</th>
+                <th>Poids</th>
+                <th>Valeur ({devises[devise].symbole})</th>
+                <th>Ratio Valeur/Poids</th>
+              </tr>
+            </thead>
+            <tbody>
+              {objets.map((objet, index) => (
+                <tr key={index}>
+                  <td>
+                    <input
+                      type="text"
+                      value={objet.nom}
+                      onChange={(e) => modifierObjet(index, "nom", e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      value={objet.poids}
+                      onChange={(e) => modifierObjet(index, "poids", e.target.value)}
+                      min="1"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      value={objet.valeur}
+                      onChange={(e) => modifierObjet(index, "valeur", e.target.value)}
+                      min="0"
+                    />
+                  </td>
+                  <td>
+                    <div className={styles.metricCell}>
+                      {(parseFloat(objet.poids) > 0 ? 
+                        (parseFloat(objet.valeur) / parseFloat(objet.poids)).toFixed(2) : 
+                        "0.00"
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        <div className={styles.metricsRow}>
+          <div className={styles.metricCell}>
+            <strong>Poids total: {poidsTotal.toFixed(1)}</strong>
+          </div>
+          <div className={styles.metricCell}>
+            <strong>Valeur totale: {devises[devise].symbole}{valeurTotale.toFixed(2)}</strong>
+          </div>
+          <div className={styles.metricCell}>
+            <strong>Ratio moyen: {ratioMoyen.toFixed(2)}</strong>
+          </div>
+          <div className={styles.metricCell}>
+            <strong>Capacité: {capacite}</strong>
+          </div>
+        </div>
+      </div>
 
-      {error && <div className={styles.error}>{error}</div>}
+      <div className={styles.actionButtons}>
+        <button
+          onClick={calculerSacADos}
+          disabled={loading}
+          className={styles.calculateButton}
+        >
+          {loading ? "Calcul en cours..." : "Calculer avec Programmation Linéaire"}
+        </button>
+        <button
+          onClick={reinitialiser}
+          className={`${styles.button} ${styles.secondaryButton}`}
+        >
+          Réinitialiser
+        </button>
+      </div>
 
-      {result && (
-        <div className={styles.results}>
-          <h3>Résultats de l'optimisation</h3>
+      {resultats && (
+        <div className={`${styles.section} ${styles.resultsSection}`}>
+          <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
           
-          <div className={styles.metricsGrid}>
-            <div>
-              <strong>Statut :</strong> 
-              <span style={{ color: result.status === 'Optimal' ? '#10b981' : '#f59e0b' }}>
-                {result.status}
-              </span>
+          <div className={styles.resultsGrid}>
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue}>
+                {devises[devise].symbole}{resultats.valeur_optimale}
+              </div>
+              <div className={styles.metricLabel}>Valeur optimale</div>
             </div>
-            <div>
-              <strong>Profit maximal :</strong> ${result.profit_maximal}
+            
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue}>
+                {resultats.poids_utilise}
+              </div>
+              <div className={styles.metricLabel}>Poids utilisé / {capacite}</div>
             </div>
-            <div>
-              <strong>Capacité utilisée :</strong> {result.capacite_utilisee}/{result.capacite_totale} {result.unite}
+            
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue}>
+                {((resultats.poids_utilise / parseInt(capacite)) * 100).toFixed(1)}%
+              </div>
+              <div className={styles.metricLabel}>Utilisation capacité</div>
             </div>
-            <div>
-              <strong>Utilisation :</strong> {result.utilisation_capacite}%
-            </div>
-            <div>
-              <strong>Efficacité :</strong> {result.efficacite}%
-            </div>
-            <div>
-              <strong>Produits sélectionnés :</strong> {result.nombre_produits_selectionnes}
+            
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue}>
+                {resultats.objets_selectionnes.length}
+              </div>
+              <div className={styles.metricLabel}>Objets sélectionnés</div>
             </div>
           </div>
-
-          <div style={{ 
-            padding: "0.5rem", 
-            margin: "1rem 0", 
-            backgroundColor: "#e0f2fe", 
-            borderRadius: "0.375rem",
-            border: "1px solid #0891b2" 
-          }}>
-            <strong style={{ color: "#0891b2" }}>Méthode utilisée :</strong> {result.methode}
-          </div>
-
-          {/* Produits sélectionnés */}
-          {result.produits_selectionnes && result.produits_selectionnes.length > 0 && (
-            <div className={styles.stationsSection}>
-              <h4>Produits sélectionnés pour la production :</h4>
-              {result.produits_selectionnes.map((produit, index) => (
-                <div key={index} className={styles.stationBlock}>
-                  <strong>{produit.nom}</strong>
-                  <br />
-                  Profit unitaire : ${produit.profit_unitaire} | 
-                  Profit total : ${produit.profit_total} | 
-                  Temps requis : {produit.temps_requis} {result.unite}
-                  <br />
-                  <small className={styles.helpText}>
-                    Demande : {produit.demande} unités | 
-                    Prix vente : ${produit.prix_vente} | 
-                    Coût MP : ${produit.cout_mp} | 
-                    Temps fab. : {produit.temps_fabrication} {result.unite}/unité
-                  </small>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Produits non sélectionnés */}
-          {result.produits_non_selectionnes && result.produits_non_selectionnes.length > 0 && (
-            <div className={styles.stationsSection}>
-              <h4>Produits non sélectionnés :</h4>
-              {result.produits_non_selectionnes.map((produit, index) => (
-                <div key={index} style={{ 
-                  padding: "0.5rem", 
-                  margin: "0.5rem 0", 
-                  border: "1px solid #fecaca", 
-                  borderRadius: "0.375rem", 
-                  backgroundColor: "#fef2f2" 
-                }}>
-                  <strong>{produit.nom}</strong> - Profit unitaire : ${produit.profit_unitaire}
-                  <br />
-                  <small className={styles.helpText}>Raison : {produit.raison_exclusion}</small>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {chartUrl && (
-            <div className={styles.ganttContainer}>
-              <h4>Analyse graphique du sac à dos (PL)</h4>
-              <img 
-                src={chartUrl} 
-                alt="Graphiques FMS Sac à Dos PL" 
-                className={styles.gantt}
-              />
-              <button onClick={handleDownloadChart} className={styles.downloadButton}>
-                Télécharger les graphiques
-              </button>
+          
+          {resultats.objets_selectionnes && resultats.objets_selectionnes.length > 0 && (
+            <div>
+              <h3 style={{ marginBottom: "1rem", color: "#3b82f6" }}>
+                Objets dans la solution optimale
+              </h3>
+              <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Nom</th>
+                      <th>Poids</th>
+                      <th>Valeur</th>
+                      <th>Ratio</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {resultats.objets_selectionnes.map((objet, index) => (
+                      <tr key={index}>
+                        <td>{objet.nom}</td>
+                        <td>{objet.poids}</td>
+                        <td>{devises[devise].symbole}{objet.valeur}</td>
+                        <td>{(objet.valeur / objet.poids).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

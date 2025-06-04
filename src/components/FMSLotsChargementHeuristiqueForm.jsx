@@ -167,7 +167,7 @@ export default function FMSLotsChargementHeuristiqueForm() {
   const getValidationIcon = (machineIndex) => {
     const utilisation = parseFloat(calculateCapaciteUtilisee(machineIndex));
     if (utilisation <= 100) return { icon: "✓", color: "#10b981" };
-    return { icon: "⚠️", color: "#f59e0b" };
+    return { icon: "⚠", color: "#f59e0b" };
   };
 
   const getTotalOutilsRequisMachine = (machineIndex) => {
@@ -276,97 +276,67 @@ export default function FMSLotsChargementHeuristiqueForm() {
     document.body.removeChild(link);
   };
 
-  const renderResultsForMachine = (nom_machine, result) => {
-    const machine_key = nom_machine.toLowerCase().replace(' ', '_');
-    const nb_operations = result[`nb_operations_${machine_key}`] || 0;
-    const nb_clusters = result[`nb_clusters_${machine_key}`] || 0;
-    const nb_groupes = result[`nb_groupes_${machine_key}`] || 0;
-    const utilisation = result[`utilisation_${machine_key}`] || 0;
-    
-    return `${nb_operations} ops → ${nb_clusters} clusters → ${nb_groupes} groupes (${utilisation}%)`;
-  };
-
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>FMS - Lots de Chargement (Heuristique)</h2>
-      
-      <div className={styles.unitSelector}>
-        <label>Unité de temps :</label>
-        <select value={uniteTemps} onChange={(e) => setUniteTemps(e.target.value)} className={styles.select}>
-          <option value="minutes">minutes</option>
-          <option value="heures">heures</option>
-          <option value="jours">jours</option>
-        </select>
-      </div>
-
-      {/* Aperçu système */}
-      <div className={styles.systemOverview}>
-        <h4 className={styles.subtitle}>📊 Aperçu du système</h4>
-        <div className={styles.overviewGrid}>
-          <div className={styles.overviewCard}>
-            <div className={styles.cardHeader}>🏭 Machines</div>
-            <div className={styles.cardValue}>{machines.length}</div>
-            <div className={styles.cardLabel}>types configurés</div>
-          </div>
-          <div className={styles.overviewCard}>
-            <div className={styles.cardHeader}>⚙️ Opérations</div>
-            <div className={styles.cardValue}>{machines.reduce((total, m) => total + m.operations.length, 0)}</div>
-            <div className={styles.cardLabel}>total système</div>
-          </div>
-          <div className={styles.overviewCard}>
-            <div className={styles.cardHeader}>🔧 Outils</div>
-            <div className={styles.cardValue}>{Object.keys(outilsEspace).length}</div>
-            <div className={styles.cardLabel}>types disponibles</div>
-          </div>
-          <div className={styles.overviewCard}>
-            <div className={styles.cardHeader}>📦 Espace</div>
-            <div className={styles.cardValue}>{Object.values(outilsEspace).reduce((sum, espace) => sum + espace, 0)}</div>
-            <div className={styles.cardLabel}>unités total</div>
-          </div>
+    <div className="algorithmContent">
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>FMS - Lots de Chargement (Heuristique)</h1>
+          <p className={styles.subtitle}>
+            Algorithme heuristique pour l'optimisation des lots de chargement en système flexible de production
+          </p>
         </div>
-      </div>
 
-      {/* Configuration des machines */}
-      <div className={styles.tasksContainer}>
-        <div className={styles.sectionHeader}>
-          <h4 className={styles.subtitle}>🏭 Configuration des machines</h4>
-          <div className={styles.buttonGroup}>
-            <button className={styles.miniButton} onClick={addMachine}>+ Machine</button>
-            <button 
-              className={styles.miniButton} 
-              onClick={removeMachine}
-              style={{ backgroundColor: "#ef4444" }}
-              disabled={machines.length <= 1}
-            >
-              - Machine
-            </button>
+        <div className={styles.configSection}>
+          <div className={styles.configRow}>
+            <div className={styles.inputGroup}>
+              <label>Unité de temps</label>
+              <select value={uniteTemps} onChange={(e) => setUniteTemps(e.target.value)} className={styles.select}>
+                <option value="minutes">minutes</option>
+                <option value="heures">heures</option>
+                <option value="jours">jours</option>
+              </select>
+            </div>
+            
+            <div className={styles.actionButtons}>
+              <button className={styles.addButton} onClick={addMachine}>
+                + Ajouter machine
+              </button>
+              <button 
+                className={styles.removeButton} 
+                onClick={removeMachine}
+                disabled={machines.length <= 1}
+              >
+                - Supprimer machine
+              </button>
+              <button className={styles.addButton} onClick={addOutil}>
+                + Ajouter outil
+              </button>
+            </div>
           </div>
         </div>
 
-        {machines.map((machine, machineIndex) => {
-          const validation = getValidationIcon(machineIndex);
-          const outilsRequisUniques = getTotalOutilsRequisMachine(machineIndex);
+        {/* Configuration des machines */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Configuration des machines</h3>
           
-          return (
-            <div key={machineIndex} className={styles.machineBlock}>
-              <div className={styles.machineHeader}>
-                <h4 style={{ color: validation.color }}>
-                  {validation.icon} {machine.nom}
-                </h4>
-                <div className={styles.machineStats}>
-                  <span className={styles.statBadge}>
-                    {calculateCapaciteUtilisee(machineIndex)}% utilisé
-                  </span>
-                  <span className={styles.statBadge}>
-                    {outilsRequisUniques}/{machine.capaciteOutils} outils
+          {machines.map((machine, machineIndex) => {
+            const validation = getValidationIcon(machineIndex);
+            const outilsRequisUniques = getTotalOutilsRequisMachine(machineIndex);
+            
+            return (
+              <div key={machineIndex} className={styles.machineSection}>
+                <div className={styles.machineHeader}>
+                  <h4 style={{ color: validation.color }}>
+                    {validation.icon} {machine.nom} - {calculateCapaciteUtilisee(machineIndex)}% utilisé
+                  </h4>
+                  <span className={styles.machineInfo}>
+                    {outilsRequisUniques}/{machine.capaciteOutils} outils requis
                   </span>
                 </div>
-              </div>
-              
-              <div className={styles.machineConfig}>
-                <div className={styles.configRow}>
+                
+                <div className={styles.machineConfigGrid}>
                   <div className={styles.inputGroup}>
-                    <label>Nom :</label>
+                    <label>Nom</label>
                     <input
                       type="text"
                       value={machine.nom}
@@ -375,319 +345,296 @@ export default function FMSLotsChargementHeuristiqueForm() {
                     />
                   </div>
                   <div className={styles.inputGroup}>
-                    <label>Quantité :</label>
+                    <label>Quantité</label>
                     <input
                       type="number"
                       min="1"
                       value={machine.nombre}
                       onChange={(e) => handleMachineChange(machineIndex, "nombre", e.target.value)}
                       className={styles.input}
-                      style={{ width: "80px" }}
                     />
                   </div>
                   <div className={styles.inputGroup}>
-                    <label>Capacité temps ({uniteTemps}) :</label>
+                    <label>Capacité temps ({uniteTemps})</label>
                     <input
                       type="number"
                       min="1"
                       value={machine.capaciteTemps}
                       onChange={(e) => handleMachineChange(machineIndex, "capaciteTemps", e.target.value)}
                       className={styles.input}
-                      style={{ width: "100px" }}
                     />
                   </div>
                   <div className={styles.inputGroup}>
-                    <label>Capacité outils :</label>
+                    <label>Capacité outils</label>
                     <input
                       type="number"
                       min="1"
                       value={machine.capaciteOutils}
                       onChange={(e) => handleMachineChange(machineIndex, "capaciteOutils", e.target.value)}
                       className={styles.input}
-                      style={{ width: "80px" }}
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className={styles.operationsSection}>
-                <div className={styles.sectionHeader}>
-                  <h5>🔄 Opérations (Phase 1 FMS)</h5>
-                  <div className={styles.buttonGroup}>
+                <div className={styles.operationsSubsection}>
+                  <div className={styles.subsectionHeader}>
+                    <h5>Opérations</h5>
                     <button 
-                      className={styles.miniButton} 
+                      className={styles.addButton} 
                       onClick={() => addOperation(machineIndex)}
                     >
                       + Opération
                     </button>
                   </div>
+                  
+                  <div className={styles.operationsList}>
+                    {machine.operations.map((operation, operationIndex) => (
+                      <div key={operationIndex} className={styles.operationItem}>
+                        <input
+                          type="text"
+                          value={operation[0]}
+                          onChange={(e) => handleOperationChange(machineIndex, operationIndex, "nom", e.target.value)}
+                          className={styles.inputCompact}
+                          placeholder="Nom"
+                        />
+                        <input
+                          type="number"
+                          min="1"
+                          value={operation[1]}
+                          onChange={(e) => handleOperationChange(machineIndex, operationIndex, "temps", e.target.value)}
+                          className={styles.inputCompact}
+                          placeholder="Temps"
+                        />
+                        <select
+                          value={operation[2]}
+                          onChange={(e) => handleOperationChange(machineIndex, operationIndex, "outil", e.target.value)}
+                          className={styles.selectCompact}
+                        >
+                          {Object.keys(outilsEspace || {}).map(outil => (
+                            <option key={outil} value={outil}>{outil}</option>
+                          ))}
+                        </select>
+                        <button 
+                          className={styles.deleteButton}
+                          onClick={() => removeOperation(machineIndex, operationIndex)}
+                          disabled={machine.operations.length <= 1}
+                          title="Supprimer"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                
-                <div className={styles.operationsCompact}>
-                  {machine.operations.map((operation, operationIndex) => (
-                    <div key={operationIndex} className={styles.operationRow}>
-                      <input
-                        type="text"
-                        value={operation[0]}
-                        onChange={(e) => handleOperationChange(machineIndex, operationIndex, "nom", e.target.value)}
-                        className={styles.inputCompact}
-                        placeholder="Nom"
-                        style={{ width: "100px" }}
-                      />
-                      <input
-                        type="number"
-                        min="1"
-                        value={operation[1]}
-                        onChange={(e) => handleOperationChange(machineIndex, operationIndex, "temps", e.target.value)}
-                        className={styles.inputCompact}
-                        placeholder="Temps"
-                        style={{ width: "80px" }}
-                      />
-                      <select
-                        value={operation[2]}
-                        onChange={(e) => handleOperationChange(machineIndex, operationIndex, "outil", e.target.value)}
-                        className={styles.selectCompact}
-                        style={{ width: "80px" }}
-                      >
-                        {Object.keys(outilsEspace || {}).map(outil => (
-                          <option key={outil} value={outil}>{outil}</option>
-                        ))}
-                      </select>
-                      <button 
-                        className={styles.deleteButton}
-                        onClick={() => removeOperation(machineIndex, operationIndex)}
-                        disabled={machine.operations.length <= 1}
-                        title="Supprimer l'opération"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.machineResume}>
-                <span><strong>Total:</strong> {calculateTempsTotal(machineIndex)} {uniteTemps}</span>
-                <span><strong>Capacité:</strong> {machine.capaciteTemps * machine.nombre} {uniteTemps}</span>
-                <span><strong>Opérations:</strong> {machine.operations.length}</span>
-                <span><strong>Outils uniques:</strong> {outilsRequisUniques}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Configuration des outils */}
-      <div className={styles.tasksContainer}>
-        <div className={styles.sectionHeader}>
-          <h4 className={styles.subtitle}>🔧 Configuration des outils</h4>
-          <button className={styles.miniButton} onClick={addOutil}>+ Outil</button>
-        </div>
-        
-        <div className={styles.outilsCompact}>
-          {Object.entries(outilsEspace || {}).map(([outil, espace]) => {
-            const utilisations = machines.reduce((total, machine) => 
-              total + machine.operations.filter(op => op[2] === outil).length, 0
-            );
-            
-            return (
-              <div key={outil} className={styles.outilRow}>
-                <span className={styles.outilNom}>{outil}</span>
-                <div className={styles.inputGroup}>
-                  <label>Espace:</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={espace}
-                    onChange={(e) => handleOutilEspaceChange(outil, e.target.value)}
-                    className={styles.inputCompact}
-                    style={{ width: "60px" }}
-                  />
-                </div>
-                <span className={styles.outilUsage}>
-                  {utilisations} utilisation{utilisations !== 1 ? 's' : ''}
-                </span>
-                <button 
-                  className={styles.deleteButton}
-                  onClick={() => removeOutil(outil)}
-                  disabled={Object.keys(outilsEspace).length <= 1}
-                  title="Supprimer l'outil"
-                >
-                  ✕
-                </button>
               </div>
             );
           })}
         </div>
-      </div>
 
-      <button 
-        onClick={handleSubmit} 
-        disabled={isLoading}
-        className={styles.submitButton}
-      >
-        {isLoading ? "🔄 Analyse heuristique en cours..." : "🚀 Résoudre avec l'algorithme heuristique"}
-      </button>
-
-      {error && <div className={styles.error}>❌ {error}</div>}
-
-      {result && (
-        <div className={styles.results}>
-          <h3>📈 Résultats de l'algorithme heuristique - Lots de chargement</h3>
+        {/* Configuration des outils */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Configuration des outils</h3>
           
-          {/* Métriques principales */}
-          <div className={styles.metricsGrid}>
-            <div className={styles.metricCard}>
-              <div className={styles.metricValue} style={{ color: result.status === 'Optimal' ? '#10b981' : '#f59e0b' }}>
-                {result.status === 'Optimal' ? '✓' : '⚠️'} {result.status}
-              </div>
-              <div className={styles.metricLabel}>Statut de la solution</div>
-            </div>
-            <div className={styles.metricCard}>
-              <div className={styles.metricValue}>{result.nb_operations_total}</div>
-              <div className={styles.metricLabel}>Opérations totales</div>
-            </div>
-            <div className={styles.metricCard}>
-              <div className={styles.metricValue}>{result.nb_clusters_total}</div>
-              <div className={styles.metricLabel}>Clusters formés</div>
-            </div>
-            <div className={styles.metricCard}>
-              <div className={styles.metricValue}>{result.nb_groupes_total}</div>
-              <div className={styles.metricLabel}>Groupes créés</div>
-            </div>
-            <div className={styles.metricCard}>
-              <div className={styles.metricValue} style={{ color: result.efficacite_globale >= 80 ? '#10b981' : result.efficacite_globale >= 60 ? '#f59e0b' : '#ef4444' }}>
-                {result.efficacite_globale}%
-              </div>
-              <div className={styles.metricLabel}>Efficacité globale</div>
-            </div>
-          </div>
-
-          {/* Algorithme utilisé */}
-          <div className={styles.algorithmInfo}>
-            <h4>🔧 Méthode: {result.methode}</h4>
-            <p><strong>Critère de sélection:</strong> {result.critere_selection}</p>
-            <p><strong>Nombre d'étapes:</strong> {result.nb_etapes} (Clustering → Groupes → Assignation LPT)</p>
-          </div>
-
-          {/* Résultats par machine */}
-          <div className={styles.machineResults}>
-            <h4>📊 Performance par machine</h4>
-            <div className={styles.machineResultsGrid}>
-              {machines.map((machine, index) => {
-                const machine_key = machine.nom.toLowerCase().replace(' ', '_');
-                const utilisation = result[`utilisation_${machine_key}`] || 0;
-                const nb_operations = result[`nb_operations_${machine_key}`] || 0;
-                const nb_clusters = result[`nb_clusters_${machine_key}`] || 0;
-                const nb_groupes = result[`nb_groupes_${machine_key}`] || 0;
-                
-                return (
-                  <div key={index} className={styles.machineResultCard}>
-                    <h5>{machine.nom}</h5>
-                    <div className={styles.machineResultStats}>
-                      <span>{nb_operations} ops</span>
-                      <span>→ {nb_clusters} clusters</span>
-                      <span>→ {nb_groupes} groupes</span>
-                    </div>
-                    <div className={styles.utilisationBar}>
-                      <div 
-                        className={styles.utilisationFill}
-                        style={{ 
-                          width: `${Math.min(utilisation, 100)}%`,
-                          backgroundColor: utilisation <= 100 ? '#10b981' : '#ef4444'
-                        }}
-                      ></div>
-                      <span className={styles.utilisationText}>{utilisation}%</span>
-                    </div>
+          <div className={styles.outilsList}>
+            {Object.entries(outilsEspace || {}).map(([outil, espace]) => {
+              const utilisations = machines.reduce((total, machine) => 
+                total + machine.operations.filter(op => op[2] === outil).length, 0
+              );
+              
+              return (
+                <div key={outil} className={styles.outilItem}>
+                  <span className={styles.outilNom}>{outil}</span>
+                  <div className={styles.inputGroup}>
+                    <label>Espace</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={espace}
+                      onChange={(e) => handleOutilEspaceChange(outil, e.target.value)}
+                      className={styles.inputCompact}
+                    />
                   </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Détails des étapes */}
-          {result.clusters && result.clusters.length > 0 && (
-            <div className={styles.stepsSection}>
-              <h4>🔄 Étape 1 - Formation des clusters</h4>
-              {result.clusters.map((machineCluster, index) => (
-                <div key={index} className={styles.stepBlock}>
-                  <h5>{machineCluster.machine}</h5>
-                  <div className={styles.clustersGrid}>
-                    {machineCluster.clusters.map((cluster, clusterIndex) => (
-                      <div key={clusterIndex} className={styles.clusterCard}>
-                        <div className={styles.clusterHeader}>Cluster {cluster.numero}</div>
-                        <div className={styles.clusterContent}>
-                          <div><strong>Opérations:</strong> {cluster.operations.join(", ")}</div>
-                          <div><strong>Temps:</strong> {cluster.temps_total} {result.unite_temps}</div>
-                          <div><strong>Outils:</strong> {cluster.outils.join(", ")}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <span className={styles.outilUsage}>
+                    {utilisations} utilisation{utilisations !== 1 ? 's' : ''}
+                  </span>
+                  <button 
+                    className={styles.deleteButton}
+                    onClick={() => removeOutil(outil)}
+                    disabled={Object.keys(outilsEspace).length <= 1}
+                    title="Supprimer"
+                  >
+                    ×
+                  </button>
                 </div>
-              ))}
-            </div>
-          )}
-
-          {result.groupes && result.groupes.length > 0 && (
-            <div className={styles.stepsSection}>
-              <h4>📦 Étape 2 - Formation des groupes</h4>
-              {result.groupes.map((machineGroupe, index) => (
-                <div key={index} className={styles.stepBlock}>
-                  <h5>{machineGroupe.machine} - {machineGroupe.nb_groupes} groupe(s)</h5>
-                  <div className={styles.groupesGrid}>
-                    {machineGroupe.groupes.map((groupe, groupeIndex) => (
-                      <div key={groupeIndex} className={styles.groupeCard}>
-                        <span>Groupe {groupe.numero}: {groupe.nb_machines} machine(s)</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {result.assignations && result.assignations.length > 0 && (
-            <div className={styles.stepsSection}>
-              <h4>⚡ Étape 3 - Assignations LPT</h4>
-              {result.assignations.map((machineAssign, index) => (
-                <div key={index} className={styles.stepBlock}>
-                  <h5>{machineAssign.machine}</h5>
-                  <div className={styles.assignationsGrid}>
-                    {machineAssign.assignations.map((assign, assignIndex) => (
-                      <div key={assignIndex} className={styles.assignationCard}>
-                        <div className={styles.assignationHeader}>Groupe {assign.groupe}</div>
-                        <div className={styles.assignationContent}>
-                          {assign.operations.length > 0 ? assign.operations.join(", ") : "Aucune opération"}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {chartUrl && (
-            <div className={styles.ganttContainer}>
-              <h4>📊 Analyse graphique de l'algorithme heuristique</h4>
-              <img 
-                src={chartUrl} 
-                alt="Graphiques FMS Lots de Chargement Heuristique" 
-                className={styles.gantt}
-                style={{ width: "100%", maxWidth: "800px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
-              />
-              <button 
-                onClick={handleDownloadChart}
-                className={styles.button}
-                style={{ marginTop: "1rem" }}
-              >
-                📥 Télécharger le graphique
-              </button>
-            </div>
-          )}
+              );
+            })}
+          </div>
         </div>
-      )}
+
+        <button 
+          onClick={handleSubmit} 
+          disabled={isLoading}
+          className={styles.calculateButton}
+        >
+          {isLoading ? "Analyse en cours..." : "Résoudre avec l'heuristique"}
+        </button>
+
+        {error && <div className={styles.error}>{error}</div>}
+
+        {result && (
+          <div className={styles.resultsSection}>
+            <h3>Résultats de l'algorithme heuristique - Lots de chargement</h3>
+            
+            {/* Métriques principales */}
+            <div className={styles.metricsGrid}>
+              <div className={styles.metric}>
+                <div className={styles.metricValue} style={{ color: result.status === 'Optimal' ? '#10b981' : '#f59e0b' }}>
+                  {result.status}
+                </div>
+                <div className={styles.metricLabel}>Statut</div>
+              </div>
+              <div className={styles.metric}>
+                <div className={styles.metricValue}>{result.nb_operations_total}</div>
+                <div className={styles.metricLabel}>Opérations totales</div>
+              </div>
+              <div className={styles.metric}>
+                <div className={styles.metricValue}>{result.nb_clusters_total}</div>
+                <div className={styles.metricLabel}>Clusters formés</div>
+              </div>
+              <div className={styles.metric}>
+                <div className={styles.metricValue}>{result.nb_groupes_total}</div>
+                <div className={styles.metricLabel}>Groupes créés</div>
+              </div>
+              <div className={styles.metric}>
+                <div className={styles.metricValue} style={{ color: result.efficacite_globale >= 80 ? '#10b981' : result.efficacite_globale >= 60 ? '#f59e0b' : '#ef4444' }}>
+                  {result.efficacite_globale}%
+                </div>
+                <div className={styles.metricLabel}>Efficacité globale</div>
+              </div>
+            </div>
+
+            {/* Algorithme utilisé */}
+            <div className={styles.algorithmDetails}>
+              <h4>Méthode: {result.methode}</h4>
+              <p><strong>Critère:</strong> {result.critere_selection}</p>
+              <p><strong>Étapes:</strong> {result.nb_etapes} (Clustering → Groupes → Assignation LPT)</p>
+            </div>
+
+            {/* Résultats par machine */}
+            <div className={styles.machineResults}>
+              <h4>Performance par machine</h4>
+              <div className={styles.machineResultsGrid}>
+                {machines.map((machine, index) => {
+                  const machine_key = machine.nom.toLowerCase().replace(' ', '_');
+                  const utilisation = result[`utilisation_${machine_key}`] || 0;
+                  const nb_operations = result[`nb_operations_${machine_key}`] || 0;
+                  const nb_clusters = result[`nb_clusters_${machine_key}`] || 0;
+                  const nb_groupes = result[`nb_groupes_${machine_key}`] || 0;
+                  
+                  return (
+                    <div key={index} className={styles.machineResultCard}>
+                      <h5>{machine.nom}</h5>
+                      <div className={styles.machineResultStats}>
+                        <span>{nb_operations} ops → {nb_clusters} clusters → {nb_groupes} groupes</span>
+                      </div>
+                      <div className={styles.utilisationBar}>
+                        <div 
+                          className={styles.utilisationFill}
+                          style={{ 
+                            width: `${Math.min(utilisation, 100)}%`,
+                            backgroundColor: utilisation <= 100 ? '#3b82f6' : '#ef4444'
+                          }}
+                        ></div>
+                        <span className={styles.utilisationText}>{utilisation}%</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Détails des étapes */}
+            {result.clusters && result.clusters.length > 0 && (
+              <div className={styles.stepsSection}>
+                <h4>Étape 1 - Formation des clusters</h4>
+                {result.clusters.map((machineCluster, index) => (
+                  <div key={index} className={styles.stepDetails}>
+                    <h5>{machineCluster.machine}</h5>
+                    <div className={styles.clustersGrid}>
+                      {machineCluster.clusters.map((cluster, clusterIndex) => (
+                        <div key={clusterIndex} className={styles.clusterCard}>
+                          <div className={styles.clusterHeader}>Cluster {cluster.numero}</div>
+                          <div className={styles.clusterContent}>
+                            <div><strong>Opérations:</strong> {cluster.operations.join(", ")}</div>
+                            <div><strong>Temps:</strong> {cluster.temps_total} {result.unite_temps}</div>
+                            <div><strong>Outils:</strong> {cluster.outils.join(", ")}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {result.groupes && result.groupes.length > 0 && (
+              <div className={styles.stepsSection}>
+                <h4>Étape 2 - Formation des groupes</h4>
+                {result.groupes.map((machineGroupe, index) => (
+                  <div key={index} className={styles.stepDetails}>
+                    <h5>{machineGroupe.machine} - {machineGroupe.nb_groupes} groupe(s)</h5>
+                    <div className={styles.groupesGrid}>
+                      {machineGroupe.groupes.map((groupe, groupeIndex) => (
+                        <div key={groupeIndex} className={styles.groupeCard}>
+                          Groupe {groupe.numero}: {groupe.nb_machines} machine(s)
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {result.assignations && result.assignations.length > 0 && (
+              <div className={styles.stepsSection}>
+                <h4>Étape 3 - Assignations LPT</h4>
+                {result.assignations.map((machineAssign, index) => (
+                  <div key={index} className={styles.stepDetails}>
+                    <h5>{machineAssign.machine}</h5>
+                    <div className={styles.assignationsGrid}>
+                      {machineAssign.assignations.map((assign, assignIndex) => (
+                        <div key={assignIndex} className={styles.assignationCard}>
+                          <div className={styles.assignationHeader}>Groupe {assign.groupe}</div>
+                          <div className={styles.assignationContent}>
+                            {assign.operations.length > 0 ? assign.operations.join(", ") : "Aucune opération"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {chartUrl && (
+              <div className={styles.chartSection}>
+                <h4>Analyse graphique</h4>
+                <img 
+                  src={chartUrl} 
+                  alt="Graphiques FMS Lots de Chargement Heuristique" 
+                  className={styles.chart}
+                />
+                <button 
+                  onClick={handleDownloadChart}
+                  className={styles.downloadButton}
+                >
+                  Télécharger le graphique
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 } 

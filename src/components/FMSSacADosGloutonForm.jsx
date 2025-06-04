@@ -43,6 +43,7 @@ export default function FMSSacADosGloutonForm() {
   const [resultats, setResultats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [erreur, setErreur] = useState("");
+  const [graphique, setGraphique] = useState(null);
 
   const devises = {
     "CAD": { symbole: "$", nom: "Dollar Canadien" },
@@ -139,6 +140,25 @@ export default function FMSSacADosGloutonForm() {
       const resultats = await response.json();
       console.log("Résultats reçus:", resultats);
       setResultats(resultats);
+      
+      // Récupération du graphique
+      try {
+        const chartResponse = await fetch(`${config.API_URL}/fms/sac_a_dos_glouton/chart`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(donnees)
+        });
+        
+        if (chartResponse.ok) {
+          const chartBlob = await chartResponse.blob();
+          const chartUrl = URL.createObjectURL(chartBlob);
+          setGraphique(chartUrl);
+        } else {
+          console.warn("Impossible de charger le graphique");
+        }
+      } catch (chartError) {
+        console.warn("Erreur lors du chargement du graphique:", chartError);
+      }
     } catch (error) {
       console.error("Erreur:", error);
       setErreur(`Erreur lors du calcul: ${error.message}`);
@@ -170,7 +190,22 @@ export default function FMSSacADosGloutonForm() {
         
         <div className={styles.configRow}>
           <div className={styles.inputGroup}>
-            <label>Capacité maximale</label>
+            <label>Unité de temps</label>
+            <select
+              value={unite}
+              onChange={(e) => setUnite(e.target.value)}
+              className={styles.select}
+            >
+              <option value="heures">Heures</option>
+              <option value="minutes">Minutes</option>
+              <option value="jours">Jours</option>
+            </select>
+          </div>
+        </div>
+        
+        <div className={styles.configRow}>
+          <div className={styles.inputGroup}>
+            <label>Capacité maximale<br/><span style={{fontSize: "0.8em", color: "#6b7280"}}>({unite})</span></label>
             <input
               type="number"
               value={capaciteMax}
@@ -179,11 +214,10 @@ export default function FMSSacADosGloutonForm() {
               min="1"
               step="1"
             />
-            <span>heures</span>
           </div>
           
           <div className={styles.inputGroup}>
-            <label>Coût d'opération</label>
+            <label>Coût d'opération<br/><span style={{fontSize: "0.8em", color: "#6b7280"}}>({devises[devise].symbole}/{unite})</span></label>
             <input
               type="number"
               value={coutOp}
@@ -192,7 +226,6 @@ export default function FMSSacADosGloutonForm() {
               min="0"
               step="0.01"
             />
-            <span>$/heure</span>
           </div>
           
           <div className={styles.inputGroup}>
@@ -309,22 +342,6 @@ export default function FMSSacADosGloutonForm() {
                 );
               })}
             </tbody>
-            <tfoot>
-              <tr style={{ background: "#f8fafc", fontWeight: "bold" }}>
-                <td>Totaux</td>
-                <td></td>
-                <td></td>
-                <td style={{ textAlign: "center", color: "#3b82f6" }}>
-                  {produits.reduce((sum, p) => sum + parseInt(p.demandePeriode || 0), 0)} unités
-                </td>
-                <td style={{ textAlign: "center", color: "#3b82f6" }}>
-                  {tempsRequis.toFixed(1)} heures
-                </td>
-                <td style={{ textAlign: "center", color: "#3b82f6" }}>
-                  {devises[devise].symbole}{profitUnitaireTotal.toFixed(2)}
-                </td>
-              </tr>
-            </tfoot>
           </table>
         </div>
       </div>
@@ -437,6 +454,19 @@ export default function FMSSacADosGloutonForm() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+          
+          {graphique && (
+            <div className={styles.solutionDetails}>
+              <h3>Analyse graphique</h3>
+              <div className={styles.chartContainer}>
+                <img 
+                  src={graphique} 
+                  alt="Graphique d'analyse FMS Sac à Dos Glouton" 
+                  style={{ width: "100%", height: "auto", borderRadius: "0.5rem", border: "1px solid #e5e7eb" }}
+                />
               </div>
             </div>
           )}

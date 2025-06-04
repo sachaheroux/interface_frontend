@@ -712,36 +712,38 @@ export default function FMSLotsProductionMIPForm() {
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {devises[devise].symbole}{result.cout_total_inventaire || result.cout_inventaire_total || 0}
+                {devises[devise].symbole}{result.cout_total_inventaire || 0}
               </div>
               <div className={styles.metricLabel}>Coût Total d'Inventaire</div>
             </div>
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {Math.min(100, Math.round((result.efficacite_globale || 0) * 100) / 100)}%
+                {Math.round((result.efficacite_globale || 0) * 100) / 100}%
               </div>
               <div className={styles.metricLabel}>Efficacité Globale</div>
             </div>
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue} style={{ color: '#10b981' }}>
-                {result.nombre_produits_assignes || 
-                 (result.produits_assignes ? result.produits_assignes.length : 0) ||
-                 (result.produits_planifies ? result.produits_planifies.length : 0)}
+                {result.nombre_produits || produits.length}
               </div>
-              <div className={styles.metricLabel}>Produits Assignés</div>
+              <div className={styles.metricLabel}>Produits Planifiés</div>
             </div>
             
             <div className={styles.resultMetric}>
-              <div className={styles.metricValue} style={{ color: '#ef4444' }}>
-                {result.nombre_produits_rejetes || 
-                 result.nombre_produits_non_assignes ||
-                 (result.produits_non_assignes ? result.produits_non_assignes.length : 0) ||
-                 (result.produits_rejetes ? result.produits_rejetes.length : 0) ||
-                 (produits.length - (result.produits_assignes ? result.produits_assignes.length : 0))}
+              <div className={styles.metricValue} style={{ color: '#2563eb' }}>
+                {result.nombre_periodes || result.horizon_planification || 3}
               </div>
-              <div className={styles.metricLabel}>Produits Rejetés</div>
+              <div className={styles.metricLabel}>Périodes de Planning</div>
+            </div>
+            
+            <div className={styles.resultMetric}>
+              <div className={styles.metricValue} style={{ color: '#059669' }}>
+                {result.total_produits_par_periode ? 
+                 result.total_produits_par_periode.reduce((a, b) => a + b, 0) : 0}
+              </div>
+              <div className={styles.metricLabel}>Total Unités Produites</div>
             </div>
           </div>
 
@@ -755,32 +757,18 @@ export default function FMSLotsProductionMIPForm() {
                     <th>Temps Utilisé</th>
                     <th>Temps Total</th>
                     <th>Utilisation (%)</th>
-                    <th>Outils Utilisés</th>
-                    <th>Espace Utilisé</th>
                   </tr>
                 </thead>
                 <tbody>
                   {machines.map((machine, index) => {
-                    const machine_key = machine.nom.toLowerCase().replace(' ', '_');
-                    const temps_utilise = result[`temps_utilise_${machine_key}`] || 0;
-                    const temps_total = result[`temps_disponible_total_${machine_key}`] || calculateCapaciteTotale(index);
-                    let utilisation = result[`utilisation_${machine_key}`] || 0;
+                    // Clés réelles du backend MIP
+                    const machine_suffix = machine.nom.toLowerCase().replace(' ', '_');
+                    const temps_utilise = result[`temps_utilise_${machine_suffix}`] || 0;
+                    const temps_total = result[`temps_disponible_total_${machine_suffix}`] || calculateCapaciteTotale(index);
+                    let utilisation = result[`utilisation_${machine_suffix}`] || 0;
                     
-                    // Correction pour les pourcentages > 100% ou en format décimal
-                    if (utilisation > 1 && utilisation <= 100) {
-                      // Déjà en pourcentage
-                      utilisation = Math.min(100, Math.round(utilisation * 100) / 100);
-                    } else if (utilisation <= 1) {
-                      // Format décimal, convertir en pourcentage
-                      utilisation = Math.min(100, Math.round(utilisation * 10000) / 100);
-                    } else {
-                      // Valeur aberrante, recalculer
-                      utilisation = temps_total > 0 ? Math.min(100, Math.round((temps_utilise / temps_total) * 10000) / 100) : 0;
-                    }
-                    
-                    const outils_utilises = result[`outils_utilises_${machine_key}`] || [];
-                    const espace_utilise = result[`espace_utilise_${machine_key}`] || 0;
-                    const capacite = result[`capacite_outils_${machine_key}`] || machine.capaciteOutils;
+                    // Les pourcentages du MIP peuvent dépasser 100% (surcharge)
+                    utilisation = Math.round(utilisation * 100) / 100;
                     
                     return (
                       <tr key={index}>
@@ -788,23 +776,15 @@ export default function FMSLotsProductionMIPForm() {
                         <td>{Math.round(temps_utilise * 100) / 100}{uniteTemps}</td>
                         <td>{Math.round(temps_total * 100) / 100}{uniteTemps}</td>
                         <td style={{ 
-                          color: utilisation >= 80 ? "#10b981" : utilisation >= 50 ? "#f59e0b" : "#ef4444",
+                          color: utilisation >= 100 ? "#ef4444" : utilisation >= 80 ? "#f59e0b" : "#10b981",
                           fontWeight: "bold"
                         }}>
-                          {utilisation}%
-                        </td>
-                        <td>
-                          {outils_utilises.join(", ") || "Aucun"} 
-                          <br/>
-                          <small style={{ color: "#6b7280" }}>({outils_utilises.length} outils)</small>
-                        </td>
-                        <td style={{ 
-                          color: espace_utilise <= capacite ? "#10b981" : "#ef4444",
-                          fontWeight: "bold"
-                        }}>
-                          {espace_utilise}/{capacite}
-                          <br/>
-                          <small style={{ color: "#6b7280" }}>unités</small>
+                          <>
+                            {utilisation}%
+                            {utilisation > 100 && (
+                              <><br/><small style={{ color: "#dc2626" }}>⚠️ Surcharge</small></>
+                            )}
+                          </>
                         </td>
                       </tr>
                     );
@@ -853,6 +833,40 @@ export default function FMSLotsProductionMIPForm() {
             </div>
           )}
           
+          {result.planification_periodes && result.planification_periodes.length > 0 && (
+            <div className={styles.solutionDetails}>
+              <h3>Planification par Périodes</h3>
+              <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Période</th>
+                      <th>Total Unités</th>
+                      <th>Détails Production</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result.planification_periodes.map((periode, index) => (
+                      <tr key={index}>
+                        <td><strong>Période {index + 1}</strong></td>
+                        <td style={{ color: "#059669", fontWeight: "bold" }}>
+                          {result.total_produits_par_periode ? result.total_produits_par_periode[index] : 0} unités
+                        </td>
+                        <td>
+                          {Object.entries(periode).map(([key, value]) => (
+                            <div key={key} style={{ fontSize: "0.85rem", marginBottom: "0.25rem" }}>
+                              <strong>{key}:</strong> {typeof value === 'object' ? JSON.stringify(value) : value}
+                            </div>
+                          ))}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
           {chartUrl && (
             <div className={styles.solutionDetails}>
               <h3>Analyse graphique</h3>

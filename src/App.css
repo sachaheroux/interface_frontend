@@ -91,6 +91,38 @@
   letter-spacing: 0.05em;
 }
 
+/* ===== BOUTON ARBRE DE DÉCISION ===== */
+.decision-tree-btn {
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.decision-tree-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.decision-tree-btn.active {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+}
+
+.decision-tree-btn:active {
+  transform: translateY(0);
+}
+
 .select {
   width: 100%;
   padding: var(--spacing-md);

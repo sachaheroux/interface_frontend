@@ -259,7 +259,7 @@ const LigneAssemblageMixteEquilibrageForm = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>Ligne d'assemblage mixte - Équilibrage</h1>
         <p className={styles.subtitle}>
-          Équilibrage optimal multi-produits avec contraintes de précédence spécifiques par produit
+          Équilibrage optimal multi-produits avec contraintes de précédence
         </p>
       </div>
 

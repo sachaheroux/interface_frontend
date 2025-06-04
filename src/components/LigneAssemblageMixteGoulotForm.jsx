@@ -191,9 +191,9 @@ const LigneAssemblageMixteGoulotForm = () => {
     <>
       {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>Ligne d'assemblage mixte - Variation du goulot</h1>
+        <h1 className={styles.title}>Ligne d'assemblage mixte - Goulot</h1>
         <p className={styles.subtitle}>
-          Optimisation de la séquence de production multi-produits pour minimiser la variation du goulot
+          Optimisation de la séquence de production multi-produits
         </p>
       </div>
 

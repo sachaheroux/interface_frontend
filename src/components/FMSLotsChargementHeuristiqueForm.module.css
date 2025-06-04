@@ -254,7 +254,7 @@
 }
 
 .deleteButton {
-  background: #ef4444;
+  background: #3b82f6;
   color: white;
   border: none;
   padding: 0.25rem 0.5rem;
@@ -270,7 +270,7 @@
 }
 
 .deleteButton:hover:not(:disabled) {
-  background: #dc2626;
+  background: #2563eb;
   transform: scale(1.05);
 }
 

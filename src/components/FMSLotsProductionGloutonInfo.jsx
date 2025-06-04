@@ -2,7 +2,7 @@ export default function FMSLotsProductionGloutonInfo() {
   return (
     <div style={{
       background: "#f1f5f9",
-      borderLeft: "4px solid #8b5cf6",
+      borderLeft: "4px solid #2563eb",
       borderRadius: "0.75rem",
       padding: "1.5rem",
       marginLeft: "2rem",
@@ -10,10 +10,10 @@ export default function FMSLotsProductionGloutonInfo() {
       color: "#1e293b",
       fontSize: "0.95rem"
     }}>
-      <h3 style={{ marginTop: 0, color: "#8b5cf6", fontSize: "1.2rem" }}>FMS - Lots de Production Glouton</h3>
+      <h3 style={{ marginTop: 0, color: "#2563eb", fontSize: "1.2rem" }}>FMS - Lots de Production Glouton</h3>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Principe de l'algorithme</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Principe de l'algorithme</h4>
         <p style={{ marginBottom: "0.5rem" }}>
           L'algorithme glouton des lots de production optimise l'assignation de produits 
           sur des machines multiples en tenant compte des <strong>contraintes de capacité</strong>, 
@@ -22,7 +22,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Contexte FMS multi-machines</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Contexte FMS multi-machines</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Machines hétérogènes :</strong> Types A et B avec capacités différentes</li>
           <li><strong>Contraintes d'outils :</strong> Limitation des outils disponibles par machine</li>
@@ -32,7 +32,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Structure des données</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Structure des données</h4>
         <p style={{ marginBottom: "0.5rem" }}>
           Chaque produit est défini par :
         </p>
@@ -45,7 +45,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Configuration système</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Configuration système</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Nombre de machines :</strong> Quantité par type (A et B)</li>
           <li><strong>Capacité d'outils :</strong> Nombre maximum d'outils par type de machine</li>
@@ -55,7 +55,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Algorithme glouton</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Algorithme glouton</h4>
         <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Tri par priorité :</strong> Produits classés par date due croissante</li>
           <li><strong>Évaluation faisabilité :</strong> Vérification contraintes temps et outils</li>
@@ -66,7 +66,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Calculs de faisabilité</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Calculs de faisabilité</h4>
         <div style={{ backgroundColor: "#e2e8f0", padding: "0.5rem", borderRadius: "0.375rem", fontFamily: "monospace", fontSize: "0.85rem" }}>
           Fraction_max = min(<br />
           &nbsp;&nbsp;(Temps_disponible - Temps_utilisé) / Temps_opération,<br />
@@ -79,7 +79,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Contraintes d'outils</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Contraintes d'outils</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Limitation par machine :</strong> Capacité fixe d'outils par type</li>
           <li><strong>Exclusivité :</strong> Un outil ne peut être utilisé que par un produit</li>
@@ -89,7 +89,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages de l'approche</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages de l'approche</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Simplicité :</strong> Algorithme rapide et compréhensible</li>
           <li><strong>Flexibilité :</strong> Assignation partielle des commandes</li>
@@ -100,7 +100,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Métriques d'évaluation</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Métriques d'évaluation</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Utilisation machines :</strong> Pourcentage de temps utilisé par type</li>
           <li><strong>Utilisation outils :</strong> Nombre d'outils consommés/disponibles</li>
@@ -110,7 +110,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Visualisations incluses</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Visualisations incluses</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Utilisation machines :</strong> Barres de capacité par type</li>
           <li><strong>Répartition produits :</strong> Camembert assignés/non-assignés</li>
@@ -120,7 +120,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Paramètres de configuration</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Paramètres de configuration</h4>
         <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Produits :</strong> Nom, grandeur, temps opération, outils, échéance</li>
           <li><strong>Machines :</strong> Nombre de machines de type A et B</li>
@@ -130,7 +130,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Limitations</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Limitations</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Optimalité :</strong> Pas de garantie d'optimum global</li>
           <li><strong>Ordre fixe :</strong> Dépendant du tri par date due</li>
@@ -140,7 +140,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Cas d'usage industriels</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Cas d'usage industriels</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Production flexible :</strong> Ateliers multi-produits</li>
           <li><strong>Planification courte :</strong> Assignation quotidienne</li>
@@ -151,7 +151,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Différences avec autres approches</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Différences avec autres approches</h4>
         <div style={{ fontSize: "0.9rem" }}>
           <div style={{ marginBottom: "0.5rem" }}>
             <strong>Sac à dos :</strong> Sélection binaire vs assignation partielle
@@ -167,7 +167,7 @@ export default function FMSLotsProductionGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "0" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Conseils d'utilisation</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Conseils d'utilisation</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li>Vérifiez la cohérence des temps d'opération</li>
           <li>Adaptez les capacités d'outils selon vos contraintes réelles</li>

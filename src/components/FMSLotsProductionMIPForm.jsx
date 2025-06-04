@@ -150,6 +150,57 @@ export default function FMSLotsProductionMIPForm() {
     );
   };
 
+  // Fonctions pour gérer les outils de machines (style JobShop)
+  const addOutilToMachine = (machineIndex) => {
+    const nouvellesMachines = [...machines];
+    const machine = nouvellesMachines[machineIndex];
+    const nouveauNom = `${machine.nom.slice(-1)}${(machine.outilsDisponibles.length + 1)}`;
+    machine.outilsDisponibles.push(nouveauNom);
+    machine.espaceOutils.push(1);
+    setMachines(nouvellesMachines);
+  };
+
+  const removeOutilFromMachine = (machineIndex, outilIndex) => {
+    const nouvellesMachines = [...machines];
+    const machine = nouvellesMachines[machineIndex];
+    if (machine.outilsDisponibles.length > 1) {
+      machine.outilsDisponibles.splice(outilIndex, 1);
+      machine.espaceOutils.splice(outilIndex, 1);
+      setMachines(nouvellesMachines);
+      
+      // Nettoyer les références à cet outil dans les produits
+      const nouveauxProduits = produits.map(p => ({
+        ...p,
+        outils: p.outils.map((outil, index) => 
+          index === machineIndex && !machine.outilsDisponibles.includes(outil) ? "" : outil
+        )
+      }));
+      setProduits(nouveauxProduits);
+    }
+  };
+
+  const updateOutilNom = (machineIndex, outilIndex, nouveauNom) => {
+    const nouvellesMachines = [...machines];
+    const ancienNom = nouvellesMachines[machineIndex].outilsDisponibles[outilIndex];
+    nouvellesMachines[machineIndex].outilsDisponibles[outilIndex] = nouveauNom;
+    setMachines(nouvellesMachines);
+    
+    // Mettre à jour les références dans les produits
+    const nouveauxProduits = produits.map(p => ({
+      ...p,
+      outils: p.outils.map((outil, index) => 
+        index === machineIndex && outil === ancienNom ? nouveauNom : outil
+      )
+    }));
+    setProduits(nouveauxProduits);
+  };
+
+  const updateOutilEspace = (machineIndex, outilIndex, nouvelEspace) => {
+    const nouvellesMachines = [...machines];
+    nouvellesMachines[machineIndex].espaceOutils[outilIndex] = parseInt(nouvelEspace) || 1;
+    setMachines(nouvellesMachines);
+  };
+
   const handleSubmit = () => {
     setError(null);
     setChartUrl(null);
@@ -407,7 +458,7 @@ export default function FMSLotsProductionMIPForm() {
                 <th>Nombre d'Unités</th>
                 <th>Capacité Espace<br/><small>(unités d'espace)</small></th>
                 <th>Outils Disponibles</th>
-                <th>Espace par Outil<br/><small>(même ordre)</small></th>
+                <th>Actions</th>
                 <th>Capacité Temps<br/>({uniteTemps})</th>
                 <th>Validation Espace</th>
               </tr>
@@ -445,24 +496,51 @@ export default function FMSLotsProductionMIPForm() {
                       />
                     </td>
                     <td>
-                      <input
-                        type="text"
-                        value={machine.outilsDisponibles.join(', ')}
-                        onChange={(e) => handleMachineChange(index, "outilsDisponibles", e.target.value)}
-                        className={styles.input}
-                        placeholder="A1, A2, A3"
-                        title="Séparez les outils par des virgules"
-                      />
+                      <div className={styles.outilsCompact}>
+                        {machine.outilsDisponibles.map((outil, outilIndex) => (
+                          <div key={outilIndex} className={styles.outilCompact}>
+                            <div className={styles.outilNumber}>{outilIndex + 1}</div>
+                            <input
+                              type="text"
+                              value={outil}
+                              onChange={(e) => updateOutilNom(index, outilIndex, e.target.value)}
+                              className={styles.compactInput}
+                              placeholder={`${machine.nom.slice(-1)}${outilIndex + 1}`}
+                              title={`Nom de l'outil ${outilIndex + 1}`}
+                            />
+                            <input
+                              type="number"
+                              value={machine.espaceOutils[outilIndex]}
+                              onChange={(e) => updateOutilEspace(index, outilIndex, e.target.value)}
+                              className={styles.compactNumberInput}
+                              min="1"
+                              placeholder="1"
+                              title={`Espace requis (unités)`}
+                            />
+                            <button
+                              onClick={() => removeOutilFromMachine(index, outilIndex)}
+                              disabled={machine.outilsDisponibles.length <= 1}
+                              className={styles.miniButton}
+                              type="button"
+                              title="Supprimer cet outil"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </td>
                     <td>
-                      <input
-                        type="text"
-                        value={machine.espaceOutils.join(', ')}
-                        onChange={(e) => handleMachineChange(index, "espaceOutils", e.target.value)}
-                        className={styles.input}
-                        placeholder="1, 2, 3"
-                        title="Espace requis pour chaque outil (séparez par des virgules)"
-                      />
+                      <div className={styles.machineActionsCompact}>
+                        <button
+                          onClick={() => addOutilToMachine(index)}
+                          className={styles.miniButton}
+                          type="button"
+                          title="Ajouter un outil"
+                        >
+                          +
+                        </button>
+                      </div>
                     </td>
                     <td>
                       <div className={styles.metricCell} style={{ 

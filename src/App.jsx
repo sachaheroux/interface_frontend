@@ -90,7 +90,7 @@ function App() {
               }
             }}
           >
-            🌳 Aide à la Décision 🔒
+            🔒 Aide à la Décision
           </button>
         </div>
 

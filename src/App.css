@@ -95,7 +95,7 @@
 .decision-tree-btn {
   width: 100%;
   padding: var(--spacing-md) var(--spacing-lg);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: var(--border-radius);
@@ -109,14 +109,14 @@
 }
 
 .decision-tree-btn:hover {
+  background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
 }
 
 .decision-tree-btn.active {
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-  box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+  background: var(--primary-dark);
+  box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4);
 }
 
 .decision-tree-btn:active {

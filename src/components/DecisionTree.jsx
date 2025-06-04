@@ -44,7 +44,7 @@ const DecisionTree = ({ onSystemRecommendation }) => {
       id: 5,
       question: "Le système est-il cadencé (rythme de production fixe) ?",
       yesPath: "Ligne d'assemblage mixte",  // 1.1.2.1.1 → Direct vers ligne mixte
-      noPath: 8                             // 1.1.2.1.2 → Question sur types de produits
+      noPath: 7                             // 1.1.2.1.2 → Question sur séquencement
     },
     {
       id: 6,

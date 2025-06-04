@@ -146,7 +146,7 @@ const DecisionTree = ({ onSystemRecommendation }) => {
       <div className="decision-tree-container">
         <div className="password-modal">
           <h2>🔒 Accès Protégé</h2>
-          <p>Cette section est réservée aux enseignants</p>
+          <p>Sébastien vous dit NON</p>
           <form onSubmit={handlePasswordSubmit}>
             <input
               type="password"

@@ -301,7 +301,12 @@ export default function FMSLotsProductionMIPForm() {
             produits_non_assignes: data.produits_non_assignes,
             nombre_produits_assignes: data.nombre_produits_assignes,
             nombre_produits_rejetes: data.nombre_produits_rejetes,
-            efficacite_globale: data.efficacite_globale
+            efficacite_globale: data.efficacite_globale,
+            planification_periodes: data.planification_periodes,
+            utilisation_machines: {
+              machine_a: data.utilisation_machine_a,
+              machine_b: data.utilisation_machine_b
+            }
           });
           setResult(data);
           // Récupérer le graphique
@@ -747,6 +752,36 @@ export default function FMSLotsProductionMIPForm() {
             </div>
           </div>
 
+          {/* Alerte de surcharge */}
+          {(() => {
+            const hasOverload = machines.some(machine => {
+              const machine_suffix = machine.nom.toLowerCase().replace(' ', '_');
+              const utilisation = result[`utilisation_${machine_suffix}`] || 0;
+              return utilisation > 100;
+            });
+            
+            return hasOverload ? (
+              <div className={styles.solutionDetails} style={{ 
+                background: "linear-gradient(135deg, #fef2f2, #fee2e2)", 
+                border: "2px solid #fca5a5",
+                marginBottom: "1rem"
+              }}>
+                <h3 style={{ color: "#dc2626", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  ⚠️ Alerte : Machines en Surcharge
+                </h3>
+                <div style={{ color: "#7f1d1d", lineHeight: "1.6" }}>
+                  <p><strong>Problème détecté :</strong> Certaines machines dépassent 100% d'utilisation, ce qui indique :</p>
+                  <ul style={{ marginLeft: "1.5rem" }}>
+                    <li>Soit un problème dans l'algorithme MIP (contraintes de capacité non respectées)</li>
+                    <li>Soit des données incohérentes (temps requis supérieur au temps disponible)</li>
+                    <li>Soit l'algorithme accepte des contraintes "souples" avec pénalités</li>
+                  </ul>
+                  <p><strong>Recommandation :</strong> Vérifiez les paramètres de temps et la logique de l'algorithme backend.</p>
+                </div>
+              </div>
+            ) : null;
+          })()}
+
           <div className={styles.solutionDetails}>
             <h3>Utilisation des machines</h3>
             <div className={styles.tableContainer}>
@@ -842,7 +877,7 @@ export default function FMSLotsProductionMIPForm() {
                     <tr>
                       <th>Période</th>
                       <th>Total Unités</th>
-                      <th>Détails Production</th>
+                      <th>Répartition par Produit</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -853,11 +888,23 @@ export default function FMSLotsProductionMIPForm() {
                           {result.total_produits_par_periode ? result.total_produits_par_periode[index] : 0} unités
                         </td>
                         <td>
-                          {Object.entries(periode).map(([key, value]) => (
-                            <div key={key} style={{ fontSize: "0.85rem", marginBottom: "0.25rem" }}>
-                              <strong>{key}:</strong> {typeof value === 'object' ? JSON.stringify(value) : value}
-                            </div>
-                          ))}
+                          {produits.map((produit, produitIndex) => {
+                            const quantite = periode[`produit_${produitIndex + 1}`] || 
+                                           periode[produit.nom.toLowerCase().replace(' ', '_')] || 
+                                           periode[`Produit ${produitIndex + 1}`] || 0;
+                            return quantite > 0 ? (
+                              <div key={produitIndex} style={{ 
+                                fontSize: "0.85rem", 
+                                marginBottom: "0.25rem",
+                                color: "#374151"
+                              }}>
+                                <strong>{produit.nom}:</strong> {quantite} unités
+                              </div>
+                            ) : null;
+                          })}
+                          {Object.keys(periode).length === 0 && (
+                            <span style={{ color: "#6b7280", fontStyle: "italic" }}>Aucune production</span>
+                          )}
                         </td>
                       </tr>
                     ))}

@@ -75,7 +75,7 @@ export default function FMSSacADosPLForm() {
         }))
       };
       
-      const response = await fetch("http://localhost:8000/fms-sac-a-dos-pl", {
+      const response = await fetch("http://localhost:8000/fms/sac_a_dos_pl", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(donnees)

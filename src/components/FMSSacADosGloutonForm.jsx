@@ -75,7 +75,7 @@ export default function FMSSacADosGloutonForm() {
         }))
       };
       
-      const response = await fetch("http://localhost:8000/fms-sac-a-dos-glouton", {
+      const response = await fetch("http://localhost:8000/fms/sac_a_dos_glouton", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(donnees)

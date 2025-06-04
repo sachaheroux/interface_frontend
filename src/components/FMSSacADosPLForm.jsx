@@ -55,17 +55,11 @@ export default function FMSSacADosPLForm() {
   const calculerMetriques = () => {
     const poidsTotal = objets.reduce((sum, obj) => sum + parseFloat(obj.poids || 0), 0);
     const valeurTotale = objets.reduce((sum, obj) => sum + parseFloat(obj.valeur || 0), 0);
-    const ratioMoyen = objets.length > 0 ? 
-      objets.reduce((sum, obj) => {
-        const poids = parseFloat(obj.poids || 0);
-        const valeur = parseFloat(obj.valeur || 0);
-        return sum + (poids > 0 ? valeur / poids : 0);
-      }, 0) / objets.length : 0;
 
-    return { poidsTotal, valeurTotale, ratioMoyen };
+    return { poidsTotal, valeurTotale };
   };
 
-  const { poidsTotal, valeurTotale, ratioMoyen } = calculerMetriques();
+  const { poidsTotal, valeurTotale } = calculerMetriques();
 
   const calculerSacADos = async () => {
     setLoading(true);
@@ -99,20 +93,6 @@ export default function FMSSacADosPLForm() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const reinitialiser = () => {
-    setCapacite("50");
-    setNbObjets("4");
-    setDevise("CAD");
-    setObjets([
-      { nom: "Objet 1", poids: "10", valeur: "60" },
-      { nom: "Objet 2", poids: "20", valeur: "100" },
-      { nom: "Objet 3", poids: "30", valeur: "120" },
-      { nom: "Objet 4", poids: "15", valeur: "80" }
-    ]);
-    setResultats(null);
-    setErreur("");
   };
 
   return (
@@ -227,40 +207,29 @@ export default function FMSSacADosPLForm() {
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr style={{ background: "#f8fafc", fontWeight: "bold" }}>
+                <td></td>
+                <td style={{ textAlign: "center", color: "#3b82f6" }}>
+                  Total: {poidsTotal.toFixed(1)}
+                </td>
+                <td style={{ textAlign: "center", color: "#3b82f6" }}>
+                  Total: {devises[devise].symbole}{valeurTotale.toFixed(2)}
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
           </table>
-        </div>
-        
-        <div className={styles.metricsRow}>
-          <div className={styles.metricCell}>
-            <strong>Poids total: {poidsTotal.toFixed(1)}</strong>
-          </div>
-          <div className={styles.metricCell}>
-            <strong>Valeur totale: {devises[devise].symbole}{valeurTotale.toFixed(2)}</strong>
-          </div>
-          <div className={styles.metricCell}>
-            <strong>Ratio moyen: {ratioMoyen.toFixed(2)}</strong>
-          </div>
-          <div className={styles.metricCell}>
-            <strong>Capacité: {capacite}</strong>
-          </div>
         </div>
       </div>
 
-      <div className={styles.actionButtons}>
-        <button
-          onClick={calculerSacADos}
-          disabled={loading}
-          className={styles.calculateButton}
-        >
-          {loading ? "Calcul en cours..." : "Calculer avec Programmation Linéaire"}
-        </button>
-        <button
-          onClick={reinitialiser}
-          className={`${styles.button} ${styles.secondaryButton}`}
-        >
-          Réinitialiser
-        </button>
-      </div>
+      <button
+        onClick={calculerSacADos}
+        disabled={loading}
+        className={styles.calculateButton}
+      >
+        {loading ? "Calcul en cours..." : "Calculer avec Programmation Linéaire"}
+      </button>
 
       {resultats && (
         <div className={`${styles.section} ${styles.resultsSection}`}>

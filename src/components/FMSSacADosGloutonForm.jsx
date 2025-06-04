@@ -66,13 +66,16 @@ export default function FMSSacADosGloutonForm() {
     setErreur("");
     
     try {
+      // Conversion du format classique vers le format FMS attendu par le backend
       const donnees = {
-        capacite: parseInt(capacite),
-        objets: objets.map((obj, index) => ({
-          nom: obj.nom,
-          poids: parseInt(obj.poids),
-          valeur: parseInt(obj.valeur)
-        }))
+        vente_unite: objets.map(obj => parseFloat(obj.valeur)),  // Valeur = prix de vente
+        cout_mp_unite: objets.map(() => 0),  // Pas de coût matière première dans le sac à dos classique
+        demande_periode: objets.map(() => 1),  // Demande unitaire pour chaque objet
+        temps_fabrication_unite: objets.map(obj => parseFloat(obj.poids)),  // Poids = temps de fabrication
+        cout_op: 0,  // Pas de coût d'opération dans le sac à dos classique
+        capacite_max: parseInt(capacite),
+        noms_produits: objets.map(obj => obj.nom),
+        unite: "unités"
       };
       
       const response = await fetch("http://localhost:8000/fms/sac_a_dos_glouton", {
@@ -238,57 +241,85 @@ export default function FMSSacADosGloutonForm() {
           <div className={styles.resultsGrid}>
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {devises[devise].symbole}{resultats.valeur_optimale}
+                {devises[devise].symbole}{resultats.profit_maximal}
               </div>
               <div className={styles.metricLabel}>Valeur obtenue</div>
             </div>
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {resultats.poids_utilise}
+                {resultats.capacite_utilisee}
               </div>
               <div className={styles.metricLabel}>Poids utilisé / {capacite}</div>
             </div>
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {((resultats.poids_utilise / parseInt(capacite)) * 100).toFixed(1)}%
+                {resultats.utilisation_capacite}%
               </div>
-              <div className={styles.metricLabel}>Utilisation capacité</div>
+              <div className={styles.metricLabel}>Utilisation</div>
             </div>
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {resultats.objets_selectionnes.length}
+                {resultats.nombre_produits_selectionnes}
               </div>
               <div className={styles.metricLabel}>Objets sélectionnés</div>
             </div>
           </div>
-          
-          {resultats.objets_selectionnes && resultats.objets_selectionnes.length > 0 && (
-            <div>
-              <h3 style={{ marginBottom: "1rem", color: "#3b82f6" }}>
-                Objets sélectionnés par l'algorithme glouton
-              </h3>
+
+          <div className={styles.solutionDetails}>
+            <h3>Objets sélectionnés</h3>
+            {resultats.produits_selectionnes && resultats.produits_selectionnes.length > 0 ? (
               <div className={styles.tableContainer}>
                 <table className={styles.table}>
                   <thead>
                     <tr>
                       <th>Nom</th>
                       <th>Poids</th>
-                      <th>Valeur</th>
-                      <th>Ratio</th>
-                      <th>Ordre de sélection</th>
+                      <th>Valeur ({devises[devise].symbole})</th>
+                      <th>Ratio Valeur/Poids</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {resultats.objets_selectionnes.map((objet, index) => (
+                    {resultats.produits_selectionnes.map((objet, index) => (
                       <tr key={index}>
                         <td>{objet.nom}</td>
-                        <td>{objet.poids}</td>
-                        <td>{devises[devise].symbole}{objet.valeur}</td>
-                        <td>{(objet.valeur / objet.poids).toFixed(2)}</td>
-                        <td>{index + 1}</td>
+                        <td>{objet.temps_requis}</td>
+                        <td>{devises[devise].symbole}{objet.prix_vente}</td>
+                        <td>{objet.desirabilite}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p>Aucun objet sélectionné</p>
+            )}
+          </div>
+
+          {resultats.produits_non_selectionnes && resultats.produits_non_selectionnes.length > 0 && (
+            <div className={styles.solutionDetails}>
+              <h3>Objets non sélectionnés</h3>
+              <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Nom</th>
+                      <th>Poids</th>
+                      <th>Valeur ({devises[devise].symbole})</th>
+                      <th>Ratio</th>
+                      <th>Raison</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {resultats.produits_non_selectionnes.map((objet, index) => (
+                      <tr key={index}>
+                        <td>{objet.nom}</td>
+                        <td>{objet.temps_requis}</td>
+                        <td>{devises[devise].symbole}{objet.prix_vente || objet.profit_total}</td>
+                        <td>{objet.desirabilite}</td>
+                        <td>{objet.raison_exclusion}</td>
                       </tr>
                     ))}
                   </tbody>

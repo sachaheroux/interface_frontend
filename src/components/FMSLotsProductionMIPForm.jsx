@@ -296,6 +296,13 @@ export default function FMSLotsProductionMIPForm() {
         })
         .then(data => {
           console.log("Résultats reçus:", data);
+          console.log("Structure des données:", {
+            produits_assignes: data.produits_assignes,
+            produits_non_assignes: data.produits_non_assignes,
+            nombre_produits_assignes: data.nombre_produits_assignes,
+            nombre_produits_rejetes: data.nombre_produits_rejetes,
+            efficacite_globale: data.efficacite_globale
+          });
           setResult(data);
           // Récupérer le graphique
           return fetch(`${config.API_URL}/fms/lots_production_mip/chart`, {
@@ -443,12 +450,6 @@ export default function FMSLotsProductionMIPForm() {
 
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Configuration des Machines</h2>
-        <div className={styles.configInfo} style={{ marginBottom: "1rem", padding: "1rem", backgroundColor: "#f0f9ff", borderLeft: "4px solid #0ea5e9", fontSize: "0.9rem" }}>
-          <strong>💡 Contrainte d'Espace Outil :</strong> Chaque machine a une capacité limitée d'espace pour les outils. 
-          L'algorithme MIP optimise le choix des outils selon leur espace requis.
-          <br/>
-          <strong>Exemple :</strong> Machine avec capacité 5, outils A1(1), A2(2), A3(3) → ne peut pas tout avoir simultanément.
-        </div>
         
         <div className={styles.tableContainer}>
           <table className={styles.table}>
@@ -718,21 +719,27 @@ export default function FMSLotsProductionMIPForm() {
             
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
-                {result.efficacite_globale || '0'}%
+                {Math.min(100, Math.round((result.efficacite_globale || 0) * 100) / 100)}%
               </div>
               <div className={styles.metricLabel}>Efficacité Globale</div>
             </div>
             
             <div className={styles.resultMetric}>
-              <div className={styles.metricValue}>
-                {result.nombre_produits_assignes || (result.produits_assignes ? result.produits_assignes.length : 0)}
+              <div className={styles.metricValue} style={{ color: '#10b981' }}>
+                {result.nombre_produits_assignes || 
+                 (result.produits_assignes ? result.produits_assignes.length : 0) ||
+                 (result.produits_planifies ? result.produits_planifies.length : 0)}
               </div>
               <div className={styles.metricLabel}>Produits Assignés</div>
             </div>
             
             <div className={styles.resultMetric}>
-              <div className={styles.metricValue}>
-                {result.nombre_produits_rejetes || (result.produits_non_assignes ? result.produits_non_assignes.length : 0)}
+              <div className={styles.metricValue} style={{ color: '#ef4444' }}>
+                {result.nombre_produits_rejetes || 
+                 result.nombre_produits_non_assignes ||
+                 (result.produits_non_assignes ? result.produits_non_assignes.length : 0) ||
+                 (result.produits_rejetes ? result.produits_rejetes.length : 0) ||
+                 (produits.length - (result.produits_assignes ? result.produits_assignes.length : 0))}
               </div>
               <div className={styles.metricLabel}>Produits Rejetés</div>
             </div>
@@ -756,8 +763,21 @@ export default function FMSLotsProductionMIPForm() {
                   {machines.map((machine, index) => {
                     const machine_key = machine.nom.toLowerCase().replace(' ', '_');
                     const temps_utilise = result[`temps_utilise_${machine_key}`] || 0;
-                    const temps_total = result[`temps_disponible_total_${machine_key}`] || 0;
-                    const utilisation = result[`utilisation_${machine_key}`] || 0;
+                    const temps_total = result[`temps_disponible_total_${machine_key}`] || calculateCapaciteTotale(index);
+                    let utilisation = result[`utilisation_${machine_key}`] || 0;
+                    
+                    // Correction pour les pourcentages > 100% ou en format décimal
+                    if (utilisation > 1 && utilisation <= 100) {
+                      // Déjà en pourcentage
+                      utilisation = Math.min(100, Math.round(utilisation * 100) / 100);
+                    } else if (utilisation <= 1) {
+                      // Format décimal, convertir en pourcentage
+                      utilisation = Math.min(100, Math.round(utilisation * 10000) / 100);
+                    } else {
+                      // Valeur aberrante, recalculer
+                      utilisation = temps_total > 0 ? Math.min(100, Math.round((temps_utilise / temps_total) * 10000) / 100) : 0;
+                    }
+                    
                     const outils_utilises = result[`outils_utilises_${machine_key}`] || [];
                     const espace_utilise = result[`espace_utilise_${machine_key}`] || 0;
                     const capacite = result[`capacite_outils_${machine_key}`] || machine.capaciteOutils;
@@ -765,8 +785,8 @@ export default function FMSLotsProductionMIPForm() {
                     return (
                       <tr key={index}>
                         <td><strong>{machine.nom}</strong></td>
-                        <td>{temps_utilise}{uniteTemps}</td>
-                        <td>{temps_total}{uniteTemps}</td>
+                        <td>{Math.round(temps_utilise * 100) / 100}{uniteTemps}</td>
+                        <td>{Math.round(temps_total * 100) / 100}{uniteTemps}</td>
                         <td style={{ 
                           color: utilisation >= 80 ? "#10b981" : utilisation >= 50 ? "#f59e0b" : "#ef4444",
                           fontWeight: "bold"

@@ -50,7 +50,7 @@ const LigneAssemblageMixteEquilibrageForm = () => {
     
     const newTasks = tasks.map(task => ({
       ...task, 
-      models: [...task.models, { predecessors: null, time: 0 }]
+      models: [...task.models, { predecessors: null, time: 1 }]
     }));
     setTasks(newTasks);
   };
@@ -82,7 +82,7 @@ const LigneAssemblageMixteEquilibrageForm = () => {
     setTasks([...tasks, { 
       id: newId, 
       name: `Tâche ${newId}`,
-      models: products.map(() => ({ predecessors: null, time: 0 }))
+      models: products.map(() => ({ predecessors: null, time: 1 }))
     }]);
   };
 
@@ -400,38 +400,40 @@ const LigneAssemblageMixteEquilibrageForm = () => {
                 </div>
               </div>
               
-              <div className={styles.productsGrid}>
+              <div className={styles.compactTable}>
+                <div className={styles.tableHeader}>
+                  <div className={styles.productColumn}>Produit</div>
+                  <div className={styles.timeColumn}>Temps ({timeUnit})</div>
+                  <div className={styles.predecessorsColumn}>Prédécesseurs</div>
+                </div>
+                
                 {task.models.map((model, productIndex) => (
-                  <div key={productIndex} className={styles.productBlock}>
-                    <div className={styles.productHeader}>
+                  <div key={productIndex} className={styles.tableRow}>
+                    <div className={styles.productColumn}>
                       <div className={styles.productBadge}>{products[productIndex]?.name || `Produit ${productIndex + 1}`}</div>
                     </div>
                     
-                    <div className={styles.productFields}>
-                      <div className={styles.fieldGroup}>
-                        <label>Temps ({timeUnit})</label>
-                        <input
-                          type="number"
-                          value={model.time}
-                          onChange={(e) => updateTaskModel(taskIndex, productIndex, 'time', e.target.value)}
-                          className={styles.timeInput}
-                          min="0"
-                          step="0.1"
-                          placeholder="0"
-                        />
-                      </div>
-                      
-                      <div className={styles.fieldGroup}>
-                        <label>Prédécesseurs</label>
-                        <input
-                          type="text"
-                          value={formatPredecessors(model.predecessors)}
-                          onChange={(e) => updateTaskModel(taskIndex, productIndex, 'predecessors', e.target.value)}
-                          className={styles.predecessorsInput}
-                          placeholder="Ex: 1,2"
-                          title="IDs des tâches prédécesseurs séparés par des virgules"
-                        />
-                      </div>
+                    <div className={styles.timeColumn}>
+                      <input
+                        type="number"
+                        value={model.time}
+                        onChange={(e) => updateTaskModel(taskIndex, productIndex, 'time', e.target.value)}
+                        className={styles.compactTimeInput}
+                        min="0"
+                        step="0.1"
+                        placeholder="1"
+                      />
+                    </div>
+                    
+                    <div className={styles.predecessorsColumn}>
+                      <input
+                        type="text"
+                        value={formatPredecessors(model.predecessors)}
+                        onChange={(e) => updateTaskModel(taskIndex, productIndex, 'predecessors', e.target.value)}
+                        className={styles.compactPredecessorsInput}
+                        placeholder="Ex: 1,2"
+                        title="IDs des tâches prédécesseurs séparés par des virgules"
+                      />
                     </div>
                   </div>
                 ))}

@@ -308,9 +308,7 @@ export default function FMSLotsProductionGloutonForm() {
               <option value="jours">Jours</option>
             </select>
           </div>
-        </div>
-        
-        <div className={styles.configRow}>
+          
           <div className={styles.inputGroup}>
             <label>Temps disponible/jour<br/><span style={{fontSize: "0.8em", color: "#6b7280"}}>({uniteTemps})</span></label>
             <input
@@ -322,52 +320,6 @@ export default function FMSLotsProductionGloutonForm() {
               className={styles.input}
               placeholder="12"
             />
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label>Nombre de machines</label>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <button 
-                type="button"
-                onClick={addMachine} 
-                className={styles.input}
-                style={{ flex: "1", cursor: "pointer", backgroundColor: "#f3f4f6" }}
-              >
-                + Ajouter
-              </button>
-              <button 
-                type="button"
-                onClick={removeMachine} 
-                className={styles.input}
-                style={{ flex: "1", cursor: "pointer", backgroundColor: "#fee2e2" }}
-                disabled={machines.length <= 1}
-              >
-                - Supprimer
-              </button>
-            </div>
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label>Nombre de produits</label>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <button 
-                type="button"
-                onClick={addProduit} 
-                className={styles.input}
-                style={{ flex: "1", cursor: "pointer", backgroundColor: "#f3f4f6" }}
-              >
-                + Ajouter
-              </button>
-              <button 
-                type="button"
-                onClick={removeProduit} 
-                className={styles.input}
-                style={{ flex: "1", cursor: "pointer", backgroundColor: "#fee2e2" }}
-                disabled={produits.length <= 1}
-              >
-                - Supprimer
-              </button>
-            </div>
           </div>
 
           <div className={styles.inputGroup}>
@@ -385,6 +337,21 @@ export default function FMSLotsProductionGloutonForm() {
             </select>
           </div>
         </div>
+        
+        <div className={styles.actionButtons}>
+          <button className={styles.addButton} onClick={addMachine}>
+            + Ajouter une machine
+          </button>
+          <button className={styles.removeButton} onClick={removeMachine} disabled={machines.length <= 1}>
+            - Supprimer une machine
+          </button>
+          <button className={styles.addButton} onClick={addProduit}>
+            + Ajouter un produit
+          </button>
+          <button className={styles.removeButton} onClick={removeProduit} disabled={produits.length <= 1}>
+            - Supprimer un produit
+          </button>
+        </div>
       </div>
 
       <div className={styles.section}>
@@ -398,6 +365,7 @@ export default function FMSLotsProductionGloutonForm() {
                 <th>Nombre d'Unités</th>
                 <th>Capacité d'Outils</th>
                 <th>Capacité Totale<br/>({uniteTemps})</th>
+                <th>Outils Disponibles</th>
               </tr>
             </thead>
             <tbody>
@@ -437,6 +405,13 @@ export default function FMSLotsProductionGloutonForm() {
                       {calculateCapaciteTotale(index).toFixed(1)}
                     </div>
                   </td>
+                  <td>
+                    <div style={{ fontSize: "0.85rem", color: "#6b7280" }}>
+                      Suggérés : {machine.nom.slice(-1)}1, {machine.nom.slice(-1)}2, {machine.nom.slice(-1)}3...
+                      <br/>
+                      <small>Capacité : {machine.capaciteOutils} outils max</small>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -455,10 +430,12 @@ export default function FMSLotsProductionGloutonForm() {
                 <th>Grandeur Commande<br/>(unités)</th>
                 <th>Date d'Échéance<br/>(jours)</th>
                 {machines.map((machine, index) => (
-                  <th key={index} colSpan="2">
+                  <th key={index} colSpan="2" style={{ backgroundColor: "#1e40af" }}>
                     {machine.nom}
                     <br/>
-                    <small>Temps ({uniteTemps}/u) | Outil</small>
+                    <small style={{ fontWeight: "normal", opacity: "0.9" }}>
+                      Temps ({uniteTemps}/u) | Outil requis
+                    </small>
                   </th>
                 ))}
                 <th>Temps Total<br/>({uniteTemps})</th>
@@ -495,7 +472,7 @@ export default function FMSLotsProductionGloutonForm() {
                   </td>
                   {machines.map((machine, machineIndex) => (
                     <React.Fragment key={machineIndex}>
-                      <td>
+                      <td style={{ backgroundColor: "#f8fafc" }}>
                         <input
                           type="number"
                           min="0"
@@ -503,16 +480,27 @@ export default function FMSLotsProductionGloutonForm() {
                           value={produit.tempsOperations[machineIndex] || 0}
                           onChange={(e) => handleProduitChange(produitIndex, "tempsOperation", e.target.value, machineIndex)}
                           className={styles.input}
+                          placeholder="0.0"
                         />
                       </td>
-                      <td>
+                      <td style={{ backgroundColor: "#f1f5f9" }}>
                         <input
                           type="text"
                           value={produit.outils[machineIndex] || ""}
                           onChange={(e) => handleProduitChange(produitIndex, "outil", e.target.value, machineIndex)}
                           className={styles.input}
-                          placeholder={`${machine.nom.slice(-1)}1`}
+                          placeholder={`${machine.nom.slice(-1)}${produitIndex + 1}`}
+                          title={`Outil pour ${machine.nom} - Exemples: ${machine.nom.slice(-1)}1, ${machine.nom.slice(-1)}2, ${machine.nom.slice(-1)}3...`}
                         />
+                        <small style={{ 
+                          display: "block", 
+                          fontSize: "0.7rem", 
+                          color: "#6b7280", 
+                          marginTop: "2px",
+                          textAlign: "center"
+                        }}>
+                          {produit.outils[machineIndex] ? '✓' : `Ex: ${machine.nom.slice(-1)}${produitIndex + 1}`}
+                        </small>
                       </td>
                     </React.Fragment>
                   ))}

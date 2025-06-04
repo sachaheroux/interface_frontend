@@ -2,7 +2,7 @@ export default function FMSSacADosPLInfo() {
   return (
     <div style={{
       background: "#f1f5f9",
-      borderLeft: "4px solid #8b5cf6",
+      borderLeft: "4px solid #2563eb",
       borderRadius: "0.75rem",
       padding: "1.5rem",
       marginLeft: "2rem",
@@ -10,10 +10,10 @@ export default function FMSSacADosPLInfo() {
       color: "#1e293b",
       fontSize: "0.95rem"
     }}>
-      <h3 style={{ marginTop: 0, color: "#8b5cf6", fontSize: "1.2rem" }}>FMS - Sac à Dos (Programmation Linéaire)</h3>
+      <h3 style={{ marginTop: 0, color: "#2563eb", fontSize: "1.2rem" }}>FMS - Sac à Dos (Programmation Linéaire)</h3>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Principe de l'algorithme</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Principe de l'algorithme</h4>
         <p style={{ marginBottom: "0.5rem" }}>
           Cette variante utilise la <strong>programmation linéaire</strong> avec le solveur PuLP 
           pour résoudre le problème du sac à dos FMS. Approche plus moderne et 
@@ -22,7 +22,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages de la PL</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages de la PL</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Solveur industriel :</strong> CBC/COIN-OR optimisé</li>
           <li><strong>Gestion mémoire :</strong> Pas de tableau n × capacité</li>
@@ -32,7 +32,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Formulation mathématique</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Formulation mathématique</h4>
         <p style={{ marginBottom: "0.5rem" }}>
           Variables binaires x[i] de valeur 0 ou 1 pour chaque produit :
         </p>
@@ -44,7 +44,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Solveur PuLP/CBC</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Solveur PuLP/CBC</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Branch & Bound :</strong> Exploration intelligente de l'espace</li>
           <li><strong>Cuts :</strong> Plans de coupe pour accélérer</li>
@@ -54,7 +54,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Paramètres identiques</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Paramètres identiques</h4>
         <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Prix de vente :</strong> Revenus par unité vendue</li>
           <li><strong>Coût matière première :</strong> Coût des matériaux par unité</li>
@@ -66,7 +66,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Processus de résolution</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Processus de résolution</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Modélisation :</strong> Création du modèle PuLP</li>
           <li><strong>Variables :</strong> Définition des variables binaires</li>
@@ -77,7 +77,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages sur programmation dynamique</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages sur programmation dynamique</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Mémoire :</strong> O(n) vs O(n × capacité)</li>
           <li><strong>Precision :</strong> Pas de discrétisation des temps</li>
@@ -88,7 +88,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Métriques identiques</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Métriques identiques</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Profit maximal :</strong> Retour financier total optimisé</li>
           <li><strong>Utilisation capacité :</strong> Pourcentage de temps utilisé</li>
@@ -98,7 +98,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Visualisations enrichies</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Visualisations enrichies</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Profits par produit :</strong> Barres colorées selon sélection</li>
           <li><strong>Utilisation capacité :</strong> Camembert avec pourcentages</li>
@@ -108,7 +108,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Limites de l'approche PL</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Limites de l'approche PL</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Dépendance :</strong> Nécessite PuLP et solveur CBC</li>
           <li><strong>Variables binaires :</strong> Complexité exponentielle théorique</li>
@@ -118,7 +118,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Quand utiliser chaque approche</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Quand utiliser chaque approche</h4>
         <div style={{ fontSize: "0.9rem" }}>
           <div style={{ marginBottom: "0.5rem" }}>
             <strong>Programmation Dynamique :</strong> Petits problèmes, apprentissage
@@ -134,7 +134,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Extensions possibles</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Extensions possibles</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Multi-périodes :</strong> Planification sur plusieurs horizons</li>
           <li><strong>Multi-ressources :</strong> Plusieurs contraintes de capacité</li>
@@ -145,7 +145,7 @@ export default function FMSSacADosPLInfo() {
       </div>
 
       <div style={{ marginBottom: "0" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Recommandations d'usage</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Recommandations d'usage</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li>Utilisez PL pour les applications industrielles réelles</li>
           <li>Comparez les deux approches pour valider les résultats</li>

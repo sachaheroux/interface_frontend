@@ -2,7 +2,7 @@ export default function FMSSacADosGloutonInfo() {
   return (
     <div style={{
       background: "#f1f5f9",
-      borderLeft: "4px solid #8b5cf6",
+      borderLeft: "4px solid #2563eb",
       borderRadius: "0.75rem",
       padding: "1.5rem",
       marginLeft: "2rem",
@@ -10,10 +10,10 @@ export default function FMSSacADosGloutonInfo() {
       color: "#1e293b",
       fontSize: "0.95rem"
     }}>
-      <h3 style={{ marginTop: 0, color: "#8b5cf6", fontSize: "1.2rem" }}>FMS - Sac à Dos (Algorithme Glouton)</h3>
+      <h3 style={{ marginTop: 0, color: "#2563eb", fontSize: "1.2rem" }}>FMS - Sac à Dos (Algorithme Glouton)</h3>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Principe de l'algorithme</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Principe de l'algorithme</h4>
         <p style={{ marginBottom: "0.5rem" }}>
           L'algorithme <strong>glouton</strong> résout le problème du sac à dos FMS en faisant des 
           choix <strong>localement optimaux</strong> basés sur la désirabilité (ratio profit/temps).
@@ -22,7 +22,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Stratégie gloutonne</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Stratégie gloutonne</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Critère :</strong> Désirabilité = Profit total / Temps requis</li>
           <li><strong>Tri :</strong> Ordre décroissant de désirabilité</li>
@@ -32,7 +32,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Calcul de désirabilité</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Calcul de désirabilité</h4>
         <div style={{ backgroundColor: "#e2e8f0", padding: "0.5rem", borderRadius: "0.375rem", fontFamily: "monospace", fontSize: "0.85rem" }}>
           Désirabilité[i] = Profit_total[i] / Temps_requis[i]
           <br />
@@ -43,7 +43,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages du glouton</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Avantages du glouton</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Rapidité :</strong> Exécution très rapide O(n log n)</li>
           <li><strong>Simplicité :</strong> Algorithme facile à comprendre</li>
@@ -54,7 +54,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Processus de résolution</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Processus de résolution</h4>
         <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Calcul :</strong> Désirabilité pour chaque produit</li>
           <li><strong>Tri :</strong> Produits par désirabilité décroissante</li>
@@ -65,7 +65,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Paramètres identiques</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Paramètres identiques</h4>
         <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Prix de vente :</strong> Revenus par unité vendue</li>
           <li><strong>Coût matière première :</strong> Coût des matériaux par unité</li>
@@ -77,7 +77,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Comparaison avec autres méthodes</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Comparaison avec autres méthodes</h4>
         <div style={{ fontSize: "0.9rem" }}>
           <div style={{ marginBottom: "0.5rem" }}>
             <strong>Glouton vs DP :</strong> Plus rapide mais possiblement sous-optimal
@@ -92,7 +92,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Limitations importantes</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Limitations importantes</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Sous-optimalité :</strong> Solution pas forcément optimale</li>
           <li><strong>Choix local :</strong> Pas de vision globale du problème</li>
@@ -102,7 +102,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Métriques calculées</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Métriques calculées</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Profit total :</strong> Somme des profits des produits sélectionnés</li>
           <li><strong>Utilisation capacité :</strong> Pourcentage de temps utilisé</li>
@@ -112,7 +112,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Visualisations spécifiques</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Visualisations spécifiques</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Désirabilité :</strong> Barres par produit avec sélection</li>
           <li><strong>Capacité :</strong> Camembert utilisation vs disponible</li>
@@ -122,7 +122,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Cas d'usage recommandés</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Cas d'usage recommandés</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Prototypage :</strong> Solution rapide pour tests</li>
           <li><strong>Benchmark :</strong> Comparaison avec autres méthodes</li>
@@ -132,7 +132,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "1rem" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Interprétation des résultats</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Interprétation des résultats</h4>
         <div style={{ fontSize: "0.9rem" }}>
           <p style={{ marginBottom: "0.5rem" }}>
             La <strong>désirabilité</strong> montre l'attractivité de chaque produit. 
@@ -146,7 +146,7 @@ export default function FMSSacADosGloutonInfo() {
       </div>
 
       <div style={{ marginBottom: "0" }}>
-        <h4 style={{ color: "#8b5cf6", marginBottom: "0.5rem", fontSize: "1rem" }}>Recommandations d'usage</h4>
+        <h4 style={{ color: "#2563eb", marginBottom: "0.5rem", fontSize: "1rem" }}>Recommandations d'usage</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li>Utilisez pour une solution rapide et approximative</li>
           <li>Comparez avec DP et PL pour valider la qualité</li>

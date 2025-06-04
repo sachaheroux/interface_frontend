@@ -15,12 +15,12 @@
   --text-secondary: #6b7280;
   --text-muted: #9ca3af;
   
-  --model1-color: #3b82f6;
-  --model2-color: #ef4444;
-  --model3-color: #10b981;
-  --model4-color: #f59e0b;
-  --model5-color: #8b5cf6;
-  --model6-color: #06b6d4;
+  --product1-color: #3b82f6;
+  --product2-color: #ef4444;
+  --product3-color: #10b981;
+  --product4-color: #f59e0b;
+  --product5-color: #8b5cf6;
+  --product6-color: #06b6d4;
   
   --border-radius: 0.5rem;
   --border-radius-lg: 0.75rem;
@@ -86,16 +86,16 @@
 }
 
 .configRow {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr) 2fr;
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
-  align-items: end;
 }
 
 .inputGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  text-align: center;
 }
 
 .inputGroup label {
@@ -114,6 +114,8 @@
   background: var(--background-main);
   color: var(--text-primary);
   transition: all 0.2s ease;
+  max-width: 200px;
+  margin: 0 auto;
 }
 
 .input:focus,
@@ -123,12 +125,19 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+.paramRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  justify-items: center;
+}
+
 /* ===== BOUTONS D'ACTION ===== */
 .actionButtons {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 0.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
 
 .addButton,
@@ -144,26 +153,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.addButton {
   background: var(--primary-color);
   color: white;
 }
 
-.addButton:hover:not(:disabled) {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.removeButton {
-  background: #f87171;
-  color: white;
-}
-
+.addButton:hover:not(:disabled),
 .removeButton:hover:not(:disabled) {
-  background: #ef4444;
+  background: var(--primary-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -172,86 +168,88 @@
   background: var(--text-muted);
   cursor: not-allowed;
   opacity: 0.5;
+  transform: none;
 }
 
-/* ===== DEMANDES PAR MODÈLE ===== */
-.demandContainer {
+/* ===== PRODUITS ===== */
+.productsContainer {
   background: var(--background-section);
   border-radius: var(--border-radius);
   padding: 1rem;
   border: 1px solid var(--border-color);
 }
 
-.demandHeader {
-  display: flex;
+.productsHeader {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px;
   gap: 1rem;
   margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-color);
 }
 
-.demandHeaderCell {
-  flex: 1;
+.productHeaderCell {
+  font-weight: 600;
+  color: var(--text-primary);
   text-align: center;
-  padding: 1rem;
+  padding: 0.5rem;
   background: white;
   border-radius: var(--border-radius);
-  border: 2px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
 }
 
-.demandRow {
-  display: flex;
+.productRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px;
   gap: 1rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
 }
 
-.demandCell {
-  flex: 1;
+.productCell {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-.demandInput {
-  width: 100%;
-  max-width: 120px;
-  height: 40px;
-  padding: 0 0.75rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius);
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  text-align: center;
-  background: white;
-  transition: all 0.2s ease;
-}
-
-.demandInput:focus {
-  outline: none;
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.demandLabel {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  margin-top: 0.5rem;
-}
-
-/* ===== BADGES MODÈLES ===== */
-.modelBadge {
+.productBadge {
   background: var(--primary-color);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
   font-size: var(--font-size-sm);
   font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   min-width: 3rem;
+  text-align: center;
   box-shadow: var(--shadow-sm);
 }
 
-/* ===== MATRICE DES TEMPS ===== */
-.matrixContainer {
+.productNameInput,
+.demandInput {
+  width: 100%;
+  height: 36px;
+  padding: 0 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.productNameInput:focus,
+.demandInput:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.demandInput {
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ===== TEMPS DE TRAITEMENT ===== */
+.timesContainer {
   background: var(--background-section);
   border-radius: var(--border-radius);
   padding: 1rem;
@@ -259,107 +257,82 @@
   overflow-x: auto;
 }
 
-.matrixHeader {
-  display: flex;
-  margin-bottom: 0.5rem;
+.timesHeader {
+  display: grid;
+  grid-template-columns: 80px 200px repeat(var(--products-count, 2), minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
   border-bottom: 2px solid var(--border-color);
-  padding-bottom: 1rem;
+  min-width: fit-content;
 }
 
-.matrixCorner {
-  width: 120px;
-  padding: 1rem;
-  background: var(--primary-color);
-  color: white;
+.timeHeaderCell {
   font-weight: 600;
+  color: var(--text-primary);
   text-align: center;
-  border-radius: var(--border-radius) 0 0 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.matrixHeaderCell {
-  flex: 1;
-  min-width: 120px;
-  text-align: center;
-  padding: 1rem;
+  padding: 0.75rem;
   background: white;
-  border: 2px solid var(--border-color);
-  border-left: none;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 
-.matrixHeaderCell:last-child {
-  border-radius: 0 var(--border-radius) 0 0;
-}
-
-.timeLabel {
+.timeUnit {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
-  margin-top: 0.5rem;
+  font-weight: normal;
 }
 
-.matrixRow {
-  display: flex;
+.timeRow {
+  display: grid;
+  grid-template-columns: 80px 200px repeat(var(--products-count, 2), minmax(120px, 1fr));
+  gap: 1rem;
   margin-bottom: 0.5rem;
+  align-items: center;
+  min-width: fit-content;
 }
 
-.taskLabelCell {
-  width: 120px;
-  padding: 1rem;
-  background: var(--primary-light);
-  color: var(--primary-dark);
-  font-weight: 600;
-  text-align: center;
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius) 0 0 var(--border-radius);
+.timeCell {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 .taskNumber {
   background: var(--primary-color);
   color: white;
-  padding: 0.25rem 0.75rem;
+  padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
   font-size: var(--font-size-sm);
   font-weight: 700;
+  min-width: 3rem;
+  text-align: center;
 }
 
-.matrixCell {
-  flex: 1;
-  min-width: 120px;
-  padding: 0.5rem;
-  background: white;
-  border: 2px solid var(--border-color);
-  border-left: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.matrixCell:last-child {
-  border-radius: 0 var(--border-radius) var(--border-radius) 0;
-}
-
+.taskNameInput,
 .timeInput {
   width: 100%;
   height: 36px;
-  padding: 0 0.5rem;
-  border: 1px solid var(--border-color);
+  padding: 0 0.75rem;
+  border: 2px solid var(--border-color);
   border-radius: var(--border-radius);
   font-size: var(--font-size-base);
-  text-align: center;
-  font-weight: 600;
+  background: white;
   transition: all 0.2s ease;
 }
 
+.taskNameInput:focus,
 .timeInput:focus {
   outline: none;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.timeInput {
+  text-align: center;
+  font-weight: 600;
+  max-width: 100px;
 }
 
 /* ===== ERREURS ===== */
@@ -498,18 +471,18 @@
   align-items: center;
 }
 
-.sequenceItem .modelBadge {
+.sequenceItem .productBadge {
   font-size: var(--font-size-base);
   padding: 0.5rem 0.75rem;
   min-width: 2.5rem;
 }
 
-.model1 { background: var(--model1-color); }
-.model2 { background: var(--model2-color); }
-.model3 { background: var(--model3-color); }
-.model4 { background: var(--model4-color); }
-.model5 { background: var(--model5-color); }
-.model6 { background: var(--model6-color); }
+.product1 { background: var(--product1-color); }
+.product2 { background: var(--product2-color); }
+.product3 { background: var(--product3-color); }
+.product4 { background: var(--product4-color); }
+.product5 { background: var(--product5-color); }
+.product6 { background: var(--product6-color); }
 
 /* ===== MÉTRIQUES ===== */
 .metricsGrid {
@@ -601,48 +574,32 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .configRow {
+  .paramRow {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
   .actionButtons {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, 1fr);
-  }
-
-  .demandHeader,
-  .demandRow {
-    flex-direction: column;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
   }
 
-  .matrixHeader,
-  .matrixRow {
-    flex-direction: column;
+  .productsHeader,
+  .productRow {
+    grid-template-columns: 60px 1fr 80px;
   }
 
-  .matrixCorner,
-  .taskLabelCell {
-    width: 100%;
-    border-radius: var(--border-radius);
-    margin-bottom: 0.5rem;
+  .timesHeader,
+  .timeRow {
+    grid-template-columns: 60px 150px 1fr;
   }
 
-  .matrixHeaderCell,
-  .matrixCell {
-    min-width: 100%;
-    border-left: 2px solid var(--border-color);
-    border-radius: var(--border-radius);
-    margin-bottom: 0.5rem;
-  }
-
-  .sequenceContainer {
-    justify-content: center;
+  .timeInput {
+    max-width: 80px;
   }
 
   .metricsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -663,7 +620,23 @@
     padding: 1rem;
   }
 
-  .matrixContainer {
-    padding: 0.5rem;
+  .actionButtons {
+    grid-template-columns: 1fr;
+  }
+
+  .productsHeader,
+  .productRow {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .timesHeader,
+  .timeRow {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
   }
 } 

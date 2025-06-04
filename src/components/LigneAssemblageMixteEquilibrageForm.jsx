@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import styles from './LigneAssemblageMixteEquilibrageForm.module.css';
 
 const LigneAssemblageMixteEquilibrageForm = () => {
+  const [products, setProducts] = useState([
+    { name: 'Produit 1', demand: 4 },
+    { name: 'Produit 2', demand: 6 }
+  ]);
+  
   const [tasks, setTasks] = useState([
     { 
       id: 1, 
@@ -29,7 +34,6 @@ const LigneAssemblageMixteEquilibrageForm = () => {
     }
   ]);
 
-  const [models, setModels] = useState([4, 6]); // Demande par modèle
   const [cycleTime, setCycleTime] = useState(50);
   const [timeUnit, setTimeUnit] = useState('minutes');
   const [result, setResult] = useState(null);
@@ -39,13 +43,46 @@ const LigneAssemblageMixteEquilibrageForm = () => {
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
+  // Gestion des produits
+  const addProduct = () => {
+    const newProduct = { name: `Produit ${products.length + 1}`, demand: 1 };
+    setProducts([...products, newProduct]);
+    
+    const newTasks = tasks.map(task => ({
+      ...task, 
+      models: [...task.models, { predecessors: null, time: 0 }]
+    }));
+    setTasks(newTasks);
+  };
+
+  const removeProduct = () => {
+    if (products.length > 2) {
+      setProducts(products.slice(0, -1));
+      const newTasks = tasks.map(task => ({
+        ...task,
+        models: task.models.slice(0, -1)
+      }));
+      setTasks(newTasks);
+    }
+  };
+
+  const updateProduct = (index, field, value) => {
+    const newProducts = [...products];
+    if (field === 'name') {
+      newProducts[index].name = value;
+    } else if (field === 'demand') {
+      newProducts[index].demand = parseInt(value) || 0;
+    }
+    setProducts(newProducts);
+  };
+
   // Gestion des tâches
   const addTask = () => {
     const newId = Math.max(...tasks.map(t => t.id)) + 1;
     setTasks([...tasks, { 
       id: newId, 
       name: `Tâche ${newId}`,
-      models: models.map(() => ({ predecessors: null, time: 0 }))
+      models: products.map(() => ({ predecessors: null, time: 0 }))
     }]);
   };
 
@@ -74,27 +111,6 @@ const LigneAssemblageMixteEquilibrageForm = () => {
     }
   };
 
-  // Gestion des modèles
-  const addModel = () => {
-    setModels([...models, 1]);
-    const newTasks = tasks.map(task => ({
-      ...task, 
-      models: [...task.models, { predecessors: null, time: 0 }]
-    }));
-    setTasks(newTasks);
-  };
-
-  const removeModel = () => {
-    if (models.length > 2) {
-      setModels(models.slice(0, -1));
-      const newTasks = tasks.map(task => ({
-        ...task,
-        models: task.models.slice(0, -1)
-      }));
-      setTasks(newTasks);
-    }
-  };
-
   const updateTask = (taskIndex, field, value) => {
     const newTasks = [...tasks];
     if (field === 'name') {
@@ -111,12 +127,6 @@ const LigneAssemblageMixteEquilibrageForm = () => {
       newTasks[taskIndex].models[modelIndex][field] = parseFloat(value) || 0;
     }
     setTasks(newTasks);
-  };
-
-  const updateModelDemand = (index, value) => {
-    const newModels = [...models];
-    newModels[index] = parseInt(value) || 0;
-    setModels(newModels);
   };
 
   const formatPredecessors = (predecessors) => {
@@ -144,8 +154,8 @@ const LigneAssemblageMixteEquilibrageForm = () => {
       }
 
       // Validation des demandes
-      if (models.some(demand => demand <= 0)) {
-        throw new Error("Les demandes par modèle doivent être positives.");
+      if (products.some(product => product.demand <= 0)) {
+        throw new Error("Les demandes par produit doivent être positives.");
       }
 
       // Validation des temps
@@ -180,7 +190,7 @@ const LigneAssemblageMixteEquilibrageForm = () => {
       });
 
       const requestData = {
-        models: models,
+        models: products.map(p => p.demand),
         tasks_data: tasksData,
         cycle_time: cycleTime,
         unite: timeUnit
@@ -249,11 +259,11 @@ const LigneAssemblageMixteEquilibrageForm = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>Ligne d'assemblage mixte - Équilibrage</h1>
         <p className={styles.subtitle}>
-          Équilibrage optimal multi-modèles avec contraintes de précédence spécifiques par modèle
+          Équilibrage optimal multi-produits avec contraintes de précédence spécifiques par produit
         </p>
       </div>
 
-      {/* Configuration générale */}
+      {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
         <div className={styles.configRow}>
           <div className={styles.inputGroup}>
@@ -286,20 +296,20 @@ const LigneAssemblageMixteEquilibrageForm = () => {
           
           <div className={styles.actionButtons}>
             <button
-              onClick={addModel}
+              onClick={addProduct}
               className={styles.addButton}
               type="button"
             >
-              + Ajouter un modèle
+              + Ajouter un produit
             </button>
             
             <button
-              onClick={removeModel}
-              disabled={models.length <= 2}
+              onClick={removeProduct}
+              disabled={products.length <= 2}
               className={styles.removeButton}
               type="button"
             >
-              - Supprimer un modèle
+              - Supprimer un produit
             </button>
 
             <button
@@ -322,38 +332,49 @@ const LigneAssemblageMixteEquilibrageForm = () => {
         </div>
       </div>
 
-      {/* Configuration des demandes par modèle */}
+      {/* Configuration des produits */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Demande par modèle ({models.length} modèles)</h2>
+        <h2 className={styles.sectionTitle}>Configuration des produits ({products.length} produits)</h2>
         
-        <div className={styles.demandContainer}>
-          <div className={styles.demandHeader}>
-            {models.map((_, index) => (
-              <div key={index} className={styles.demandHeaderCell}>
-                <div className={styles.modelBadge}>M{index + 1}</div>
-                <div className={styles.demandLabel}>Demande</div>
-              </div>
-            ))}
+        <div className={styles.productsContainer}>
+          <div className={styles.productsHeader}>
+            <div className={styles.productHeaderCell}>Produit</div>
+            <div className={styles.productHeaderCell}>Nom du produit</div>
+            <div className={styles.productHeaderCell}>Demande</div>
           </div>
           
-          <div className={styles.demandRow}>
-            {models.map((demand, index) => (
-              <div key={index} className={styles.demandCell}>
+          {products.map((product, index) => (
+            <div key={index} className={styles.productRow}>
+              <div className={styles.productCell}>
+                <div className={styles.productBadge}>P{index + 1}</div>
+              </div>
+              
+              <div className={styles.productCell}>
                 <input
-                  type="number"
-                  value={demand}
-                  onChange={(e) => updateModelDemand(index, e.target.value)}
-                  className={styles.demandInput}
-                  min="1"
-                  placeholder="0"
+                  type="text"
+                  value={product.name}
+                  onChange={(e) => updateProduct(index, 'name', e.target.value)}
+                  className={styles.productNameInput}
+                  placeholder={`Produit ${index + 1}`}
                 />
               </div>
-            ))}
-          </div>
+              
+              <div className={styles.productCell}>
+                <input
+                  type="number"
+                  value={product.demand}
+                  onChange={(e) => updateProduct(index, 'demand', e.target.value)}
+                  className={styles.demandInput}
+                  min="1"
+                  placeholder="4"
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Configuration des tâches avec modèles */}
+      {/* Configuration des tâches avec produits */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Configuration des tâches ({tasks.length} tâches)</h2>
         
@@ -371,22 +392,25 @@ const LigneAssemblageMixteEquilibrageForm = () => {
                     placeholder={`Tâche ${task.id}`}
                   />
                 </div>
+                <div className={styles.availableText}>
+                  Prédécesseurs disponibles: {getAvailablePredecessors(task.id) || "Aucun"}
+                </div>
               </div>
               
-              <div className={styles.modelsGrid}>
-                {task.models.map((model, modelIndex) => (
-                  <div key={modelIndex} className={styles.modelBlock}>
-                    <div className={styles.modelHeader}>
-                      <div className={styles.modelBadge}>Modèle {modelIndex + 1}</div>
+              <div className={styles.productsGrid}>
+                {task.models.map((model, productIndex) => (
+                  <div key={productIndex} className={styles.productBlock}>
+                    <div className={styles.productHeader}>
+                      <div className={styles.productBadge}>{products[productIndex]?.name || `Produit ${productIndex + 1}`}</div>
                     </div>
                     
-                    <div className={styles.modelFields}>
+                    <div className={styles.productFields}>
                       <div className={styles.fieldGroup}>
                         <label>Temps ({timeUnit})</label>
                         <input
                           type="number"
                           value={model.time}
-                          onChange={(e) => updateTaskModel(taskIndex, modelIndex, 'time', e.target.value)}
+                          onChange={(e) => updateTaskModel(taskIndex, productIndex, 'time', e.target.value)}
                           className={styles.timeInput}
                           min="0"
                           step="0.1"
@@ -399,14 +423,11 @@ const LigneAssemblageMixteEquilibrageForm = () => {
                         <input
                           type="text"
                           value={formatPredecessors(model.predecessors)}
-                          onChange={(e) => updateTaskModel(taskIndex, modelIndex, 'predecessors', e.target.value)}
+                          onChange={(e) => updateTaskModel(taskIndex, productIndex, 'predecessors', e.target.value)}
                           className={styles.predecessorsInput}
                           placeholder="Ex: 1,2"
                           title="IDs des tâches prédécesseurs séparés par des virgules"
                         />
-                        <div className={styles.availableText}>
-                          Disponibles: {getAvailablePredecessors(task.id) || "Aucun"}
-                        </div>
                       </div>
                     </div>
                   </div>

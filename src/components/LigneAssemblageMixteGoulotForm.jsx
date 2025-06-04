@@ -2,11 +2,24 @@ import React, { useState } from 'react';
 import styles from './LigneAssemblageMixteGoulotForm.module.css';
 
 const LigneAssemblageMixteGoulotForm = () => {
-  const [modelsDemand, setModelsDemand] = useState([4, 6]);
-  const [taskTimes, setTaskTimes] = useState([
-    [3, 3],  // Tâche 1: [temps modèle 1, temps modèle 2]
-    [2, 3]   // Tâche 2: [temps modèle 1, temps modèle 2]
+  const [products, setProducts] = useState([
+    { name: 'Produit 1', demand: 4 },
+    { name: 'Produit 2', demand: 6 }
   ]);
+  
+  const [tasks, setTasks] = useState([
+    { 
+      id: 1, 
+      name: 'Tâche 1',
+      times: [3, 3]  // temps pour chaque produit
+    },
+    { 
+      id: 2, 
+      name: 'Tâche 2',
+      times: [2, 3]  // temps pour chaque produit
+    }
+  ]);
+
   const [s1, setS1] = useState(0.5);
   const [s2, setS2] = useState(0.5);
   const [timeUnit, setTimeUnit] = useState('minutes');
@@ -17,49 +30,70 @@ const LigneAssemblageMixteGoulotForm = () => {
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
-  // Gestion des modèles
-  const addModel = () => {
-    const newModelsDemand = [...modelsDemand, 4];
-    setModelsDemand(newModelsDemand);
+  // Gestion des produits
+  const addProduct = () => {
+    const newProduct = { name: `Produit ${products.length + 1}`, demand: 4 };
+    setProducts([...products, newProduct]);
     
     // Ajouter une colonne aux temps de tâches
-    const newTaskTimes = taskTimes.map(task => [...task, 3]);
-    setTaskTimes(newTaskTimes);
+    const newTasks = tasks.map(task => ({
+      ...task,
+      times: [...task.times, 3]
+    }));
+    setTasks(newTasks);
   };
 
-  const removeModel = () => {
-    if (modelsDemand.length > 2) {
-      const newModelsDemand = modelsDemand.slice(0, -1);
-      setModelsDemand(newModelsDemand);
+  const removeProduct = () => {
+    if (products.length > 2) {
+      setProducts(products.slice(0, -1));
       
       // Supprimer la dernière colonne des temps de tâches
-      const newTaskTimes = taskTimes.map(task => task.slice(0, -1));
-      setTaskTimes(newTaskTimes);
+      const newTasks = tasks.map(task => ({
+        ...task,
+        times: task.times.slice(0, -1)
+      }));
+      setTasks(newTasks);
     }
   };
 
-  const updateModelDemand = (index, value) => {
-    const newModelsDemand = [...modelsDemand];
-    newModelsDemand[index] = parseInt(value) || 0;
-    setModelsDemand(newModelsDemand);
+  const updateProduct = (index, field, value) => {
+    const newProducts = [...products];
+    if (field === 'name') {
+      newProducts[index].name = value;
+    } else if (field === 'demand') {
+      newProducts[index].demand = parseInt(value) || 0;
+    }
+    setProducts(newProducts);
   };
 
   // Gestion des tâches
   const addTask = () => {
-    const newTask = new Array(modelsDemand.length).fill(3);
-    setTaskTimes([...taskTimes, newTask]);
+    const newId = Math.max(...tasks.map(t => t.id)) + 1;
+    setTasks([...tasks, { 
+      id: newId, 
+      name: `Tâche ${newId}`,
+      times: new Array(products.length).fill(3)
+    }]);
   };
 
   const removeTask = () => {
-    if (taskTimes.length > 1) {
-      setTaskTimes(taskTimes.slice(0, -1));
+    if (tasks.length > 1) {
+      setTasks(tasks.slice(0, -1));
     }
   };
 
-  const updateTaskTime = (taskIndex, modelIndex, value) => {
-    const newTaskTimes = [...taskTimes];
-    newTaskTimes[taskIndex][modelIndex] = parseFloat(value) || 0;
-    setTaskTimes(newTaskTimes);
+  const updateTask = (taskIndex, field, value) => {
+    const newTasks = [...tasks];
+    if (field === 'name') {
+      newTasks[taskIndex].name = value;
+    }
+    setTasks(newTasks);
+  };
+
+  const updateTaskTime = (taskIndex, productIndex, value) => {
+    const newTasks = [...tasks];
+    newTasks[taskIndex].times[productIndex] = parseFloat(value) || 0;
+    setTasks(newTasks);
   };
 
   const calculateOptimization = async () => {
@@ -79,18 +113,18 @@ const LigneAssemblageMixteGoulotForm = () => {
       }
 
       // Validation des demandes
-      if (modelsDemand.some(demand => demand <= 0)) {
-        throw new Error("Les demandes par modèle doivent être positives.");
+      if (products.some(product => product.demand <= 0)) {
+        throw new Error("Les demandes par produit doivent être positives.");
       }
 
       // Validation des temps
-      if (taskTimes.some(task => task.some(time => time <= 0))) {
+      if (tasks.some(task => task.times.some(time => time <= 0))) {
         throw new Error("Les temps de traitement doivent être positifs.");
       }
 
       const requestData = {
-        models_demand: modelsDemand,
-        task_times: taskTimes,
+        models_demand: products.map(p => p.demand),
+        task_times: tasks.map(task => task.times),
         s1: s1,
         s2: s2,
         unite: timeUnit
@@ -159,11 +193,11 @@ const LigneAssemblageMixteGoulotForm = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>Ligne d'assemblage mixte - Variation du goulot</h1>
         <p className={styles.subtitle}>
-          Optimisation de la séquence de production multi-modèles pour minimiser la variation du goulot
+          Optimisation de la séquence de production multi-produits pour minimiser la variation du goulot
         </p>
       </div>
 
-      {/* Configuration générale */}
+      {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
         <div className={styles.configRow}>
           <div className={styles.inputGroup}>
@@ -180,52 +214,54 @@ const LigneAssemblageMixteGoulotForm = () => {
             </select>
           </div>
 
-          <div className={styles.inputGroup}>
-            <label htmlFor="s1">Paramètre s1 (lissage modèles)</label>
-            <input
-              id="s1"
-              type="number"
-              value={s1}
-              onChange={(e) => setS1(parseFloat(e.target.value) || 0)}
-              className={styles.input}
-              min="0"
-              max="1"
-              step="0.1"
-              placeholder="0.5"
-            />
-          </div>
+          <div className={styles.paramRow}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="s1">Paramètre s1 (lissage produits)</label>
+              <input
+                id="s1"
+                type="number"
+                value={s1}
+                onChange={(e) => setS1(parseFloat(e.target.value) || 0)}
+                className={styles.input}
+                min="0"
+                max="1"
+                step="0.1"
+                placeholder="0.5"
+              />
+            </div>
 
-          <div className={styles.inputGroup}>
-            <label htmlFor="s2">Paramètre s2 (lissage capacité)</label>
-            <input
-              id="s2"
-              type="number"
-              value={s2}
-              onChange={(e) => setS2(parseFloat(e.target.value) || 0)}
-              className={styles.input}
-              min="0"
-              max="1"
-              step="0.1"
-              placeholder="0.5"
-            />
+            <div className={styles.inputGroup}>
+              <label htmlFor="s2">Paramètre s2 (lissage capacité)</label>
+              <input
+                id="s2"
+                type="number"
+                value={s2}
+                onChange={(e) => setS2(parseFloat(e.target.value) || 0)}
+                className={styles.input}
+                min="0"
+                max="1"
+                step="0.1"
+                placeholder="0.5"
+              />
+            </div>
           </div>
           
           <div className={styles.actionButtons}>
             <button
-              onClick={addModel}
+              onClick={addProduct}
               className={styles.addButton}
               type="button"
             >
-              + Ajouter un modèle
+              + Ajouter un produit
             </button>
             
             <button
-              onClick={removeModel}
-              disabled={modelsDemand.length <= 2}
+              onClick={removeProduct}
+              disabled={products.length <= 2}
               className={styles.removeButton}
               type="button"
             >
-              - Supprimer un modèle
+              - Supprimer un produit
             </button>
 
             <button
@@ -238,7 +274,7 @@ const LigneAssemblageMixteGoulotForm = () => {
             
             <button
               onClick={removeTask}
-              disabled={taskTimes.length <= 1}
+              disabled={tasks.length <= 1}
               className={styles.removeButton}
               type="button"
             >
@@ -248,65 +284,88 @@ const LigneAssemblageMixteGoulotForm = () => {
         </div>
       </div>
 
-      {/* Configuration des demandes par modèle */}
+      {/* Configuration des produits */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Demande par modèle ({modelsDemand.length} modèles)</h2>
+        <h2 className={styles.sectionTitle}>Configuration des produits ({products.length} produits)</h2>
         
-        <div className={styles.demandContainer}>
-          <div className={styles.demandHeader}>
-            {modelsDemand.map((_, index) => (
-              <div key={index} className={styles.demandHeaderCell}>
-                <div className={styles.modelBadge}>M{index + 1}</div>
-                <div className={styles.demandLabel}>Demande</div>
-              </div>
-            ))}
+        <div className={styles.productsContainer}>
+          <div className={styles.productsHeader}>
+            <div className={styles.productHeaderCell}>Produit</div>
+            <div className={styles.productHeaderCell}>Nom du produit</div>
+            <div className={styles.productHeaderCell}>Demande</div>
           </div>
           
-          <div className={styles.demandRow}>
-            {modelsDemand.map((demand, index) => (
-              <div key={index} className={styles.demandCell}>
+          {products.map((product, index) => (
+            <div key={index} className={styles.productRow}>
+              <div className={styles.productCell}>
+                <div className={styles.productBadge}>P{index + 1}</div>
+              </div>
+              
+              <div className={styles.productCell}>
                 <input
-                  type="number"
-                  value={demand}
-                  onChange={(e) => updateModelDemand(index, e.target.value)}
-                  className={styles.demandInput}
-                  min="1"
-                  placeholder="0"
+                  type="text"
+                  value={product.name}
+                  onChange={(e) => updateProduct(index, 'name', e.target.value)}
+                  className={styles.productNameInput}
+                  placeholder={`Produit ${index + 1}`}
                 />
               </div>
-            ))}
-          </div>
+              
+              <div className={styles.productCell}>
+                <input
+                  type="number"
+                  value={product.demand}
+                  onChange={(e) => updateProduct(index, 'demand', e.target.value)}
+                  className={styles.demandInput}
+                  min="1"
+                  placeholder="4"
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Matrice des temps de traitement */}
+      {/* Configuration des temps de traitement */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
-          Temps de traitement au poste goulot ({taskTimes.length} tâches)
+          Temps de traitement au poste goulot ({tasks.length} tâches)
         </h2>
         
-        <div className={styles.matrixContainer}>
-          <div className={styles.matrixHeader}>
-            <div className={styles.matrixCorner}>Tâche</div>
-            {modelsDemand.map((_, index) => (
-              <div key={index} className={styles.matrixHeaderCell}>
-                <div className={styles.modelBadge}>M{index + 1}</div>
-                <div className={styles.timeLabel}>Temps ({timeUnit})</div>
+        <div className={styles.timesContainer}>
+          <div className={styles.timesHeader}>
+            <div className={styles.timeHeaderCell}>Tâche</div>
+            <div className={styles.timeHeaderCell}>Nom de la tâche</div>
+            {products.map((product, index) => (
+              <div key={index} className={styles.timeHeaderCell}>
+                {product.name}<br/>
+                <span className={styles.timeUnit}>({timeUnit})</span>
               </div>
             ))}
           </div>
           
-          {taskTimes.map((task, taskIndex) => (
-            <div key={taskIndex} className={styles.matrixRow}>
-              <div className={styles.taskLabelCell}>
-                <div className={styles.taskNumber}>T{taskIndex + 1}</div>
+          {tasks.map((task, taskIndex) => (
+            <div key={task.id} className={styles.timeRow}>
+              <div className={styles.timeCell}>
+                <div className={styles.taskNumber}>T{task.id}</div>
               </div>
-              {task.map((time, modelIndex) => (
-                <div key={modelIndex} className={styles.matrixCell}>
+              
+              <div className={styles.timeCell}>
+                <input
+                  type="text"
+                  value={task.name}
+                  onChange={(e) => updateTask(taskIndex, 'name', e.target.value)}
+                  className={styles.taskNameInput}
+                  placeholder={`Tâche ${task.id}`}
+                />
+              </div>
+              
+              {task.times.map((time, productIndex) => (
+                <div key={productIndex} className={styles.timeCell}>
                   <input
                     type="number"
                     value={time}
-                    onChange={(e) => updateTaskTime(taskIndex, modelIndex, e.target.value)}
+                    onChange={(e) => updateTaskTime(taskIndex, productIndex, e.target.value)}
                     className={styles.timeInput}
                     min="0"
                     step="0.1"
@@ -356,10 +415,10 @@ const LigneAssemblageMixteGoulotForm = () => {
           <div className={styles.sequenceSection}>
             <h4>Séquence optimale de production</h4>
             <div className={styles.sequenceContainer}>
-              {result.sequence && result.sequence.map((model, index) => (
+              {result.sequence && result.sequence.map((productIndex, index) => (
                 <div key={index} className={styles.sequenceItem}>
-                  <div className={`${styles.modelBadge} ${styles[`model${model}`]}`}>
-                    M{model}
+                  <div className={`${styles.productBadge} ${styles[`product${productIndex}`]}`}>
+                    P{productIndex}
                   </div>
                 </div>
               ))}

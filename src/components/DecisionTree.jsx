@@ -20,73 +20,73 @@ const DecisionTree = ({ onSystemRecommendation }) => {
       id: 1,
       question: "Y a-t-il un seul type de produit par ligne de production ?",
       yesPath: 3,
-      noPath: 4  // Rejoint la branche "gamme unique"
+      noPath: 4  // 1.1.2 → gamme unique
     },
     {
       id: 2,
       question: "Le produit est-il modularisable (assemblage de composants standardisés) ?",
-      yesPath: 4,  // Rejoint la branche "gamme unique"
-      noPath: "Jobshop"
+      yesPath: 4,  // 1.2.1 → gamme unique (rejoint 1.1.2)
+      noPath: "Jobshop"  // 1.2.2
     },
     {
       id: 3,
       question: "Le procédé est-il très mécanisé et sujet à des pannes fréquentes ?",
-      yesPath: "Ligne de transfert",
-      noPath: 4  // Continue vers "gamme unique"
+      yesPath: "Ligne de transfert",  // 1.1.1.1
+      noPath: "Ligne d'assemblage"    // 1.1.1.2 → ligne dédiée
     },
     {
       id: 4,
       question: "La gamme opératoire est-elle unique pour tous les produits ?",
-      yesPath: 5,
-      noPath: 6
+      yesPath: 5,  // 1.1.2.1 / 1.2.1.1
+      noPath: 6    // 1.1.2.2 / 1.2.1.2
     },
     {
       id: 5,
       question: "Le système est-il cadencé (rythme de production fixe) ?",
-      yesPath: 7,
-      noPath: 8
+      yesPath: 7,  // 1.1.2.1.1
+      noPath: 8    // 1.1.2.1.2
     },
     {
       id: 6,
       question: "Existe-t-il des familles de produits avec des gammes similaires ?",
-      yesPath: 9,
-      noPath: 10
+      yesPath: 9,  // 1.1.2.2.1
+      noPath: 10   // 1.1.2.2.2
     },
     {
       id: 7,
       question: "S'agit-il principalement d'un problème de séquencement des tâches ?",
-      yesPath: "Flowshop",
-      noPath: "Ligne d'assemblage"
+      yesPath: "Flowshop",               // 1.1.2.1.1.1
+      noPath: "Ligne d'assemblage"       // 1.1.2.1.1.2 → ligne non-cadencée
     },
     {
       id: 8,
       question: "Y a-t-il plusieurs types de produits à fabriquer ?",
-      yesPath: "Ligne d'assemblage mixte",
-      noPath: "Ligne d'assemblage"
+      yesPath: "Ligne d'assemblage mixte",  // 1.1.2.1.2.1
+      noPath: "Ligne d'assemblage"          // 1.1.2.1.2.2
     },
     {
       id: 9,
       question: "La demande de production est-elle fixe et prévisible ?",
-      yesPath: 11,
-      noPath: 12
+      yesPath: 11,  // 1.1.2.2.1.1
+      noPath: 12    // 1.1.2.2.1.2
     },
     {
       id: 10,
       question: "Le système est-il facilement automatisable ?",
-      yesPath: "FMS",
-      noPath: "Ligne d'assemblage"
+      yesPath: "FMS",                    // 1.1.2.2.2.1
+      noPath: "Ligne d'assemblage"       // 1.1.2.2.2.2 → ligne dédiée par produit
     },
     {
       id: 11,
       question: "Les machines sont-elles facilement déplaçables et reconfigurables ?",
-      yesPath: "FMS",
-      noPath: "Ligne d'assemblage"
+      yesPath: "FMS",                    // 1.1.2.2.1.1.1 → cellules dynamiques
+      noPath: "Ligne d'assemblage"       // 1.1.2.2.1.1.2 → cellules virtuelles
     },
     {
       id: 12,
       question: "Les machines peuvent-elles être déplacées et reconfigurées dynamiquement ?",
-      yesPath: "FMS", 
-      noPath: "Ligne d'assemblage"
+      yesPath: "FMS",                    // 1.1.2.2.1.2.1
+      noPath: "Ligne d'assemblage"       // 1.1.2.2.1.2.2
     }
   ];
 

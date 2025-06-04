@@ -43,8 +43,8 @@ const DecisionTree = ({ onSystemRecommendation }) => {
     {
       id: 5,
       question: "Le système est-il cadencé (rythme de production fixe) ?",
-      yesPath: 7,  // 1.1.2.1.1
-      noPath: 8    // 1.1.2.1.2
+      yesPath: 8,  // 1.1.2.1.1 → Si OUI cadencé → ligne mixte
+      noPath: 7    // 1.1.2.1.2 → Si NON cadencé → séquencement
     },
     {
       id: 6,

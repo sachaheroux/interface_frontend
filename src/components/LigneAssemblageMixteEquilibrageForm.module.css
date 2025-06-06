@@ -956,8 +956,8 @@
 
 /* Largeurs fixes pour les colonnes de produits */
 .table th:nth-child(n+3) {
-  width: 120px;
-  min-width: 120px;
+  width: 140px;
+  min-width: 140px;
 }
 
 .table td {
@@ -981,8 +981,8 @@
 }
 
 .table td:nth-child(n+3) {
-  width: 120px;
-  min-width: 120px;
+  width: 140px;
+  min-width: 140px;
 }
 
 .table tbody tr:hover td {
@@ -1018,7 +1018,10 @@
   background: var(--primary-light);
   color: var(--text-primary);
   font-weight: 500;
-  font-size: var(--font-size-sm);
+  font-size: 0.8rem;
+  padding: 6px 4px;
+  width: 70px;
+  min-width: 70px;
 }
 
 .taskCell {

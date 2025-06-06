@@ -915,15 +915,18 @@
 .tableContainer {
   background: white;
   border-radius: var(--border-radius);
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: visible;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
+  max-width: 100%;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   min-width: 800px;
+  table-layout: fixed;
 }
 
 .table th {
@@ -936,6 +939,25 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Largeurs fixes pour les colonnes principales */
+.table th:nth-child(1) {
+  width: 80px;
+  min-width: 80px;
+}
+
+.table th:nth-child(2) {
+  width: 200px;
+  min-width: 200px;
+}
+
+/* Largeurs fixes pour les colonnes de produits */
+.table th:nth-child(n+3) {
+  width: 120px;
+  min-width: 120px;
 }
 
 .table td {
@@ -943,6 +965,24 @@
   border: 1px solid var(--border-color);
   text-align: center;
   vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Largeurs fixes pour les cellules */
+.table td:nth-child(1) {
+  width: 80px;
+  min-width: 80px;
+}
+
+.table td:nth-child(2) {
+  width: 200px;
+  min-width: 200px;
+}
+
+.table td:nth-child(n+3) {
+  width: 120px;
+  min-width: 120px;
 }
 
 .table tbody tr:hover td {
@@ -950,14 +990,16 @@
 }
 
 .table input {
-  width: 100%;
-  padding: var(--spacing-sm);
+  width: calc(100% - 4px);
+  max-width: calc(100% - 4px);
+  padding: 4px 6px;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   background: var(--background-main);
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .table input:focus {

@@ -390,7 +390,10 @@ const LigneAssemblageMixteEquilibrageForm = () => {
         </h2>
         
         <div className={styles.tableContainer}>
-          <table className={styles.table}>
+          <table 
+            className={styles.table} 
+            style={{ minWidth: `${280 + (products.length * 240)}px` }}
+          >
             <thead>
               <tr>
                 <th rowSpan="2">Tâche</th>

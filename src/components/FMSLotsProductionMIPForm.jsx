@@ -272,7 +272,7 @@ export default function FMSLotsProductionMIPForm() {
         noms_produits: produits.map(p => p.nom),
         grandeurs_commande: produits.map(p => p.grandeurCommande),
         temps_operation_machines: produits.map(p => p.tempsOperations),
-        outils_machines: produits.map(p => p.outils.map(outil => outil || null)),
+        outils_machines: produits.map(p => p.outils.map(outilsListe => outilsListe || [])),
         dates_dues: produits.map(p => p.dateDue),
         couts_inventaire: produits.map(p => p.coutInventaire),
         temps_disponible_jour: tempsValue,
@@ -586,8 +586,8 @@ export default function FMSLotsProductionMIPForm() {
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Configuration des Produits</h2>
         
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
+        <div className={styles.tableContainer} style={{ overflowX: "auto", maxWidth: "100%" }}>
+          <table className={styles.table} style={{ minWidth: `${600 + (machines.length * 300)}px` }}>
             <thead>
               <tr>
                 <th>Nom du Produit</th>
@@ -603,7 +603,7 @@ export default function FMSLotsProductionMIPForm() {
                     </small>
                   </th>
                 ))}
-                <th>Temps Total<br/>({uniteTemps})</th>
+                <th style={{ minWidth: "120px", backgroundColor: "#10b981" }}>Temps Total<br/>({uniteTemps})</th>
               </tr>
             </thead>
             <tbody>
@@ -706,7 +706,7 @@ export default function FMSLotsProductionMIPForm() {
                       </td>
                     </React.Fragment>
                   ))}
-                  <td>
+                  <td style={{ minWidth: "120px", backgroundColor: "#f0fdf4" }}>
                     <div className={styles.metricCell} style={{ 
                       color: "#10b981",
                       fontWeight: "bold"

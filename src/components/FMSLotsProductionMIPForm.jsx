@@ -767,8 +767,15 @@ export default function FMSLotsProductionMIPForm() {
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>
                 {Math.round((result.efficacite_globale || 0) * 100) / 100}%
+                {result.efficacite_pic_moyen && (
+                  <div style={{ fontSize: "0.7rem", color: "#6b7280", marginTop: "2px" }}>
+                    (Moy. pics: {result.efficacite_pic_moyen}%)
+                  </div>
+                )}
               </div>
-              <div className={styles.metricLabel}>Efficacité Globale</div>
+              <div className={styles.metricLabel} title="Temps total utilisé / Temps total disponible sur toutes machines et périodes">
+                Efficacité Globale
+              </div>
             </div>
             
             <div className={styles.resultMetric}>

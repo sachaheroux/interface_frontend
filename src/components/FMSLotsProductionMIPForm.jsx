@@ -941,21 +941,21 @@ export default function FMSLotsProductionMIPForm() {
                           {result.total_produits_par_periode ? result.total_produits_par_periode[index] : 0} unités
                         </td>
                         <td>
-                          {produits.map((produit, produitIndex) => {
-                            const quantite = periode[`produit_${produitIndex + 1}`] || 
-                                           periode[produit.nom.toLowerCase().replace(' ', '_')] || 
-                                           periode[`Produit ${produitIndex + 1}`] || 0;
-                            return quantite > 0 ? (
+                          {periode.produits && periode.produits.length > 0 ? (
+                            periode.produits.map((produitProduit, produitIndex) => (
                               <div key={produitIndex} style={{ 
                                 fontSize: "0.85rem", 
                                 marginBottom: "0.25rem",
                                 color: "#374151"
                               }}>
-                                <strong>{produit.nom}:</strong> {quantite} unités
+                                <strong>{produitProduit.nom}:</strong> {produitProduit.quantite} unités
+                                <br/>
+                                <small style={{ color: "#6b7280" }}>
+                                  ({produitProduit.pourcentage}% de la commande, échéance: jour {produitProduit.date_due})
+                                </small>
                               </div>
-                            ) : null;
-                          })}
-                          {Object.keys(periode).length === 0 && (
+                            ))
+                          ) : (
                             <span style={{ color: "#6b7280", fontStyle: "italic" }}>Aucune production</span>
                           )}
                         </td>

@@ -857,7 +857,7 @@ export default function FMSLotsProductionMIPForm() {
                           <small style={{ color: "#6b7280" }}>({utilisation_totale.toFixed(1)}% sur toutes les périodes)</small>
                         </td>
                         <td style={{ 
-                          color: utilisation_pic >= 100 ? "#ef4444" : utilisation_pic >= 80 ? "#f59e0b" : "#10b981",
+                          color: utilisation_pic > 100 ? "#ef4444" : utilisation_pic >= 80 ? "#f59e0b" : "#10b981",
                           fontWeight: "bold"
                         }}>
                           {utilisation_pic.toFixed(1)}% max
@@ -865,10 +865,10 @@ export default function FMSLotsProductionMIPForm() {
                           <small style={{ color: "#6b7280" }}>({temps_par_periode.toFixed(1)}{uniteTemps}/période)</small>
                         </td>
                         <td style={{ 
-                          color: utilisation_pic >= 100 ? "#ef4444" : "#10b981",
+                          color: utilisation_pic > 100 ? "#ef4444" : "#10b981",
                           fontWeight: "bold"
                         }}>
-                          {utilisation_pic >= 100 ? (
+                          {utilisation_pic > 100 ? (
                             <>⚠️ Surcharge<br/><small>Contrainte violée</small></>
                           ) : (
                             <>✅ Conforme<br/><small>Respect contraintes</small></>

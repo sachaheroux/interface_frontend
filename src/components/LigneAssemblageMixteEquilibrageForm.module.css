@@ -1022,6 +1022,8 @@
   padding: 6px 4px;
   width: 70px;
   min-width: 70px;
+  text-align: center !important;
+  vertical-align: middle;
 }
 
 .taskCell {

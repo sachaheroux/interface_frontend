@@ -242,11 +242,13 @@ export default function FMSLotsProductionMIPForm() {
           setIsLoading(false);
           return;
         }
-        const espaceTotal = m.espaceOutils.reduce((sum, espace) => sum + espace, 0);
-        if (espaceTotal > m.capaciteOutils) {
-          setError(`Machine ${m.nom}: L'espace total des outils (${espaceTotal}) dépasse la capacité (${m.capaciteOutils}).`);
-          setIsLoading(false);
-          return;
+        // Validation : vérifier que chaque outil individuel ne dépasse pas la capacité
+        for (let j = 0; j < m.espaceOutils.length; j++) {
+          if (m.espaceOutils[j] > m.capaciteOutils) {
+            setError(`Machine ${m.nom}: L'outil "${m.outilsDisponibles[j]}" (espace: ${m.espaceOutils[j]}) dépasse la capacité de la machine (${m.capaciteOutils}).`);
+            setIsLoading(false);
+            return;
+          }
         }
       }
 
@@ -480,7 +482,8 @@ export default function FMSLotsProductionMIPForm() {
             <tbody>
               {machines.map((machine, index) => {
                 const espaceTotal = machine.espaceOutils ? machine.espaceOutils.reduce((sum, espace) => sum + espace, 0) : 0;
-                const isEspaceValid = espaceTotal <= machine.capaciteOutils;
+                const maxEspaceOutil = machine.espaceOutils ? Math.max(...machine.espaceOutils) : 0;
+                const isEspaceValid = maxEspaceOutil <= machine.capaciteOutils;
                 return (
                   <tr key={index}>
                     <td>
@@ -570,9 +573,11 @@ export default function FMSLotsProductionMIPForm() {
                         fontWeight: "bold",
                         fontSize: "0.8rem"
                       }}>
-                        {espaceTotal}/{machine.capaciteOutils}
+                        Max: {maxEspaceOutil}/{machine.capaciteOutils}
                         <br/>
-                        {isEspaceValid ? "✓ OK" : "⚠️ Trop"}
+                        Total: {espaceTotal}
+                        <br/>
+                        {isEspaceValid ? "✓ OK" : "⚠️ Outil trop gros"}
                       </div>
                     </td>
                   </tr>

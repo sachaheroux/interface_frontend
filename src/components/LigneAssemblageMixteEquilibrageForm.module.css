@@ -898,4 +898,249 @@
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
   font-style: italic;
+}
+
+/* ===== TABLEAU MATRICIEL COMPACT ===== */
+.matrixContainer {
+  background: var(--background-main);
+  border-radius: var(--border-radius);
+  overflow: auto;
+  border: 1px solid var(--border-color);
+}
+
+.matrixTable {
+  display: table;
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+}
+
+/* En-tête du tableau matriciel */
+.matrixHeader {
+  display: table-row;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.matrixHeader > div {
+  display: table-cell;
+  padding: var(--spacing-md);
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  vertical-align: middle;
+}
+
+/* Colonnes principales */
+.taskColumn {
+  width: 60px;
+  min-width: 60px;
+  background: var(--primary-dark);
+  text-align: center;
+  font-weight: 700;
+}
+
+.taskNameColumn {
+  width: 200px;
+  min-width: 180px;
+  background: var(--primary-color);
+  text-align: left;
+}
+
+.productColumnGroup {
+  width: 150px;
+  min-width: 150px;
+  background: var(--primary-color);
+}
+
+/* En-tête des produits avec sous-colonnes */
+.productGroupHeader {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+.productSubColumns {
+  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.timeSubColumn,
+.predSubColumn {
+  flex: 1;
+  padding: var(--spacing-xs);
+  text-align: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.predSubColumn {
+  border-right: none;
+}
+
+/* Lignes des tâches */
+.matrixRow {
+  display: table-row;
+}
+
+.matrixRow:nth-child(even) {
+  background: var(--background-section);
+}
+
+.matrixRow:hover {
+  background: var(--background-hover);
+}
+
+.matrixRow > div {
+  display: table-cell;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+/* Numéro de tâche */
+.taskNumber {
+  background: var(--primary-color);
+  color: white;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  margin: 0 auto;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Input du nom de tâche */
+.taskNameInput {
+  width: 100%;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  background: var(--background-main);
+  color: var(--text-primary);
+}
+
+.taskNameInput:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Colonnes de données produit */
+.productDataColumns {
+  display: flex;
+  height: 100%;
+}
+
+.productDataColumns .timeSubColumn,
+.productDataColumns .predSubColumn {
+  flex: 1;
+  padding: 2px;
+  border-right: 1px solid var(--border-color);
+  background: transparent;
+}
+
+.productDataColumns .predSubColumn {
+  border-right: none;
+}
+
+/* Inputs matriciels */
+.matrixTimeInput,
+.matrixPredInput {
+  width: 100%;
+  height: 28px;
+  padding: 2px 4px;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  font-size: 0.75rem;
+  text-align: center;
+  background: var(--background-main);
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+
+.matrixTimeInput:focus,
+.matrixPredInput:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+  background: #fffbf0;
+}
+
+.matrixTimeInput {
+  font-weight: 600;
+}
+
+.matrixPredInput {
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+/* Aide matricielle */
+.matrixHelp {
+  background: var(--background-section);
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.matrixHelp p {
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.matrixHelp p:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive pour le tableau matriciel */
+@media (max-width: 1024px) {
+  .matrixContainer {
+    border-radius: 0;
+    margin: 0 -1.5rem;
+  }
+  
+  .productColumnGroup {
+    width: 120px;
+    min-width: 120px;
+  }
+  
+  .taskNameColumn {
+    width: 150px;
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .matrixTable {
+    min-width: 600px;
+  }
+  
+  .productColumnGroup {
+    width: 100px;
+    min-width: 100px;
+  }
+  
+  .taskNameColumn {
+    width: 120px;
+    min-width: 120px;
+  }
+  
+  .matrixTimeInput,
+  .matrixPredInput {
+    font-size: 0.7rem;
+    height: 24px;
+  }
 } 

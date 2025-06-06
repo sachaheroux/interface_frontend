@@ -124,7 +124,9 @@ const LigneAssemblageMixteEquilibrageForm = () => {
     if (field === 'predecessors') {
       newTasks[taskIndex].models[modelIndex][field] = value === '' ? null : value;
     } else if (field === 'time') {
-      newTasks[taskIndex].models[modelIndex][field] = parseFloat(value) || 0;
+      // Accepter les valeurs zéro
+      const numValue = value === '' ? 0 : parseFloat(value);
+      newTasks[taskIndex].models[modelIndex][field] = isNaN(numValue) ? 0 : numValue;
     }
     setTasks(newTasks);
   };
@@ -158,11 +160,11 @@ const LigneAssemblageMixteEquilibrageForm = () => {
         throw new Error("Les demandes par produit doivent être positives.");
       }
 
-      // Validation des temps
+      // Validation des temps (permettre zéro)
       for (const task of tasks) {
         for (const model of task.models) {
-          if (model.time <= 0) {
-            throw new Error(`Le temps de traitement doit être positif pour la tâche ${task.id}.`);
+          if (model.time < 0) {
+            throw new Error(`Le temps de traitement ne peut pas être négatif pour la tâche ${task.id}.`);
           }
         }
       }
@@ -175,15 +177,18 @@ const LigneAssemblageMixteEquilibrageForm = () => {
             let predecessors = null;
             if (model.predecessors) {
               if (typeof model.predecessors === 'string') {
-                const predecessorIds = model.predecessors.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
-                predecessors = predecessorIds.length === 1 ? predecessorIds[0] : predecessorIds;
+                const predecessorIds = model.predecessors.split(',')
+                  .map(p => parseInt(p.trim()))
+                  .filter(p => !isNaN(p) && p > 0);
+                predecessors = predecessorIds.length === 1 ? predecessorIds[0] : 
+                              predecessorIds.length > 1 ? predecessorIds : null;
               } else {
                 predecessors = model.predecessors;
               }
             }
             return {
               predecessors: predecessors,
-              time: model.time
+              time: Math.max(0, parseFloat(model.time) || 0) // Assurer des valeurs numériques valides
             };
           })
         };
@@ -377,16 +382,37 @@ const LigneAssemblageMixteEquilibrageForm = () => {
         </div>
       </div>
 
-      {/* Configuration des tâches avec produits */}
+      {/* Tableau matriciel compact */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Configuration des tâches ({tasks.length} tâches)</h2>
+        <h2 className={styles.sectionTitle}>
+          Configuration des tâches - Tableau matriciel ({tasks.length} tâches × {products.length} produits)
+        </h2>
         
-        <div className={styles.tasksContainer}>
-          {tasks.map((task, taskIndex) => (
-            <div key={task.id} className={styles.taskBlock}>
-              <div className={styles.taskHeader}>
-                <div className={styles.taskNameContainer}>
+        <div className={styles.matrixContainer}>
+          <div className={styles.matrixTable}>
+            {/* En-tête du tableau */}
+            <div className={styles.matrixHeader}>
+              <div className={styles.taskColumn}>Tâche</div>
+              <div className={styles.taskNameColumn}>Nom de la tâche</div>
+              {products.map((product, index) => (
+                <div key={index} className={styles.productColumnGroup}>
+                  <div className={styles.productGroupHeader}>{product.name}</div>
+                  <div className={styles.productSubColumns}>
+                    <div className={styles.timeSubColumn}>Temps ({timeUnit})</div>
+                    <div className={styles.predSubColumn}>Prédécesseurs</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Lignes des tâches */}
+            {tasks.map((task, taskIndex) => (
+              <div key={task.id} className={styles.matrixRow}>
+                <div className={styles.taskColumn}>
                   <div className={styles.taskNumber}>T{task.id}</div>
+                </div>
+                
+                <div className={styles.taskNameColumn}>
                   <input
                     type="text"
                     value={task.name}
@@ -395,51 +421,44 @@ const LigneAssemblageMixteEquilibrageForm = () => {
                     placeholder={`Tâche ${task.id}`}
                   />
                 </div>
-                <div className={styles.availableText}>
-                  Prédécesseurs disponibles: {getAvailablePredecessors(task.id) || "Aucun"}
-                </div>
-              </div>
-              
-              <div className={styles.compactTable}>
-                <div className={styles.tableHeader}>
-                  <div className={styles.productColumn}>Produit</div>
-                  <div className={styles.timeColumn}>Temps ({timeUnit})</div>
-                  <div className={styles.predecessorsColumn}>Prédécesseurs</div>
-                </div>
                 
                 {task.models.map((model, productIndex) => (
-                  <div key={productIndex} className={styles.tableRow}>
-                    <div className={styles.productColumn}>
-                      <div className={styles.productBadge}>{products[productIndex]?.name || `Produit ${productIndex + 1}`}</div>
-                    </div>
-                    
-                    <div className={styles.timeColumn}>
-                      <input
-                        type="number"
-                        value={model.time}
-                        onChange={(e) => updateTaskModel(taskIndex, productIndex, 'time', e.target.value)}
-                        className={styles.compactTimeInput}
-                        min="0"
-                        step="0.1"
-                        placeholder="1"
-                      />
-                    </div>
-                    
-                    <div className={styles.predecessorsColumn}>
-                      <input
-                        type="text"
-                        value={formatPredecessors(model.predecessors)}
-                        onChange={(e) => updateTaskModel(taskIndex, productIndex, 'predecessors', e.target.value)}
-                        className={styles.compactPredecessorsInput}
-                        placeholder="Ex: 1,2"
-                        title="IDs des tâches prédécesseurs séparés par des virgules"
-                      />
+                  <div key={productIndex} className={styles.productColumnGroup}>
+                    <div className={styles.productDataColumns}>
+                      <div className={styles.timeSubColumn}>
+                        <input
+                          type="number"
+                          value={model.time}
+                          onChange={(e) => updateTaskModel(taskIndex, productIndex, 'time', e.target.value)}
+                          className={styles.matrixTimeInput}
+                          min="0"
+                          step="0.1"
+                          placeholder="0"
+                        />
+                      </div>
+                      
+                      <div className={styles.predSubColumn}>
+                        <input
+                          type="text"
+                          value={formatPredecessors(model.predecessors)}
+                          onChange={(e) => updateTaskModel(taskIndex, productIndex, 'predecessors', e.target.value)}
+                          className={styles.matrixPredInput}
+                          placeholder=""
+                          title="IDs des tâches prédécesseurs séparés par des virgules"
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          
+          {/* Aide sur les prédécesseurs */}
+          <div className={styles.matrixHelp}>
+            <p><strong>Aide :</strong> Pour les prédécesseurs, utilisez les numéros de tâches séparés par des virgules (ex: 1,2). Laissez vide si aucun prédécesseur.</p>
+            <p><strong>Temps :</strong> Mettez 0 si un produit ne passe pas par cette tâche.</p>
+          </div>
         </div>
       </div>
 

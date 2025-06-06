@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./FlowshopEDDForm.module.css";
+import config from "../config";
 
 function FlowshopEDDForm() {
   const [jobs, setJobs] = useState([

@@ -85,9 +85,11 @@ const FlowshopSmithForm = () => {
         };
         
         let currentTime = 0;
-        data.sequence.forEach((jobName, index) => {
-          const jobIndex = jobs.findIndex(job => job.name === jobName);
+        data.sequence.forEach((jobNumber, index) => {
+          // Convertir le numéro de job (1-based) en index (0-based)
+          const jobIndex = jobNumber - 1;
           const duration = parseFloat(jobs[jobIndex]?.duration) || 0;
+          const jobName = jobs[jobIndex]?.name || `Job ${jobNumber}`;
           
           simulatedCompletionTimes[jobName] = currentTime + duration;
           simulatedPlanification["Machine 0"].push({

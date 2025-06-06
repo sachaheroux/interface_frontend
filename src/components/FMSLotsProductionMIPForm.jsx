@@ -19,7 +19,7 @@ export default function FMSLotsProductionMIPForm() {
       nom: "Produit 1", 
       grandeurCommande: 60, 
       tempsOperations: [5, 1], 
-      outils: ["A1", "B1"], 
+      outils: [["A1"], ["B1"]], // Maintenant un tableau de tableaux pour permettre plusieurs outils
       dateDue: 3,
       coutInventaire: 100
     },
@@ -27,7 +27,7 @@ export default function FMSLotsProductionMIPForm() {
       nom: "Produit 2", 
       grandeurCommande: 175, 
       tempsOperations: [2, 2.5], 
-      outils: ["A2", "B1"], 
+      outils: [["A2"], ["B1"]], 
       dateDue: 2,
       coutInventaire: 50
     },
@@ -35,7 +35,7 @@ export default function FMSLotsProductionMIPForm() {
       nom: "Produit 3", 
       grandeurCommande: 45, 
       tempsOperations: [2.5, 2.5], 
-      outils: ["A3", "B2"], 
+      outils: [["A3"], ["B2"]], 
       dateDue: 2,
       coutInventaire: 150
     }
@@ -70,7 +70,7 @@ export default function FMSLotsProductionMIPForm() {
     const nouveauxProduits = produits.map(p => ({
       ...p,
       tempsOperations: [...p.tempsOperations, 1.0],
-      outils: [...p.outils, (nouvelleMachine.outilsDisponibles || [])[0] || ""]
+      outils: [...p.outils, [(nouvelleMachine.outilsDisponibles || [])[0] || ""]]
     }));
     setProduits(nouveauxProduits);
   };
@@ -109,7 +109,7 @@ export default function FMSLotsProductionMIPForm() {
       nom: `Produit ${produits.length + 1}`, 
       grandeurCommande: 50, 
       tempsOperations: new Array(machines.length).fill(2.0), 
-      outils: machines.map((machine, index) => (machine.outilsDisponibles || [])[0] || ""), 
+      outils: machines.map((machine, index) => [(machine.outilsDisponibles || [])[0] || ""]), 
       dateDue: 2,
       coutInventaire: 100
     };
@@ -128,7 +128,15 @@ export default function FMSLotsProductionMIPForm() {
     if (field === 'tempsOperation') {
       nouveauxProduits[produitIndex].tempsOperations[machineIndex] = parseFloat(value) || 0;
     } else if (field === 'outil') {
-      nouveauxProduits[produitIndex].outils[machineIndex] = value;
+      // Gestion de la sélection multiple d'outils
+      const outilsActuels = nouveauxProduits[produitIndex].outils[machineIndex] || [];
+      if (outilsActuels.includes(value)) {
+        // Désélectionner l'outil
+        nouveauxProduits[produitIndex].outils[machineIndex] = outilsActuels.filter(o => o !== value);
+      } else {
+        // Sélectionner l'outil
+        nouveauxProduits[produitIndex].outils[machineIndex] = [...outilsActuels, value];
+      }
     } else if (field === 'nom') {
       nouveauxProduits[produitIndex][field] = value;
     } else if (field === 'coutInventaire') {
@@ -171,8 +179,8 @@ export default function FMSLotsProductionMIPForm() {
       // Nettoyer les références à cet outil dans les produits
       const nouveauxProduits = produits.map(p => ({
         ...p,
-        outils: p.outils.map((outil, index) => 
-          index === machineIndex && !machine.outilsDisponibles.includes(outil) ? "" : outil
+        outils: p.outils.map((outilsListe, index) => 
+          index === machineIndex ? outilsListe.filter(outil => machine.outilsDisponibles.includes(outil)) : outilsListe
         )
       }));
       setProduits(nouveauxProduits);
@@ -188,8 +196,8 @@ export default function FMSLotsProductionMIPForm() {
     // Mettre à jour les références dans les produits
     const nouveauxProduits = produits.map(p => ({
       ...p,
-      outils: p.outils.map((outil, index) => 
-        index === machineIndex && outil === ancienNom ? nouveauNom : outil
+      outils: p.outils.map((outilsListe, index) => 
+        index === machineIndex ? outilsListe.map(outil => outil === ancienNom ? nouveauNom : outil) : outilsListe
       )
     }));
     setProduits(nouveauxProduits);
@@ -587,11 +595,11 @@ export default function FMSLotsProductionMIPForm() {
                 <th>Date d'Échéance<br/>(jours)</th>
                 <th>Coût Inventaire<br/>({devises[devise].symbole}/unité)</th>
                 {machines.map((machine, index) => (
-                  <th key={index} colSpan="2" style={{ backgroundColor: "#1e40af" }}>
+                  <th key={index} colSpan="2" style={{ backgroundColor: "#1e40af", minWidth: "250px" }}>
                     {machine.nom}
                     <br/>
                     <small style={{ fontWeight: "normal", opacity: "0.9" }}>
-                      Temps ({uniteTemps}/u) | Outil requis
+                      Temps ({uniteTemps}/u) | Outils requis
                     </small>
                   </th>
                 ))}
@@ -639,7 +647,7 @@ export default function FMSLotsProductionMIPForm() {
                   </td>
                   {machines.map((machine, machineIndex) => (
                     <React.Fragment key={machineIndex}>
-                      <td style={{ backgroundColor: "#f8fafc" }}>
+                      <td style={{ backgroundColor: "#f8fafc", minWidth: "100px" }}>
                         <input
                           type="number"
                           min="0"
@@ -648,32 +656,52 @@ export default function FMSLotsProductionMIPForm() {
                           onChange={(e) => handleProduitChange(produitIndex, "tempsOperation", e.target.value, machineIndex)}
                           className={styles.input}
                           placeholder="0.0"
+                          style={{ minWidth: "80px", width: "100%" }}
                         />
                       </td>
-                      <td style={{ backgroundColor: "#f1f5f9" }}>
-                        <select
-                          value={produit.outils[machineIndex] || ""}
-                          onChange={(e) => handleProduitChange(produitIndex, "outil", e.target.value, machineIndex)}
-                          className={styles.select}
-                        >
-                          <option value="">Aucun outil</option>
+                      <td style={{ backgroundColor: "#f1f5f9", minWidth: "150px", padding: "8px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                           {machine.outilsDisponibles.map((outil, outilIndex) => {
                             const espaceOutil = machine.espaceOutils[outilIndex] || 1;
+                            const isSelected = (produit.outils[machineIndex] || []).includes(outil);
                             return (
-                              <option key={outilIndex} value={outil}>
-                                {outil} (espace: {espaceOutil})
-                              </option>
+                              <label key={outilIndex} style={{ 
+                                display: "flex", 
+                                alignItems: "center", 
+                                gap: "6px",
+                                fontSize: "0.8rem",
+                                cursor: "pointer",
+                                padding: "2px 4px",
+                                borderRadius: "3px",
+                                backgroundColor: isSelected ? "#e0f2fe" : "transparent"
+                              }}>
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={(e) => handleProduitChange(produitIndex, "outil", outil, machineIndex)}
+                                  style={{ margin: "0" }}
+                                />
+                                <span style={{ 
+                                  color: isSelected ? "#0369a1" : "#374151",
+                                  fontWeight: isSelected ? "600" : "normal"
+                                }}>
+                                  {outil} ({espaceOutil})
+                                </span>
+                              </label>
                             );
                           })}
-                        </select>
+                        </div>
                         <small style={{ 
                           display: "block", 
                           fontSize: "0.7rem", 
                           color: "#6b7280", 
-                          marginTop: "2px",
-                          textAlign: "center"
+                          marginTop: "4px",
+                          textAlign: "center",
+                          fontWeight: "500"
                         }}>
-                          {produit.outils[machineIndex] ? '✓ Sélectionné' : 'Choisir un outil'}
+                          {(produit.outils[machineIndex] || []).length > 0 
+                            ? `✓ ${(produit.outils[machineIndex] || []).length} outil(s)` 
+                            : 'Aucun outil sélectionné'}
                         </small>
                       </td>
                     </React.Fragment>

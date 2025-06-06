@@ -2,53 +2,105 @@ import { useState } from "react";
 import styles from "./FMSLotsChargementHeuristiqueForm.module.css";
 
 export default function FMSLotsChargementHeuristiqueForm() {
-  // État des machines avec données par défaut du collègue
+  // Configuration système
+  const [tempsDisponibleJour, setTempsDisponibleJour] = useState("420");
+  const [uniteTemps, setUniteTemps] = useState("minutes");
+  const [devise, setDevise] = useState("CAD");
+  
+  // État des machines avec données par défaut
   const [machines, setMachines] = useState([
     { 
-      nom: "Machine 1", 
+      nom: "Machine A", 
       nombre: 2, 
       capaciteTemps: 800, 
       capaciteOutils: 3,
-      operations: [
-        ["o23", 500, "Y5"],
-        ["o13", 400, "Y4"],
-        ["o12", 200, "Y1"],
-        ["o22", 200, "Y2"]
-      ]
+      outilsDisponibles: ["A1", "A2", "A3"],
+      espaceOutils: [1, 2, 1]
     },
     { 
-      nom: "Machine 2", 
+      nom: "Machine B", 
       nombre: 2, 
       capaciteTemps: 800, 
       capaciteOutils: 1,
-      operations: [
-        ["o31", 560, "Y2"],
-        ["o21", 600, "Y3"]
-      ]
+      outilsDisponibles: ["B1", "B2"],
+      espaceOutils: [1, 2]
     },
     { 
-      nom: "Machine 3", 
+      nom: "Machine C", 
       nombre: 1, 
       capaciteTemps: 800, 
       capaciteOutils: 4,
-      operations: [
-        ["o33", 400, "Y6"],
-        ["o11", 480, "Y1"]
-      ]
+      outilsDisponibles: ["C1"],
+      espaceOutils: [1]
     }
   ]);
 
-  // Configuration des outils avec données par défaut
-  const [outilsEspace, setOutilsEspace] = useState({
-    "Y1": 1,
-    "Y2": 1,
-    "Y3": 1,
-    "Y4": 1,
-    "Y5": 1,
-    "Y6": 1
-  });
-
-  const [uniteTemps, setUniteTemps] = useState("minutes");
+  // État des opérations (résultats de phase 1 FMS)
+  const [operations, setOperations] = useState([
+    { 
+      nom: "o11", 
+      piece: "P1", 
+      operation: "1",
+      machine: 0, // index de machine
+      temps: 480, 
+      outilsRequis: ["A1"], // Peut contenir plusieurs outils
+      demande: 10 // Quantité demandée
+    },
+    { 
+      nom: "o12", 
+      piece: "P1", 
+      operation: "2",
+      machine: 1, 
+      temps: 200, 
+      outilsRequis: ["B1"],
+      demande: 10
+    },
+    { 
+      nom: "o21", 
+      piece: "P2", 
+      operation: "1",
+      machine: 1, 
+      temps: 600, 
+      outilsRequis: ["B2"],
+      demande: 15
+    },
+    { 
+      nom: "o22", 
+      piece: "P2", 
+      operation: "2",
+      machine: 0, 
+      temps: 200, 
+      outilsRequis: ["A2"],
+      demande: 15
+    },
+    { 
+      nom: "o23", 
+      piece: "P2", 
+      operation: "3",
+      machine: 0, 
+      temps: 500, 
+      outilsRequis: ["A3"],
+      demande: 15
+    },
+    { 
+      nom: "o31", 
+      piece: "P3", 
+      operation: "1",
+      machine: 1, 
+      temps: 560, 
+      outilsRequis: ["B1"],
+      demande: 8
+    },
+    { 
+      nom: "o33", 
+      piece: "P3", 
+      operation: "3",
+      machine: 2, 
+      temps: 400, 
+      outilsRequis: ["C1"],
+      demande: 8
+    }
+  ]);
   
   const [result, setResult] = useState(null);
   const [chartUrl, setChartUrl] = useState(null);
@@ -57,24 +109,35 @@ export default function FMSLotsChargementHeuristiqueForm() {
 
   const API_URL = "/api";
 
+  const devises = {
+    "CAD": { symbole: "$", nom: "Dollar Canadien" },
+    "USD": { symbole: "$", nom: "Dollar Américain" },
+    "EUR": { symbole: "€", nom: "Euro" },
+    "GBP": { symbole: "£", nom: "Livre Sterling" },
+    "JPY": { symbole: "¥", nom: "Yen Japonais" }
+  };
+
   // Fonctions pour gérer les machines
   const addMachine = () => {
-    const premierOutil = Object.keys(outilsEspace || {})[0] || "Y1";
+    const nouveauNom = `Machine ${String.fromCharCode(68 + machines.length - 3)}`; // D, E, F...
     const nouvelleMachine = { 
-      nom: `Machine ${machines.length + 1}`, 
+      nom: nouveauNom, 
       nombre: 1, 
       capaciteTemps: 800, 
-      capaciteOutils: 2,
-      operations: [
-        [`o${machines.length + 1}1`, 300, premierOutil]
-      ]
+      capaciteOutils: 3,
+      outilsDisponibles: [`${nouveauNom.slice(-1)}1`],
+      espaceOutils: [1]
     };
     setMachines([...machines, nouvelleMachine]);
   };
 
   const removeMachine = () => {
     if (machines.length > 1) {
+      const machineIndexToRemove = machines.length - 1;
       setMachines(machines.slice(0, -1));
+      
+      // Supprimer les opérations liées à cette machine
+      setOperations(operations.filter(op => op.machine !== machineIndexToRemove));
     }
   };
 
@@ -88,91 +151,139 @@ export default function FMSLotsChargementHeuristiqueForm() {
     setMachines(nouvellesMachines);
   };
 
-  // Fonctions pour gérer les opérations
-  const addOperation = (machineIndex) => {
+  // Fonctions pour gérer les outils de machines
+  const addOutilToMachine = (machineIndex) => {
     const nouvellesMachines = [...machines];
-    const nouveauNom = `o${machineIndex + 1}${nouvellesMachines[machineIndex].operations.length + 1}`;
-    const premierOutil = Object.keys(outilsEspace || {})[0] || "Y1";
-    nouvellesMachines[machineIndex].operations.push([nouveauNom, 300, premierOutil]);
+    const machine = nouvellesMachines[machineIndex];
+    const nouveauNom = `${machine.nom.slice(-1)}${machine.outilsDisponibles.length + 1}`;
+    machine.outilsDisponibles.push(nouveauNom);
+    machine.espaceOutils.push(1);
     setMachines(nouvellesMachines);
   };
 
-  const removeOperation = (machineIndex, operationIndex) => {
+  const removeOutilFromMachine = (machineIndex, outilIndex) => {
     const nouvellesMachines = [...machines];
-    if (nouvellesMachines[machineIndex].operations.length > 1) {
-      nouvellesMachines[machineIndex].operations.splice(operationIndex, 1);
+    const machine = nouvellesMachines[machineIndex];
+    if (machine.outilsDisponibles.length > 1) {
+      const outilASupprimer = machine.outilsDisponibles[outilIndex];
+      machine.outilsDisponibles.splice(outilIndex, 1);
+      machine.espaceOutils.splice(outilIndex, 1);
       setMachines(nouvellesMachines);
+      
+      // Nettoyer les références à cet outil dans les opérations
+      const nouvellesOperations = operations.map(op => ({
+        ...op,
+        outilsRequis: op.outilsRequis.filter(outil => outil !== outilASupprimer)
+      }));
+      setOperations(nouvellesOperations);
     }
   };
 
-  const handleOperationChange = (machineIndex, operationIndex, field, value) => {
+  const updateOutilNom = (machineIndex, outilIndex, nouveauNom) => {
     const nouvellesMachines = [...machines];
-    if (field === 'nom') {
-      nouvellesMachines[machineIndex].operations[operationIndex][0] = value;
-    } else if (field === 'temps') {
-      nouvellesMachines[machineIndex].operations[operationIndex][1] = parseInt(value) || 0;
-    } else if (field === 'outil') {
-      nouvellesMachines[machineIndex].operations[operationIndex][2] = value;
-    }
+    const ancienNom = nouvellesMachines[machineIndex].outilsDisponibles[outilIndex];
+    nouvellesMachines[machineIndex].outilsDisponibles[outilIndex] = nouveauNom;
     setMachines(nouvellesMachines);
-  };
-
-  // Gestion des outils
-  const handleOutilEspaceChange = (outil, espace) => {
-    setOutilsEspace({
-      ...outilsEspace,
-      [outil]: parseInt(espace) || 1
-    });
-  };
-
-  const addOutil = () => {
-    const nouvelOutil = `Y${Object.keys(outilsEspace).length + 1}`;
-    setOutilsEspace({
-      ...outilsEspace,
-      [nouvelOutil]: 1
-    });
-  };
-
-  const removeOutil = (outilASupprimer) => {
-    if (Object.keys(outilsEspace).length <= 1) return; // Garder au moins un outil
     
-    const nouveauxOutils = { ...outilsEspace };
-    delete nouveauxOutils[outilASupprimer];
-    setOutilsEspace(nouveauxOutils);
-
-    // Mettre à jour les opérations qui utilisent cet outil
-    const premierOutilRestant = Object.keys(nouveauxOutils)[0] || "Y1";
-    const nouvellesMachines = machines.map(machine => ({
-      ...machine,
-      operations: machine.operations.map(operation => 
-        operation[2] === outilASupprimer 
-          ? [operation[0], operation[1], premierOutilRestant]
-          : operation
-      )
+    // Mettre à jour les références dans les opérations
+    const nouvellesOperations = operations.map(op => ({
+      ...op,
+      outilsRequis: op.outilsRequis.map(outil => outil === ancienNom ? nouveauNom : outil)
     }));
+    setOperations(nouvellesOperations);
+  };
+
+  const updateOutilEspace = (machineIndex, outilIndex, nouvelEspace) => {
+    const nouvellesMachines = [...machines];
+    nouvellesMachines[machineIndex].espaceOutils[outilIndex] = parseInt(nouvelEspace) || 1;
     setMachines(nouvellesMachines);
+  };
+
+  // Fonctions pour gérer les opérations
+  const addOperation = () => {
+    const nouvellePiece = `P${Math.max(...operations.map(op => parseInt(op.piece.slice(1)) || 0)) + 1}`;
+    const nouvelleOperation = { 
+      nom: `o${operations.length + 1}1`, 
+      piece: nouvellePiece,
+      operation: "1",
+      machine: 0, 
+      temps: 300, 
+      outilsRequis: [machines[0]?.outilsDisponibles[0] || "A1"],
+      demande: 10
+    };
+    setOperations([...operations, nouvelleOperation]);
+  };
+
+  const removeOperation = (index) => {
+    setOperations(operations.filter((_, i) => i !== index));
+  };
+
+  const handleOperationChange = (index, field, value) => {
+    const nouvellesOperations = [...operations];
+    if (field === 'machine') {
+      nouvellesOperations[index][field] = parseInt(value) || 0;
+      // Réinitialiser les outils requis quand on change de machine
+      nouvellesOperations[index].outilsRequis = [];
+    } else if (field === 'temps' || field === 'demande') {
+      nouvellesOperations[index][field] = parseInt(value) || 0;
+    } else {
+      nouvellesOperations[index][field] = value;
+    }
+    setOperations(nouvellesOperations);
+  };
+
+  const handleOutilSelection = (operationIndex, outil) => {
+    const nouvellesOperations = [...operations];
+    const outilsActuels = nouvellesOperations[operationIndex].outilsRequis || [];
+    
+    if (outilsActuels.includes(outil)) {
+      // Désélectionner l'outil
+      nouvellesOperations[operationIndex].outilsRequis = outilsActuels.filter(o => o !== outil);
+    } else {
+      // Sélectionner l'outil
+      nouvellesOperations[operationIndex].outilsRequis = [...outilsActuels, outil];
+    }
+    
+    setOperations(nouvellesOperations);
   };
 
   // Calculs d'assistance
-  const calculateTempsTotal = (machineIndex) => {
-    return machines[machineIndex].operations.reduce((total, op) => total + op[1], 0);
+  const getOperationsParMachine = (machineIndex) => {
+    return operations.filter(op => op.machine === machineIndex);
   };
 
-  const calculateCapaciteUtilisee = (machineIndex) => {
-    const tempsTotal = calculateTempsTotal(machineIndex);
+  const getTempsTotal = (machineIndex) => {
+    return getOperationsParMachine(machineIndex).reduce((total, op) => total + (op.temps * op.demande), 0);
+  };
+
+  const getCapaciteUtilisee = (machineIndex) => {
+    const tempsTotal = getTempsTotal(machineIndex);
     const capaciteMax = machines[machineIndex].capaciteTemps * machines[machineIndex].nombre;
     return capaciteMax > 0 ? ((tempsTotal / capaciteMax) * 100).toFixed(1) : 0;
   };
 
   const getValidationIcon = (machineIndex) => {
-    const utilisation = parseFloat(calculateCapaciteUtilisee(machineIndex));
+    const utilisation = parseFloat(getCapaciteUtilisee(machineIndex));
     if (utilisation <= 100) return { icon: "✓", color: "#10b981" };
     return { icon: "⚠", color: "#f59e0b" };
   };
 
-  const getTotalOutilsRequisMachine = (machineIndex) => {
-    const outilsUniques = new Set(machines[machineIndex].operations.map(op => op[2]));
-    return outilsUniques.size;
+  const getAllOutilsGlobaux = () => {
+    const tousTousOutils = new Set();
+    machines.forEach(machine => {
+      machine.outilsDisponibles.forEach(outil => tousTousOutils.add(outil));
+    });
+    return Array.from(tousTousOutils);
+  };
+
+  const getOutilsEspace = () => {
+    const outilsEspace = {};
+    machines.forEach(machine => {
+      machine.outilsDisponibles.forEach((outil, index) => {
+        outilsEspace[outil] = machine.espaceOutils[index] || 1;
+      });
+    });
+    return outilsEspace;
   };
 
   const handleSubmit = () => {
@@ -182,6 +293,19 @@ export default function FMSLotsChargementHeuristiqueForm() {
 
     try {
       // Validation
+      if (machines.length === 0) {
+        setError("Au moins une machine est requise.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (operations.length === 0) {
+        setError("Au moins une opération est requise.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Validation des machines
       for (let i = 0; i < machines.length; i++) {
         const m = machines[i];
         if (m.nombre <= 0 || m.capaciteTemps <= 0 || m.capaciteOutils <= 0) {
@@ -190,32 +314,62 @@ export default function FMSLotsChargementHeuristiqueForm() {
           return;
         }
         
-        if (m.operations.length === 0) {
-          setError(`Machine ${m.nom}: Au moins une opération est requise.`);
+        if (m.outilsDisponibles.length === 0) {
+          setError(`Machine ${m.nom}: Au moins un outil est requis.`);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Validation des opérations
+      for (let i = 0; i < operations.length; i++) {
+        const op = operations[i];
+        if (!op.nom || !op.piece || op.temps <= 0 || op.demande <= 0) {
+          setError(`Opération ${i + 1}: Nom, pièce, temps positif et demande positive sont requis.`);
           setIsLoading(false);
           return;
         }
 
-        for (let j = 0; j < m.operations.length; j++) {
-          const op = m.operations[j];
-          if (!op[0] || op[1] <= 0 || !op[2]) {
-            setError(`Machine ${m.nom}, opération ${j + 1}: Nom, temps positif et outil sont requis.`);
-            setIsLoading(false);
-            return;
-          }
+        if (op.machine < 0 || op.machine >= machines.length) {
+          setError(`Opération ${op.nom}: Machine invalide sélectionnée.`);
+          setIsLoading(false);
+          return;
+        }
+
+        if (op.outilsRequis.length === 0) {
+          setError(`Opération ${op.nom}: Au moins un outil doit être sélectionné.`);
+          setIsLoading(false);
+          return;
         }
       }
 
-      // Validation des outils
-      if (Object.keys(outilsEspace).length === 0) {
-        setError("Au moins un outil doit être défini.");
-        setIsLoading(false);
-        return;
-      }
+      // Préparer les données selon le format attendu par le backend
+      const operations_machines = machines.map((machine, machineIndex) => {
+        const operationsPourCetteMachine = operations
+          .filter(op => op.machine === machineIndex)
+          .map(op => {
+            // Dupliquer l'opération selon la demande et créer une entrée par outil requis
+            const operationsAvecDemande = [];
+            for (let d = 0; d < op.demande; d++) {
+              // Pour chaque outil requis, créer une opération
+              op.outilsRequis.forEach(outil => {
+                operationsAvecDemande.push([
+                  `${op.nom}_${op.piece}_op${op.operation}_dem${d + 1}`, 
+                  op.temps, 
+                  outil
+                ]);
+              });
+            }
+            return operationsAvecDemande;
+          })
+          .flat();
+        
+        return operationsPourCetteMachine;
+      });
 
       const requestData = {
-        operations_machines: machines.map(m => m.operations),
-        outils_espace: outilsEspace,
+        operations_machines: operations_machines,
+        outils_espace: getOutilsEspace(),
         noms_machines: machines.map(m => m.nom),
         nb_machines: machines.map(m => m.nombre),
         capacite_temps: machines.map(m => m.capaciteTemps),
@@ -282,12 +436,26 @@ export default function FMSLotsChargementHeuristiqueForm() {
         <div className={styles.header}>
           <h1 className={styles.title}>FMS - Lots de Chargement (Heuristique)</h1>
           <p className={styles.subtitle}>
-            Algorithme heuristique pour l'optimisation des lots de chargement en système flexible de production
+            Algorithme heuristique en 3 étapes pour optimiser les lots de chargement dans un système FMS
           </p>
         </div>
 
-        <div className={styles.configSection}>
+        {/* Configuration système */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Paramètres Système</h3>
+          
           <div className={styles.configRow}>
+            <div className={styles.inputGroup}>
+              <label>Temps disponible par jour ({uniteTemps})</label>
+              <input
+                type="number"
+                min="1"
+                value={tempsDisponibleJour}
+                onChange={(e) => setTempsDisponibleJour(e.target.value)}
+                className={styles.input}
+              />
+            </div>
+            
             <div className={styles.inputGroup}>
               <label>Unité de temps</label>
               <select value={uniteTemps} onChange={(e) => setUniteTemps(e.target.value)} className={styles.select}>
@@ -296,7 +464,16 @@ export default function FMSLotsChargementHeuristiqueForm() {
                 <option value="jours">jours</option>
               </select>
             </div>
-            
+
+            <div className={styles.inputGroup}>
+              <label>Devise</label>
+              <select value={devise} onChange={(e) => setDevise(e.target.value)} className={styles.select}>
+                {Object.entries(devises).map(([code, info]) => (
+                  <option key={code} value={code}>{info.nom} ({info.symbole})</option>
+                ))}
+              </select>
+            </div>
+
             <div className={styles.actionButtons}>
               <button className={styles.addButton} onClick={addMachine}>
                 + Ajouter machine
@@ -308,29 +485,27 @@ export default function FMSLotsChargementHeuristiqueForm() {
               >
                 - Supprimer machine
               </button>
-              <button className={styles.addButton} onClick={addOutil}>
-                + Ajouter outil
-              </button>
             </div>
           </div>
         </div>
 
         {/* Configuration des machines */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Configuration des machines</h3>
+          <h3 className={styles.sectionTitle}>Configuration des Machines et Outils</h3>
           
           {machines.map((machine, machineIndex) => {
             const validation = getValidationIcon(machineIndex);
-            const outilsRequisUniques = getTotalOutilsRequisMachine(machineIndex);
+            const operationsPourCetteMachine = getOperationsParMachine(machineIndex);
+            const tempsTotal = getTempsTotal(machineIndex);
             
             return (
               <div key={machineIndex} className={styles.machineSection}>
                 <div className={styles.machineHeader}>
                   <h4 style={{ color: validation.color }}>
-                    {validation.icon} {machine.nom} - {calculateCapaciteUtilisee(machineIndex)}% utilisé
+                    {validation.icon} {machine.nom} - {getCapaciteUtilisee(machineIndex)}% utilisé
                   </h4>
                   <span className={styles.machineInfo}>
-                    {outilsRequisUniques}/{machine.capaciteOutils} outils requis
+                    {operationsPourCetteMachine.length} opérations ({tempsTotal} {uniteTemps} total)
                   </span>
                 </div>
                 
@@ -376,48 +551,42 @@ export default function FMSLotsChargementHeuristiqueForm() {
                   </div>
                 </div>
 
-                <div className={styles.operationsSubsection}>
+                {/* Configuration des outils pour cette machine */}
+                <div className={styles.outilsSubsection}>
                   <div className={styles.subsectionHeader}>
-                    <h5>Opérations</h5>
+                    <h5>Outils disponibles</h5>
                     <button 
                       className={styles.addButton} 
-                      onClick={() => addOperation(machineIndex)}
+                      onClick={() => addOutilToMachine(machineIndex)}
                     >
-                      + Opération
+                      + Outil
                     </button>
                   </div>
                   
-                  <div className={styles.operationsList}>
-                    {machine.operations.map((operation, operationIndex) => (
-                      <div key={operationIndex} className={styles.operationItem}>
+                  <div className={styles.outilsList}>
+                    {machine.outilsDisponibles.map((outil, outilIndex) => (
+                      <div key={outilIndex} className={styles.outilItem}>
                         <input
                           type="text"
-                          value={operation[0]}
-                          onChange={(e) => handleOperationChange(machineIndex, operationIndex, "nom", e.target.value)}
+                          value={outil}
+                          onChange={(e) => updateOutilNom(machineIndex, outilIndex, e.target.value)}
                           className={styles.inputCompact}
-                          placeholder="Nom"
+                          placeholder="Nom outil"
                         />
-                        <input
-                          type="number"
-                          min="1"
-                          value={operation[1]}
-                          onChange={(e) => handleOperationChange(machineIndex, operationIndex, "temps", e.target.value)}
-                          className={styles.inputCompact}
-                          placeholder="Temps"
-                        />
-                        <select
-                          value={operation[2]}
-                          onChange={(e) => handleOperationChange(machineIndex, operationIndex, "outil", e.target.value)}
-                          className={styles.selectCompact}
-                        >
-                          {Object.keys(outilsEspace || {}).map(outil => (
-                            <option key={outil} value={outil}>{outil}</option>
-                          ))}
-                        </select>
+                        <div className={styles.inputGroup}>
+                          <label>Espace</label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={machine.espaceOutils[outilIndex]}
+                            onChange={(e) => updateOutilEspace(machineIndex, outilIndex, e.target.value)}
+                            className={styles.inputCompact}
+                          />
+                        </div>
                         <button 
                           className={styles.deleteButton}
-                          onClick={() => removeOperation(machineIndex, operationIndex)}
-                          disabled={machine.operations.length <= 1}
+                          onClick={() => removeOutilFromMachine(machineIndex, outilIndex)}
+                          disabled={machine.outilsDisponibles.length <= 1}
                           title="Supprimer"
                         >
                           ×
@@ -431,43 +600,128 @@ export default function FMSLotsChargementHeuristiqueForm() {
           })}
         </div>
 
-        {/* Configuration des outils */}
+        {/* Configuration des opérations */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Configuration des outils</h3>
+          <h3 className={styles.sectionTitle}>Opérations FMS (Résultats Phase 1)</h3>
+          <p className={styles.sectionDescription}>
+            Définissez les opérations résultant de la phase 1 FMS. Chaque opération appartient à une pièce et nécessite des outils spécifiques.
+          </p>
           
-          <div className={styles.outilsList}>
-            {Object.entries(outilsEspace || {}).map(([outil, espace]) => {
-              const utilisations = machines.reduce((total, machine) => 
-                total + machine.operations.filter(op => op[2] === outil).length, 0
-              );
-              
-              return (
-                <div key={outil} className={styles.outilItem}>
-                  <span className={styles.outilNom}>{outil}</span>
-                  <div className={styles.inputGroup}>
-                    <label>Espace</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={espace}
-                      onChange={(e) => handleOutilEspaceChange(outil, e.target.value)}
-                      className={styles.inputCompact}
-                    />
-                  </div>
-                  <span className={styles.outilUsage}>
-                    {utilisations} utilisation{utilisations !== 1 ? 's' : ''}
-                  </span>
+          <div className={styles.actionButtons}>
+            <button className={styles.addButton} onClick={addOperation}>
+              + Ajouter opération
+            </button>
+          </div>
+
+          <div className={styles.operationsList}>
+            {operations.map((operation, operationIndex) => (
+              <div key={operationIndex} className={styles.operationCard}>
+                <div className={styles.operationHeader}>
+                  <h5>Opération {operationIndex + 1}</h5>
                   <button 
                     className={styles.deleteButton}
-                    onClick={() => removeOutil(outil)}
-                    disabled={Object.keys(outilsEspace).length <= 1}
-                    title="Supprimer"
+                    onClick={() => removeOperation(operationIndex)}
+                    title="Supprimer opération"
                   >
                     ×
                   </button>
                 </div>
-              );
-            })}
+                
+                <div className={styles.operationGrid}>
+                  <div className={styles.inputGroup}>
+                    <label>Nom opération</label>
+                    <input
+                      type="text"
+                      value={operation.nom}
+                      onChange={(e) => handleOperationChange(operationIndex, "nom", e.target.value)}
+                      className={styles.input}
+                      placeholder="ex: o11"
+                    />
+                  </div>
+                  
+                  <div className={styles.inputGroup}>
+                    <label>Pièce</label>
+                    <input
+                      type="text"
+                      value={operation.piece}
+                      onChange={(e) => handleOperationChange(operationIndex, "piece", e.target.value)}
+                      className={styles.input}
+                      placeholder="ex: P1"
+                    />
+                  </div>
+                  
+                  <div className={styles.inputGroup}>
+                    <label>N° opération</label>
+                    <input
+                      type="text"
+                      value={operation.operation}
+                      onChange={(e) => handleOperationChange(operationIndex, "operation", e.target.value)}
+                      className={styles.input}
+                      placeholder="ex: 1"
+                    />
+                  </div>
+                  
+                  <div className={styles.inputGroup}>
+                    <label>Machine assignée</label>
+                    <select
+                      value={operation.machine}
+                      onChange={(e) => handleOperationChange(operationIndex, "machine", e.target.value)}
+                      className={styles.select}
+                    >
+                      {machines.map((machine, index) => (
+                        <option key={index} value={index}>{machine.nom}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className={styles.inputGroup}>
+                    <label>Temps ({uniteTemps})</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={operation.temps}
+                      onChange={(e) => handleOperationChange(operationIndex, "temps", e.target.value)}
+                      className={styles.input}
+                    />
+                  </div>
+                  
+                  <div className={styles.inputGroup}>
+                    <label>Demande (quantité)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={operation.demande}
+                      onChange={(e) => handleOperationChange(operationIndex, "demande", e.target.value)}
+                      className={styles.input}
+                    />
+                  </div>
+                </div>
+
+                {/* Sélection des outils requis */}
+                <div className={styles.outilsSelection}>
+                  <label>Outils requis (sélection multiple autorisée)</label>
+                  <div className={styles.outilsCheckboxes}>
+                    {operation.machine >= 0 && operation.machine < machines.length && 
+                     machines[operation.machine].outilsDisponibles.map(outil => (
+                      <label key={outil} className={styles.checkboxLabel}>
+                        <input
+                          type="checkbox"
+                          checked={operation.outilsRequis.includes(outil)}
+                          onChange={() => handleOutilSelection(operationIndex, outil)}
+                          className={styles.checkbox}
+                        />
+                        <span>{outil} (esp: {machines[operation.machine].espaceOutils[machines[operation.machine].outilsDisponibles.indexOf(outil)]})</span>
+                      </label>
+                    ))}
+                  </div>
+                  {operation.outilsRequis.length > 0 && (
+                    <div className={styles.selectedOutils}>
+                      <strong>Sélectionnés:</strong> {operation.outilsRequis.join(", ")}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import styles from './LigneAssemblageMixteEquilibrageForm.module.css';
 
 const LigneAssemblageMixteEquilibrageForm = () => {
@@ -259,14 +259,15 @@ const LigneAssemblageMixteEquilibrageForm = () => {
   };
 
   return (
-    <>
-      {/* Header */}
-      <div className={styles.header}>
-        <h1 className={styles.title}>Ligne d'assemblage mixte - Équilibrage</h1>
-        <p className={styles.subtitle}>
-          Équilibrage optimal multi-produits avec contraintes de précédence
-        </p>
-      </div>
+    <div className="algorithmContent">
+      <div className={styles.container}>
+        {/* Header */}
+        <div className={styles.header}>
+          <h1 className={styles.title}>Ligne d'assemblage mixte - Équilibrage</h1>
+          <p className={styles.subtitle}>
+            Équilibrage optimal multi-produits avec contraintes de précédence
+          </p>
+        </div>
 
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
@@ -382,83 +383,83 @@ const LigneAssemblageMixteEquilibrageForm = () => {
         </div>
       </div>
 
-      {/* Tableau matriciel compact */}
+      {/* Tableau des tâches */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
-          Configuration des tâches - Tableau matriciel ({tasks.length} tâches × {products.length} produits)
+          Configuration des tâches ({tasks.length} tâches × {products.length} produits)
         </h2>
         
-        <div className={styles.matrixContainer}>
-          <div className={styles.matrixTable}>
-            {/* En-tête du tableau */}
-            <div className={styles.matrixHeader}>
-              <div className={styles.taskColumn}>Tâche</div>
-              <div className={styles.taskNameColumn}>Nom de la tâche</div>
-              {products.map((product, index) => (
-                <div key={index} className={styles.productColumnGroup}>
-                  <div className={styles.productGroupHeader}>{product.name}</div>
-                  <div className={styles.productSubColumns}>
-                    <div className={styles.timeSubColumn}>Temps ({timeUnit})</div>
-                    <div className={styles.predSubColumn}>Prédécesseurs</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Lignes des tâches */}
-            {tasks.map((task, taskIndex) => (
-              <div key={task.id} className={styles.matrixRow}>
-                <div className={styles.taskColumn}>
-                  <div className={styles.taskNumber}>T{task.id}</div>
-                </div>
-                
-                <div className={styles.taskNameColumn}>
-                  <input
-                    type="text"
-                    value={task.name}
-                    onChange={(e) => updateTask(taskIndex, 'name', e.target.value)}
-                    className={styles.taskNameInput}
-                    placeholder={`Tâche ${task.id}`}
-                  />
-                </div>
-                
-                {task.models.map((model, productIndex) => (
-                  <div key={productIndex} className={styles.productColumnGroup}>
-                    <div className={styles.productDataColumns}>
-                      <div className={styles.timeSubColumn}>
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th rowSpan="2">Tâche</th>
+                <th rowSpan="2">Nom de la tâche</th>
+                {products.map((product, index) => (
+                  <th key={index} colSpan="2" className={styles.productHeader}>
+                    {product.name}
+                  </th>
+                ))}
+              </tr>
+              <tr>
+                {products.map((product, index) => (
+                  <React.Fragment key={index}>
+                    <th className={styles.subHeader}>Temps ({timeUnit})</th>
+                    <th className={styles.subHeader}>Prédécesseurs</th>
+                  </React.Fragment>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.map((task, taskIndex) => (
+                <tr key={task.id}>
+                  <td className={styles.taskCell}>
+                    <div className={styles.taskNumber}>T{task.id}</div>
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={task.name}
+                      onChange={(e) => updateTask(taskIndex, 'name', e.target.value)}
+                      className={styles.input}
+                      placeholder={`Tâche ${task.id}`}
+                    />
+                  </td>
+                  {task.models.map((model, productIndex) => (
+                    <React.Fragment key={productIndex}>
+                      <td>
                         <input
                           type="number"
                           value={model.time}
                           onChange={(e) => updateTaskModel(taskIndex, productIndex, 'time', e.target.value)}
-                          className={styles.matrixTimeInput}
+                          className={styles.input}
                           min="0"
                           step="0.1"
                           placeholder="0"
                         />
-                      </div>
-                      
-                      <div className={styles.predSubColumn}>
+                      </td>
+                      <td>
                         <input
                           type="text"
                           value={formatPredecessors(model.predecessors)}
                           onChange={(e) => updateTaskModel(taskIndex, productIndex, 'predecessors', e.target.value)}
-                          className={styles.matrixPredInput}
+                          className={styles.input}
                           placeholder=""
                           title="IDs des tâches prédécesseurs séparés par des virgules"
                         />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          
-          {/* Aide sur les prédécesseurs */}
-          <div className={styles.matrixHelp}>
-            <p><strong>Aide :</strong> Pour les prédécesseurs, utilisez les numéros de tâches séparés par des virgules (ex: 1,2). Laissez vide si aucun prédécesseur.</p>
-            <p><strong>Temps :</strong> Mettez 0 si un produit ne passe pas par cette tâche.</p>
-          </div>
+                      </td>
+                    </React.Fragment>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        {/* Aide */}
+        <div className={styles.helpText}>
+          <p><strong>Aide :</strong> Pour les prédécesseurs, utilisez les numéros de tâches séparés par des virgules (ex: 1,2). Laissez vide si aucun prédécesseur.</p>
+          <p><strong>Temps :</strong> Mettez 0 si un produit ne passe pas par cette tâche.</p>
         </div>
       </div>
 
@@ -591,7 +592,8 @@ const LigneAssemblageMixteEquilibrageForm = () => {
           </div>
         </div>
       )}
-    </>
+      </div>
+    </div>
   );
 };
 

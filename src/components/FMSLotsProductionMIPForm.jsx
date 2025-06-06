@@ -344,11 +344,20 @@ export default function FMSLotsProductionMIPForm() {
 
   const renderResultsForMachine = (nom_machine, result) => {
     const machine_key = nom_machine.toLowerCase().replace(' ', '_');
-    const temps_utilise = result[`temps_utilise_${machine_key}`] || 0;
+    const temps_utilise_total = result[`temps_utilise_${machine_key}`] || 0;
     const temps_total = result[`temps_disponible_total_${machine_key}`] || 0;
-    const utilisation = result[`utilisation_${machine_key}`] || 0;
+    const temps_par_periode = result[`temps_disponible_par_periode_${machine_key}`] || 0;
+    const utilisation_max = result[`utilisation_${machine_key}`] || 0;
     
-    return `${temps_utilise}${uniteTemps} / ${temps_total}${uniteTemps} (${utilisation}%)`;
+    // Calculate the consistent percentage for total usage
+    const utilisation_totale = temps_total > 0 ? ((temps_utilise_total / temps_total) * 100).toFixed(1) : 0;
+    
+    return (
+      <div>
+        <div><strong>Utilisation totale:</strong> {temps_utilise_total.toFixed(1)}{uniteTemps} / {temps_total.toFixed(1)}{uniteTemps} ({utilisation_totale}%)</div>
+        <div><strong>Pic d'utilisation:</strong> {utilisation_max.toFixed(1)}% ({temps_par_periode.toFixed(1)}{uniteTemps} max/période)</div>
+      </div>
+    );
   };
 
   const renderProduitsAssignes = (produits_assignes) => {
@@ -822,37 +831,48 @@ export default function FMSLotsProductionMIPForm() {
                 <thead>
                   <tr>
                     <th>Machine</th>
-                    <th>Temps Utilisé</th>
-                    <th>Temps Total</th>
-                    <th>Utilisation (%)</th>
+                    <th>Utilisation Totale</th>
+                    <th>Pic d'Utilisation</th>
+                    <th>Statut</th>
                   </tr>
                 </thead>
                 <tbody>
                   {machines.map((machine, index) => {
                     // Clés réelles du backend MIP
                     const machine_suffix = machine.nom.toLowerCase().replace(' ', '_');
-                    const temps_utilise = result[`temps_utilise_${machine_suffix}`] || 0;
-                    const temps_total = result[`temps_disponible_total_${machine_suffix}`] || calculateCapaciteTotale(index);
-                    let utilisation = result[`utilisation_${machine_suffix}`] || 0;
+                    const temps_utilise_total = result[`temps_utilise_${machine_suffix}`] || 0;
+                    const temps_total = result[`temps_disponible_total_${machine_suffix}`] || 0;
+                    const temps_par_periode = result[`temps_disponible_par_periode_${machine_suffix}`] || 0;
+                    const utilisation_pic = result[`utilisation_${machine_suffix}`] || 0;
                     
-                    // Les pourcentages du MIP peuvent dépasser 100% (surcharge)
-                    utilisation = Math.round(utilisation * 100) / 100;
+                    // Calculate total utilization percentage
+                    const utilisation_totale = temps_total > 0 ? ((temps_utilise_total / temps_total) * 100) : 0;
                     
                     return (
                       <tr key={index}>
                         <td><strong>{machine.nom}</strong></td>
-                        <td>{Math.round(temps_utilise * 100) / 100}{uniteTemps}</td>
-                        <td>{Math.round(temps_total * 100) / 100}{uniteTemps}</td>
+                        <td>
+                          {temps_utilise_total.toFixed(1)}{uniteTemps} / {temps_total.toFixed(1)}{uniteTemps}
+                          <br/>
+                          <small style={{ color: "#6b7280" }}>({utilisation_totale.toFixed(1)}% sur toutes les périodes)</small>
+                        </td>
                         <td style={{ 
-                          color: utilisation >= 100 ? "#ef4444" : utilisation >= 80 ? "#f59e0b" : "#10b981",
+                          color: utilisation_pic >= 100 ? "#ef4444" : utilisation_pic >= 80 ? "#f59e0b" : "#10b981",
                           fontWeight: "bold"
                         }}>
-                          <>
-                            {utilisation}%
-                            {utilisation > 100 && (
-                              <><br/><small style={{ color: "#dc2626" }}>⚠️ Surcharge</small></>
-                            )}
-                          </>
+                          {utilisation_pic.toFixed(1)}% max
+                          <br/>
+                          <small style={{ color: "#6b7280" }}>({temps_par_periode.toFixed(1)}{uniteTemps}/période)</small>
+                        </td>
+                        <td style={{ 
+                          color: utilisation_pic >= 100 ? "#ef4444" : "#10b981",
+                          fontWeight: "bold"
+                        }}>
+                          {utilisation_pic >= 100 ? (
+                            <>⚠️ Surcharge<br/><small>Contrainte violée</small></>
+                          ) : (
+                            <>✅ Conforme<br/><small>Respect contraintes</small></>
+                          )}
                         </td>
                       </tr>
                     );

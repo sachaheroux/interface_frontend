@@ -499,6 +499,21 @@
   letter-spacing: 0.05em;
 }
 
+.errorDetails {
+  margin-top: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  background: #fef2f2;
+  border-radius: 0.25rem;
+  border: 1px solid #fca5a5;
+}
+
+.errorDetails small {
+  color: #dc2626;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  display: block;
+}
+
 .algorithmDetails {
   background: var(--background-main);
   padding: var(--spacing-lg);

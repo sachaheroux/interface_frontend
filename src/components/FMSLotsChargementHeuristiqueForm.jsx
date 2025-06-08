@@ -753,10 +753,18 @@ export default function FMSLotsChargementHeuristiqueForm() {
           {/* Métriques principales */}
           <div className={styles.resultsGrid}>
             <div className={styles.resultMetric}>
-              <div className={styles.metricValue} style={{ color: result.status === 'Optimal' ? '#10b981' : '#f59e0b' }}>
+              <div className={styles.metricValue} style={{ 
+                color: result.status === 'Optimal' ? '#10b981' : 
+                       result.status === 'Infaisable' ? '#ef4444' : '#f59e0b' 
+              }}>
                 {result.status}
               </div>
               <div className={styles.metricLabel}>Statut</div>
+              {result.status === 'Infaisable' && (
+                <div className={styles.errorDetails}>
+                  <small>{result.message}</small>
+                </div>
+              )}
             </div>
             <div className={styles.resultMetric}>
               <div className={styles.metricValue}>{result.nb_operations_total}</div>
@@ -781,45 +789,48 @@ export default function FMSLotsChargementHeuristiqueForm() {
           {/* Algorithme utilisé */}
           <div className={styles.algorithmDetails}>
             <h4>Méthode: {result.methode}</h4>
-            <p><strong>Critère:</strong> {result.critere_selection}</p>
-            <p><strong>Étapes:</strong> {result.nb_etapes} (Clustering → Groupes → Assignation LPT)</p>
+            {result.critere_selection && <p><strong>Critère:</strong> {result.critere_selection}</p>}
+            {result.nb_etapes && <p><strong>Étapes:</strong> {result.nb_etapes} (Clustering → Groupes → Assignation LPT)</p>}
+            {result.validation && <p><strong>Validation:</strong> {result.validation}</p>}
           </div>
 
           {/* Résultats par machine */}
-          <div className={styles.machineResults}>
-            <h4>Performance par machine</h4>
-            <div className={styles.machineResultsGrid}>
-              {machines.map((machine, index) => {
-                const machine_key = machine.nom.toLowerCase().replace(' ', '_');
-                const utilisation = result[`utilisation_${machine_key}`] || 0;
-                const nb_operations = result[`nb_operations_${machine_key}`] || 0;
-                const nb_clusters = result[`nb_clusters_${machine_key}`] || 0;
-                const nb_groupes = result[`nb_groupes_${machine_key}`] || 0;
-                
-                return (
-                  <div key={index} className={styles.machineResultCard}>
-                    <h5>{machine.nom}</h5>
-                    <div className={styles.machineResultStats}>
-                      <span>{nb_operations} ops → {nb_clusters} clusters → {nb_groupes} groupes</span>
+          {result.status === 'Optimal' && (
+            <div className={styles.machineResults}>
+              <h4>Performance par machine</h4>
+              <div className={styles.machineResultsGrid}>
+                {machines.map((machine, index) => {
+                  const machine_key = machine.nom.toLowerCase().replace(' ', '_');
+                  const utilisation = result[`utilisation_${machine_key}`] || 0;
+                  const nb_operations = result[`nb_operations_${machine_key}`] || 0;
+                  const nb_clusters = result[`nb_clusters_${machine_key}`] || 0;
+                  const nb_groupes = result[`nb_groupes_${machine_key}`] || 0;
+                  
+                  return (
+                    <div key={index} className={styles.machineResultCard}>
+                      <h5>{machine.nom}</h5>
+                      <div className={styles.machineResultStats}>
+                        <span>{nb_operations} ops → {nb_clusters} clusters → {nb_groupes} groupes</span>
+                      </div>
+                      <div className={styles.utilisationBar}>
+                        <div 
+                          className={styles.utilisationFill}
+                          style={{ 
+                            width: `${Math.min(utilisation, 100)}%`,
+                            backgroundColor: utilisation <= 100 ? '#3b82f6' : '#ef4444'
+                          }}
+                        ></div>
+                        <span className={styles.utilisationText}>{utilisation}%</span>
+                      </div>
                     </div>
-                    <div className={styles.utilisationBar}>
-                      <div 
-                        className={styles.utilisationFill}
-                        style={{ 
-                          width: `${Math.min(utilisation, 100)}%`,
-                          backgroundColor: utilisation <= 100 ? '#3b82f6' : '#ef4444'
-                        }}
-                      ></div>
-                      <span className={styles.utilisationText}>{utilisation}%</span>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Détails des étapes */}
-          {result.clusters && result.clusters.length > 0 && (
+          {result.status === 'Optimal' && result.clusters && result.clusters.length > 0 && (
             <div className={styles.stepsSection}>
               <h4>Étape 1 - Formation des clusters</h4>
               {result.clusters.map((machineCluster, index) => (
@@ -842,7 +853,7 @@ export default function FMSLotsChargementHeuristiqueForm() {
             </div>
           )}
 
-          {result.groupes && result.groupes.length > 0 && (
+          {result.status === 'Optimal' && result.groupes && result.groupes.length > 0 && (
             <div className={styles.stepsSection}>
               <h4>Étape 2 - Formation des groupes</h4>
               {result.groupes.map((machineGroupe, index) => (
@@ -860,7 +871,7 @@ export default function FMSLotsChargementHeuristiqueForm() {
             </div>
           )}
 
-          {result.assignations && result.assignations.length > 0 && (
+          {result.status === 'Optimal' && result.assignations && result.assignations.length > 0 && (
             <div className={styles.stepsSection}>
               <h4>Étape 3 - Assignations LPT</h4>
               {result.assignations.map((machineAssign, index) => (

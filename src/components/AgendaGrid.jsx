@@ -115,17 +115,40 @@ function AgendaGrid({ agendaData, dueDates = {} }) {
                 />
               ))}
               
-              {/* Pause déjeuner (12h-13h) */}
-              <div 
-                className={styles.lunchBreak}
-                style={{
-                  left: `${(12 - startHour) * 100}px`,
-                  width: "100px"
-                }}
-                title="Pause déjeuner"
-              >
-                🍽️
-              </div>
+              {/* Pauses et congés */}
+              {/* Vérifier si c'est un weekend ou férié */}
+              {(() => {
+                const dayOfWeek = displayDate.getDay();
+                const dateStr = displayDate.toISOString().split('T')[0];
+                const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                const isHoliday = agendaData.agenda_config?.jours_feries?.includes(dateStr);
+                
+                if (isWeekend || isHoliday) {
+                  return (
+                    <div 
+                      className={styles.holidayOverlay}
+                      style={{ left: "0px", width: `${hours.length * 100}px` }}
+                      title={isHoliday ? "Jour férié" : "Weekend"}
+                    >
+                      {isHoliday ? '🎄 Jour férié' : '📅 Weekend'}
+                    </div>
+                  );
+                }
+                
+                // Afficher les pauses uniquement si ce n'est pas un jour chômé
+                return (
+                  <div 
+                    className={styles.lunchBreak}
+                    style={{
+                      left: `${(12 - startHour) * 100}px`,
+                      width: "100px"
+                    }}
+                    title="Pause déjeuner"
+                  >
+                    🍽️
+                  </div>
+                );
+              })()}
               
               {/* Tâches */}
               {items

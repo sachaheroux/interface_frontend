@@ -16,11 +16,12 @@ const FlowshopContraintesForm = () => {
   const [isCalculating, setIsCalculating] = useState(false);
   const [agendaData, setAgendaData] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [startDateTime, setStartDateTime] = useState('2024-01-15T08:00:00');
+  const [startDateTime, setStartDateTime] = useState('2025-06-01T08:00:00');
   const [openingHours, setOpeningHours] = useState({ start: '08:00', end: '17:00' });
   const [weekendDays, setWeekendDays] = useState({ samedi: true, dimanche: true });
   const [feries, setFeries] = useState(['']);
   const [dueDateTimes, setDueDateTimes] = useState(jobs.map(() => ''));
+  const [pauses, setPauses] = useState([{ start: '12:00', end: '13:00', name: 'Pause déjeuner' }]);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -138,6 +139,7 @@ const FlowshopContraintesForm = () => {
         requestData.weekend_days = Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k);
         requestData.jours_feries = feries.filter(f => f);
         requestData.due_date_times = dueDateTimes;
+        requestData.pauses = pauses;
       }
 
       console.log("Données envoyées:", requestData);
@@ -215,6 +217,38 @@ const FlowshopContraintesForm = () => {
       link.click();
       document.body.removeChild(link);
     }
+  };
+
+  const addFerie = () => {
+    setFeries([...feries, '']);
+  };
+
+  const removeFerie = (index) => {
+    if (feries.length > 1) {
+      setFeries(feries.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateFerie = (index, value) => {
+    const newFeries = [...feries];
+    newFeries[index] = value;
+    setFeries(newFeries);
+  };
+
+  const addPause = () => {
+    setPauses([...pauses, { start: '10:00', end: '10:15', name: 'Pause' }]);
+  };
+
+  const removePause = (index) => {
+    if (pauses.length > 0) {
+      setPauses(pauses.filter((_, i) => i !== index));
+    }
+  };
+
+  const updatePause = (index, field, value) => {
+    const newPauses = [...pauses];
+    newPauses[index][field] = value;
+    setPauses(newPauses);
   };
 
   return (
@@ -356,16 +390,82 @@ const FlowshopContraintesForm = () => {
                   </label>
                 </div>
               </div>
+            </div>
+
+            <div className={styles.paramRow}>
+              <div className={styles.inputGroup}>
+                <label>🎄 Jours fériés</label>
+                <div className={styles.listContainer}>
+                  {feries.map((ferie, index) => (
+                    <div key={index} className={styles.listItem}>
+                      <input
+                        type="date"
+                        value={ferie}
+                        onChange={(e) => updateFerie(index, e.target.value)}
+                        className={styles.input}
+                      />
+                      {feries.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeFerie(index)}
+                          className={styles.removeItemButton}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addFerie}
+                    className={styles.addItemButton}
+                  >
+                    + Ajouter un jour férié
+                  </button>
+                </div>
+              </div>
               
               <div className={styles.inputGroup}>
-                <label>Jours fériés (optionnel)</label>
-                <input
-                  type="date"
-                  value={feries[0]}
-                  onChange={(e) => setFeries([e.target.value])}
-                  className={styles.input}
-                  placeholder="AAAA-MM-JJ"
-                />
+                <label>⏸️ Pauses</label>
+                <div className={styles.listContainer}>
+                  {pauses.map((pause, index) => (
+                    <div key={index} className={styles.pauseItem}>
+                      <input
+                        type="text"
+                        value={pause.name}
+                        onChange={(e) => updatePause(index, 'name', e.target.value)}
+                        className={styles.input}
+                        placeholder="Nom de la pause"
+                      />
+                      <input
+                        type="time"
+                        value={pause.start}
+                        onChange={(e) => updatePause(index, 'start', e.target.value)}
+                        className={styles.input}
+                      />
+                      <input
+                        type="time"
+                        value={pause.end}
+                        onChange={(e) => updatePause(index, 'end', e.target.value)}
+                        className={styles.input}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePause(index)}
+                        className={styles.removeItemButton}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addPause}
+                    className={styles.addItemButton}
+                  >
+                    + Ajouter une pause
+                  </button>
+                </div>
               </div>
             </div>
           </div>

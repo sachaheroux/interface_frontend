@@ -117,9 +117,9 @@ const LigneAssemblageMixteGoulotForm = () => {
         throw new Error("Les demandes par produit doivent être positives.");
       }
 
-      // Validation des temps
-      if (tasks.some(task => task.times.some(time => time <= 0))) {
-        throw new Error("Les temps de traitement doivent être positifs.");
+      // Validation des temps (accepter les zéros pour les produits qui ne passent pas sur cette tâche)
+      if (tasks.some(task => task.times.some(time => time < 0))) {
+        throw new Error("Les temps de traitement doivent être positifs ou nuls.");
       }
 
       const requestData = {

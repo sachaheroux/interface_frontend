@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './FlowshopContraintesForm.module.css';
+import AgendaGrid from './AgendaGrid';
 
 const FlowshopContraintesForm = () => {
   const [jobs, setJobs] = useState([
@@ -13,6 +14,13 @@ const FlowshopContraintesForm = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
+  const [agendaData, setAgendaData] = useState(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [startDateTime, setStartDateTime] = useState('2024-01-15T08:00:00');
+  const [openingHours, setOpeningHours] = useState({ start: '08:00', end: '17:00' });
+  const [weekendDays, setWeekendDays] = useState({ samedi: true, dimanche: true });
+  const [feries, setFeries] = useState(['']);
+  const [dueDateTimes, setDueDateTimes] = useState(jobs.map(() => ''));
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -123,6 +131,15 @@ const FlowshopContraintesForm = () => {
         machine_names: machineNames
       };
 
+      // Ajouter les paramètres d'agenda si activés
+      if (showAdvanced) {
+        requestData.agenda_start_datetime = startDateTime;
+        requestData.opening_hours = openingHours;
+        requestData.weekend_days = Object.entries(weekendDays).filter(([_, v]) => v).map(([k]) => k);
+        requestData.jours_feries = feries.filter(f => f);
+        requestData.due_date_times = dueDateTimes;
+      }
+
       console.log("Données envoyées:", requestData);
 
       const response = await fetch(`${API_URL}/contraintes`, {
@@ -159,6 +176,26 @@ const FlowshopContraintesForm = () => {
         }
       } catch (ganttError) {
         console.log("Pas de diagramme de Gantt disponible");
+      }
+
+      // Récupération de l'agenda si les paramètres avancés sont activés
+      if (showAdvanced) {
+        try {
+          const agendaResponse = await fetch(`${API_URL}/contraintes/agenda`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+          });
+
+          if (agendaResponse.ok) {
+            const agendaResult = await agendaResponse.json();
+            setAgendaData(agendaResult);
+          }
+        } catch (agendaError) {
+          console.log("Pas d'agenda disponible");
+        }
       }
 
     } catch (err) {
@@ -245,6 +282,94 @@ const FlowshopContraintesForm = () => {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Paramètres d'agenda avancés */}
+      <div className={`${styles.section} ${styles.agendaSection}`}>
+        <h2 className={styles.sectionTitle}>
+          📅 Agenda réel de production
+          <button
+            type="button"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className={styles.toggleButton}
+          >
+            {showAdvanced ? 'Masquer' : 'Configurer'}
+          </button>
+        </h2>
+        
+        {showAdvanced && (
+          <div className={styles.advancedParams}>
+            <div className={styles.paramRow}>
+              <div className={styles.inputGroup}>
+                <label htmlFor="startDateTime">Date/heure de début</label>
+                <input
+                  id="startDateTime"
+                  type="datetime-local"
+                  value={startDateTime}
+                  onChange={(e) => setStartDateTime(e.target.value)}
+                  className={styles.input}
+                />
+              </div>
+              
+              <div className={styles.inputGroup}>
+                <label htmlFor="openingStart">Heure d'ouverture</label>
+                <input
+                  id="openingStart"
+                  type="time"
+                  value={openingHours.start}
+                  onChange={(e) => setOpeningHours({...openingHours, start: e.target.value})}
+                  className={styles.input}
+                />
+              </div>
+              
+              <div className={styles.inputGroup}>
+                <label htmlFor="openingEnd">Heure de fermeture</label>
+                <input
+                  id="openingEnd"
+                  type="time"
+                  value={openingHours.end}
+                  onChange={(e) => setOpeningHours({...openingHours, end: e.target.value})}
+                  className={styles.input}
+                />
+              </div>
+            </div>
+            
+            <div className={styles.paramRow}>
+              <div className={styles.checkboxGroup}>
+                <label>Jours chômés :</label>
+                <div className={styles.checkboxes}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={weekendDays.samedi}
+                      onChange={(e) => setWeekendDays({...weekendDays, samedi: e.target.checked})}
+                    />
+                    Samedi
+                  </label>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={weekendDays.dimanche}
+                      onChange={(e) => setWeekendDays({...weekendDays, dimanche: e.target.checked})}
+                    />
+                    Dimanche
+                  </label>
+                </div>
+              </div>
+              
+              <div className={styles.inputGroup}>
+                <label>Jours fériés (optionnel)</label>
+                <input
+                  type="date"
+                  value={feries[0]}
+                  onChange={(e) => setFeries([e.target.value])}
+                  className={styles.input}
+                  placeholder="AAAA-MM-JJ"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Configuration des machines */}
@@ -416,6 +541,31 @@ const FlowshopContraintesForm = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Agenda réel */}
+      {agendaData && (
+        <div className={`${styles.section} ${styles.agendaResults}`}>
+          <h3 className={styles.agendaTitle}>📅 Agenda de production réel</h3>
+          <div className={styles.agendaInfo}>
+            <p>
+              Cet agenda montre le planning optimisé avec les contraintes temporelles réelles :
+              heures d'ouverture, pauses déjeuner, weekends et jours fériés.
+            </p>
+            <div className={styles.agendaStats}>
+              <span>🏭 {agendaData.total_machines} machines</span>
+              <span>📊 {agendaData.items?.length || 0} tâches planifiées</span>
+              <span>⏰ Ouverture : {agendaData.opening_hours?.start} - {agendaData.opening_hours?.end}</span>
+            </div>
+          </div>
+          <AgendaGrid 
+            agendaData={agendaData} 
+            dueDates={jobs.reduce((acc, job) => {
+              acc[job.name] = job.dueDate;
+              return acc;
+            }, {})}
+          />
         </div>
       )}
 

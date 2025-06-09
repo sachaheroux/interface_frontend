@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import styles from "./AgendaGrid.module.css";
 
-function AgendaGrid({ agendaData }) {
+function AgendaGrid({ agendaData, dueDates = {} }) {
   const [dayOffset, setDayOffset] = useState(0);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   if (!agendaData) return null;
   const { groups, items, opening_hours } = agendaData;
@@ -16,23 +17,84 @@ function AgendaGrid({ agendaData }) {
   const baseDate = new Date(items[0]?.start_time || Date.now());
   const displayDate = new Date(baseDate);
   displayDate.setDate(baseDate.getDate() + dayOffset);
-  const displayDateStr = displayDate.toLocaleDateString("fr-CA", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  const displayDateStr = displayDate.toLocaleDateString("fr-FR", { 
+    weekday: "long", 
+    year: "numeric", 
+    month: "long", 
+    day: "numeric" 
+  });
 
-  // Couleurs des jobs
-  const colors = ["#4f46e5", "#e11d48", "#059669", "#f59e0b", "#0ea5e9", "#9333ea", "#14b8a6"];
+  // Couleurs des jobs (cohérentes avec le Gantt)
+  const jobColors = {
+    "Job 0": "#4f46e5",
+    "Job 1": "#ef4444", 
+    "Job 2": "#10b981",
+    "Job 3": "#f59e0b",
+    "Job 4": "#6366f1",
+    "Job 5": "#8b5cf6",
+    "Job 6": "#14b8a6",
+    "Job 7": "#f97316"
+  };
+
+  const getJobColor = (jobTitle) => {
+    const jobKey = jobTitle.split(" (")[0]; // Enlever "(1/2)", "(2/2)" etc.
+    return jobColors[jobKey] || "#6b7280";
+  };
+
+  const calculateTimeBeforeDueDate = (taskEndTime, jobTitle) => {
+    const endTime = new Date(taskEndTime);
+    const jobKey = jobTitle.split(" (")[0];
+    const dueDate = dueDates[jobKey];
+    
+    if (!dueDate) return null;
+    
+    const dueDateHours = parseFloat(dueDate);
+    const taskEndHours = (endTime - baseDate) / (1000 * 60 * 60);
+    const remainingTime = dueDateHours - taskEndHours;
+    
+    return remainingTime;
+  };
+
+  const handleTaskClick = (task) => {
+    const timeBeforeDue = calculateTimeBeforeDueDate(task.end_time, task.title);
+    setSelectedTask({
+      ...task,
+      timeBeforeDue,
+      duration: ((new Date(task.end_time) - new Date(task.start_time)) / (1000 * 60)).toFixed(0)
+    });
+  };
+
+  const formatTime = (datetime) => {
+    return new Date(datetime).toLocaleTimeString("fr-FR", { 
+      hour: "2-digit", 
+      minute: "2-digit" 
+    });
+  };
 
   return (
     <div className={styles.agendaContainer}>
       {/* Navigation */}
       <div className={styles.navigationBar}>
-        <button onClick={() => setDayOffset(dayOffset - 1)}>&larr; Jour précédent</button>
-        <strong>{displayDateStr}</strong>
-        <button onClick={() => setDayOffset(dayOffset + 1)}>Jour suivant &rarr;</button>
+        <button 
+          className={styles.navButton}
+          onClick={() => setDayOffset(dayOffset - 1)}
+        >
+          ← Jour précédent
+        </button>
+        <div className={styles.currentDate}>
+          <strong>{displayDateStr}</strong>
+        </div>
+        <button 
+          className={styles.navButton}
+          onClick={() => setDayOffset(dayOffset + 1)}
+        >
+          Jour suivant →
+        </button>
       </div>
 
       {/* En-têtes horaires */}
       <div className={styles.timeHeader}>
-        <div className={styles.machineHeader}></div>
+        <div className={styles.machineHeader}>Machines</div>
         {hours.map((hour, i) => (
           <div key={i} className={styles.timeCell}>{hour}</div>
         ))}
@@ -44,28 +106,58 @@ function AgendaGrid({ agendaData }) {
           <div key={group.id} className={styles.machineRow}>
             <div className={styles.machineName}>{group.title}</div>
             <div className={styles.machineTimeline}>
+              {/* Grille horaire de fond */}
+              {hours.map((hour, i) => (
+                <div 
+                  key={i} 
+                  className={styles.hourSlot}
+                  style={{ left: `${i * 100}px`, width: "100px" }}
+                />
+              ))}
+              
+              {/* Pause déjeuner (12h-13h) */}
+              <div 
+                className={styles.lunchBreak}
+                style={{
+                  left: `${(12 - startHour) * 100}px`,
+                  width: "100px"
+                }}
+                title="Pause déjeuner"
+              >
+                🍽️
+              </div>
+              
+              {/* Tâches */}
               {items
                 .filter(item => item.group === group.id)
                 .filter(item => {
                   const date = new Date(item.start_time);
                   return date.toDateString() === displayDate.toDateString();
                 })
-                .map((item, index) => {
+                .map((item) => {
                   const start = new Date(item.start_time);
                   const end = new Date(item.end_time);
                   const startMinutes = (start.getHours() * 60 + start.getMinutes()) - startHour * 60;
                   const duration = (end - start) / (1000 * 60);
+                  
                   return (
                     <div
                       key={item.id}
                       className={styles.taskBlock}
                       style={{
                         left: `${(startMinutes / 60) * 100}px`,
-                        width: `${(duration / 60) * 100}px`,
-                        backgroundColor: colors[index % colors.length],
+                        width: `${Math.max((duration / 60) * 100, 80)}px`,
+                        backgroundColor: getJobColor(item.title),
                       }}
+                      onClick={() => handleTaskClick(item)}
+                      title={`${item.title} - ${formatTime(item.start_time)} à ${formatTime(item.end_time)}`}
                     >
-                      {item.title}
+                      <div className={styles.taskContent}>
+                        <span className={styles.taskTitle}>{item.title}</span>
+                        <span className={styles.taskTime}>
+                          {formatTime(item.start_time)}-{formatTime(item.end_time)}
+                        </span>
+                      </div>
                     </div>
                   );
                 })}
@@ -73,6 +165,45 @@ function AgendaGrid({ agendaData }) {
           </div>
         ))}
       </div>
+
+      {/* Popup de détails de tâche */}
+      {selectedTask && (
+        <div className={styles.taskDetailsOverlay} onClick={() => setSelectedTask(null)}>
+          <div className={styles.taskDetails} onClick={(e) => e.stopPropagation()}>
+            <h3>📋 Détails de la tâche</h3>
+            <div className={styles.detailItem}>
+              <strong>Tâche :</strong> {selectedTask.title}
+            </div>
+            <div className={styles.detailItem}>
+              <strong>Machine :</strong> {groups.find(g => g.id === selectedTask.group)?.title}
+            </div>
+            <div className={styles.detailItem}>
+              <strong>Début :</strong> {formatTime(selectedTask.start_time)}
+            </div>
+            <div className={styles.detailItem}>
+              <strong>Fin :</strong> {formatTime(selectedTask.end_time)}
+            </div>
+            <div className={styles.detailItem}>
+              <strong>Durée :</strong> {selectedTask.duration} minutes
+            </div>
+            {selectedTask.timeBeforeDue !== null && (
+              <div className={styles.detailItem}>
+                <strong>Temps avant échéance :</strong> 
+                <span className={selectedTask.timeBeforeDue < 0 ? styles.overdue : styles.onTime}>
+                  {selectedTask.timeBeforeDue.toFixed(1)} heures
+                  {selectedTask.timeBeforeDue < 0 ? " (EN RETARD)" : ""}
+                </span>
+              </div>
+            )}
+            <button 
+              className={styles.closeButton}
+              onClick={() => setSelectedTask(null)}
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

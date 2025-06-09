@@ -135,18 +135,32 @@ function AgendaGrid({ agendaData, dueDates = {} }) {
                   );
                 }
                 
-                // Afficher les pauses uniquement si ce n'est pas un jour chômé
+                // Afficher toutes les pauses configurées si ce n'est pas un jour chômé
+                const pausesConfig = agendaData.pauses || [{ start: "12:00", end: "13:00", name: "Pause déjeuner" }];
                 return (
-                  <div 
-                    className={styles.lunchBreak}
-                    style={{
-                      left: `${(12 - startHour) * 100}px`,
-                      width: "100px"
-                    }}
-                    title="Pause déjeuner"
-                  >
-                    🍽️
-                  </div>
+                  <>
+                    {pausesConfig.map((pause, index) => {
+                      const [startHourPause, startMinPause] = pause.start.split(':').map(Number);
+                      const [endHourPause, endMinPause] = pause.end.split(':').map(Number);
+                      const pauseStartPos = (startHourPause + startMinPause/60 - startHour) * 100;
+                      const pauseDuration = (endHourPause + endMinPause/60) - (startHourPause + startMinPause/60);
+                      const pauseWidth = pauseDuration * 100;
+                      
+                      return (
+                        <div 
+                          key={index}
+                          className={styles.lunchBreak}
+                          style={{
+                            left: `${pauseStartPos}px`,
+                            width: `${pauseWidth}px`
+                          }}
+                          title={pause.name}
+                        >
+                          {pause.name.toLowerCase().includes('déjeuner') ? '🍽️' : '⏸️'}
+                        </div>
+                      );
+                    })}
+                  </>
                 );
               })()}
               

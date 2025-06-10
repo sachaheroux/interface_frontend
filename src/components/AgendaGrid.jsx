@@ -120,7 +120,8 @@ function AgendaGrid({ agendaData, dueDates = {} }) {
               {(() => {
                 const dayOfWeek = displayDate.getDay();
                 const dateStr = displayDate.toISOString().split('T')[0];
-                const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                const weekendDays = agendaData.agenda_config?.weekend_days || [0, 6]; // Par défaut dimanche et samedi
+                const isWeekend = weekendDays.includes(dayOfWeek);
                 const isHoliday = agendaData.agenda_config?.jours_feries?.includes(dateStr);
                 
                 if (isWeekend || isHoliday) {

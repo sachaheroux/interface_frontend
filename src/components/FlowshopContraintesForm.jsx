@@ -25,6 +25,11 @@ const FlowshopContraintesForm = () => {
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
+  // Fonction pour générer une valeur aléatoire entre 1 et 10
+  const generateRandomDuration = () => {
+    return Math.floor(Math.random() * 10) + 1;
+  };
+
   const adjustMachineCount = (newCount) => {
     if (newCount >= 1 && newCount <= 10) {
       setNumMachines(newCount);
@@ -37,7 +42,8 @@ const FlowshopContraintesForm = () => {
       setJobs(jobs.map(job => ({
         ...job,
         durations: job.durations.slice(0, newCount).concat(
-          Array(Math.max(0, newCount - job.durations.length)).fill(0)  )
+          Array(Math.max(0, newCount - job.durations.length)).fill(0).map(() => generateRandomDuration())
+        )
       })));
     }
   };
@@ -46,8 +52,8 @@ const FlowshopContraintesForm = () => {
     const newJobNumber = jobs.length + 1;
     setJobs([...jobs, {
       name: `Job ${newJobNumber}`,
-      durations: Array(numMachines).fill(0),
-      dueDate: 0
+      durations: Array(numMachines).fill(0).map(() => generateRandomDuration()),
+      dueDate: generateRandomDuration() * 5 // Due date entre 5 et 50
     }]);
   };
 

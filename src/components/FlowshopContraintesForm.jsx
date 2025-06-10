@@ -114,12 +114,12 @@ const FlowshopContraintesForm = () => {
     // Trier par temps de début de la première tâche
     firstTasks.sort((a, b) => a.start - b.start);
     
-    // Extraire la séquence des jobs basée sur leurs premières tâches
-    const sequence = firstTasks.map(task => task.job);
+    // Extraire la séquence des jobs basée sur leurs premières tâches (commencer à 1)
+    const sequence = firstTasks.map(task => task.job + 1);
     
     // Vérifier si on a tous les jobs (fallback au cas où certains n'ont pas de task_id=0)
     const uniqueJobs = [...new Set(allTasks.map(task => task.job))];
-    const missingJobs = uniqueJobs.filter(job => !sequence.includes(job));
+    const missingJobs = uniqueJobs.filter(job => !sequence.includes(job + 1));
     
     if (missingJobs.length > 0) {
       console.log("Jobs manquants dans la séquence:", missingJobs);
@@ -130,9 +130,9 @@ const FlowshopContraintesForm = () => {
       
       const addedJobs = new Set(sequence);
       additionalTasks.forEach(task => {
-        if (!addedJobs.has(task.job)) {
-          sequence.push(task.job);
-          addedJobs.add(task.job);
+        if (!addedJobs.has(task.job + 1)) {
+          sequence.push(task.job + 1);
+          addedJobs.add(task.job + 1);
         }
       });
     }
@@ -656,11 +656,15 @@ const FlowshopContraintesForm = () => {
           <div className={styles.planificationDetails}>
             <h4>Temps de complétion</h4>
             <div className={styles.tasksList}>
-              {result.completion_times && Object.entries(result.completion_times).map(([job, time]) => (
-                <div key={job} className={styles.taskBadge}>
-                  {job}: {time} {timeUnit}
-                </div>
-              ))}
+              {result.completion_times && Object.entries(result.completion_times).map(([job, time]) => {
+                // Remplacer "Job 0" par "Job 1", "Job 1" par "Job 2", etc.
+                const jobDisplay = job.replace(/Job (\d+)/, (match, num) => `Job ${parseInt(num) + 1}`);
+                return (
+                  <div key={job} className={styles.taskBadge}>
+                    {jobDisplay}: {time} {timeUnit}
+                  </div>
+                );
+              })}
             </div>
 
             <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
@@ -668,9 +672,11 @@ const FlowshopContraintesForm = () => {
               <div key={machine} className={styles.machineDetail}>
                 <strong>{machine}</strong>
                 <div className={styles.tasksList}>
-                  {tasks.map((t, i) => (
+                  {tasks
+                    .sort((a, b) => a.start - b.start) // Trier par temps de début
+                    .map((t, i) => (
                     <div key={i} className={styles.taskBadge}>
-                      {jobs[t.job]?.name || `Job ${t.job}`}: {t.start} → {t.start + t.duration}
+                      {jobs[t.job]?.name || `Job ${t.job + 1}`}: {t.start} → {t.start + t.duration}
                     </div>
                   ))}
                 </div>

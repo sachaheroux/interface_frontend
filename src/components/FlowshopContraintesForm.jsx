@@ -670,10 +670,20 @@ const FlowshopContraintesForm = () => {
             </div>
 
             <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
-            {result.raw_machines && Object.entries(result.raw_machines).map(([machineIndex, tasks]) => {
-              const machineName = machineNames[parseInt(machineIndex)] || `Machine ${machineIndex}`;
+            {/* Debug: afficher les données disponibles */}
+            {console.log("Result data:", result)}
+            {console.log("Raw machines:", result.raw_machines)}
+            {console.log("Planification:", result.planification)}
+            
+            {/* Utiliser raw_machines si disponible, sinon planification comme fallback */}
+            {(result.raw_machines || result.planification) && Object.entries(result.raw_machines || result.planification).map(([machineKey, tasks]) => {
+              // Si on utilise raw_machines, machineKey est un index, sinon c'est un nom
+              const machineName = result.raw_machines 
+                ? (machineNames[parseInt(machineKey)] || `Machine ${machineKey}`)
+                : machineKey;
+              
               return (
-                <div key={machineIndex} className={styles.machineDetail}>
+                <div key={machineKey} className={styles.machineDetail}>
                   <strong>{machineName}</strong>
                   <div className={styles.tasksList}>
                     {tasks

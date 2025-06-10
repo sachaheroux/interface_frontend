@@ -91,32 +91,51 @@ const FlowshopContraintesForm = () => {
   const extractSequenceFromSchedule = (planification) => {
     if (!planification || typeof planification !== 'object') return [];
 
+    // Collecter toutes les tâches avec leurs informations
     const allTasks = [];
     Object.entries(planification).forEach(([machineName, tasks]) => {
       if (Array.isArray(tasks)) {
         tasks.forEach(task => {
-          if (task && typeof task === 'object' && task.job) {
+          if (task && typeof task === 'object' && (task.job !== undefined && task.job !== null)) {
             allTasks.push({
               job: task.job,
               start: task.start || 0,
-              machine: machineName
+              machine: machineName,
+              task_id: task.task || 0
             });
           }
         });
       }
     });
 
-    allTasks.sort((a, b) => a.start - b.start);
+    // Trouver la première tâche (task_id = 0) de chaque job pour déterminer l'ordre
+    const firstTasks = allTasks.filter(task => task.task_id === 0);
     
-    const sequence = [];
-    const addedJobs = new Set();
+    // Trier par temps de début de la première tâche
+    firstTasks.sort((a, b) => a.start - b.start);
     
-    allTasks.forEach(task => {
-      if (!addedJobs.has(task.job)) {
-        sequence.push(task.job);
-        addedJobs.add(task.job);
-      }
-    });
+    // Extraire la séquence des jobs basée sur leurs premières tâches
+    const sequence = firstTasks.map(task => task.job);
+    
+    // Vérifier si on a tous les jobs (fallback au cas où certains n'ont pas de task_id=0)
+    const uniqueJobs = [...new Set(allTasks.map(task => task.job))];
+    const missingJobs = uniqueJobs.filter(job => !sequence.includes(job));
+    
+    if (missingJobs.length > 0) {
+      console.log("Jobs manquants dans la séquence:", missingJobs);
+      // Ajouter les jobs manquants triés par leur première apparition
+      const additionalTasks = allTasks
+        .filter(task => missingJobs.includes(task.job))
+        .sort((a, b) => a.start - b.start);
+      
+      const addedJobs = new Set(sequence);
+      additionalTasks.forEach(task => {
+        if (!addedJobs.has(task.job)) {
+          sequence.push(task.job);
+          addedJobs.add(task.job);
+        }
+      });
+    }
 
     return sequence;
   };

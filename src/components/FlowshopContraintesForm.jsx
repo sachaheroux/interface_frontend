@@ -88,19 +88,21 @@ const FlowshopContraintesForm = () => {
     setMachineNames(newNames);
   };
 
-  const extractSequenceFromSchedule = (planification) => {
-    if (!planification || typeof planification !== 'object') return [];
+  const extractSequenceFromSchedule = (planification, rawMachines = null) => {
+    // Utiliser raw_machines si disponible, sinon planification
+    const dataToUse = rawMachines || planification;
+    if (!dataToUse || typeof dataToUse !== 'object') return [];
 
     // Collecter toutes les tâches avec leurs informations
     const allTasks = [];
-    Object.entries(planification).forEach(([machineName, tasks]) => {
+    Object.entries(dataToUse).forEach(([machineKey, tasks]) => {
       if (Array.isArray(tasks)) {
         tasks.forEach(task => {
           if (task && typeof task === 'object' && (task.job !== undefined && task.job !== null)) {
             allTasks.push({
               job: task.job,
               start: task.start || 0,
-              machine: machineName,
+              machine: machineKey,
               task_id: task.task || 0
             });
           }
@@ -618,7 +620,7 @@ const FlowshopContraintesForm = () => {
           <div className={styles.sequenceSection}>
             <h3 className={styles.sequenceTitle}>Séquence optimale calculée</h3>
             <div className={styles.sequenceValue}>
-              {extractSequenceFromSchedule(result.planification).join(' → ') || 'Non disponible'}
+              {extractSequenceFromSchedule(result.planification, result.raw_machines).join(' → ') || 'Non disponible'}
             </div>
           </div>
 
@@ -668,20 +670,24 @@ const FlowshopContraintesForm = () => {
             </div>
 
             <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
-            {result.planification && Object.entries(result.planification).map(([machine, tasks]) => (
-              <div key={machine} className={styles.machineDetail}>
-                <strong>{machine}</strong>
-                <div className={styles.tasksList}>
-                  {tasks
-                    .sort((a, b) => a.start - b.start) // Trier par temps de début
-                    .map((t, i) => (
-                    <div key={i} className={styles.taskBadge}>
-                      {jobs[t.job]?.name || `Job ${t.job + 1}`}: {t.start} → {t.start + t.duration}
-                    </div>
-                  ))}
+            {result.raw_machines && Object.entries(result.raw_machines).map(([machineIndex, tasks]) => {
+              const machineName = machineNames[parseInt(machineIndex)] || `Machine ${machineIndex}`;
+              return (
+                <div key={machineIndex} className={styles.machineDetail}>
+                  <strong>{machineName}</strong>
+                  <div className={styles.tasksList}>
+                    {tasks
+                      .slice() // Créer une copie pour ne pas modifier l'original
+                      .sort((a, b) => a.start - b.start) // Trier par temps de début
+                      .map((t, i) => (
+                      <div key={i} className={styles.taskBadge}>
+                        {jobs[t.job]?.name || `Job ${t.job + 1}`}: {t.start} → {t.start + t.duration}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

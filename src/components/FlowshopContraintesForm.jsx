@@ -69,14 +69,16 @@ const FlowshopContraintesForm = () => {
       newJobs[index][field] = value;
     } else if (field === 'duration') {
       const [jobIndex, machineIndex] = value;
-      newJobs[jobIndex].durations[machineIndex] = parseFloat(value.duration) || 0;
+      const parsedValue = parseFloat(value.duration);
+      newJobs[jobIndex].durations[machineIndex] = isNaN(parsedValue) ? 0 : parsedValue;
     }
     setJobs(newJobs);
   };
 
   const updateJobDuration = (jobIndex, machineIndex, value) => {
     const newJobs = [...jobs];
-    newJobs[jobIndex].durations[machineIndex] = parseFloat(value) || 0;
+    const parsedValue = parseFloat(value);
+    newJobs[jobIndex].durations[machineIndex] = isNaN(parsedValue) ? 0 : parsedValue;
     setJobs(newJobs);
   };
 
@@ -126,9 +128,15 @@ const FlowshopContraintesForm = () => {
     try {
       // Format des données cohérent avec SPT/EDD
       const formattedJobs = jobs.map(job =>
-        job.durations.map((duration, machineIndex) => [machineIndex, parseFloat(duration) || 0])
+        job.durations.map((duration, machineIndex) => {
+          const parsedDuration = parseFloat(duration);
+          return [machineIndex, isNaN(parsedDuration) ? 0 : parsedDuration];
+        })
       );
-      const formattedDueDates = jobs.map(job => parseFloat(job.dueDate) || 0);
+      const formattedDueDates = jobs.map(job => {
+        const parsedDueDate = parseFloat(job.dueDate);
+        return isNaN(parsedDueDate) ? 0 : parsedDueDate;
+      });
 
       const requestData = {
         jobs_data: formattedJobs,
@@ -545,7 +553,10 @@ const FlowshopContraintesForm = () => {
                     <input
                       type="number"
                       value={job.dueDate}
-                      onChange={(e) => updateJob(jobIndex, 'dueDate', parseFloat(e.target.value) || 0)}
+                      onChange={(e) => {
+                        const parsedValue = parseFloat(e.target.value);
+                        updateJob(jobIndex, 'dueDate', isNaN(parsedValue) ? 0 : parsedValue);
+                      }}
                       className={styles.dueDateInput}
                       min="0"
                       step="0.1"

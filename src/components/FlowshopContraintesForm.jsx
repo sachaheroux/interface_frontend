@@ -670,26 +670,15 @@ const FlowshopContraintesForm = () => {
             </div>
 
             <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
-            {/* Debug: afficher les données disponibles */}
-            {console.log("Result data:", result)}
-            {console.log("Raw machines:", result.raw_machines)}
-            {console.log("Planification:", result.planification)}
-            
-            {/* Utiliser raw_machines si disponible, sinon planification comme fallback */}
-            {(result.raw_machines || result.planification) && Object.entries(result.raw_machines || result.planification).map(([machineKey, tasks]) => {
-              // Si on utilise raw_machines, machineKey est un index, sinon c'est un nom
-              const machineName = result.raw_machines 
-                ? (machineNames[parseInt(machineKey)] || `Machine ${machineKey}`)
-                : machineKey;
+            {result.raw_machines && Object.entries(result.raw_machines).map(([machineIndex, tasks]) => {
+              // Reproduire exactement le comportement du Gantt
+              const machineName = machineNames[parseInt(machineIndex)] || `Machine ${machineIndex}`;
               
               return (
-                <div key={machineKey} className={styles.machineDetail}>
+                <div key={machineIndex} className={styles.machineDetail}>
                   <strong>{machineName}</strong>
                   <div className={styles.tasksList}>
-                    {tasks
-                      .slice() // Créer une copie pour ne pas modifier l'original
-                      .sort((a, b) => a.start - b.start) // Trier par temps de début
-                      .map((t, i) => (
+                    {tasks.map((t, i) => (
                       <div key={i} className={styles.taskBadge}>
                         {jobs[t.job]?.name || `Job ${t.job + 1}`}: {t.start} → {t.start + t.duration}
                       </div>

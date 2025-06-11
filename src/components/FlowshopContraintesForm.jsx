@@ -578,6 +578,180 @@ const FlowshopContraintesForm = () => {
         </div>
       )}
 
+      {/* Paramètres avancés */}
+      <div className={`${styles.section} ${styles.advancedSection}`}>
+        <div className={styles.advancedHeader}>
+          <h2 className={styles.sectionTitle}>Paramètres avancés</h2>
+          <button
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className={styles.toggleButton}
+            type="button"
+          >
+            {showAdvanced ? '- Masquer' : '+ Afficher'}
+          </button>
+        </div>
+
+        {showAdvanced && (
+          <div className={styles.advancedContent}>
+            {/* Date et heure de début */}
+            <div className={styles.inputGroup}>
+              <label htmlFor="startDateTime">Date et heure de début de production</label>
+              <input
+                id="startDateTime"
+                type="datetime-local"
+                value={startDateTime}
+                onChange={(e) => setStartDateTime(e.target.value)}
+                className={styles.input}
+              />
+            </div>
+
+            {/* Horaires d'ouverture */}
+            <div className={styles.inputGroup}>
+              <label>Horaires d'ouverture</label>
+              <div className={styles.timeRange}>
+                <input
+                  type="time"
+                  value={openingHours.start}
+                  onChange={(e) => setOpeningHours({...openingHours, start: e.target.value})}
+                  className={styles.timeInput}
+                />
+                <span>à</span>
+                <input
+                  type="time"
+                  value={openingHours.end}
+                  onChange={(e) => setOpeningHours({...openingHours, end: e.target.value})}
+                  className={styles.timeInput}
+                />
+              </div>
+            </div>
+
+            {/* Jours de weekend */}
+            <div className={styles.inputGroup}>
+              <label>Jours de weekend (non travaillés)</label>
+              <div className={styles.checkboxGroup}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={weekendDays.samedi}
+                    onChange={(e) => setWeekendDays({...weekendDays, samedi: e.target.checked})}
+                  />
+                  Samedi
+                </label>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={weekendDays.dimanche}
+                    onChange={(e) => setWeekendDays({...weekendDays, dimanche: e.target.checked})}
+                  />
+                  Dimanche
+                </label>
+              </div>
+            </div>
+
+            {/* Jours fériés */}
+            <div className={styles.inputGroup}>
+              <label>Jours fériés</label>
+              <div className={styles.feriesContainer}>
+                {feries.map((ferie, index) => (
+                  <div key={index} className={styles.ferieRow}>
+                    <input
+                      type="date"
+                      value={ferie}
+                      onChange={(e) => updateFerie(index, e.target.value)}
+                      className={styles.input}
+                      placeholder="YYYY-MM-DD"
+                    />
+                    <button
+                      onClick={() => removeFerie(index)}
+                      disabled={feries.length <= 1}
+                      className={styles.removeButton}
+                      type="button"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={addFerie}
+                  className={styles.addButton}
+                  type="button"
+                >
+                  + Ajouter un jour férié
+                </button>
+              </div>
+            </div>
+
+            {/* Heures limites des jobs */}
+            <div className={styles.inputGroup}>
+              <label>Heures limites des jobs (optionnel)</label>
+              <div className={styles.dueDateTimesContainer}>
+                {jobs.map((job, index) => (
+                  <div key={index} className={styles.dueDateTimeRow}>
+                    <span className={styles.jobLabel}>{job.name}:</span>
+                    <input
+                      type="time"
+                      value={dueDateTimes[index] || ''}
+                      onChange={(e) => {
+                        const newTimes = [...dueDateTimes];
+                        newTimes[index] = e.target.value;
+                        setDueDateTimes(newTimes);
+                      }}
+                      className={styles.timeInput}
+                      placeholder="HH:MM"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Pauses */}
+            <div className={styles.inputGroup}>
+              <label>Pauses</label>
+              <div className={styles.pausesContainer}>
+                {pauses.map((pause, index) => (
+                  <div key={index} className={styles.pauseRow}>
+                    <input
+                      type="text"
+                      value={pause.name}
+                      onChange={(e) => updatePause(index, 'name', e.target.value)}
+                      className={styles.pauseNameInput}
+                      placeholder="Nom de la pause"
+                    />
+                    <input
+                      type="time"
+                      value={pause.start}
+                      onChange={(e) => updatePause(index, 'start', e.target.value)}
+                      className={styles.timeInput}
+                    />
+                    <span>à</span>
+                    <input
+                      type="time"
+                      value={pause.end}
+                      onChange={(e) => updatePause(index, 'end', e.target.value)}
+                      className={styles.timeInput}
+                    />
+                    <button
+                      onClick={() => removePause(index)}
+                      className={styles.removeButton}
+                      type="button"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={addPause}
+                  className={styles.addButton}
+                  type="button"
+                >
+                  + Ajouter une pause
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Bouton de calcul */}
       <button
         onClick={calculateOptimization}

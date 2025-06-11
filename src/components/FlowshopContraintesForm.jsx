@@ -189,16 +189,23 @@ const FlowshopContraintesForm = () => {
       // Format des données pour flowshop hybride ou classique
       const hasParallelMachines = machinesPerStage.some(count => count > 1);
       
-      const formattedJobs = jobs.map(job => {
+      const formattedJobs = jobs.map((job, jobIndex) => {
+        console.log(`DEBUG: Job ${jobIndex} raw data:`, job);
+        console.log(`DEBUG: Job ${jobIndex} durations:`, job.durations);
+        
         if (hasParallelMachines) {
           // Mode hybride : envoyer les durées par machine physique
           const jobData = [];
           job.durations.forEach((machineDurations, stageIndex) => {
+            console.log(`DEBUG: Stage ${stageIndex} durations:`, machineDurations);
             machineDurations.forEach((duration, subMachineIndex) => {
+              console.log(`DEBUG: Raw duration:`, duration, typeof duration);
               const parsedDuration = parseFloat(duration || 0);
+              console.log(`DEBUG: Parsed duration:`, parsedDuration);
               jobData.push(isNaN(parsedDuration) ? 0 : parsedDuration);
             });
           });
+          console.log(`DEBUG: Job ${jobIndex} final data:`, jobData);
           return jobData;
         } else {
           // Mode classique : format original
@@ -214,7 +221,7 @@ const FlowshopContraintesForm = () => {
       });
 
       // Vérifier si c'est un flowshop hybride (au moins une machine a plus de 1 exemplaire)
-      const isHybride = machinesPerStage.some(count => count > 1);
+      // (utilise la variable isHybride déjà définie plus haut)
 
       const requestData = {
         jobs_data: formattedJobs,

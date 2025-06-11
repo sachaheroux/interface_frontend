@@ -274,10 +274,11 @@
 
 .machineInput {
   flex: 1;
-  min-width: 120px;
+  min-width: 160px;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+  position: relative;
 }
 
 .machineInput label {
@@ -285,6 +286,33 @@
   color: var(--primary-color);
   font-size: var(--font-size-sm);
   text-align: center;
+}
+
+.machineInput .input {
+  margin-bottom: var(--spacing-xs);
+}
+
+.machineInput .select {
+  width: 60px;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-xs);
+  align-self: center;
+}
+
+.hybridInfo {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
 }
 
 /* ===== TABLEAU PRINCIPAL ===== */

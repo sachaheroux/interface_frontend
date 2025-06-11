@@ -8,10 +8,10 @@ const FlowshopContraintesForm = () => {
     { name: 'Job 2', durations: [4, 5], dueDate: 15 },
     { name: 'Job 3', durations: [7, 9], dueDate: 20 }
   ]);
-  const [numStages, setNumStages] = useState(2);
-  const [machinesPerStage, setMachinesPerStage] = useState([1, 1]); // Nombre de machines par étape
+  const [numMachines, setNumMachines] = useState(2);
+  const [machinesPerStage, setMachinesPerStage] = useState([1, 1]); // Nombre de machines par étape (pour hybride)
   const [timeUnit, setTimeUnit] = useState('heures');
-  const [stageNames, setStageNames] = useState(['Étape 1', 'Étape 2']);
+  const [machineNames, setMachineNames] = useState(['Machine 1', 'Machine 2']);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
@@ -31,17 +31,17 @@ const FlowshopContraintesForm = () => {
     return Math.floor(Math.random() * 10) + 1;
   };
 
-  const adjustStageCount = (newCount) => {
+  const adjustMachineCount = (newCount) => {
     if (newCount >= 1 && newCount <= 10) {
-      setNumStages(newCount);
+      setNumMachines(newCount);
       
-      // Ajuster les noms des étapes
+      // Ajuster les noms des machines
       const newNames = Array.from({ length: newCount }, (_, i) => 
-        stageNames[i] || `Étape ${i + 1}`
+        machineNames[i] || `Machine ${i + 1}`
       );
-      setStageNames(newNames);
+      setMachineNames(newNames);
       
-      // Ajuster le nombre de machines par étape
+      // Ajuster le nombre de machines par étape (pour hybride)
       const newMachinesPerStage = Array.from({ length: newCount }, (_, i) => 
         machinesPerStage[i] || 1
       );
@@ -57,10 +57,10 @@ const FlowshopContraintesForm = () => {
     }
   };
 
-  const updateMachinesPerStage = (stageIndex, machineCount) => {
+  const updateMachinesPerStage = (machineIndex, machineCount) => {
     if (machineCount >= 1 && machineCount <= 5) {
       const newMachinesPerStage = [...machinesPerStage];
-      newMachinesPerStage[stageIndex] = machineCount;
+      newMachinesPerStage[machineIndex] = machineCount;
       setMachinesPerStage(newMachinesPerStage);
     }
   };
@@ -69,7 +69,7 @@ const FlowshopContraintesForm = () => {
     const newJobNumber = jobs.length + 1;
     setJobs([...jobs, {
       name: `Job ${newJobNumber}`,
-      durations: Array(numStages).fill(0).map(() => generateRandomDuration()),
+      durations: Array(numMachines).fill(0).map(() => generateRandomDuration()),
       dueDate: generateRandomDuration() * 5 // Due date entre 5 et 50
     }]);
   };
@@ -92,17 +92,17 @@ const FlowshopContraintesForm = () => {
     setJobs(newJobs);
   };
 
-  const updateJobDuration = (jobIndex, stageIndex, value) => {
+  const updateJobDuration = (jobIndex, machineIndex, value) => {
     const newJobs = [...jobs];
     const parsedValue = parseFloat(value);
-    newJobs[jobIndex].durations[stageIndex] = isNaN(parsedValue) ? 0 : parsedValue;
+    newJobs[jobIndex].durations[machineIndex] = isNaN(parsedValue) ? 0 : parsedValue;
     setJobs(newJobs);
   };
 
-  const updateStageName = (index, name) => {
-    const newNames = [...stageNames];
+  const updateMachineName = (index, name) => {
+    const newNames = [...machineNames];
     newNames[index] = name;
-    setStageNames(newNames);
+    setMachineNames(newNames);
   };
 
   const extractSequenceFromSchedule = (planification, rawMachines = null) => {
@@ -164,11 +164,11 @@ const FlowshopContraintesForm = () => {
     setError('');
     
     try {
-      // Format des données pour flowshop hybride
+      // Format des données pour flowshop hybride ou classique
       const formattedJobs = jobs.map(job =>
-        job.durations.map((duration, stageIndex) => {
+        job.durations.map((duration, machineIndex) => {
           const parsedDuration = parseFloat(duration);
-          return [stageIndex, isNaN(parsedDuration) ? 0 : parsedDuration];
+          return [machineIndex, isNaN(parsedDuration) ? 0 : parsedDuration];
         })
       );
       const formattedDueDates = jobs.map(job => {
@@ -176,13 +176,19 @@ const FlowshopContraintesForm = () => {
         return isNaN(parsedDueDate) ? 0 : parsedDueDate;
       });
 
+      // Vérifier si c'est un flowshop hybride (au moins une machine a plus de 1 exemplaire)
+      const isHybride = machinesPerStage.some(count => count > 1);
+
       const requestData = {
         jobs_data: formattedJobs,
         due_dates: formattedDueDates,
         unite: timeUnit,
         job_names: jobs.map(job => job.name),
-        stage_names: stageNames,
-        machines_per_stage: machinesPerStage
+        machine_names: machineNames,
+        ...(isHybride && {
+          stage_names: machineNames,
+          machines_per_stage: machinesPerStage
+        })
       };
 
       // Ajouter les paramètres d'agenda si activés
@@ -351,21 +357,21 @@ const FlowshopContraintesForm = () => {
             </button>
             
             <button
-              onClick={() => adjustStageCount(numStages + 1)}
-              disabled={numStages >= 10}
+              onClick={() => adjustMachineCount(numMachines + 1)}
+              disabled={numMachines >= 10}
               className={styles.addButton}
               type="button"
             >
-              + Ajouter une étape
+              + Ajouter une machine
             </button>
             
             <button
-              onClick={() => adjustStageCount(numStages - 1)}
-              disabled={numStages <= 1}
+              onClick={() => adjustMachineCount(numMachines - 1)}
+              disabled={numMachines <= 1}
               className={styles.removeButton}
               type="button"
             >
-              - Supprimer une étape
+              - Supprimer une machine
             </button>
           </div>
         </div>
@@ -525,49 +531,40 @@ const FlowshopContraintesForm = () => {
         )}
       </div>
 
-      {/* Configuration des étapes et machines */}
+      {/* Configuration des machines */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Configuration des étapes (Flowshop Hybride)</h2>
-        <div className={styles.stagesTable}>
-          {stageNames.map((name, stageIndex) => (
-            <div key={stageIndex} className={styles.stageRow}>
-              <div className={styles.stageInfo}>
-                <div className={styles.inputGroup}>
-                  <label htmlFor={`stage-${stageIndex}`}>Nom de l'étape {stageIndex + 1}</label>
-                  <input
-                    id={`stage-${stageIndex}`}
-                    type="text"
-                    value={name}
-                    onChange={(e) => updateStageName(stageIndex, e.target.value)}
-                    className={styles.input}
-                    placeholder={`Étape ${stageIndex + 1}`}
-                  />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label htmlFor={`machines-${stageIndex}`}>Nombre de machines en parallèle</label>
-                  <select
-                    id={`machines-${stageIndex}`}
-                    value={machinesPerStage[stageIndex]}
-                    onChange={(e) => updateMachinesPerStage(stageIndex, parseInt(e.target.value))}
-                    className={styles.select}
-                  >
-                    <option value={1}>1 machine</option>
-                    <option value={2}>2 machines</option>
-                    <option value={3}>3 machines</option>
-                    <option value={4}>4 machines</option>
-                    <option value={5}>5 machines</option>
-                  </select>
-                </div>
-              </div>
-              <div className={styles.machineIndicator}>
-                {machinesPerStage[stageIndex] > 1 && (
-                  <span className={styles.parallelInfo}>
-                    🔀 {machinesPerStage[stageIndex]} machines en parallèle
-                  </span>
+        <h2 className={styles.sectionTitle}>Configuration des machines</h2>
+        <div className={styles.machinesTable}>
+          <div className={styles.tableRow}>
+            {machineNames.map((name, index) => (
+              <div key={index} className={styles.machineInput}>
+                <label htmlFor={`machine-${index}`}>M{index + 1}</label>
+                <input
+                  id={`machine-${index}`}
+                  type="text"
+                  value={name}
+                  onChange={(e) => updateMachineName(index, e.target.value)}
+                  className={styles.input}
+                  placeholder={`Machine ${index + 1}`}
+                />
+                <select
+                  value={machinesPerStage[index]}
+                  onChange={(e) => updateMachinesPerStage(index, parseInt(e.target.value))}
+                  className={styles.select}
+                  title="Nombre de machines identiques"
+                >
+                  <option value={1}>×1</option>
+                  <option value={2}>×2</option>
+                  <option value={3}>×3</option>
+                  <option value={4}>×4</option>
+                  <option value={5}>×5</option>
+                </select>
+                {machinesPerStage[index] > 1 && (
+                  <span className={styles.hybridInfo}>Hybride</span>
                 )}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
@@ -577,17 +574,17 @@ const FlowshopContraintesForm = () => {
         <div className={styles.dataTable}>
           <table className={styles.table}>
             <thead>
-              <tr>
+                            <tr>
                 <th className={styles.jobNameHeader}>Job</th>
-                {stageNames.map((name, index) => (
-                                      <th key={index} className={styles.machineHeader}>
-                      <div>
-                        Durée à {name} ({timeUnit})
-                        {machinesPerStage[index] > 1 && (
-                          <><br /><small>({machinesPerStage[index]} machines)</small></>
-                        )}
-                      </div>
-                    </th>
+                {machineNames.map((name, index) => (
+                  <th key={index} className={styles.machineHeader}>
+                    <div>
+                      Durée sur {name} ({timeUnit})
+                      {machinesPerStage[index] > 1 && (
+                        <><br /><small>({machinesPerStage[index]} machines en parallèle)</small></>
+                      )}
+                    </div>
+                  </th>
                 ))}
                 <th className={styles.dueDateHeader}>Date due ({timeUnit})</th>
               </tr>
@@ -604,12 +601,12 @@ const FlowshopContraintesForm = () => {
                       placeholder={`Job ${jobIndex + 1}`}
                     />
                   </td>
-                  {job.durations.map((duration, stageIndex) => (
-                    <td key={stageIndex}>
+                  {job.durations.map((duration, machineIndex) => (
+                    <td key={machineIndex}>
                       <input
                         type="number"
                         value={duration}
-                        onChange={(e) => updateJobDuration(jobIndex, stageIndex, e.target.value)}
+                        onChange={(e) => updateJobDuration(jobIndex, machineIndex, e.target.value)}
                         className={styles.durationInput}
                         min="0"
                         step="0.1"
@@ -718,8 +715,8 @@ const FlowshopContraintesForm = () => {
 
             <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
             {result.raw_machines && Object.entries(result.raw_machines).map(([machineIndex, tasks]) => {
-              // Pour flowshop hybride, afficher l'étape et la machine
-              const machineName = stageNames[parseInt(machineIndex)] || `Étape ${parseInt(machineIndex) + 1}`;
+              // Afficher le nom de la machine
+              const machineName = machineNames[parseInt(machineIndex)] || `Machine ${parseInt(machineIndex) + 1}`;
               
               return (
                 <div key={machineIndex} className={styles.machineDetail}>

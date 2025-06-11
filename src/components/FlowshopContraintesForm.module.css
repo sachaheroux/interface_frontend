@@ -274,7 +274,7 @@
 
 .machineInput {
   flex: 1;
-  min-width: 160px;
+  min-width: 140px;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
@@ -300,6 +300,17 @@
   font-size: var(--font-size-sm);
   margin-bottom: var(--spacing-xs);
   align-self: center;
+}
+
+.qtySelectConfig {
+  width: 80px;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+  align-self: center;
+  cursor: pointer;
 }
 
 .hybridInfo {

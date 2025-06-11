@@ -556,13 +556,43 @@ const FlowshopContraintesForm = () => {
 
 
 
-            {/* Tableau des données */}
+            {/* Configuration des machines */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Configuration des machines</h2>
+        <div className={styles.machinesTable}>
+          <div className={styles.tableRow}>
+            {machineNames.map((name, index) => (
+              <div key={index} className={styles.machineInput}>
+                <label htmlFor={`machine-${index}`}>M{index + 1}</label>
+                <input
+                  id={`machine-${index}`}
+                  type="text"
+                  value={name}
+                  onChange={(e) => updateMachineName(index, e.target.value)}
+                  className={styles.input}
+                  placeholder={`Machine ${index + 1}`}
+                />
+                <select
+                  value={machinesPerStage[index]}
+                  onChange={(e) => updateMachinesPerStage(index, parseInt(e.target.value))}
+                  className={styles.qtySelectConfig}
+                  title="Nombre de machines identiques"
+                >
+                  <option value={1}>Qté: 1</option>
+                  <option value={2}>Qté: 2</option>
+                  <option value={3}>Qté: 3</option>
+                  <option value={4}>Qté: 4</option>
+                  <option value={5}>Qté: 5</option>
+                </select>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tableau des données */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Matrice des temps de traitement</h2>
-        <p className={styles.tableExplanation}>
-          💡 <strong>Machines en parallèle :</strong> Utilisez la case "Qté" pour définir le nombre de machines identiques à chaque étape. 
-          Pour chaque machine, entrez la durée spécifique de traitement.
-        </p>
         <div className={styles.dataTable}>
           <table className={styles.table}>
             <thead>
@@ -570,32 +600,10 @@ const FlowshopContraintesForm = () => {
                 <th className={styles.jobNameHeader}>Job</th>
                 {machineNames.map((name, index) => (
                   <th key={index} className={styles.machineHeader}>
-                    <div className={styles.machineHeaderContent}>
-                      <div className={styles.machineNameRow}>
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => updateMachineName(index, e.target.value)}
-                          className={styles.machineNameInput}
-                          placeholder={`Machine ${index + 1}`}
-                        />
-                      </div>
-                      <div className={styles.machineQuantityRow}>
-                        <label className={styles.qtyLabel}>Qté:</label>
-                        <select
-                          value={machinesPerStage[index]}
-                          onChange={(e) => updateMachinesPerStage(index, parseInt(e.target.value))}
-                          className={styles.qtySelect}
-                        >
-                          <option value={1}>1</option>
-                          <option value={2}>2</option>
-                          <option value={3}>3</option>
-                          <option value={4}>4</option>
-                          <option value={5}>5</option>
-                        </select>
-                      </div>
-                      <div className={styles.unitLabel}>Durées ({timeUnit})</div>
-                    </div>
+                    Durée sur {name} ({timeUnit})
+                    {machinesPerStage[index] > 1 && (
+                      <><br /><small>({machinesPerStage[index]} machines)</small></>
+                    )}
                   </th>
                 ))}
                 <th className={styles.dueDateHeader}>Date due ({timeUnit})</th>
@@ -616,20 +624,31 @@ const FlowshopContraintesForm = () => {
                   {job.durations.map((machineDurations, machineIndex) => (
                     <td key={machineIndex} className={styles.durationCell}>
                       <div className={styles.durationGroup}>
-                        {machineDurations.map((duration, subMachineIndex) => (
-                          <div key={subMachineIndex} className={styles.subMachineInput}>
-                            <label className={styles.subMachineLabel}>M{subMachineIndex + 1}:</label>
-                            <input
-                              type="number"
-                              value={duration}
-                              onChange={(e) => updateJobDuration(jobIndex, machineIndex, subMachineIndex, e.target.value)}
-                              className={styles.durationInput}
-                              min="0"
-                              step="0.1"
-                              placeholder="0"
-                            />
-                          </div>
-                        ))}
+                        {machineDurations.map((duration, subMachineIndex) => {
+                          // Générer le nom de la sous-machine : M1, M1', M1'', etc.
+                          const getSubMachineName = (machineIndex, subIndex) => {
+                            const baseName = `M${machineIndex + 1}`;
+                            if (subIndex === 0) return baseName;
+                            return baseName + "'".repeat(subIndex);
+                          };
+                          
+                          return (
+                            <div key={subMachineIndex} className={styles.subMachineInput}>
+                              <label className={styles.subMachineLabel}>
+                                {getSubMachineName(machineIndex, subMachineIndex)}:
+                              </label>
+                              <input
+                                type="number"
+                                value={duration}
+                                onChange={(e) => updateJobDuration(jobIndex, machineIndex, subMachineIndex, e.target.value)}
+                                className={styles.durationInput}
+                                min="0"
+                                step="0.1"
+                                placeholder="0"
+                              />
+                            </div>
+                          );
+                        })}
                       </div>
                     </td>
                   ))}

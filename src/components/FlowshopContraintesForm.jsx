@@ -1,3 +1,4 @@
+// Fix: Correction du bug isHybride vers hasParallelMachines + Ajout section paramètres avancés
 import React, { useState } from 'react';
 import styles from './FlowshopContraintesForm.module.css';
 import AgendaGrid from './AgendaGrid';

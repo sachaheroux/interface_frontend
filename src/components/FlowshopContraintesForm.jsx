@@ -187,13 +187,27 @@ const FlowshopContraintesForm = () => {
     
     try {
       // Format des données pour flowshop hybride ou classique
-      const formattedJobs = jobs.map(job =>
-        job.durations.map((machineDurations, machineIndex) => {
-          // Pour flowshop hybride, prendre la durée moyenne ou la première durée
-          const avgDuration = machineDurations.reduce((sum, d) => sum + parseFloat(d || 0), 0) / machineDurations.length;
-          return [machineIndex, isNaN(avgDuration) ? 0 : avgDuration];
-        })
-      );
+      const hasParallelMachines = machinesPerStage.some(count => count > 1);
+      
+      const formattedJobs = jobs.map(job => {
+        if (hasParallelMachines) {
+          // Mode hybride : envoyer les durées par machine physique
+          const jobData = [];
+          job.durations.forEach((machineDurations, stageIndex) => {
+            machineDurations.forEach((duration, subMachineIndex) => {
+              const parsedDuration = parseFloat(duration || 0);
+              jobData.push(isNaN(parsedDuration) ? 0 : parsedDuration);
+            });
+          });
+          return jobData;
+        } else {
+          // Mode classique : format original
+          return job.durations.map((machineDurations, machineIndex) => {
+            const avgDuration = machineDurations.reduce((sum, d) => sum + parseFloat(d || 0), 0) / machineDurations.length;
+            return [machineIndex, isNaN(avgDuration) ? 0 : avgDuration];
+          });
+        }
+      });
       const formattedDueDates = jobs.map(job => {
         const parsedDueDate = parseFloat(job.dueDate);
         return isNaN(parsedDueDate) ? 0 : parsedDueDate;
@@ -625,11 +639,11 @@ const FlowshopContraintesForm = () => {
                     <td key={machineIndex} className={styles.durationCell}>
                       <div className={styles.durationGroup}>
                         {machineDurations.map((duration, subMachineIndex) => {
-                          // Générer le nom de la sous-machine : M1, M1', M1'', etc.
+                          // Générer le nom de la sous-machine : M1, M1a, M1b, etc.
                           const getSubMachineName = (machineIndex, subIndex) => {
                             const baseName = `M${machineIndex + 1}`;
                             if (subIndex === 0) return baseName;
-                            return baseName + "'".repeat(subIndex);
+                            return baseName + String.fromCharCode(97 + subIndex - 1); // a, b, c, d...
                           };
                           
                           return (

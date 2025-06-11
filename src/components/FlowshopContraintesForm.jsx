@@ -4,9 +4,9 @@ import AgendaGrid from './AgendaGrid';
 
 const FlowshopContraintesForm = () => {
   const [jobs, setJobs] = useState([
-    { name: 'Job 1', durations: [8, 6], dueDate: 10 },
-    { name: 'Job 2', durations: [4, 5], dueDate: 15 },
-    { name: 'Job 3', durations: [7, 9], dueDate: 20 }
+    { name: 'Job 1', durations: [[8], [6]], dueDate: 10 },
+    { name: 'Job 2', durations: [[4], [5]], dueDate: 15 },
+    { name: 'Job 3', durations: [[7], [9]], dueDate: 20 }
   ]);
   const [numMachines, setNumMachines] = useState(2);
   const [machinesPerStage, setMachinesPerStage] = useState([1, 1]); // Nombre de machines par étape (pour hybride)
@@ -47,11 +47,11 @@ const FlowshopContraintesForm = () => {
       );
       setMachinesPerStage(newMachinesPerStage);
       
-      // Ajuster les durées des jobs
+      // Ajuster les durées des jobs (tableau 2D)
       setJobs(jobs.map(job => ({
         ...job,
         durations: job.durations.slice(0, newCount).concat(
-          Array(Math.max(0, newCount - job.durations.length)).fill(0).map(() => generateRandomDuration())
+          Array(Math.max(0, newCount - job.durations.length)).fill(null).map(() => [generateRandomDuration()])
         )
       })));
     }
@@ -62,6 +62,26 @@ const FlowshopContraintesForm = () => {
       const newMachinesPerStage = [...machinesPerStage];
       newMachinesPerStage[machineIndex] = machineCount;
       setMachinesPerStage(newMachinesPerStage);
+      
+      // Ajuster les durées pour tous les jobs selon le nouveau nombre de machines
+      setJobs(jobs.map(job => {
+        const newDurations = [...job.durations];
+        if (newDurations[machineIndex]) {
+          // Ajuster la taille du tableau de durées pour cette machine
+          const currentDurations = newDurations[machineIndex];
+          if (currentDurations.length < machineCount) {
+            // Ajouter des durées manquantes
+            newDurations[machineIndex] = [
+              ...currentDurations,
+              ...Array(machineCount - currentDurations.length).fill(0).map(() => generateRandomDuration())
+            ];
+          } else if (currentDurations.length > machineCount) {
+            // Supprimer les durées en trop
+            newDurations[machineIndex] = currentDurations.slice(0, machineCount);
+          }
+        }
+        return { ...job, durations: newDurations };
+      }));
     }
   };
 
@@ -69,7 +89,9 @@ const FlowshopContraintesForm = () => {
     const newJobNumber = jobs.length + 1;
     setJobs([...jobs, {
       name: `Job ${newJobNumber}`,
-      durations: Array(numMachines).fill(0).map(() => generateRandomDuration()),
+      durations: Array(numMachines).fill(null).map((_, i) => 
+        Array(machinesPerStage[i]).fill(0).map(() => generateRandomDuration())
+      ),
       dueDate: generateRandomDuration() * 5 // Due date entre 5 et 50
     }]);
   };
@@ -92,10 +114,10 @@ const FlowshopContraintesForm = () => {
     setJobs(newJobs);
   };
 
-  const updateJobDuration = (jobIndex, machineIndex, value) => {
+  const updateJobDuration = (jobIndex, machineIndex, subMachineIndex, value) => {
     const newJobs = [...jobs];
     const parsedValue = parseFloat(value);
-    newJobs[jobIndex].durations[machineIndex] = isNaN(parsedValue) ? 0 : parsedValue;
+    newJobs[jobIndex].durations[machineIndex][subMachineIndex] = isNaN(parsedValue) ? 0 : parsedValue;
     setJobs(newJobs);
   };
 
@@ -166,9 +188,10 @@ const FlowshopContraintesForm = () => {
     try {
       // Format des données pour flowshop hybride ou classique
       const formattedJobs = jobs.map(job =>
-        job.durations.map((duration, machineIndex) => {
-          const parsedDuration = parseFloat(duration);
-          return [machineIndex, isNaN(parsedDuration) ? 0 : parsedDuration];
+        job.durations.map((machineDurations, machineIndex) => {
+          // Pour flowshop hybride, prendre la durée moyenne ou la première durée
+          const avgDuration = machineDurations.reduce((sum, d) => sum + parseFloat(d || 0), 0) / machineDurations.length;
+          return [machineIndex, isNaN(avgDuration) ? 0 : avgDuration];
         })
       );
       const formattedDueDates = jobs.map(job => {
@@ -531,58 +554,47 @@ const FlowshopContraintesForm = () => {
         )}
       </div>
 
-      {/* Configuration des machines */}
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Configuration des machines</h2>
-        <div className={styles.machinesTable}>
-          <div className={styles.tableRow}>
-            {machineNames.map((name, index) => (
-              <div key={index} className={styles.machineInput}>
-                <label htmlFor={`machine-${index}`}>M{index + 1}</label>
-                <input
-                  id={`machine-${index}`}
-                  type="text"
-                  value={name}
-                  onChange={(e) => updateMachineName(index, e.target.value)}
-                  className={styles.input}
-                  placeholder={`Machine ${index + 1}`}
-                />
-                <select
-                  value={machinesPerStage[index]}
-                  onChange={(e) => updateMachinesPerStage(index, parseInt(e.target.value))}
-                  className={styles.select}
-                  title="Nombre de machines identiques"
-                >
-                  <option value={1}>×1</option>
-                  <option value={2}>×2</option>
-                  <option value={3}>×3</option>
-                  <option value={4}>×4</option>
-                  <option value={5}>×5</option>
-                </select>
-                {machinesPerStage[index] > 1 && (
-                  <span className={styles.hybridInfo}>Hybride</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      {/* Tableau des données */}
+
+            {/* Tableau des données */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Matrice des temps de traitement</h2>
+        <p className={styles.tableExplanation}>
+          💡 <strong>Machines en parallèle :</strong> Utilisez la case "Qté" pour définir le nombre de machines identiques à chaque étape. 
+          Pour chaque machine, entrez la durée spécifique de traitement.
+        </p>
         <div className={styles.dataTable}>
           <table className={styles.table}>
             <thead>
-                            <tr>
+              <tr>
                 <th className={styles.jobNameHeader}>Job</th>
                 {machineNames.map((name, index) => (
                   <th key={index} className={styles.machineHeader}>
-                    <div>
-                      Durée sur {name} ({timeUnit})
-                      {machinesPerStage[index] > 1 && (
-                        <><br /><small>({machinesPerStage[index]} machines en parallèle)</small></>
-                      )}
+                    <div className={styles.machineHeaderContent}>
+                      <div className={styles.machineNameRow}>
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => updateMachineName(index, e.target.value)}
+                          className={styles.machineNameInput}
+                          placeholder={`Machine ${index + 1}`}
+                        />
+                      </div>
+                      <div className={styles.machineQuantityRow}>
+                        <label className={styles.qtyLabel}>Qté:</label>
+                        <select
+                          value={machinesPerStage[index]}
+                          onChange={(e) => updateMachinesPerStage(index, parseInt(e.target.value))}
+                          className={styles.qtySelect}
+                        >
+                          <option value={1}>1</option>
+                          <option value={2}>2</option>
+                          <option value={3}>3</option>
+                          <option value={4}>4</option>
+                          <option value={5}>5</option>
+                        </select>
+                      </div>
+                      <div className={styles.unitLabel}>Durées ({timeUnit})</div>
                     </div>
                   </th>
                 ))}
@@ -601,17 +613,24 @@ const FlowshopContraintesForm = () => {
                       placeholder={`Job ${jobIndex + 1}`}
                     />
                   </td>
-                  {job.durations.map((duration, machineIndex) => (
-                    <td key={machineIndex}>
-                      <input
-                        type="number"
-                        value={duration}
-                        onChange={(e) => updateJobDuration(jobIndex, machineIndex, e.target.value)}
-                        className={styles.durationInput}
-                        min="0"
-                        step="0.1"
-                        placeholder="0"
-                      />
+                  {job.durations.map((machineDurations, machineIndex) => (
+                    <td key={machineIndex} className={styles.durationCell}>
+                      <div className={styles.durationGroup}>
+                        {machineDurations.map((duration, subMachineIndex) => (
+                          <div key={subMachineIndex} className={styles.subMachineInput}>
+                            <label className={styles.subMachineLabel}>M{subMachineIndex + 1}:</label>
+                            <input
+                              type="number"
+                              value={duration}
+                              onChange={(e) => updateJobDuration(jobIndex, machineIndex, subMachineIndex, e.target.value)}
+                              className={styles.durationInput}
+                              min="0"
+                              step="0.1"
+                              placeholder="0"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </td>
                   ))}
                   <td className={styles.dueDateCell}>

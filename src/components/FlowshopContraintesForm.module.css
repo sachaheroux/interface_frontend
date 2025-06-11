@@ -315,6 +315,101 @@
   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
 }
 
+/* ===== NOUVELLE INTERFACE TABLEAU ===== */
+.tableExplanation {
+  background: #f0f9ff;
+  border: 1px solid #0ea5e9;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  color: #0c4a6e;
+  font-size: var(--font-size-sm);
+}
+
+.machineHeaderContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 150px;
+}
+
+.machineNameRow {
+  display: flex;
+  justify-content: center;
+}
+
+.machineNameInput {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-primary);
+  min-width: 120px;
+}
+
+.machineQuantityRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.qtyLabel {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.qtySelect {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--border-radius);
+  padding: 2px 4px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.unitLabel {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+.durationCell {
+  padding: var(--spacing-sm) !important;
+}
+
+.durationGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 100px;
+}
+
+.subMachineInput {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.subMachineLabel {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--primary-color);
+  min-width: 24px;
+  text-align: right;
+}
+
+.durationInput {
+  flex: 1;
+  min-width: 60px !important;
+}
+
 /* ===== TABLEAU PRINCIPAL ===== */
 .dataTable {
   overflow-x: auto;

@@ -8,9 +8,10 @@ const FlowshopContraintesForm = () => {
     { name: 'Job 2', durations: [4, 5], dueDate: 15 },
     { name: 'Job 3', durations: [7, 9], dueDate: 20 }
   ]);
-  const [numMachines, setNumMachines] = useState(2);
+  const [numStages, setNumStages] = useState(2);
+  const [machinesPerStage, setMachinesPerStage] = useState([1, 1]); // Nombre de machines par étape
   const [timeUnit, setTimeUnit] = useState('heures');
-  const [machineNames, setMachineNames] = useState(['Machine 0', 'Machine 1']);
+  const [stageNames, setStageNames] = useState(['Étape 1', 'Étape 2']);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
@@ -30,15 +31,23 @@ const FlowshopContraintesForm = () => {
     return Math.floor(Math.random() * 10) + 1;
   };
 
-  const adjustMachineCount = (newCount) => {
+  const adjustStageCount = (newCount) => {
     if (newCount >= 1 && newCount <= 10) {
-      setNumMachines(newCount);
+      setNumStages(newCount);
       
+      // Ajuster les noms des étapes
       const newNames = Array.from({ length: newCount }, (_, i) => 
-        machineNames[i] || `Machine ${i}`
+        stageNames[i] || `Étape ${i + 1}`
       );
-      setMachineNames(newNames);
+      setStageNames(newNames);
       
+      // Ajuster le nombre de machines par étape
+      const newMachinesPerStage = Array.from({ length: newCount }, (_, i) => 
+        machinesPerStage[i] || 1
+      );
+      setMachinesPerStage(newMachinesPerStage);
+      
+      // Ajuster les durées des jobs
       setJobs(jobs.map(job => ({
         ...job,
         durations: job.durations.slice(0, newCount).concat(
@@ -48,11 +57,19 @@ const FlowshopContraintesForm = () => {
     }
   };
 
+  const updateMachinesPerStage = (stageIndex, machineCount) => {
+    if (machineCount >= 1 && machineCount <= 5) {
+      const newMachinesPerStage = [...machinesPerStage];
+      newMachinesPerStage[stageIndex] = machineCount;
+      setMachinesPerStage(newMachinesPerStage);
+    }
+  };
+
   const addJob = () => {
     const newJobNumber = jobs.length + 1;
     setJobs([...jobs, {
       name: `Job ${newJobNumber}`,
-      durations: Array(numMachines).fill(0).map(() => generateRandomDuration()),
+      durations: Array(numStages).fill(0).map(() => generateRandomDuration()),
       dueDate: generateRandomDuration() * 5 // Due date entre 5 et 50
     }]);
   };
@@ -75,17 +92,17 @@ const FlowshopContraintesForm = () => {
     setJobs(newJobs);
   };
 
-  const updateJobDuration = (jobIndex, machineIndex, value) => {
+  const updateJobDuration = (jobIndex, stageIndex, value) => {
     const newJobs = [...jobs];
     const parsedValue = parseFloat(value);
-    newJobs[jobIndex].durations[machineIndex] = isNaN(parsedValue) ? 0 : parsedValue;
+    newJobs[jobIndex].durations[stageIndex] = isNaN(parsedValue) ? 0 : parsedValue;
     setJobs(newJobs);
   };
 
-  const updateMachineName = (index, name) => {
-    const newNames = [...machineNames];
+  const updateStageName = (index, name) => {
+    const newNames = [...stageNames];
     newNames[index] = name;
-    setMachineNames(newNames);
+    setStageNames(newNames);
   };
 
   const extractSequenceFromSchedule = (planification, rawMachines = null) => {
@@ -147,11 +164,11 @@ const FlowshopContraintesForm = () => {
     setError('');
     
     try {
-      // Format des données cohérent avec SPT/EDD
+      // Format des données pour flowshop hybride
       const formattedJobs = jobs.map(job =>
-        job.durations.map((duration, machineIndex) => {
+        job.durations.map((duration, stageIndex) => {
           const parsedDuration = parseFloat(duration);
-          return [machineIndex, isNaN(parsedDuration) ? 0 : parsedDuration];
+          return [stageIndex, isNaN(parsedDuration) ? 0 : parsedDuration];
         })
       );
       const formattedDueDates = jobs.map(job => {
@@ -164,7 +181,8 @@ const FlowshopContraintesForm = () => {
         due_dates: formattedDueDates,
         unite: timeUnit,
         job_names: jobs.map(job => job.name),
-        machine_names: machineNames
+        stage_names: stageNames,
+        machines_per_stage: machinesPerStage
       };
 
       // Ajouter les paramètres d'agenda si activés
@@ -333,21 +351,21 @@ const FlowshopContraintesForm = () => {
             </button>
             
             <button
-              onClick={() => adjustMachineCount(numMachines + 1)}
-              disabled={numMachines >= 10}
+              onClick={() => adjustStageCount(numStages + 1)}
+              disabled={numStages >= 10}
               className={styles.addButton}
               type="button"
             >
-              + Ajouter une machine
+              + Ajouter une étape
             </button>
             
             <button
-              onClick={() => adjustMachineCount(numMachines - 1)}
-              disabled={numMachines <= 1}
+              onClick={() => adjustStageCount(numStages - 1)}
+              disabled={numStages <= 1}
               className={styles.removeButton}
               type="button"
             >
-              - Supprimer une machine
+              - Supprimer une étape
             </button>
           </div>
         </div>
@@ -507,25 +525,49 @@ const FlowshopContraintesForm = () => {
         )}
       </div>
 
-      {/* Configuration des machines */}
+      {/* Configuration des étapes et machines */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Noms des machines</h2>
-        <div className={styles.machinesTable}>
-          <div className={styles.tableRow}>
-            {machineNames.map((name, index) => (
-              <div key={index} className={styles.machineInput}>
-                <label htmlFor={`machine-${index}`}>Machine {index}</label>
-                <input
-                  id={`machine-${index}`}
-                  type="text"
-                  value={name}
-                  onChange={(e) => updateMachineName(index, e.target.value)}
-                  className={styles.input}
-                  placeholder={`Machine ${index}`}
-                />
+        <h2 className={styles.sectionTitle}>Configuration des étapes (Flowshop Hybride)</h2>
+        <div className={styles.stagesTable}>
+          {stageNames.map((name, stageIndex) => (
+            <div key={stageIndex} className={styles.stageRow}>
+              <div className={styles.stageInfo}>
+                <div className={styles.inputGroup}>
+                  <label htmlFor={`stage-${stageIndex}`}>Nom de l'étape {stageIndex + 1}</label>
+                  <input
+                    id={`stage-${stageIndex}`}
+                    type="text"
+                    value={name}
+                    onChange={(e) => updateStageName(stageIndex, e.target.value)}
+                    className={styles.input}
+                    placeholder={`Étape ${stageIndex + 1}`}
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label htmlFor={`machines-${stageIndex}`}>Nombre de machines en parallèle</label>
+                  <select
+                    id={`machines-${stageIndex}`}
+                    value={machinesPerStage[stageIndex]}
+                    onChange={(e) => updateMachinesPerStage(stageIndex, parseInt(e.target.value))}
+                    className={styles.select}
+                  >
+                    <option value={1}>1 machine</option>
+                    <option value={2}>2 machines</option>
+                    <option value={3}>3 machines</option>
+                    <option value={4}>4 machines</option>
+                    <option value={5}>5 machines</option>
+                  </select>
+                </div>
               </div>
-            ))}
-          </div>
+              <div className={styles.machineIndicator}>
+                {machinesPerStage[stageIndex] > 1 && (
+                  <span className={styles.parallelInfo}>
+                    🔀 {machinesPerStage[stageIndex]} machines en parallèle
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -537,10 +579,15 @@ const FlowshopContraintesForm = () => {
             <thead>
               <tr>
                 <th className={styles.jobNameHeader}>Job</th>
-                {machineNames.map((name, index) => (
-                  <th key={index} className={styles.machineHeader}>
-                    Durée sur {name} ({timeUnit})
-                  </th>
+                {stageNames.map((name, index) => (
+                                      <th key={index} className={styles.machineHeader}>
+                      <div>
+                        Durée à {name} ({timeUnit})
+                        {machinesPerStage[index] > 1 && (
+                          <><br /><small>({machinesPerStage[index]} machines)</small></>
+                        )}
+                      </div>
+                    </th>
                 ))}
                 <th className={styles.dueDateHeader}>Date due ({timeUnit})</th>
               </tr>
@@ -557,12 +604,12 @@ const FlowshopContraintesForm = () => {
                       placeholder={`Job ${jobIndex + 1}`}
                     />
                   </td>
-                  {job.durations.map((duration, machineIndex) => (
-                    <td key={machineIndex}>
+                  {job.durations.map((duration, stageIndex) => (
+                    <td key={stageIndex}>
                       <input
                         type="number"
                         value={duration}
-                        onChange={(e) => updateJobDuration(jobIndex, machineIndex, e.target.value)}
+                        onChange={(e) => updateJobDuration(jobIndex, stageIndex, e.target.value)}
                         className={styles.durationInput}
                         min="0"
                         step="0.1"
@@ -671,8 +718,8 @@ const FlowshopContraintesForm = () => {
 
             <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée</h4>
             {result.raw_machines && Object.entries(result.raw_machines).map(([machineIndex, tasks]) => {
-              // Reproduire exactement le comportement du Gantt
-              const machineName = machineNames[parseInt(machineIndex)] || `Machine ${machineIndex}`;
+              // Pour flowshop hybride, afficher l'étape et la machine
+              const machineName = stageNames[parseInt(machineIndex)] || `Étape ${parseInt(machineIndex) + 1}`;
               
               return (
                 <div key={machineIndex} className={styles.machineDetail}>

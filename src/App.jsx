@@ -15,6 +15,8 @@ import FlowshopSmithForm from "./components/FlowshopSmithForm";
 import FlowshopSmithInfo from "./components/FlowshopSmithInfo";
 import FlowshopContraintesForm from "./components/FlowshopContraintesForm";
 import FlowshopContraintesInfo from "./components/FlowshopContraintesInfo";
+import FlowshopMachinesMultiplesForm from "./components/FlowshopMachinesMultiplesForm";
+import FlowshopMachinesMultiplesInfo from "./components/FlowshopMachinesMultiplesInfo";
 import JobshopSPTForm from "./components/JobshopSPTForm";
 import JobshopSPTInfo from "./components/JobshopSPTInfo";
 import JobshopEDDForm from "./components/JobshopEDDForm";
@@ -55,7 +57,7 @@ function App() {
   const [showDecisionTree, setShowDecisionTree] = useState(false);
 
   const systemes = {
-    "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Smith"],
+    "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Machines multiples", "Smith"],
     "Jobshop": ["SPT", "EDD", "Contraintes"],
     "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL"],
     "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte"],
@@ -157,6 +159,7 @@ function App() {
           {!showDecisionTree && systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieForm />}
           {!showDecisionTree && systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithForm />}
           {!showDecisionTree && systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesForm />}
+          {!showDecisionTree && systeme === "Flowshop" && algorithme === "Machines multiples" && <FlowshopMachinesMultiplesForm />}
           {!showDecisionTree && systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTForm />}
           {!showDecisionTree && systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDForm />}
           {!showDecisionTree && systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesForm />}
@@ -201,6 +204,7 @@ function App() {
                 {algorithme === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
                 {algorithme === "Smith" && <FlowshopSmithInfo />}
                 {algorithme === "Contraintes" && <FlowshopContraintesInfo />}
+                {algorithme === "Machines multiples" && <FlowshopMachinesMultiplesInfo />}
               </>
             )}
             {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTInfo />}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './FlowshopMachinesMultiplesForm.module.css';
+import styles from './FlowshopContraintesForm.module.css';
 import AgendaGrid from './AgendaGrid';
 
 const FlowshopMachinesMultiplesForm = () => {

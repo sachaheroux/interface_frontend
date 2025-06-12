@@ -195,14 +195,15 @@ const FlowshopMachinesMultiplesForm = () => {
         console.log(`DEBUG: Job ${jobIndex} durations:`, job.durations);
         
         if (hasParallelMachines) {
-          // Mode hybride : format pour machines multiples
+          // Mode hybride : format pour machines multiples avec la logique terminal
           const jobData = [];
           job.durations.forEach((machineDurations, stageIndex) => {
             const alternatives = [];
             machineDurations.forEach((duration, subMachineIndex) => {
-              // Calculer l'ID de machine physique basé sur les étapes précédentes
-              const physicalMachineId = machinesPerStage.slice(0, stageIndex).reduce((sum, count) => sum + count, 0) + subMachineIndex;
-              alternatives.push([physicalMachineId, duration]);
+              // Système de numérotation : étape (base 1) * 10 + (subMachineIndex + 1)
+              // Étape 1: 11, 12, 13... Étape 2: 21, 22, 23... etc.
+              const machineId = (stageIndex + 1) * 10 + (subMachineIndex + 1);
+              alternatives.push([machineId, parseFloat(duration) || 0]);
             });
             jobData.push(alternatives);
           });

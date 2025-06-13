@@ -23,6 +23,8 @@ const FlowshopMachinesMultiplesForm = () => {
   const [feries, setFeries] = useState(['']);
   const [dueDateTimes, setDueDateTimes] = useState(jobs.map(() => ''));
   const [pauses, setPauses] = useState([{ start: '12:00', end: '13:00', name: 'Pause déjeuner' }]);
+  const [machinePriorities, setMachinePriorities] = useState({}); // {machineId: priority}
+  const [showPriorities, setShowPriorities] = useState(false);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -168,7 +170,8 @@ const FlowshopMachinesMultiplesForm = () => {
         job_names: jobs.map(job => job.name),
         machine_names: machineNames,
         stage_names: machineNames,
-        machines_per_stage: machinesPerStage
+        machines_per_stage: machinesPerStage,
+        machine_priorities: Object.keys(machinePriorities).length > 0 ? machinePriorities : null
       };
 
       // Ajouter les paramètres d'agenda si activés
@@ -290,6 +293,45 @@ const FlowshopMachinesMultiplesForm = () => {
     setPauses(newPauses);
   };
 
+  // Fonction pour mettre à jour la priorité d'une machine
+  const updateMachinePriority = (machineId, priority) => {
+    const newPriorities = { ...machinePriorities };
+    if (priority === '' || priority === '0') {
+      delete newPriorities[machineId]; // Supprimer si priorité neutre
+    } else {
+      newPriorities[machineId] = parseInt(priority);
+    }
+    setMachinePriorities(newPriorities);
+  };
+
+  // Fonction pour générer toutes les machines possibles
+  const getAllMachineIds = () => {
+    const machineIds = new Set();
+    jobs.forEach(job => {
+      job.durations.forEach((machineDurations, stageIndex) => {
+        machineDurations.forEach((duration, subMachineIndex) => {
+          const machineId = (stageIndex + 1) * 10 + (subMachineIndex + 1);
+          machineIds.add(machineId);
+        });
+      });
+    });
+    return Array.from(machineIds).sort((a, b) => a - b);
+  };
+
+  // Fonction pour obtenir le nom d'affichage d'une machine
+  const getMachineDisplayName = (machineId) => {
+    const stage = Math.floor(machineId / 10) - 1;
+    const subMachine = (machineId % 10) - 1;
+    const stageName = machineNames[stage] || `Étape ${stage + 1}`;
+    
+    if (machinesPerStage[stage] > 1) {
+      const suffixes = 'abcdefghijklmnopqrstuvwxyz';
+      return subMachine === 0 ? stageName : `${stageName}${suffixes[subMachine]}`;
+    } else {
+      return stageName;
+    }
+  };
+
   return (
     <div className={styles.algorithmContainer}>
       {/* Header */}
@@ -389,6 +431,74 @@ const FlowshopMachinesMultiplesForm = () => {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Configuration des priorités */}
+      <div className={`${styles.section} ${styles.prioritiesSection}`}>
+        <h2 className={styles.sectionTitle}>
+          🎯 Priorités des machines
+          <button
+            type="button"
+            onClick={() => setShowPriorities(!showPriorities)}
+            className={styles.toggleButton}
+          >
+            {showPriorities ? 'Masquer' : 'Configurer'}
+          </button>
+        </h2>
+        
+        {showPriorities && (
+          <div className={styles.prioritiesContent}>
+            <div className={styles.prioritiesHelp}>
+              <p>📝 <strong>Comment ça marche :</strong> Quand plusieurs machines donnent le même makespan optimal, 
+              les priorités permettent de choisir quelle machine utiliser en premier.</p>
+              <p>🔢 <strong>Valeurs :</strong> Plus le nombre est <strong>petit</strong>, plus la priorité est <strong>élevée</strong>. 
+              Exemple : Priorité 1 &gt; Priorité 2 &gt; Priorité 3...</p>
+              <p>⚡ <strong>Impact :</strong> Les priorités n'affectent <strong>jamais</strong> le makespan optimal, 
+              elles servent seulement à départager les solutions équivalentes.</p>
+            </div>
+            
+            <div className={styles.prioritiesGrid}>
+              {getAllMachineIds().map(machineId => (
+                <div key={machineId} className={styles.priorityItem}>
+                  <label className={styles.priorityLabel}>
+                    {getMachineDisplayName(machineId)}
+                  </label>
+                  <input
+                    type="number"
+                    value={machinePriorities[machineId] || ''}
+                    onChange={(e) => updateMachinePriority(machineId, e.target.value)}
+                    className={styles.priorityInput}
+                    placeholder="Neutre"
+                    min="1"
+                    max="100"
+                  />
+                  <small className={styles.priorityHint}>
+                    {machinePriorities[machineId] ? 
+                      `Priorité ${machinePriorities[machineId]}` : 
+                      'Priorité neutre'
+                    }
+                  </small>
+                </div>
+              ))}
+            </div>
+            
+            {Object.keys(machinePriorities).length > 0 && (
+              <div className={styles.prioritiesSummary}>
+                <h4>📊 Résumé des priorités :</h4>
+                <div className={styles.prioritiesList}>
+                  {Object.entries(machinePriorities)
+                    .sort(([,a], [,b]) => a - b)
+                    .map(([machineId, priority]) => (
+                      <span key={machineId} className={styles.priorityBadge}>
+                        {getMachineDisplayName(parseInt(machineId))} (P{priority})
+                      </span>
+                    ))
+                  }
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Tableau des données */}

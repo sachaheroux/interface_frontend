@@ -186,36 +186,27 @@ const FlowshopMachinesMultiplesForm = () => {
     setError('');
     
     try {
-      // Format des données pour flowshop hybride ou classique
+      // Format des données pour machines multiples (TOUJOURS format à 4 niveaux pour cet algorithme)
       const hasParallelMachines = machinesPerStage.some(count => count > 1);
-      const isHybride = hasParallelMachines;
       
       const formattedJobs = jobs.map((job, jobIndex) => {
         console.log(`DEBUG: Job ${jobIndex} raw data:`, job);
         console.log(`DEBUG: Job ${jobIndex} durations:`, job.durations);
         
-        if (hasParallelMachines) {
-          // Mode hybride : format pour machines multiples avec la logique terminal
-          const jobData = [];
-          job.durations.forEach((machineDurations, stageIndex) => {
-            const alternatives = [];
-            machineDurations.forEach((duration, subMachineIndex) => {
-              // Système de numérotation : étape (base 1) * 10 + (subMachineIndex + 1)
-              // Étape 1: 11, 12, 13... Étape 2: 21, 22, 23... etc.
-              const machineId = (stageIndex + 1) * 10 + (subMachineIndex + 1);
-              alternatives.push([machineId, parseFloat(duration) || 0]);
-            });
-            jobData.push(alternatives);
+        // TOUJOURS utiliser le format machines multiples pour cet algorithme
+        const jobData = [];
+        job.durations.forEach((machineDurations, stageIndex) => {
+          const alternatives = [];
+          machineDurations.forEach((duration, subMachineIndex) => {
+            // Système de numérotation : étape (base 1) * 10 + (subMachineIndex + 1)
+            // Étape 1: 11, 12, 13... Étape 2: 21, 22, 23... etc.
+            const machineId = (stageIndex + 1) * 10 + (subMachineIndex + 1);
+            alternatives.push([machineId, parseFloat(duration) || 0]);
           });
-          console.log(`DEBUG: Job ${jobIndex} final data:`, jobData);
-          return jobData;
-        } else {
-          // Mode classique : format original
-          return job.durations.map((machineDurations, machineIndex) => {
-            const avgDuration = machineDurations.reduce((sum, d) => sum + parseFloat(d || 0), 0) / machineDurations.length;
-            return [machineIndex, isNaN(avgDuration) ? 0 : avgDuration];
-          });
-        }
+          jobData.push(alternatives);
+        });
+        console.log(`DEBUG: Job ${jobIndex} final data:`, jobData);
+        return jobData;
       });
       const formattedDueDates = jobs.map(job => {
         const parsedDueDate = parseFloat(job.dueDate);
@@ -228,10 +219,8 @@ const FlowshopMachinesMultiplesForm = () => {
         unite: timeUnit,
         job_names: jobs.map(job => job.name),
         machine_names: machineNames,
-        ...(isHybride && {
-          stage_names: machineNames,
-          machines_per_stage: machinesPerStage
-        })
+        stage_names: machineNames,
+        machines_per_stage: machinesPerStage
       };
 
       // Ajouter les paramètres d'agenda si activés

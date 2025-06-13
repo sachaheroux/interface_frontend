@@ -901,4 +901,197 @@
     font-size: 0.7rem;
     padding: 2px 6px;
   }
+}
+
+/* ===== TEMPS DE SETUP ===== */
+.setupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.setupToggle {
+  display: flex;
+  align-items: center;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-primary);
+  user-select: none;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}
+
+.checkboxText {
+  font-size: var(--font-size-base);
+}
+
+.setupSection {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 2px solid var(--border-color);
+}
+
+.setupInfo {
+  margin-bottom: var(--spacing-xl);
+}
+
+.infoBox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: var(--border-radius);
+  border-left: 4px solid #f59e0b;
+}
+
+.infoIcon {
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.infoText {
+  font-size: var(--font-size-sm);
+  color: #92400e;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.machineSetupTable {
+  margin-bottom: var(--spacing-xl);
+  background: white;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.machineSetupTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0;
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.setupTableContainer {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.setupTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.setupTableHeader {
+  background: var(--background-section);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: var(--spacing-md);
+  text-align: center;
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.setupTableRowHeader {
+  background: var(--background-section);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: var(--spacing-md);
+  text-align: center;
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+.setupTableCell {
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  background: white;
+}
+
+.setupInput {
+  width: 60px;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.setupInput:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+}
+
+.setupInput:hover {
+  border-color: var(--primary-light);
+}
+
+.setupDiagonal {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+}
+
+/* Responsive pour les temps de setup */
+@media (max-width: 768px) {
+  .setupHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .setupTableContainer {
+    font-size: 0.75rem;
+  }
+  
+  .setupInput {
+    width: 50px;
+    font-size: 0.75rem;
+  }
+  
+  .setupTableHeader,
+  .setupTableRowHeader {
+    padding: var(--spacing-sm);
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .setupInput {
+    width: 45px;
+  }
+  
+  .infoBox {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .checkboxLabel {
+    font-size: var(--font-size-sm);
+  }
 } 

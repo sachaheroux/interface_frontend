@@ -26,6 +26,8 @@ const JobshopContraintesForm = () => {
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
   const [ganttUrl, setGanttUrl] = useState(null);
+  const [useSetupTimes, setUseSetupTimes] = useState(false);
+  const [setupTimes, setSetupTimes] = useState({});
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -107,6 +109,42 @@ const JobshopContraintesForm = () => {
     const newNames = [...machineNames];
     newNames[index] = name;
     setMachineNames(newNames);
+  };
+
+  // Gestion des temps de setup
+  const initializeSetupTimes = () => {
+    const newSetupTimes = {};
+    machineNames.forEach((_, machineIndex) => {
+      newSetupTimes[machineIndex] = {};
+      jobs.forEach((fromJob, fromIndex) => {
+        newSetupTimes[machineIndex][fromIndex] = {};
+        jobs.forEach((toJob, toIndex) => {
+          if (fromIndex !== toIndex) {
+            newSetupTimes[machineIndex][fromIndex][toIndex] = 0;
+          }
+        });
+      });
+    });
+    setSetupTimes(newSetupTimes);
+  };
+
+  const updateSetupTime = (machineIndex, fromJobIndex, toJobIndex, value) => {
+    const newSetupTimes = { ...setupTimes };
+    if (!newSetupTimes[machineIndex]) {
+      newSetupTimes[machineIndex] = {};
+    }
+    if (!newSetupTimes[machineIndex][fromJobIndex]) {
+      newSetupTimes[machineIndex][fromJobIndex] = {};
+    }
+    newSetupTimes[machineIndex][fromJobIndex][toJobIndex] = parseFloat(value) || 0;
+    setSetupTimes(newSetupTimes);
+  };
+
+  const toggleSetupTimes = (checked) => {
+    setUseSetupTimes(checked);
+    if (checked && Object.keys(setupTimes).length === 0) {
+      initializeSetupTimes();
+    }
   };
 
   const calculateOptimization = async () => {
@@ -371,6 +409,89 @@ const JobshopContraintesForm = () => {
         </div>
       </div>
 
+      {/* Configuration des temps de setup */}
+      <div className={styles.section}>
+        <div className={styles.setupHeader}>
+          <h2 className={styles.sectionTitle}>Temps de setup (optionnel)</h2>
+          <div className={styles.setupToggle}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={useSetupTimes}
+                onChange={(e) => toggleSetupTimes(e.target.checked)}
+                className={styles.checkbox}
+              />
+              <span className={styles.checkboxText}>
+                Activer les temps de setup entre jobs
+              </span>
+            </label>
+          </div>
+        </div>
+
+        {useSetupTimes && (
+          <div className={styles.setupSection}>
+            <div className={styles.setupInfo}>
+              <div className={styles.infoBox}>
+                <span className={styles.infoIcon}>ℹ️</span>
+                <span className={styles.infoText}>
+                  Configurez les temps de setup nécessaires lorsqu'une machine passe d'un job à un autre.
+                  Par exemple : Machine 1 passe du Job A au Job B → temps de setup de 15 {timeUnit}.
+                </span>
+              </div>
+            </div>
+
+            {machineNames.map((machineName, machineIndex) => (
+              <div key={machineIndex} className={styles.machineSetupTable}>
+                <h4 className={styles.machineSetupTitle}>
+                  {machineName} - Temps de setup ({timeUnit})
+                </h4>
+                
+                <div className={styles.setupTableContainer}>
+                  <table className={styles.setupTable}>
+                    <thead>
+                      <tr>
+                        <th className={styles.setupTableHeader}>De \ Vers</th>
+                        {jobs.map((job, jobIndex) => (
+                          <th key={jobIndex} className={styles.setupTableHeader}>
+                            {job.name}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {jobs.map((fromJob, fromIndex) => (
+                        <tr key={fromIndex}>
+                          <td className={styles.setupTableRowHeader}>
+                            {fromJob.name}
+                          </td>
+                          {jobs.map((toJob, toIndex) => (
+                            <td key={toIndex} className={styles.setupTableCell}>
+                              {fromIndex === toIndex ? (
+                                <span className={styles.setupDiagonal}>-</span>
+                              ) : (
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.1"
+                                  value={setupTimes[machineIndex]?.[fromIndex]?.[toIndex] || 0}
+                                  onChange={(e) => updateSetupTime(machineIndex, fromIndex, toIndex, e.target.value)}
+                                  className={styles.setupInput}
+                                  placeholder="0"
+                                />
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Gestion d'erreur */}
       {error && (
         <div className={styles.errorSection}>
@@ -396,22 +517,7 @@ const JobshopContraintesForm = () => {
         <div className={`${styles.section} ${styles.resultsSection}`}>
           <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
 
-          {/* Séquence calculée */}
-          <div className={styles.sequenceSection}>
-            <h3 className={styles.sequenceTitle}>Séquence optimale calculée</h3>
-            <div className={styles.sequenceValue}>
-              {result.sequence && Array.isArray(result.sequence) ? (
-                result.sequence.join(' → ')
-              ) : result.order && Array.isArray(result.order) ? (
-                result.order.map(jobIndex => jobs[jobIndex]?.name || `Job ${jobIndex + 1}`).join(' → ')
-              ) : result.job_order && Array.isArray(result.job_order) ? (
-                result.job_order.join(' → ')
-              ) : (
-                // Simulation si pas de séquence fournie
-                jobs.map(job => job.name).join(' → ')
-              )}
-            </div>
-          </div>
+
 
           {/* Métriques */}
           <div className={styles.metricsGrid}>

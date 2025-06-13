@@ -165,7 +165,8 @@ const JobshopContraintesForm = () => {
         due_dates: formattedDueDates,
         job_names: jobs.map(job => job.name),
         machine_names: machineNames,
-        unite: timeUnit
+        unite: timeUnit,
+        setup_times: useSetupTimes ? setupTimes : null
       };
 
       console.log("Données envoyées:", requestData);

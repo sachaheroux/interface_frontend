@@ -22,6 +22,8 @@ function FlowshopSPTForm() {
   const [feries, setFeries] = useState([""]);
   const [dueDateTimes, setDueDateTimes] = useState(["", ""]);
   const [agendaData, setAgendaData] = useState(null);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
 
   const API_URL = "/api";
 
@@ -135,6 +137,81 @@ function FlowshopSPTForm() {
     document.body.removeChild(link);
   };
 
+  // Fonctions pour l'import Excel
+  const handleDownloadTemplate = async (templateType) => {
+    try {
+      const response = await fetch(`${API_URL}/flowshop/template/${templateType}`);
+      if (!response.ok) throw new Error("Erreur lors du téléchargement du template");
+      
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Template_Flowshop_${templateType.charAt(0).toUpperCase() + templateType.slice(1)}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setError(`Erreur téléchargement template: ${error.message}`);
+    }
+  };
+
+  const handleFileImport = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    setError(null);
+    setImportSuccess(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${API_URL}/spt/import-excel`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erreur lors de l\'import');
+      }
+
+      const data = await response.json();
+      
+      // Mettre à jour les données du formulaire avec les données importées
+      const importedData = data.imported_data;
+      setJobNames(importedData.job_names || []);
+      setMachineNames(importedData.machine_names || []);
+      
+      // Afficher les résultats directement
+      setResult(data.results);
+      setImportSuccess(`Fichier '${file.name}' importé et traité avec succès!`);
+      
+      // Générer le diagramme de Gantt
+      if (!showAdvanced) {
+        try {
+          const ganttFormData = new FormData();
+          ganttFormData.append('file', file);
+          
+          // Note: Il faudrait créer un endpoint spécifique pour le Gantt depuis Excel
+          // Pour l'instant, on utilise les données importées
+        } catch (ganttError) {
+          console.log("Pas de diagramme de Gantt disponible pour l'import Excel");
+        }
+      }
+
+    } catch (error) {
+      setError(`Erreur import: ${error.message}`);
+    } finally {
+      setIsImporting(false);
+      // Réinitialiser l'input file
+      event.target.value = '';
+    }
+  };
+
   return (
     <div className="algorithmContent">
       <div className={styles.algorithmContainer}>
@@ -199,6 +276,60 @@ function FlowshopSPTForm() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Section Import Excel */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>📊 Import depuis Excel</h3>
+          <div className={styles.importSection}>
+            <div className={styles.importInfo}>
+              <p className={styles.importDescription}>
+                Importez vos données depuis un fichier Excel pour un traitement automatique.
+                Téléchargez d'abord un template pour voir la structure attendue.
+              </p>
+            </div>
+            
+            <div className={styles.importActions}>
+              <div className={styles.templateButtons}>
+                <button 
+                  className={styles.templateButton}
+                  onClick={() => handleDownloadTemplate('exemple')}
+                  type="button"
+                >
+                  📄 Template avec exemple
+                </button>
+                <button 
+                  className={styles.templateButton}
+                  onClick={() => handleDownloadTemplate('vide')}
+                  type="button"
+                >
+                  📄 Template vide
+                </button>
+              </div>
+              
+              <div className={styles.importUpload}>
+                <label className={styles.uploadLabel}>
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={handleFileImport}
+                    className={styles.fileInput}
+                    disabled={isImporting}
+                  />
+                  <span className={styles.uploadButton}>
+                    {isImporting ? '⏳ Import en cours...' : '📥 Importer fichier Excel'}
+                  </span>
+                </label>
+              </div>
+            </div>
+            
+            {importSuccess && (
+              <div className={styles.successMessage}>
+                <span className={styles.successIcon}>✅</span>
+                {importSuccess}
+              </div>
+            )}
           </div>
         </div>
 

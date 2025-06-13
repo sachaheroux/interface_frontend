@@ -120,6 +120,7 @@ const LigneAssemblageLPTForm = () => {
 
         return {
           id: task.id,
+          name: task.name,
           predecessors: predecessors,
           duration: task.duration
         };
@@ -186,6 +187,12 @@ const LigneAssemblageLPTForm = () => {
       link.click();
       document.body.removeChild(link);
     }
+  };
+
+  // Fonction helper pour récupérer le nom d'une tâche par son ID
+  const getTaskNameById = (taskId) => {
+    const task = tasks.find(t => t.id === taskId);
+    return task ? task.name : `Tâche ${taskId}`;
   };
 
   return (
@@ -388,7 +395,7 @@ const LigneAssemblageLPTForm = () => {
                       </span>
                     </div>
                     <div className={styles.stationTasks}>
-                      Tâches assignées : {Array.isArray(station.tasks) ? station.tasks.join(', ') : 'Aucune'}
+                      Tâches assignées : {Array.isArray(station.tasks) ? station.tasks.map(getTaskNameById).join(', ') : 'Aucune'}
                     </div>
                   </div>
                 ))

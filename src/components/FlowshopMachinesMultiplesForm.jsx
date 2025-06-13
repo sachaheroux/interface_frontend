@@ -127,59 +127,7 @@ const FlowshopMachinesMultiplesForm = () => {
     setMachineNames(newNames);
   };
 
-  const extractSequenceFromSchedule = (planification, rawMachines = null) => {
-    // Utiliser raw_machines si disponible, sinon planification
-    const dataToUse = rawMachines || planification;
-    if (!dataToUse || typeof dataToUse !== 'object') return [];
 
-    // Collecter toutes les tâches avec leurs informations
-    const allTasks = [];
-    Object.entries(dataToUse).forEach(([machineKey, tasks]) => {
-      if (Array.isArray(tasks)) {
-        tasks.forEach(task => {
-          if (task && typeof task === 'object' && (task.job !== undefined && task.job !== null)) {
-            allTasks.push({
-              job: task.job,
-              start: task.start || 0,
-              machine: machineKey,
-              task_id: task.task || 0
-            });
-          }
-        });
-      }
-    });
-
-    // Trouver la première tâche (task_id = 0) de chaque job pour déterminer l'ordre
-    const firstTasks = allTasks.filter(task => task.task_id === 0);
-    
-    // Trier par temps de début de la première tâche
-    firstTasks.sort((a, b) => a.start - b.start);
-    
-    // Extraire la séquence des jobs basée sur leurs premières tâches (commencer à 1)
-    const sequence = firstTasks.map(task => task.job + 1);
-    
-    // Vérifier si on a tous les jobs (fallback au cas où certains n'ont pas de task_id=0)
-    const uniqueJobs = [...new Set(allTasks.map(task => task.job))];
-    const missingJobs = uniqueJobs.filter(job => !sequence.includes(job + 1));
-    
-    if (missingJobs.length > 0) {
-      console.log("Jobs manquants dans la séquence:", missingJobs);
-      // Ajouter les jobs manquants triés par leur première apparition
-      const additionalTasks = allTasks
-        .filter(task => missingJobs.includes(task.job))
-        .sort((a, b) => a.start - b.start);
-      
-      const addedJobs = new Set(sequence);
-      additionalTasks.forEach(task => {
-        if (!addedJobs.has(task.job + 1)) {
-          sequence.push(task.job + 1);
-          addedJobs.add(task.job + 1);
-        }
-      });
-    }
-
-    return sequence;
-  };
 
   const calculateOptimization = async () => {
     setIsCalculating(true);
@@ -703,14 +651,6 @@ const FlowshopMachinesMultiplesForm = () => {
       {result && (
         <div className={`${styles.section} ${styles.resultsSection}`}>
           <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
-
-          {/* Séquence calculée */}
-          <div className={styles.sequenceSection}>
-            <h3 className={styles.sequenceTitle}>Séquence optimale calculée</h3>
-            <div className={styles.sequenceValue}>
-              {extractSequenceFromSchedule(result.planification, result.raw_machines).join(' → ') || 'Non disponible'}
-            </div>
-          </div>
 
           {/* Métriques */}
           <div className={styles.metricsGrid}>

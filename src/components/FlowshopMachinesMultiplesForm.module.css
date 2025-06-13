@@ -681,31 +681,7 @@
   text-align: center;
 }
 
-.sequenceSection {
-  background: white;
-  padding: var(--spacing-lg);
-  border-radius: var(--border-radius);
-  margin-bottom: var(--spacing-lg);
-  border: 1px solid #bae6fd;
-}
 
-.sequenceTitle {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  color: #0369a1;
-  margin: 0 0 var(--spacing-md) 0;
-}
-
-.sequenceValue {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--primary-color);
-  text-align: center;
-  padding: var(--spacing-md);
-  background: #f0f9ff;
-  border-radius: var(--border-radius);
-  border: 2px dashed #0ea5e9;
-}
 
 .metricsGrid {
   display: grid;

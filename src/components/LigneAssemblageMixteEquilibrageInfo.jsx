@@ -25,7 +25,7 @@ export default function LigneAssemblageMixteEquilibrageInfo() {
         <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Spécificités ligne mixte</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Plusieurs modèles :</strong> Chaque tâche a des temps différents par modèle</li>
-          <li><strong>Demandes variables :</strong> Chaque modèle a sa propre demande</li>
+          <li><strong>Demandes variables :</strong> Chaque modèle a sa propre demande pour la période</li>
           <li><strong>Temps pondérés :</strong> Calcul basé sur la proportion de chaque modèle</li>
           <li><strong>Précédences mixtes :</strong> Prédécesseurs peuvent varier par modèle</li>
         </ul>
@@ -34,7 +34,7 @@ export default function LigneAssemblageMixteEquilibrageInfo() {
       <div style={{ marginBottom: "1rem" }}>
         <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Calcul des temps pondérés</h4>
         <p style={{ marginBottom: "0.5rem" }}>
-          Pour chaque tâche, le temps est pondéré par la demande :
+          Pour chaque tâche, le temps est pondéré par la demande pour la période :
         </p>
         <div style={{ backgroundColor: "#e2e8f0", padding: "0.5rem", borderRadius: "0.375rem", fontFamily: "monospace", fontSize: "0.85rem" }}>
           temps_pondéré = Σ(demande[modèle] × temps[tâche,modèle])
@@ -46,7 +46,7 @@ export default function LigneAssemblageMixteEquilibrageInfo() {
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Variables :</strong> y[i,j] = 1 si tâche i assignée à station j</li>
           <li><strong>Objectif :</strong> Minimiser nombre de stations</li>
-          <li><strong>Contraintes :</strong> Temps de cycle, précédence, assignation unique</li>
+          <li><strong>Contraintes :</strong> Durée de la période, précédence, assignation unique</li>
           <li><strong>Solveur :</strong> CBC avec PuLP</li>
         </ul>
       </div>
@@ -55,7 +55,7 @@ export default function LigneAssemblageMixteEquilibrageInfo() {
         <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Contraintes principales</h4>
         <ol style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Assignation unique :</strong> Chaque tâche dans une seule station</li>
-          <li><strong>Temps de cycle :</strong> Charge station ≤ temps de cycle</li>
+          <li><strong>Durée de la période :</strong> Charge station ≤ durée de la période</li>
           <li><strong>Précédence :</strong> Ordre des tâches respecté pour tous modèles</li>
           <li><strong>Capacité :</strong> Stations limitées en nombre</li>
         </ol>
@@ -66,7 +66,7 @@ export default function LigneAssemblageMixteEquilibrageInfo() {
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li><strong>Optimalité :</strong> Solution mathématiquement optimale</li>
           <li><strong>Multi-modèles :</strong> Prise en compte simultanée de tous modèles</li>
-          <li><strong>Flexibilité :</strong> Gestion demandes variables</li>
+          <li><strong>Flexibilité :</strong> Gestion demandes variables pour la période</li>
           <li><strong>Reproductibilité :</strong> Résultat identique à chaque fois</li>
           <li><strong>Métriques complètes :</strong> Efficacité, variance, utilisation</li>
         </ul>
@@ -123,7 +123,7 @@ export default function LigneAssemblageMixteEquilibrageInfo() {
         <h4 style={{ color: "#3b82f6", marginBottom: "0.5rem", fontSize: "1rem" }}>Conseils d'utilisation</h4>
         <ul style={{ paddingLeft: "1.2rem", margin: "0.5rem 0" }}>
           <li>Commencez avec 2-3 modèles pour tester</li>
-          <li>Vérifiez la cohérence des demandes (proportions réalistes)</li>
+          <li>Vérifiez la cohérence des demandes pour la période (proportions réalistes)</li>
           <li>Surveillez le temps de calcul pour problèmes complexes</li>
           <li>Comparez avec les algorithmes de ligne simple</li>
           <li>Utilisez pour valider les décisions d'investissement</li>

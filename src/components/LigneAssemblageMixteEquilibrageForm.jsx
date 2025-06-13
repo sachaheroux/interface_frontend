@@ -150,14 +150,14 @@ const LigneAssemblageMixteEquilibrageForm = () => {
     setIsCalculating(true);
 
     try {
-      // Validation du temps de cycle
+      // Validation de la durée de la période
       if (cycleTime <= 0) {
-        throw new Error("Le temps de cycle doit être un nombre positif.");
+        throw new Error("La durée de la période doit être un nombre positif.");
       }
 
-      // Validation des demandes
+      // Validation des demandes pour la période
       if (products.some(product => product.demand <= 0)) {
-        throw new Error("Les demandes par produit doivent être positives.");
+        throw new Error("Les demandes pour la période par produit doivent être positives.");
       }
 
       // Validation des temps (permettre zéro)
@@ -287,7 +287,7 @@ const LigneAssemblageMixteEquilibrageForm = () => {
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="cycleTime">Temps de cycle ({timeUnit})</label>
+                            <label htmlFor="cycleTime">Durée de la période ({timeUnit})</label>
             <input
               id="cycleTime"
               type="number"
@@ -350,7 +350,7 @@ const LigneAssemblageMixteEquilibrageForm = () => {
         <div className={styles.productsContainer}>
           <div className={styles.productsHeader}>
             <div className={styles.productHeaderCell}>Produit</div>
-            <div className={styles.productHeaderCell}>Demande</div>
+            <div className={styles.productHeaderCell}>Demande pour la période</div>
           </div>
           
           {products.map((product, index) => (

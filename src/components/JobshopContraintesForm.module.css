@@ -721,6 +721,16 @@
   font-weight: 500;
 }
 
+.setupBadge {
+  background: #ffcccb;  /* Rouge pâle comme dans le Gantt */
+  color: #8b0000;       /* Rouge foncé pour le texte */
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 9999px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border: 1px solid #ff9999;  /* Bordure rouge légèrement plus foncée */
+}
+
 .machineDetail {
   margin-bottom: var(--spacing-lg);
   padding: var(--spacing-md);

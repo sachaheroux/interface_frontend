@@ -594,6 +594,7 @@ const JobshopContraintesForm = () => {
             {result.schedule && !result.planification && (
               <div>
                 {machineNames.map((machineName, machineIndex) => {
+                  // Récupérer les tâches normales pour cette machine
                   const machineTasks = result.schedule.filter(task => 
                     task.machine === machineName || 
                     task.machine === `Machine ${machineIndex}` ||
@@ -601,15 +602,36 @@ const JobshopContraintesForm = () => {
                     task.machine === `M${machineIndex}`
                   );
                   
-                  if (machineTasks.length === 0) return null;
+                  // Récupérer les temps de setup pour cette machine
+                  const machineSetups = result.setup_schedule ? result.setup_schedule.filter(setup => 
+                    setup.machine === machineName || 
+                    setup.machine === `Machine ${machineIndex}` ||
+                    setup.machine === machineIndex ||
+                    setup.machine === `M${machineIndex}`
+                  ) : [];
+                  
+                  // Combiner tâches et setups, puis trier par temps de début
+                  const allActivities = [
+                    ...machineTasks.map(task => ({ ...task, type: 'task' })),
+                    ...machineSetups.map(setup => ({ ...setup, type: 'setup' }))
+                  ].sort((a, b) => a.start - b.start);
+                  
+                  if (allActivities.length === 0) return null;
                   
                   return (
                     <div key={machineIndex} className={styles.machineDetail}>
                       <strong>{machineName}</strong>
                       <div className={styles.tasksList}>
-                        {machineTasks.map((task, i) => (
-                          <div key={i} className={styles.taskBadge}>
-                            {task.job} : {task.start} → {task.end}
+                        {allActivities.map((activity, i) => (
+                          <div 
+                            key={i} 
+                            className={activity.type === 'setup' ? styles.setupBadge : styles.taskBadge}
+                          >
+                            {activity.type === 'setup' ? (
+                              `Setup ${activity.from_job} → ${activity.to_job} : ${activity.start} → ${activity.end}`
+                            ) : (
+                              `${activity.job} : ${activity.start} → ${activity.end}`
+                            )}
                           </div>
                         ))}
                       </div>

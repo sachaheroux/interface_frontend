@@ -1096,4 +1096,115 @@
   .checkboxLabel {
     font-size: var(--font-size-sm);
   }
+}
+
+/* ===== TEMPS D'ARRIVÉE ===== */
+.releaseTimesContainer {
+  margin-top: var(--spacing-lg);
+}
+
+.releaseTimesTitle {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-lg) 0;
+  text-align: center;
+}
+
+.releaseTimesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.releaseTimeItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.releaseTimeItem:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.releaseTimeLabel {
+  font-weight: 500;
+  color: var(--text-primary);
+  min-width: 80px;
+  font-size: var(--font-size-sm);
+}
+
+.releaseTimeInput {
+  flex: 1;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  min-width: 80px;
+  transition: all 0.2s ease;
+}
+
+.releaseTimeInput:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.releaseTimeInput:hover {
+  border-color: var(--primary-light);
+}
+
+.releaseTimeUnit {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 50px;
+}
+
+/* Responsive pour les temps d'arrivée */
+@media (max-width: 768px) {
+  .releaseTimesGrid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .releaseTimeItem {
+    padding: var(--spacing-sm);
+  }
+  
+  .releaseTimeLabel {
+    min-width: 60px;
+    font-size: var(--font-size-sm);
+  }
+  
+  .releaseTimeInput {
+    min-width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .releaseTimeItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-xs);
+  }
+  
+  .releaseTimeLabel {
+    min-width: auto;
+    text-align: center;
+  }
+  
+  .releaseTimeUnit {
+    text-align: center;
+    min-width: auto;
+  }
 } 

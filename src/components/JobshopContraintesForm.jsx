@@ -28,6 +28,8 @@ const JobshopContraintesForm = () => {
   const [ganttUrl, setGanttUrl] = useState(null);
   const [useSetupTimes, setUseSetupTimes] = useState(false);
   const [setupTimes, setSetupTimes] = useState({});
+  const [useReleaseTimes, setUseReleaseTimes] = useState(false);
+  const [releaseTimes, setReleaseTimes] = useState({});
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -39,11 +41,25 @@ const JobshopContraintesForm = () => {
       tasks: [{ machine: 0, duration: 1 }],
       dueDate: 10
     }]);
+    
+    // Ajouter un temps d'arrivée par défaut si les temps d'arrivée sont activés
+    if (useReleaseTimes) {
+      const newReleaseTimes = { ...releaseTimes };
+      newReleaseTimes[jobs.length] = 0; // Index du nouveau job
+      setReleaseTimes(newReleaseTimes);
+    }
   };
 
   const removeJob = () => {
     if (jobs.length > 1) {
       setJobs(jobs.slice(0, -1));
+      
+      // Supprimer le temps d'arrivée correspondant si les temps d'arrivée sont activés
+      if (useReleaseTimes) {
+        const newReleaseTimes = { ...releaseTimes };
+        delete newReleaseTimes[jobs.length - 1]; // Index du job supprimé
+        setReleaseTimes(newReleaseTimes);
+      }
     }
   };
 
@@ -147,6 +163,28 @@ const JobshopContraintesForm = () => {
     }
   };
 
+  // Gestion des temps d'arrivée
+  const initializeReleaseTimes = () => {
+    const newReleaseTimes = {};
+    jobs.forEach((_, jobIndex) => {
+      newReleaseTimes[jobIndex] = 0;
+    });
+    setReleaseTimes(newReleaseTimes);
+  };
+
+  const updateReleaseTime = (jobIndex, value) => {
+    const newReleaseTimes = { ...releaseTimes };
+    newReleaseTimes[jobIndex] = parseFloat(value) || 0;
+    setReleaseTimes(newReleaseTimes);
+  };
+
+  const toggleReleaseTimes = (checked) => {
+    setUseReleaseTimes(checked);
+    if (checked && Object.keys(releaseTimes).length === 0) {
+      initializeReleaseTimes();
+    }
+  };
+
   const calculateOptimization = async () => {
     setIsCalculating(true);
     setError('');
@@ -166,7 +204,8 @@ const JobshopContraintesForm = () => {
         job_names: jobs.map(job => job.name),
         machine_names: machineNames,
         unite: timeUnit,
-        setup_times: useSetupTimes ? setupTimes : null
+        setup_times: useSetupTimes ? setupTimes : null,
+        release_times: useReleaseTimes ? releaseTimes : null
       };
 
       console.log("Données envoyées:", requestData);
@@ -491,6 +530,64 @@ const JobshopContraintesForm = () => {
         )}
       </div>
 
+      {/* Configuration des temps d'arrivée */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Temps d'arrivée des produits (optionnel)</h2>
+        <div className={styles.setupToggle}>
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={useReleaseTimes}
+              onChange={(e) => toggleReleaseTimes(e.target.checked)}
+              className={styles.checkbox}
+            />
+            <span className={styles.checkboxText}>
+              Activer les temps d'arrivée des produits
+            </span>
+          </label>
+        </div>
+
+        {useReleaseTimes && (
+          <div className={styles.setupSection}>
+            <div className={styles.setupInfo}>
+              <div className={styles.infoBox}>
+                <span className={styles.infoIcon}>ℹ️</span>
+                <span className={styles.infoText}>
+                  Configurez les temps d'arrivée des produits. Par défaut, tous les jobs arrivent à t=0.
+                  Si un job arrive plus tard, il ne pourra pas commencer avant son temps d'arrivée.
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.releaseTimesContainer}>
+              <h4 className={styles.releaseTimesTitle}>
+                Temps d'arrivée des jobs ({timeUnit})
+              </h4>
+              
+              <div className={styles.releaseTimesGrid}>
+                {jobs.map((job, jobIndex) => (
+                  <div key={jobIndex} className={styles.releaseTimeItem}>
+                    <label className={styles.releaseTimeLabel}>
+                      {job.name}
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={releaseTimes[jobIndex] || 0}
+                      onChange={(e) => updateReleaseTime(jobIndex, e.target.value)}
+                      className={styles.releaseTimeInput}
+                      placeholder="0"
+                    />
+                    <span className={styles.releaseTimeUnit}>{timeUnit}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Gestion d'erreur */}
       {error && (
         <div className={styles.errorSection}>
@@ -573,6 +670,20 @@ const JobshopContraintesForm = () => {
                 })
               )}
             </div>
+
+            {/* Affichage des temps d'arrivée si activés */}
+            {useReleaseTimes && result.release_times && (
+              <>
+                <h4 style={{ marginTop: '1.5rem' }}>Temps d'arrivée des jobs</h4>
+                <div className={styles.tasksList}>
+                  {Object.entries(result.release_times).map(([job, time]) => (
+                    <div key={job} className={styles.taskBadge}>
+                      {job}: {time} {timeUnit}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
             <h4 style={{ marginTop: '1.5rem' }}>Planification détaillée par machine</h4>
             

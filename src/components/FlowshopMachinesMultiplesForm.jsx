@@ -407,6 +407,25 @@ const FlowshopMachinesMultiplesForm = () => {
       {/* Tableau des données */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Matrice des temps de traitement</h2>
+        
+        {/* Message d'information sur les priorités */}
+        <div className={styles.priorityInfo}>
+          <div className={styles.priorityInfoIcon}>🎯</div>
+          <div className={styles.priorityInfoContent}>
+            <h4 className={styles.priorityInfoTitle}>Priorités automatiques des machines</h4>
+            <p className={styles.priorityInfoText}>
+              Quand plusieurs machines alternatives sont disponibles pour une même tâche, 
+              l'algorithme favorise automatiquement la <strong>première ligne</strong> (priorité la plus élevée), 
+              puis la <strong>deuxième ligne</strong>, etc. Cela n'affecte jamais le makespan optimal, 
+              mais permet de choisir les meilleures machines en cas de solutions équivalentes.
+            </p>
+            <div className={styles.priorityExample}>
+              <span className={styles.priorityBadge}>M1 = Priorité 1</span>
+              <span className={styles.priorityBadge}>M1a = Priorité 2</span>
+              <span className={styles.priorityBadge}>M1b = Priorité 3</span>
+            </div>
+          </div>
+        </div>
         <div className={styles.dataTable}>
           <table className={styles.table}>
             <thead>

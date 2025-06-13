@@ -904,18 +904,10 @@
 }
 
 /* ===== TEMPS DE SETUP ===== */
-.setupHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-}
-
 .setupToggle {
   display: flex;
   align-items: center;
+  margin-bottom: var(--spacing-lg);
 }
 
 .checkboxLabel {
@@ -954,10 +946,10 @@
   align-items: flex-start;
   gap: var(--spacing-sm);
   padding: var(--spacing-lg);
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1px solid #f59e0b;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid var(--primary-color);
   border-radius: var(--border-radius);
-  border-left: 4px solid #f59e0b;
+  border-left: 4px solid var(--primary-color);
 }
 
 .infoIcon {
@@ -968,7 +960,7 @@
 
 .infoText {
   font-size: var(--font-size-sm);
-  color: #92400e;
+  color: var(--primary-dark);
   line-height: 1.5;
   font-weight: 500;
 }

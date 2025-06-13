@@ -411,21 +411,19 @@ const JobshopContraintesForm = () => {
 
       {/* Configuration des temps de setup */}
       <div className={styles.section}>
-        <div className={styles.setupHeader}>
-          <h2 className={styles.sectionTitle}>Temps de setup (optionnel)</h2>
-          <div className={styles.setupToggle}>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={useSetupTimes}
-                onChange={(e) => toggleSetupTimes(e.target.checked)}
-                className={styles.checkbox}
-              />
-              <span className={styles.checkboxText}>
-                Activer les temps de setup entre jobs
-              </span>
-            </label>
-          </div>
+        <h2 className={styles.sectionTitle}>Temps de setup (optionnel)</h2>
+        <div className={styles.setupToggle}>
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={useSetupTimes}
+              onChange={(e) => toggleSetupTimes(e.target.checked)}
+              className={styles.checkbox}
+            />
+            <span className={styles.checkboxText}>
+              Activer les temps de setup entre jobs
+            </span>
+          </label>
         </div>
 
         {useSetupTimes && (

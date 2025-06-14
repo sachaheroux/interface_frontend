@@ -177,8 +177,8 @@ const FlowshopSmithForm = () => {
         // Convertir les données Smith au format du composant
         const newJobs = importedData.job_names.map((name, index) => ({
           name: name,
-          duration: importedData.jobs_data[index][0], // Smith n'a qu'une durée par job
-          dueDate: 10 // Valeur par défaut car Smith n'utilise pas les dates dues
+          duration: importedData.jobs_data[index][0], // Durée (premier élément)
+          dueDate: importedData.jobs_data[index][1] || importedData.due_dates[index] || 10 // Date due (deuxième élément ou depuis due_dates)
         }));
         setJobs(newJobs);
         setTimeUnit(importedData.unite);
@@ -188,17 +188,10 @@ const FlowshopSmithForm = () => {
       setResult(data.results);
       setImportSuccess(`Fichier "${fileName}" importé et traité avec succès ! ${data.imported_data.jobs_count} jobs détectés.`);
       
-      // Générer le diagramme de Gantt
-      const requestData = {
-        jobs: data.imported_data.jobs_data,
-        job_names: data.imported_data.job_names,
-        unite: data.imported_data.unite
-      };
-
-      const ganttResponse = await fetch(`${API_URL}/smith/gantt`, {
+      // Générer le diagramme de Gantt directement depuis l'import Excel
+      const ganttResponse = await fetch(`${API_URL}/smith/import-excel-gantt`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestData)
+        body: formData  // Réutiliser le même fichier Excel
       });
 
       if (ganttResponse.ok) {

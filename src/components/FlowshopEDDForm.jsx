@@ -150,21 +150,10 @@ function FlowshopEDDForm() {
       setResult(data.results);
       setImportSuccess(`Fichier "${fileName}" importé et traité avec succès ! ${data.imported_data.jobs_count} jobs et ${data.imported_data.machines_count} machines détectés.`);
       
-      // Générer le diagramme de Gantt
-      const payload = {
-        jobs_data: data.imported_data.jobs_data.map(job =>
-          job.map((duration, i) => [i, duration])
-        ),
-        due_dates: data.imported_data.due_dates,
-        unite: data.imported_data.unite,
-        job_names: data.imported_data.job_names,
-        machine_names: data.imported_data.machine_names
-      };
-
-      const ganttResponse = await fetch(`${API_URL}/edd/gantt`, {
+      // Générer le diagramme de Gantt directement depuis l'import Excel
+      const ganttResponse = await fetch(`${API_URL}/edd/import-excel-gantt`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: formData  // Réutiliser le même fichier Excel
       });
 
       if (ganttResponse.ok) {

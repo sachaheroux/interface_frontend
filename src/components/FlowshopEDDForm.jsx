@@ -138,13 +138,11 @@ function FlowshopEDDForm() {
         // Convertir au format EDD (avec objets { duration: "valeur" })
         const newJobs = importedData.jobs_data.map(job => 
           job.map(duration => ({ 
-            duration: typeof duration === 'number' ? duration.toString() : String(duration).replace(',', '.')
+            duration: parseFloat(duration).toString()
           }))
         );
         setJobs(newJobs);
-        setDueDates(importedData.due_dates.map(date => 
-          typeof date === 'number' ? date.toString() : String(date).replace(',', '.')
-        ));
+        setDueDates(importedData.due_dates.map(date => parseFloat(date).toString()));
         setJobNames(importedData.job_names);
         setMachineNames(importedData.machine_names);
         setUnite(importedData.unite);

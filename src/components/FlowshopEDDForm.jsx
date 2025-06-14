@@ -136,9 +136,10 @@ function FlowshopEDDForm() {
       if (data.imported_data) {
         const importedData = data.imported_data;
         // Convertir au format EDD (avec objets { duration: "valeur" })
+        // jobs_data format: [[machine_id, duration], [machine_id, duration], ...]
         const newJobs = importedData.jobs_data.map(job => 
-          job.map(duration => ({ 
-            duration: parseFloat(duration).toString()
+          job.map(task => ({ 
+            duration: parseFloat(task[1]).toString()  // task[1] est la durée
           }))
         );
         setJobs(newJobs);

@@ -144,7 +144,7 @@ function FlowshopSPTForm() {
     try {
       const success = downloadTemplate(templateType);
       if (success) {
-        setImportSuccess(`Template ${templateType} téléchargé avec succès ! Le fichier s'ouvrira automatiquement dans Excel.`);
+        setImportSuccess(`Template ${templateType} téléchargé ! 📋 Ouvrez le fichier CSV dans Excel, remplissez vos données, puis sauvegardez au format .xlsx pour l'import.`);
       } else {
         setError("Erreur lors de la génération du template");
       }

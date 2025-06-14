@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 import AgendaGrid from "./AgendaGrid";
+import { downloadTemplate } from "../utils/excelGenerator";
 
 function FlowshopSPTForm() {
   const [jobs, setJobs] = useState([
@@ -139,21 +140,16 @@ function FlowshopSPTForm() {
   };
 
   // Fonctions pour l'import Excel
-  const handleDownloadTemplate = async (templateType) => {
+  const handleDownloadTemplate = (templateType) => {
     try {
-      const response = await fetch(`https://interface-backend-1jgi.onrender.com/flowshop/template/${templateType}`);
-      if (!response.ok) throw new Error("Erreur lors du téléchargement du template");
-      
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `Template_Flowshop_${templateType.charAt(0).toUpperCase() + templateType.slice(1)}.xlsx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      const success = downloadTemplate(templateType);
+      if (success) {
+        setImportSuccess(`Template ${templateType} téléchargé avec succès ! Le fichier s'ouvrira automatiquement dans Excel.`);
+      } else {
+        setError("Erreur lors de la génération du template");
+      }
     } catch (error) {
+      console.error('Erreur téléchargement template:', error);
       setError(`Erreur téléchargement template: ${error.message}`);
     }
   };

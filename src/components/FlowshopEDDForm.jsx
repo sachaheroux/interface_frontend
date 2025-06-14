@@ -22,11 +22,15 @@ function FlowshopEDDForm() {
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
+  // Fonction utilitaire pour générer des valeurs aléatoirement entre 1 et 9
+  const getRandomDuration = () => String(Math.floor(Math.random() * 9) + 1);
+  const getRandomDueDate = () => String(Math.floor(Math.random() * 9) + 10); // Entre 10 et 18
+
   const addJob = () => {
     const machineCount = jobs[0].length;
-    const newJob = Array.from({ length: machineCount }, () => ({ duration: "1" }));
+    const newJob = Array.from({ length: machineCount }, () => ({ duration: getRandomDuration() }));
     setJobs([...jobs, newJob]);
-    setDueDates([...dueDates, "10"]);
+    setDueDates([...dueDates, getRandomDueDate()]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
   };
 
@@ -39,7 +43,7 @@ function FlowshopEDDForm() {
   };
 
   const addTaskToAllJobs = () => {
-    const updatedJobs = jobs.map(job => [...job, { duration: "1" }]);
+    const updatedJobs = jobs.map(job => [...job, { duration: getRandomDuration() }]);
     setJobs(updatedJobs);
     setMachineNames([...machineNames, `Machine ${machineNames.length}`]);
   };

@@ -33,13 +33,17 @@ const JobshopContraintesForm = () => {
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
+  // Fonction utilitaire pour générer des valeurs aléatoirement entre 1 et 9
+  const getRandomDuration = () => Math.floor(Math.random() * 9) + 1;
+  const getRandomDueDate = () => Math.floor(Math.random() * 9) + 10; // Entre 10 et 18
+
   // Gestion des jobs
   const addJob = () => {
     const newJobNumber = jobs.length + 1;
     setJobs([...jobs, {
       name: `Job ${newJobNumber}`,
-      tasks: [{ machine: 0, duration: 1 }],
-      dueDate: 10
+      tasks: [{ machine: 0, duration: getRandomDuration() }],
+      dueDate: getRandomDueDate()
     }]);
     
     // Ajouter un temps d'arrivée par défaut si les temps d'arrivée sont activés
@@ -78,7 +82,7 @@ const JobshopContraintesForm = () => {
   // Gestion des tâches individuelles
   const addTaskToJob = (jobIndex) => {
     const newJobs = [...jobs];
-    newJobs[jobIndex].tasks.push({ machine: 0, duration: 1 });
+    newJobs[jobIndex].tasks.push({ machine: 0, duration: getRandomDuration() });
     setJobs(newJobs);
   };
 

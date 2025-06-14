@@ -21,10 +21,14 @@ function FlowshopJohnsonForm() {
 
   const API_URL = "/api";
 
+  // Fonction utilitaire pour générer des valeurs aléatoirement entre 1 et 9
+  const getRandomDuration = () => String(Math.floor(Math.random() * 9) + 1);
+  const getRandomDueDate = () => String(Math.floor(Math.random() * 9) + 10); // Entre 10 et 18
+
   const addJob = () => {
-    const newJob = Array.from({ length: 2 }, () => "1");
+    const newJob = Array.from({ length: 2 }, () => getRandomDuration());
     setJobs([...jobs, newJob]);
-    setDueDates([...dueDates, "10"]);
+    setDueDates([...dueDates, getRandomDueDate()]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
   };
 

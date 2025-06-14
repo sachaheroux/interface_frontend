@@ -28,11 +28,15 @@ function FlowshopSPTForm() {
 
   const API_URL = "/api";
 
+  // Fonction utilitaire pour générer des valeurs aléatoirement entre 1 et 9
+  const getRandomDuration = () => String(Math.floor(Math.random() * 9) + 1);
+  const getRandomDueDate = () => String(Math.floor(Math.random() * 9) + 10); // Entre 10 et 18
+
   const addJob = () => {
     const machineCount = jobs[0].length;
-    const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: "1" }));
+    const newJob = Array.from({ length: machineCount }, (_, i) => ({ machine: String(i), duration: getRandomDuration() }));
     setJobs([...jobs, newJob]);
-    setDueDates([...dueDates, "10"]);
+    setDueDates([...dueDates, getRandomDueDate()]);
     setDueDateTimes([...dueDateTimes, ""]);
     setJobNames([...jobNames, `Job ${jobs.length}`]);
   };
@@ -47,7 +51,7 @@ function FlowshopSPTForm() {
   };
 
   const addTaskToAllJobs = () => {
-    const updatedJobs = jobs.map(job => [...job, { machine: String(job.length), duration: "1" }]);
+    const updatedJobs = jobs.map(job => [...job, { machine: String(job.length), duration: getRandomDuration() }]);
     setJobs(updatedJobs);
     setMachineNames([...machineNames, `Machine ${machineNames.length}`]);
   };

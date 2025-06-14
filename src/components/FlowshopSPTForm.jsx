@@ -356,13 +356,6 @@ function FlowshopSPTForm() {
                   >
                     📄 Template vide
                   </button>
-                  <button 
-                    className={styles.instructionsButton}
-                    onClick={handleDownloadInstructions}
-                    type="button"
-                  >
-                    📖 Instructions détaillées
-                  </button>
                 </div>
                 
                 <div className={styles.importUpload}>

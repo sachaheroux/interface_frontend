@@ -830,6 +830,29 @@
   box-shadow: var(--shadow-md);
 }
 
+.instructionsButton {
+  background: #FF9800;
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 180px;
+  justify-content: center;
+}
+
+.instructionsButton:hover {
+  background: #F57C00;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
 .importUpload {
   width: 100%;
   max-width: 300px;

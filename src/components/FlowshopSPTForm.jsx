@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 import AgendaGrid from "./AgendaGrid";
-import { downloadTemplate } from "../utils/excelGenerator";
+import { downloadTemplate, downloadInstructions } from "../utils/excelGenerator";
 
 function FlowshopSPTForm() {
   const [jobs, setJobs] = useState([
@@ -151,6 +151,20 @@ function FlowshopSPTForm() {
     } catch (error) {
       console.error('Erreur téléchargement template:', error);
       setError(`Erreur téléchargement template: ${error.message}`);
+    }
+  };
+
+  const handleDownloadInstructions = () => {
+    try {
+      const success = downloadInstructions();
+      if (success) {
+        setImportSuccess("Instructions téléchargées ! 📖 Consultez le fichier texte pour un guide détaillé.");
+      } else {
+        setError("Erreur lors du téléchargement des instructions");
+      }
+    } catch (error) {
+      console.error('Erreur téléchargement instructions:', error);
+      setError(`Erreur téléchargement instructions: ${error.message}`);
     }
   };
 
@@ -317,6 +331,13 @@ function FlowshopSPTForm() {
                     type="button"
                   >
                     📄 Template vide
+                  </button>
+                  <button 
+                    className={styles.instructionsButton}
+                    onClick={handleDownloadInstructions}
+                    type="button"
+                  >
+                    📖 Instructions détaillées
                   </button>
                 </div>
                 

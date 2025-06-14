@@ -7,7 +7,7 @@ export const createFlowshopTemplate = (templateType = "exemple") => {
   let csvContent = "";
   
   if (isExample) {
-    // Template avec exemple - Structure matrice comme l'interface
+    // Template avec exemple - Structure matrice simple et propre
     csvContent = `Job,Découpe,Assemblage,Finition,Date Due
 Job_A,4,2,3,12
 Job_B,3,4,2,15
@@ -19,29 +19,11 @@ Job_G,,,
 Job_H,,,
 Job_I,,,
 Job_J,,,
-
-INSTRUCTIONS - Comment utiliser ce template:
-,
-"1. STRUCTURE:",
-"• Première colonne: Nom des jobs (Job_A Job_B etc.)",
-"• Colonnes du milieu: Durées sur chaque machine",
-"• Dernière colonne: Date d'échéance (Date Due)",
-,
-"2. PERSONNALISATION:",
-"• Modifiez les noms des machines dans la première ligne",
-"• Ajoutez des colonnes pour plus de machines",
-"• Ajoutez des lignes pour plus de jobs",
-"• Supprimez les lignes vides non utilisées",
-,
-"3. RÈGLES:",
-"• Toutes les durées doivent être des nombres positifs",
-"• Ne laissez pas de cellules vides dans les données",
-"• Les noms de jobs doivent être uniques",
-"• Sauvegardez au format .xlsx pour l'import",
-,
-"4. EXEMPLE:",
-"Job_A: 4h sur Découpe 2h sur Assemblage 3h sur Finition",
-"Date d'échéance: 12 heures"`;
+Job_K,,,
+Job_L,,,
+Job_M,,,
+Job_N,,,
+Job_O,,,`;
   } else {
     // Template vide avec structure claire
     csvContent = `Job,Machine_0,Machine_1,Machine_2,Date Due
@@ -55,27 +37,11 @@ Job_7,,,
 Job_8,,,
 Job_9,,,
 Job_10,,,
-
-INSTRUCTIONS - Comment utiliser ce template:
-,
-"1. STRUCTURE:",
-"• Première colonne: Nom des jobs",
-"• Colonnes du milieu: Durées sur chaque machine",
-"• Dernière colonne: Date d'échéance",
-,
-"2. ÉTAPES:",
-"• Modifiez Machine_0 Machine_1 etc. avec vos vrais noms de machines",
-"• Remplissez les durées pour chaque job sur chaque machine",
-"• Indiquez la date d'échéance dans la dernière colonne",
-"• Ajoutez des colonnes/lignes si nécessaire",
-,
-"3. RÈGLES:",
-"• Utilisez uniquement des nombres positifs pour les durées",
-"• Ne laissez pas de cellules vides dans les données",
-"• Sauvegardez au format .xlsx pour l'import",
-,
-"4. CONSEIL:",
-"Ce template est extensible! Ajoutez autant de machines et jobs que nécessaire"`;
+Job_11,,,
+Job_12,,,
+Job_13,,,
+Job_14,,,
+Job_15,,,`;
   }
   
   return csvContent;
@@ -106,6 +72,65 @@ export const downloadTemplate = (templateType) => {
     return true;
   } catch (error) {
     console.error('Erreur génération template:', error);
+    return false;
+  }
+};
+
+// Créer un fichier d'instructions séparé
+export const createInstructionsFile = () => {
+  const instructionsContent = `INSTRUCTIONS - Template Flowshop
+
+STRUCTURE DU FICHIER:
+• Première colonne: Nom des jobs (Job_A, Job_B, etc.)
+• Colonnes du milieu: Durées sur chaque machine
+• Dernière colonne: Date d'échéance (Date Due)
+
+COMMENT UTILISER:
+1. Modifiez les noms des machines dans la première ligne
+   (remplacez Machine_0, Machine_1, etc. par vos vrais noms)
+2. Remplissez les durées pour chaque job sur chaque machine
+3. Indiquez la date d'échéance dans la dernière colonne
+4. Ajoutez des colonnes pour plus de machines si nécessaire
+5. Ajoutez des lignes pour plus de jobs si nécessaire
+6. Supprimez les lignes vides non utilisées
+
+RÈGLES IMPORTANTES:
+• Toutes les durées doivent être des nombres positifs
+• Ne laissez pas de cellules vides dans les données utilisées
+• Les noms de jobs doivent être uniques
+• Sauvegardez au format .xlsx pour l'import dans l'application
+
+EXEMPLE:
+Job_A: 4h sur Découpe, 2h sur Assemblage, 3h sur Finition
+Date d'échéance: 12 heures
+
+CONSEILS:
+• Ce template est extensible! Ajoutez autant de machines et jobs que nécessaire
+• Vous pouvez copier-coller des lignes pour dupliquer la structure
+• Excel ajustera automatiquement les colonnes`;
+
+  return instructionsContent;
+};
+
+// Télécharger le fichier d'instructions
+export const downloadInstructions = () => {
+  try {
+    const content = createInstructionsFile();
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+    
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Instructions_Template_Flowshop.txt";
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    return true;
+  } catch (error) {
+    console.error('Erreur téléchargement instructions:', error);
     return false;
   }
 };

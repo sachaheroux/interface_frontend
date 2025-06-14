@@ -5,12 +5,11 @@ import ExcelImportSection from './ExcelImportSection';
 
 const FlowshopContraintesForm = () => {
   const [jobs, setJobs] = useState([
-    { name: 'Job 1', durations: [[8], [6]], dueDate: 10 },
-    { name: 'Job 2', durations: [[4], [5]], dueDate: 15 },
-    { name: 'Job 3', durations: [[7], [9]], dueDate: 20 }
+    { name: 'Job 1', durations: [8, 6], dueDate: 10 },
+    { name: 'Job 2', durations: [4, 5], dueDate: 15 },
+    { name: 'Job 3', durations: [7, 9], dueDate: 20 }
   ]);
   const [numMachines, setNumMachines] = useState(2);
-  const [machinesPerStage, setMachinesPerStage] = useState([1, 1]); // Nombre de machines par étape (pour hybride)
   const [timeUnit, setTimeUnit] = useState('heures');
   const [machineNames, setMachineNames] = useState(['Machine 1', 'Machine 2']);
   const [result, setResult] = useState(null);
@@ -46,57 +45,23 @@ const FlowshopContraintesForm = () => {
       );
       setMachineNames(newNames);
       
-      // Ajuster le nombre de machines par étape (pour hybride)
-      const newMachinesPerStage = Array.from({ length: newCount }, (_, i) => 
-        machinesPerStage[i] || 1
-      );
-      setMachinesPerStage(newMachinesPerStage);
-      
-      // Ajuster les durées des jobs (tableau 2D)
+      // Ajuster les durées des jobs (tableau simple)
       setJobs(jobs.map(job => ({
         ...job,
         durations: job.durations.slice(0, newCount).concat(
-          Array(Math.max(0, newCount - job.durations.length)).fill(null).map(() => [generateRandomDuration()])
+          Array(Math.max(0, newCount - job.durations.length)).fill(0).map(() => generateRandomDuration())
         )
       })));
     }
   };
 
-  const updateMachinesPerStage = (machineIndex, machineCount) => {
-    if (machineCount >= 1 && machineCount <= 5) {
-      const newMachinesPerStage = [...machinesPerStage];
-      newMachinesPerStage[machineIndex] = machineCount;
-      setMachinesPerStage(newMachinesPerStage);
-      
-      // Ajuster les durées pour tous les jobs selon le nouveau nombre de machines
-      setJobs(jobs.map(job => {
-        const newDurations = [...job.durations];
-        if (newDurations[machineIndex]) {
-          // Ajuster la taille du tableau de durées pour cette machine
-          const currentDurations = newDurations[machineIndex];
-          if (currentDurations.length < machineCount) {
-            // Ajouter des durées manquantes
-            newDurations[machineIndex] = [
-              ...currentDurations,
-              ...Array(machineCount - currentDurations.length).fill(0).map(() => generateRandomDuration())
-            ];
-          } else if (currentDurations.length > machineCount) {
-            // Supprimer les durées en trop
-            newDurations[machineIndex] = currentDurations.slice(0, machineCount);
-          }
-        }
-        return { ...job, durations: newDurations };
-      }));
-    }
-  };
+
 
   const addJob = () => {
     const newJobNumber = jobs.length + 1;
     setJobs([...jobs, {
       name: `Job ${newJobNumber}`,
-      durations: Array(numMachines).fill(null).map((_, i) => 
-        Array(machinesPerStage[i]).fill(0).map(() => generateRandomDuration())
-      ),
+      durations: Array(numMachines).fill(0).map(() => generateRandomDuration()),
       dueDate: generateRandomDuration() * 5 // Due date entre 5 et 50
     }]);
   };
@@ -111,18 +76,14 @@ const FlowshopContraintesForm = () => {
     const newJobs = [...jobs];
     if (field === 'name' || field === 'dueDate') {
       newJobs[index][field] = value;
-    } else if (field === 'duration') {
-      const [jobIndex, machineIndex] = value;
-      const parsedValue = parseFloat(value.duration);
-      newJobs[jobIndex].durations[machineIndex] = isNaN(parsedValue) ? 0 : parsedValue;
     }
     setJobs(newJobs);
   };
 
-  const updateJobDuration = (jobIndex, machineIndex, subMachineIndex, value) => {
+  const updateJobDuration = (jobIndex, machineIndex, value) => {
     const newJobs = [...jobs];
     const parsedValue = parseFloat(value);
-    newJobs[jobIndex].durations[machineIndex][subMachineIndex] = isNaN(parsedValue) ? 0 : parsedValue;
+    newJobs[jobIndex].durations[machineIndex] = isNaN(parsedValue) ? 0 : parsedValue;
     setJobs(newJobs);
   };
 
@@ -191,53 +152,28 @@ const FlowshopContraintesForm = () => {
     setError('');
     
     try {
-      // Format des données pour flowshop hybride ou classique
-      const hasParallelMachines = machinesPerStage.some(count => count > 1);
-      
+      // Format des données pour flowshop classique (une machine par étape)
       const formattedJobs = jobs.map((job, jobIndex) => {
         console.log(`DEBUG: Job ${jobIndex} raw data:`, job);
         console.log(`DEBUG: Job ${jobIndex} durations:`, job.durations);
         
-        if (hasParallelMachines) {
-          // Mode hybride : envoyer les durées par machine physique
-          const jobData = [];
-          job.durations.forEach((machineDurations, stageIndex) => {
-            console.log(`DEBUG: Stage ${stageIndex} durations:`, machineDurations);
-            machineDurations.forEach((duration, subMachineIndex) => {
-              console.log(`DEBUG: Raw duration:`, duration, typeof duration);
-              const parsedDuration = parseFloat(duration || 0);
-              console.log(`DEBUG: Parsed duration:`, parsedDuration);
-              jobData.push(isNaN(parsedDuration) ? 0 : parsedDuration);
-            });
-          });
-          console.log(`DEBUG: Job ${jobIndex} final data:`, jobData);
-          return jobData;
-        } else {
-          // Mode classique : format original
-          return job.durations.map((machineDurations, machineIndex) => {
-            const avgDuration = machineDurations.reduce((sum, d) => sum + parseFloat(d || 0), 0) / machineDurations.length;
-            return [machineIndex, isNaN(avgDuration) ? 0 : avgDuration];
-          });
-        }
+        return job.durations.map((duration, machineIndex) => {
+          const parsedDuration = parseFloat(duration || 0);
+          return [machineIndex, isNaN(parsedDuration) ? 0 : parsedDuration];
+        });
       });
+      
       const formattedDueDates = jobs.map(job => {
         const parsedDueDate = parseFloat(job.dueDate);
         return isNaN(parsedDueDate) ? 0 : parsedDueDate;
       });
-
-      // Vérifier si c'est un flowshop hybride (au moins une machine a plus de 1 exemplaire)
-      // (utilise la variable isHybride déjà définie plus haut)
 
       const requestData = {
         jobs_data: formattedJobs,
         due_dates: formattedDueDates,
         unite: timeUnit,
         job_names: jobs.map(job => job.name),
-        machine_names: machineNames,
-        ...(isHybride && {
-          stage_names: machineNames,
-          machines_per_stage: machinesPerStage
-        })
+        machine_names: machineNames
       };
 
       // Ajouter les paramètres d'agenda si activés
@@ -387,7 +323,7 @@ const FlowshopContraintesForm = () => {
         // Convertir les données au format du composant Contraintes
         const newJobs = importedData.job_names.map((name, index) => ({
           name: name,
-          durations: importedData.jobs_data[index].map(task => [task[1]]), // Convertir au format [[durée]]
+          durations: importedData.jobs_data[index].map(task => task[1]), // Convertir au format [durée]
           dueDate: importedData.due_dates[index]
         }));
         
@@ -395,9 +331,6 @@ const FlowshopContraintesForm = () => {
         setNumMachines(importedData.machines_count);
         setMachineNames(importedData.machine_names);
         setTimeUnit(importedData.unite);
-        
-        // Réinitialiser machinesPerStage pour flowshop classique
-        setMachinesPerStage(Array(importedData.machines_count).fill(1));
       }
       
       // Afficher les résultats
@@ -661,18 +594,6 @@ const FlowshopContraintesForm = () => {
                   className={styles.input}
                   placeholder={`Machine ${index + 1}`}
                 />
-                <select
-                  value={machinesPerStage[index]}
-                  onChange={(e) => updateMachinesPerStage(index, parseInt(e.target.value))}
-                  className={styles.qtySelectConfig}
-                  title="Nombre de machines identiques"
-                >
-                  <option value={1}>Qté: 1</option>
-                  <option value={2}>Qté: 2</option>
-                  <option value={3}>Qté: 3</option>
-                  <option value={4}>Qté: 4</option>
-                  <option value={5}>Qté: 5</option>
-                </select>
               </div>
             ))}
           </div>
@@ -690,9 +611,6 @@ const FlowshopContraintesForm = () => {
                 {machineNames.map((name, index) => (
                   <th key={index} className={styles.machineHeader}>
                     Durée sur {name} ({timeUnit})
-                    {machinesPerStage[index] > 1 && (
-                      <><br /><small>({machinesPerStage[index]} machines)</small></>
-                    )}
                   </th>
                 ))}
                 <th className={styles.dueDateHeader}>Date due ({timeUnit})</th>
@@ -710,35 +628,17 @@ const FlowshopContraintesForm = () => {
                       placeholder={`Job ${jobIndex + 1}`}
                     />
                   </td>
-                  {job.durations.map((machineDurations, machineIndex) => (
+                  {job.durations.map((duration, machineIndex) => (
                     <td key={machineIndex} className={styles.durationCell}>
-                      <div className={styles.durationGroup}>
-                        {machineDurations.map((duration, subMachineIndex) => {
-                          // Générer le nom de la sous-machine : M1, M1a, M1b, etc.
-                          const getSubMachineName = (machineIndex, subIndex) => {
-                            const baseName = `M${machineIndex + 1}`;
-                            if (subIndex === 0) return baseName;
-                            return baseName + String.fromCharCode(97 + subIndex - 1); // a, b, c, d...
-                          };
-                          
-                          return (
-                            <div key={subMachineIndex} className={styles.subMachineInput}>
-                              <label className={styles.subMachineLabel}>
-                                {getSubMachineName(machineIndex, subMachineIndex)}:
-                              </label>
-                              <input
-                                type="number"
-                                value={duration}
-                                onChange={(e) => updateJobDuration(jobIndex, machineIndex, subMachineIndex, e.target.value)}
-                                className={styles.durationInput}
-                                min="0"
-                                step="0.1"
-                                placeholder="0"
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
+                      <input
+                        type="number"
+                        value={duration}
+                        onChange={(e) => updateJobDuration(jobIndex, machineIndex, e.target.value)}
+                        className={styles.durationInput}
+                        min="0"
+                        step="0.1"
+                        placeholder="0"
+                      />
                     </td>
                   ))}
                   <td className={styles.dueDateCell}>

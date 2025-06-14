@@ -49,29 +49,22 @@ Job_15,,,`;
 
 export const downloadTemplate = (templateType) => {
   try {
-    const csvContent = createFlowshopTemplate(templateType);
+    // Utiliser directement le fichier Excel créé par l'utilisateur
+    const templateFileName = 'Template-Flowshop_Vide.xlsx';
     
-    // Ajouter le BOM UTF-8 pour que Excel reconnaisse l'encodage
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + csvContent], { 
-      type: 'text/csv;charset=utf-8;' 
-    });
-    
-    // Créer le lien de téléchargement
-    const url = URL.createObjectURL(blob);
+    // Créer le lien de téléchargement vers le fichier dans public/
     const link = document.createElement("a");
-    link.href = url;
-    link.download = `Template_Flowshop_${templateType.charAt(0).toUpperCase() + templateType.slice(1)}.csv`;
+    link.href = `/${templateFileName}`;
+    link.download = `Template_Flowshop_${templateType.charAt(0).toUpperCase() + templateType.slice(1)}.xlsx`;
     
     // Déclencher le téléchargement
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
     
     return true;
   } catch (error) {
-    console.error('Erreur génération template:', error);
+    console.error('Erreur téléchargement template:', error);
     return false;
   }
 };

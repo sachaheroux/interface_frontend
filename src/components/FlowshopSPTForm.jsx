@@ -144,7 +144,7 @@ function FlowshopSPTForm() {
     try {
       const success = downloadTemplate(templateType);
       if (success) {
-        setImportSuccess(`Template ${templateType} téléchargé ! 📋 Ouvrez le fichier CSV dans Excel, remplissez vos données, puis sauvegardez au format .xlsx pour l'import.`);
+        setImportSuccess(`Template ${templateType} téléchargé ! 📋 Remplissez vos données dans le tableau (12 colonnes x 11 lignes), indiquez l'unité de temps en C20 (j/h/m), puis importez le fichier.`);
       } else {
         setError("Erreur lors de la génération du template");
       }

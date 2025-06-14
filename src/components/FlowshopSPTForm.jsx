@@ -1,7 +1,6 @@
 import { useState } from "react";
 import styles from "./FlowshopSPTForm.module.css";
 import AgendaGrid from "./AgendaGrid";
-import { downloadTemplate, downloadInstructions } from "../utils/excelGenerator";
 
 function FlowshopSPTForm() {
   const [jobs, setJobs] = useState([
@@ -142,31 +141,28 @@ function FlowshopSPTForm() {
   // Fonctions pour l'import Excel
   const handleDownloadTemplate = (templateType) => {
     try {
-      const success = downloadTemplate(templateType);
-      if (success) {
-        setImportSuccess(`Template ${templateType} téléchargé ! 📋 Remplissez vos données dans le tableau (12 colonnes x 11 lignes), indiquez l'unité de temps en C20 (j/h/m), puis importez le fichier.`);
+      let fileName;
+      if (templateType === 'exemple') {
+        fileName = 'Template-Flowshop_Exemple.xlsx';
       } else {
-        setError("Erreur lors de la génération du template");
+        fileName = 'Template-Flowshop_Vide.xlsx';
       }
+      
+      const link = document.createElement('a');
+      link.href = `/${fileName}`;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setImportSuccess(`Template ${templateType} téléchargé ! 📋 Remplissez vos données dans le tableau (12 colonnes x 11 lignes), indiquez l'unité de temps en C20 (j/h/m), puis importez le fichier.`);
     } catch (error) {
       console.error('Erreur téléchargement template:', error);
       setError(`Erreur téléchargement template: ${error.message}`);
     }
   };
 
-  const handleDownloadInstructions = () => {
-    try {
-      const success = downloadInstructions();
-      if (success) {
-        setImportSuccess("Instructions téléchargées ! 📖 Consultez le fichier texte pour un guide détaillé.");
-      } else {
-        setError("Erreur lors du téléchargement des instructions");
-      }
-    } catch (error) {
-      console.error('Erreur téléchargement instructions:', error);
-      setError(`Erreur téléchargement instructions: ${error.message}`);
-    }
-  };
+
 
   const handleFileImport = async (event) => {
     const file = event.target.files[0];
@@ -175,12 +171,17 @@ function FlowshopSPTForm() {
     setIsImporting(true);
     setError(null);
     setImportSuccess(null);
+    
+    // Réinitialiser les résultats précédents
+    setResult(null);
+    setGanttUrl(null);
+    setAgendaData(null);
 
     try {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`https://interface-backend-1jgi.onrender.com/spt/import-excel`, {
+      const response = await fetch(`${API_URL}/spt/import-excel`, {
         method: 'POST',
         body: formData
       });
@@ -192,25 +193,48 @@ function FlowshopSPTForm() {
 
       const data = await response.json();
       
-      // Mettre à jour les données du formulaire avec les données importées
+      // Remplacer complètement les données du formulaire avec les données importées
       const importedData = data.imported_data;
+      
+      // Mettre à jour tous les états avec les données importées uniquement
       setJobNames(importedData.job_names || []);
       setMachineNames(importedData.machine_names || []);
+      setUnite(importedData.unite || 'heures');
+      
+      // Reconstruire les jobs à partir des données importées
+      if (importedData.jobs_data && importedData.jobs_data.length > 0) {
+        setJobs(importedData.jobs_data.map(job => 
+          job.map((task, index) => ({
+            machine: String(index),
+            duration: String(task[1])
+          }))
+        ));
+      }
+      
+      // Mettre à jour les dates d'échéance
+      if (importedData.due_dates && importedData.due_dates.length > 0) {
+        setDueDates(importedData.due_dates.map(date => String(date)));
+      }
       
       // Afficher les résultats directement
       setResult(data.results);
-      setImportSuccess(`Fichier '${file.name}' importé et traité avec succès!`);
+      setImportSuccess(`Fichier '${file.name}' importé et traité avec succès! Les données du formulaire ont été remplacées par celles du fichier.`);
       
-      // Générer le diagramme de Gantt
+      // Générer le diagramme de Gantt si pas en mode avancé
       if (!showAdvanced) {
         try {
-          const ganttFormData = new FormData();
-          ganttFormData.append('file', file);
+          const ganttResponse = await fetch(`${API_URL}/spt/import-excel-gantt`, {
+            method: 'POST',
+            body: formData
+          });
           
-          // Note: Il faudrait créer un endpoint spécifique pour le Gantt depuis Excel
-          // Pour l'instant, on utilise les données importées
+          if (ganttResponse.ok) {
+            const blob = await ganttResponse.blob();
+            const url = URL.createObjectURL(blob);
+            setGanttUrl(url);
+          }
         } catch (ganttError) {
-          console.log("Pas de diagramme de Gantt disponible pour l'import Excel");
+          console.log("Diagramme de Gantt non disponible pour l'import Excel");
         }
       }
 

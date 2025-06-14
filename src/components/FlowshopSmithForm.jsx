@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './FlowshopSmithForm.module.css';
+import ExcelImportSection from './ExcelImportSection';
 
 const FlowshopSmithForm = () => {
   const [jobs, setJobs] = useState([
@@ -11,6 +12,10 @@ const FlowshopSmithForm = () => {
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
   const [ganttUrl, setGanttUrl] = useState(null);
+  
+  // États pour l'import Excel
+  const [isImporting, setIsImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -145,6 +150,71 @@ const FlowshopSmithForm = () => {
     }
   };
 
+  // Fonction d'import Excel
+  const handleExcelImport = async (formData, fileName) => {
+    setIsImporting(true);
+    setError('');
+    setImportSuccess(null);
+    setResult(null);
+    setGanttUrl(null);
+
+    try {
+      const response = await fetch(`${API_URL}/smith/import-excel`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erreur lors de l\'import');
+      }
+
+      const data = await response.json();
+      
+      // Mettre à jour les données du formulaire avec les données importées
+      if (data.imported_data) {
+        const importedData = data.imported_data;
+        // Convertir les données Smith au format du composant
+        const newJobs = importedData.job_names.map((name, index) => ({
+          name: name,
+          duration: importedData.jobs_data[index][0], // Smith n'a qu'une durée par job
+          dueDate: 10 // Valeur par défaut car Smith n'utilise pas les dates dues
+        }));
+        setJobs(newJobs);
+        setTimeUnit(importedData.unite);
+      }
+      
+      // Afficher les résultats
+      setResult(data.results);
+      setImportSuccess(`Fichier "${fileName}" importé et traité avec succès ! ${data.imported_data.jobs_count} jobs détectés.`);
+      
+      // Générer le diagramme de Gantt
+      const requestData = {
+        jobs: data.imported_data.jobs_data,
+        job_names: data.imported_data.job_names,
+        unite: data.imported_data.unite
+      };
+
+      const ganttResponse = await fetch(`${API_URL}/smith/gantt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestData)
+      });
+
+      if (ganttResponse.ok) {
+        const blob = await ganttResponse.blob();
+        const url = URL.createObjectURL(blob);
+        setGanttUrl(url);
+      }
+
+    } catch (error) {
+      console.error('Erreur import Excel:', error);
+      setError(error.message);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   return (
     <div className={styles.algorithmContainer}>
       {/* Header */}
@@ -193,6 +263,16 @@ const FlowshopSmithForm = () => {
           </div>
         </div>
       </div>
+
+      {/* Import Excel */}
+      <ExcelImportSection
+        onImport={handleExcelImport}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={error}
+        algorithmName="Smith"
+        API_URL={API_URL}
+      />
 
       {/* Tableau des données */}
       <div className={styles.section}>

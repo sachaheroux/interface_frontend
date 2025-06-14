@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./FlowshopEDDForm.module.css";
 import config from "../config";
+import ExcelImportSection from "./ExcelImportSection";
 
 function FlowshopEDDForm() {
   const [jobs, setJobs] = useState([
@@ -14,6 +15,10 @@ function FlowshopEDDForm() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
+  
+  // États pour l'import Excel
+  const [isImporting, setIsImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -106,6 +111,76 @@ function FlowshopEDDForm() {
     document.body.removeChild(link);
   };
 
+  // Fonction d'import Excel
+  const handleExcelImport = async (formData, fileName) => {
+    setIsImporting(true);
+    setError(null);
+    setImportSuccess(null);
+    setResult(null);
+    setGanttUrl(null);
+
+    try {
+      const response = await fetch(`${API_URL}/edd/import-excel`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erreur lors de l\'import');
+      }
+
+      const data = await response.json();
+      
+      // Mettre à jour les données du formulaire avec les données importées
+      if (data.imported_data) {
+        const importedData = data.imported_data;
+        // Convertir au format EDD (avec objets { duration: "valeur" })
+        const newJobs = importedData.jobs_data.map(job => 
+          job.map(duration => ({ duration: String(duration) }))
+        );
+        setJobs(newJobs);
+        setDueDates(importedData.due_dates.map(String));
+        setJobNames(importedData.job_names);
+        setMachineNames(importedData.machine_names);
+        setUnite(importedData.unite);
+      }
+      
+      // Afficher les résultats
+      setResult(data.results);
+      setImportSuccess(`Fichier "${fileName}" importé et traité avec succès ! ${data.imported_data.jobs_count} jobs et ${data.imported_data.machines_count} machines détectés.`);
+      
+      // Générer le diagramme de Gantt
+      const payload = {
+        jobs_data: data.imported_data.jobs_data.map(job =>
+          job.map((duration, i) => [i, duration])
+        ),
+        due_dates: data.imported_data.due_dates,
+        unite: data.imported_data.unite,
+        job_names: data.imported_data.job_names,
+        machine_names: data.imported_data.machine_names
+      };
+
+      const ganttResponse = await fetch(`${API_URL}/edd/gantt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (ganttResponse.ok) {
+        const blob = await ganttResponse.blob();
+        const url = URL.createObjectURL(blob);
+        setGanttUrl(url);
+      }
+
+    } catch (error) {
+      console.error('Erreur import Excel:', error);
+      setError(error.message);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   return (
     <div className="algorithmContent">
       <div className={styles.algorithmContainer}>
@@ -158,6 +233,16 @@ function FlowshopEDDForm() {
             </div>
           </div>
         </div>
+
+        {/* Import Excel */}
+        <ExcelImportSection
+          onImport={handleExcelImport}
+          isImporting={isImporting}
+          importSuccess={importSuccess}
+          error={error}
+          algorithmName="EDD"
+          API_URL={API_URL}
+        />
 
         {/* Configuration des machines */}
         <div className={styles.section}>

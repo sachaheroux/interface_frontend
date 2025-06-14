@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./FlowshopJohnsonForm.module.css";
+import ExcelImportSection from "./ExcelImportSection";
 
 function FlowshopJohnsonForm() {
   const [jobs, setJobs] = useState([
@@ -13,6 +14,10 @@ function FlowshopJohnsonForm() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [ganttUrl, setGanttUrl] = useState(null);
+  
+  // États pour l'import Excel
+  const [isImporting, setIsImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
 
   const API_URL = "/api";
 
@@ -113,6 +118,70 @@ function FlowshopJohnsonForm() {
     setMachineNames(newNames);
   };
 
+  // Fonction d'import Excel
+  const handleExcelImport = async (formData, fileName) => {
+    setIsImporting(true);
+    setError(null);
+    setImportSuccess(null);
+    setResult(null);
+    setGanttUrl(null);
+
+    try {
+      const response = await fetch(`${API_URL}/johnson/import-excel`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erreur lors de l\'import');
+      }
+
+      const data = await response.json();
+      
+      // Mettre à jour les données du formulaire avec les données importées
+      if (data.imported_data) {
+        const importedData = data.imported_data;
+        setJobs(importedData.jobs_data.map(job => job.map(String)));
+        setDueDates(importedData.due_dates.map(String));
+        setJobNames(importedData.job_names);
+        setMachineNames(importedData.machine_names);
+        setUnite(importedData.unite);
+      }
+      
+      // Afficher les résultats
+      setResult(data.results);
+      setImportSuccess(`Fichier "${fileName}" importé et traité avec succès ! ${data.imported_data.jobs_count} jobs et ${data.imported_data.machines_count} machines détectés.`);
+      
+      // Générer le diagramme de Gantt
+      const payload = {
+        jobs_data: data.imported_data.jobs_data,
+        due_dates: data.imported_data.due_dates,
+        unite: data.imported_data.unite,
+        job_names: data.imported_data.job_names,
+        machine_names: data.imported_data.machine_names
+      };
+
+      const ganttResponse = await fetch(`${API_URL}/johnson/gantt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (ganttResponse.ok) {
+        const blob = await ganttResponse.blob();
+        const url = URL.createObjectURL(blob);
+        setGanttUrl(url);
+      }
+
+    } catch (error) {
+      console.error('Erreur import Excel:', error);
+      setError(error.message);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   return (
     <div className={styles.algorithmContainer}>
       {/* ===== HEADER ===== */}
@@ -154,6 +223,16 @@ function FlowshopJohnsonForm() {
           </div>
         </div>
       </div>
+
+      {/* ===== IMPORT EXCEL ===== */}
+      <ExcelImportSection
+        onImport={handleExcelImport}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={error}
+        algorithmName="Johnson"
+        API_URL={API_URL}
+      />
 
       {/* ===== CONFIGURATION MACHINES ===== */}
       <div className={styles.section}>

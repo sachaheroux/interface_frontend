@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './FlowshopContraintesForm.module.css';
 import AgendaGrid from './AgendaGrid';
+import ExcelImportSection from './ExcelImportSection';
 
 const FlowshopContraintesForm = () => {
   const [jobs, setJobs] = useState([
@@ -16,6 +17,10 @@ const FlowshopContraintesForm = () => {
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
   const [agendaData, setAgendaData] = useState(null);
+  
+  // États pour l'import Excel
+  const [isImporting, setIsImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [startDateTime, setStartDateTime] = useState('2025-06-01T08:00:00');
   const [openingHours, setOpeningHours] = useState({ start: '08:00', end: '17:00' });
@@ -354,6 +359,59 @@ const FlowshopContraintesForm = () => {
     setPauses(newPauses);
   };
 
+  // Fonction d'import Excel
+  const handleExcelImport = async (formData, fileName) => {
+    setIsImporting(true);
+    setError('');
+    setImportSuccess(null);
+    setResult(null);
+    setAgendaData(null);
+
+    try {
+      const response = await fetch(`${API_URL}/contraintes/import-excel`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erreur lors de l\'import');
+      }
+
+      const data = await response.json();
+      
+      // Mettre à jour les données du formulaire avec les données importées
+      if (data.imported_data) {
+        const importedData = data.imported_data;
+        
+        // Convertir les données au format du composant Contraintes
+        const newJobs = importedData.job_names.map((name, index) => ({
+          name: name,
+          durations: importedData.jobs_data[index].map(task => [task[1]]), // Convertir au format [[durée]]
+          dueDate: importedData.due_dates[index]
+        }));
+        
+        setJobs(newJobs);
+        setNumMachines(importedData.machines_count);
+        setMachineNames(importedData.machine_names);
+        setTimeUnit(importedData.unite);
+        
+        // Réinitialiser machinesPerStage pour flowshop classique
+        setMachinesPerStage(Array(importedData.machines_count).fill(1));
+      }
+      
+      // Afficher les résultats
+      setResult(data.results);
+      setImportSuccess(`Fichier "${fileName}" importé et traité avec succès ! ${data.imported_data.jobs_count} jobs et ${data.imported_data.machines_count} machines détectés.`);
+
+    } catch (error) {
+      console.error('Erreur import Excel:', error);
+      setError(error.message);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   return (
     <div className={styles.algorithmContainer}>
       {/* Header */}
@@ -420,6 +478,16 @@ const FlowshopContraintesForm = () => {
           </div>
         </div>
       </div>
+
+      {/* Import Excel */}
+      <ExcelImportSection
+        onImport={handleExcelImport}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={error}
+        algorithmName="Contraintes"
+        API_URL={API_URL}
+      />
 
       {/* Paramètres d'agenda avancés */}
       <div className={`${styles.section} ${styles.agendaSection}`}>

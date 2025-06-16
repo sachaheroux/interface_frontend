@@ -1,66 +1,37 @@
 function FlowshopCompareInfo() {
   return (
-    <div className="info-container">
-      <h3>🔄 Comparaison des algorithmes Flowshop</h3>
-      
-      <div className="info-section">
-        <h4>📋 Objectif</h4>
-        <p>
-          Cette fonctionnalité permet de comparer automatiquement tous les algorithmes 
-          flowshop compatibles avec vos données pour trouver la meilleure solution 
-          selon différents critères.
-        </p>
-      </div>
-
-      <div className="info-section">
-        <h4>🎯 Algorithmes supportés</h4>
-        <ul>
-          <li><strong>SPT</strong> : Shortest Processing Time (toutes configurations)</li>
-          <li><strong>EDD</strong> : Earliest Due Date (toutes configurations)</li>
-          <li><strong>Contraintes</strong> : Solveur OR-Tools CP-SAT (toutes configurations)</li>
-          <li><strong>Johnson</strong> : Algorithme optimal pour exactement 2 machines</li>
-          <li><strong>Johnson modifié</strong> : Extension pour 3 machines minimum</li>
-          <li><strong>Smith</strong> : Optimisation pondérée pour 1 machine exactement</li>
-        </ul>
-      </div>
-
-      <div className="info-section">
-        <h4>⚡ Sélection automatique</h4>
-        <p>
-          Le système détecte automatiquement le nombre de machines dans vos données 
-          et n'exécute que les algorithmes compatibles. Les algorithmes incompatibles 
-          sont signalés avec une explication claire.
-        </p>
-      </div>
-
-      <div className="info-section">
-        <h4>📊 Critères de comparaison</h4>
-        <ul>
-          <li><strong>Makespan</strong> : Temps total de production</li>
-          <li><strong>Flowtime moyen</strong> : Temps de séjour moyen des jobs</li>
-          <li><strong>Retard cumulé</strong> : Somme des retards par rapport aux dates dues</li>
-        </ul>
-      </div>
-
-      <div className="info-section">
-        <h4>🏆 Résultats</h4>
-        <ul>
-          <li>Tableau comparatif avec toutes les métriques</li>
-          <li>Identification du meilleur algorithme par critère</li>
-          <li>Diagrammes de Gantt pour chaque algorithme</li>
-          <li>Export Excel des résultats</li>
-        </ul>
-      </div>
-
-      <div className="info-section">
-        <h4>💡 Conseils d'utilisation</h4>
-        <ul>
-          <li>Utilisez l'import Excel pour traiter rapidement vos données réelles</li>
-          <li>Le choix du "meilleur" algorithme dépend de votre priorité (temps vs retards)</li>
-          <li>Johnson est optimal pour 2 machines si applicable à votre contexte</li>
-          <li>OR-Tools Contraintes offre la meilleure qualité mais peut être plus lent</li>
-        </ul>
-      </div>
+    <div style={{
+      background: "#f1f5f9",
+      borderLeft: "4px solid #2563eb",
+      borderRadius: "0.75rem",
+      padding: "1.5rem",
+      marginLeft: "2rem",
+      maxWidth: "400px",
+      color: "#1e293b",
+      fontSize: "0.95rem"
+    }}>
+      <h4 style={{ marginTop: 0, color: "#1d4ed8" }}>À propos de la comparaison d'algorithmes Flowshop</h4>
+      <p>
+        Cette fonctionnalité permet de comparer automatiquement tous les algorithmes 
+        flowshop compatibles avec vos données pour identifier la meilleure solution 
+        selon différents critères de performance.
+      </p>
+      <p>
+        <strong>Algorithmes supportés :</strong>
+      </p>
+      <ul style={{ paddingLeft: "1.5rem", marginBottom: "1rem" }}>
+        <li><strong>SPT</strong> : Shortest Processing Time</li>
+        <li><strong>EDD</strong> : Earliest Due Date</li>
+        <li><strong>Contraintes</strong> : Solveur OR-Tools CP-SAT</li>
+        <li><strong>Johnson</strong> : Optimal pour 2 machines exactement</li>
+        <li><strong>Johnson modifié</strong> : Extension pour 3+ machines</li>
+        <li><strong>Smith</strong> : Optimisation pour 1 machine</li>
+      </ul>
+      <p>
+        Le système détecte automatiquement les algorithmes compatibles selon le nombre 
+        de machines et affiche un tableau comparatif avec makespan, flowtime moyen, 
+        et retard cumulé pour vous aider à choisir la meilleure stratégie.
+      </p>
     </div>
   );
 }

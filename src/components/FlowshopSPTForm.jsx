@@ -238,6 +238,18 @@ function FlowshopSPTForm() {
           </p>
         </div>
 
+        {/* Export Excel - Placé tout en haut */}
+        <ExcelExportSection
+          jobs={jobs}
+          dueDates={dueDates}
+          jobNames={jobNames}
+          machineNames={machineNames}
+          unite={unite}
+          algorithmName="SPT"
+          API_URL={API_URL}
+          algorithmEndpoint="spt"
+        />
+
         <div className={styles.configSection}>
           <div className={styles.configRow}>
             <div className={styles.inputGroup}>
@@ -303,18 +315,6 @@ function FlowshopSPTForm() {
           error={error}
           algorithmName="SPT"
           API_URL={API_URL}
-        />
-
-        {/* Export Excel */}
-        <ExcelExportSection
-          jobs={jobs}
-          dueDates={dueDates}
-          jobNames={jobNames}
-          machineNames={machineNames}
-          unite={unite}
-          algorithmName="SPT"
-          API_URL={API_URL}
-          algorithmEndpoint="spt"
         />
 
         {/* Tableau principal des jobs */}

@@ -197,6 +197,18 @@ function FlowshopJohnsonForm() {
         </p>
       </div>
 
+      {/* ===== EXPORT EXCEL - Placé tout en haut ===== */}
+      <ExcelExportSection
+        jobs={jobs}
+        dueDates={dueDates}
+        jobNames={jobNames}
+        machineNames={machineNames}
+        unite={unite}
+        algorithmName="Johnson"
+        API_URL={API_URL}
+        algorithmEndpoint="johnson"
+      />
+
       {/* ===== CONFIGURATION ===== */}
       <div className={`${styles.section} ${styles.configSection}`}>
         <div className={styles.configRow}>
@@ -237,18 +249,6 @@ function FlowshopJohnsonForm() {
         error={error}
         algorithmName="Johnson"
         API_URL={API_URL}
-      />
-
-      {/* ===== EXPORT EXCEL ===== */}
-      <ExcelExportSection
-        jobs={jobs}
-        dueDates={dueDates}
-        jobNames={jobNames}
-        machineNames={machineNames}
-        unite={unite}
-        algorithmName="Johnson"
-        API_URL={API_URL}
-        algorithmEndpoint="johnson"
       />
 
       {/* ===== CONFIGURATION MACHINES ===== */}

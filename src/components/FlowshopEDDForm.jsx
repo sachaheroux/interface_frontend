@@ -189,6 +189,18 @@ function FlowshopEDDForm() {
           </p>
         </div>
 
+        {/* Export Excel - Placé tout en haut */}
+        <ExcelExportSection
+          jobs={jobs}
+          dueDates={dueDates}
+          jobNames={jobNames}
+          machineNames={machineNames}
+          unite={unite}
+          algorithmName="EDD"
+          API_URL={API_URL}
+          algorithmEndpoint="edd"
+        />
+
         {/* Section Configuration */}
         <div className={`${styles.section} ${styles.configSection}`}>
           <div className={styles.configRow}>
@@ -239,18 +251,6 @@ function FlowshopEDDForm() {
           error={error}
           algorithmName="EDD"
           API_URL={API_URL}
-        />
-
-        {/* Export Excel */}
-        <ExcelExportSection
-          jobs={jobs}
-          dueDates={dueDates}
-          jobNames={jobNames}
-          machineNames={machineNames}
-          unite={unite}
-          algorithmName="EDD"
-          API_URL={API_URL}
-          algorithmEndpoint="edd"
         />
 
         {/* Configuration des machines */}

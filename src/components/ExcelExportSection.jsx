@@ -82,11 +82,17 @@ function ExcelExportSection({
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      setExportSuccess(`✅ Données exportées avec succès ! Le fichier Excel contient ${exportData.job_names.length} jobs et ${exportData.machine_names.length} machines.`);
+      setExportSuccess(`✅ Données exportées avec succès !`);
+      
+      // Effacer le message de succès après 3 secondes
+      setTimeout(() => setExportSuccess(null), 3000);
 
     } catch (error) {
       console.error('Erreur export Excel:', error);
       setExportError(error.message);
+      
+      // Effacer le message d'erreur après 5 secondes
+      setTimeout(() => setExportError(null), 5000);
     } finally {
       setIsExporting(false);
     }
@@ -98,62 +104,55 @@ function ExcelExportSection({
                          machineNames && machineNames.length > 0;
 
   return (
-    <div className={styles.section}>
-      <h3 className={styles.sectionTitle}>📤 Export vers Excel</h3>
+    <div style={{ marginBottom: '20px' }}>
+      <button 
+        className={`${styles.button} ${!hasDataToExport ? styles.disabled : ''}`}
+        onClick={handleExportData}
+        disabled={isExporting || !hasDataToExport}
+        type="button"
+        style={{
+          width: '100%',
+          backgroundColor: hasDataToExport ? '#007bff' : '#6c757d',
+          color: 'white',
+          border: 'none',
+          padding: '12px 20px',
+          borderRadius: '5px',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          cursor: hasDataToExport ? 'pointer' : 'not-allowed',
+          transition: 'background-color 0.3s'
+        }}
+      >
+        {isExporting ? '⏳ Export en cours...' : '📤 Exporter vers Excel'}
+      </button>
       
-      <div className={styles.exportSection}>
-        <div className={styles.exportInfo}>
-          <p className={styles.exportDescription}>
-            Exportez vos données saisies manuellement vers un fichier Excel pour les sauvegarder, 
-            les partager ou les réutiliser plus tard.
-          </p>
-          
-          {hasDataToExport && (
-            <div className={styles.exportStats}>
-              <span className={styles.statItem}>
-                📊 {jobs.length} jobs
-              </span>
-              <span className={styles.statItem}>
-                ⚙️ {machineNames.length} machines
-              </span>
-              <span className={styles.statItem}>
-                ⏱️ Unité: {unite}
-              </span>
-            </div>
-          )}
+      {exportSuccess && (
+        <div style={{
+          marginTop: '10px',
+          padding: '10px',
+          backgroundColor: '#d4edda',
+          color: '#155724',
+          border: '1px solid #c3e6cb',
+          borderRadius: '5px',
+          fontSize: '14px'
+        }}>
+          {exportSuccess}
         </div>
-        
-        <div className={styles.exportActions}>
-          <button 
-            className={`${styles.exportButton} ${!hasDataToExport ? styles.disabled : ''}`}
-            onClick={handleExportData}
-            disabled={isExporting || !hasDataToExport}
-            type="button"
-          >
-            {isExporting ? '⏳ Export en cours...' : '📤 Exporter vers Excel'}
-          </button>
-          
-          {!hasDataToExport && (
-            <p className={styles.noDataMessage}>
-              ⚠️ Saisissez d'abord des données pour pouvoir les exporter
-            </p>
-          )}
+      )}
+      
+      {exportError && (
+        <div style={{
+          marginTop: '10px',
+          padding: '10px',
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          border: '1px solid #f5c6cb',
+          borderRadius: '5px',
+          fontSize: '14px'
+        }}>
+          ❌ {exportError}
         </div>
-        
-        {exportSuccess && (
-          <div className={styles.successMessage}>
-            <span className={styles.successIcon}>✅</span>
-            {exportSuccess}
-          </div>
-        )}
-        
-        {exportError && (
-          <div className={styles.errorMessage}>
-            <span className={styles.errorIcon}>❌</span>
-            {exportError}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }

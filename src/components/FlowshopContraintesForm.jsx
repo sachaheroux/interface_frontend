@@ -338,6 +338,31 @@ const FlowshopContraintesForm = () => {
       setResult(data.results);
       setImportSuccess(`Fichier "${fileName}" importé et traité avec succès ! ${data.imported_data.jobs_count} jobs et ${data.imported_data.machines_count} machines détectés.`);
 
+      // Générer le diagramme de Gantt après un import réussi
+      if (data.results && data.results.gantt_url) {
+        // Le Gantt est déjà inclus dans les résultats de l'import
+        console.log("Diagramme de Gantt généré avec l'import");
+      } else {
+        // Si pas de Gantt dans la réponse, essayer de le générer séparément
+        try {
+          const ganttResponse = await fetch(`${API_URL}/contraintes/import-excel-gantt`, {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (ganttResponse.ok) {
+            const ganttBlob = await ganttResponse.blob();
+            const ganttUrl = URL.createObjectURL(ganttBlob);
+            setResult(prev => ({
+              ...prev,
+              gantt_url: ganttUrl
+            }));
+          }
+        } catch (ganttError) {
+          console.log("Diagramme de Gantt non disponible pour l'import Excel:", ganttError);
+        }
+      }
+
     } catch (error) {
       console.error('Erreur import Excel:', error);
       setError(error.message);

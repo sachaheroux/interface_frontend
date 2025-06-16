@@ -494,12 +494,10 @@ function FlowshopCompareForm() {
           </div>
         )}
 
-        {/* Configuration générale */}
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Configuration</h3>
-          <div className={styles.configGrid}>
+        <div className={styles.configSection}>
+          <div className={styles.configRow}>
             <div className={styles.inputGroup}>
-              <label className={styles.label}>Unité de temps</label>
+              <label>Unité de temps</label>
               <select 
                 value={unite} 
                 onChange={e => setUnite(e.target.value)} 

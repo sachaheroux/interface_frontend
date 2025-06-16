@@ -272,46 +272,162 @@ function FlowshopCompareForm() {
       const importedData = data.imported_data;
       
       // Mettre à jour tous les états avec les données importées uniquement
-      setJobNames(importedData.job_names || []);
-      setMachineNames(importedData.machine_names || []);
-      setUnite(importedData.unite || 'heures');
+      const newJobNames = importedData.job_names || [];
+      const newMachineNames = importedData.machine_names || [];
+      const newUnite = importedData.unite || 'heures';
+      
+      setJobNames(newJobNames);
+      setMachineNames(newMachineNames);
+      setUnite(newUnite);
       
       // Reconstruire les jobs à partir des données importées
+      let newJobs = [];
       if (importedData.jobs_data && importedData.jobs_data.length > 0) {
-        setJobs(importedData.jobs_data.map(job => 
+        newJobs = importedData.jobs_data.map(job => 
           job.map((task, index) => ({
             machine: String(index),
-            duration: parseFloat(task[1]).toString()  // task[1] est la durée, comme dans EDD
+            duration: parseFloat(task[1]).toString()  // task[1] est la durée
           }))
-        ));
+        );
+        setJobs(newJobs);
       }
       
       // Mettre à jour les dates d'échéance
+      let newDueDates = [];
       if (importedData.due_dates && importedData.due_dates.length > 0) {
-        setDueDates(importedData.due_dates.map(date => String(date)));
+        newDueDates = importedData.due_dates.map(date => String(date));
+        setDueDates(newDueDates);
       }
       
-      // Afficher les résultats directement
-      setResults({ "Import Excel": data.results });
-      setImportSuccess(`Fichier "${fileName}" importé et traité avec succès! Les données du formulaire ont été remplacées par celles du fichier.`);
+      setImportSuccess(`Fichier "${fileName}" importé avec succès! Comparaison automatique en cours...`);
       
-      // Générer le diagramme de Gantt si pas en mode avancé
-      if (!showAdvanced) {
+      // Attendre que les états soient mis à jour puis lancer la comparaison automatique
+      setTimeout(async () => {
         try {
-          const ganttResponse = await fetch(`${API_URL}/spt/import-excel-gantt`, {
-            method: 'POST',
-            body: formData
-          });
-          
-          if (ganttResponse.ok) {
-            const blob = await ganttResponse.blob();
-            const url = URL.createObjectURL(blob);
-            setGanttUrls({ "Import Excel": url });
+          // Déterminer les algorithmes compatibles avec la nouvelle configuration
+          const numMachines = newJobs[0]?.length || 0;
+          const algorithmsToCompare = [];
+
+          // SPT, EDD, Contraintes : n'importe quel nombre de machines
+          if (numMachines >= 1) {
+            algorithmsToCompare.push("SPT", "EDD", "Contraintes");
           }
-        } catch (ganttError) {
-          console.error('Erreur génération Gantt:', ganttError);
+
+          // Smith : exactement 1 machine
+          if (numMachines === 1) {
+            algorithmsToCompare.push("Smith");
+          }
+
+          // Johnson : exactement 2 machines
+          if (numMachines === 2) {
+            algorithmsToCompare.push("Johnson");
+          }
+
+          // Johnson modifié : minimum 3 machines
+          if (numMachines >= 3) {
+            algorithmsToCompare.push("Johnson modifié");
+          }
+
+          if (algorithmsToCompare.length === 0) {
+            setError("Aucun algorithme compatible avec cette configuration importée.");
+            return;
+          }
+
+          const compareResults = {};
+          const compareGanttUrls = {};
+
+          const formattedJobs = newJobs.map(job =>
+            job.map(op => [parseInt(op.machine, 10), parseFloat(op.duration.replace(",", "."))])
+          );
+          const formattedDueDates = newDueDates.map(d => {
+            const parsed = parseFloat(d.replace(",", "."));
+            if (isNaN(parsed)) throw new Error("Date due invalide");
+            return parsed;
+          });
+
+          const basePayload = {
+            jobs_data: formattedJobs,
+            due_dates: formattedDueDates,
+            unite: newUnite,
+            job_names: newJobNames,
+            machine_names: newMachineNames,
+          };
+
+          // Lancer la comparaison pour tous les algorithmes compatibles
+          for (const algorithm of algorithmsToCompare) {
+            try {
+              let payload;
+              let endpoint;
+              let ganttEndpoint;
+
+              if (algorithm === "Johnson") {
+                payload = {
+                  jobs_data: newJobs.map(job => job.map(op => parseFloat(op.duration.replace(",", ".")))),
+                  due_dates: formattedDueDates,
+                  unite: newUnite,
+                  job_names: newJobNames,
+                  machine_names: newMachineNames
+                };
+                endpoint = "/johnson";
+                ganttEndpoint = "/johnson/gantt";
+              } else if (algorithm === "Johnson modifié") {
+                payload = basePayload;
+                endpoint = "/johnson_modifie";
+                ganttEndpoint = "/johnson_modifie/gantt";
+              } else if (algorithm === "Smith") {
+                payload = {
+                  jobs: newJobs.map(job => job.map(op => parseFloat(op.duration.replace(",", ".")))),
+                  unite: newUnite,
+                  job_names: newJobNames
+                };
+                endpoint = "/smith";
+                ganttEndpoint = "/smith/gantt";
+              } else {
+                payload = basePayload;
+                endpoint = `/${algorithm.toLowerCase()}`;
+                ganttEndpoint = `/${algorithm.toLowerCase()}/gantt`;
+              }
+
+              const resAlgo = await fetch(`${API_URL}${endpoint}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+              });
+              if (!resAlgo.ok) throw new Error("Erreur API");
+              const algoData = await resAlgo.json();
+              compareResults[algorithm] = algoData;
+
+              // Générer le Gantt pour chaque algorithme
+              if (!showAdvanced) {
+                try {
+                  const ganttRes = await fetch(`${API_URL}${ganttEndpoint}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                  });
+                  if (ganttRes.ok) {
+                    const blob = await ganttRes.blob();
+                    const url = URL.createObjectURL(blob);
+                    compareGanttUrls[algorithm] = url;
+                  }
+                } catch (ganttError) {
+                  console.error(`Erreur génération Gantt ${algorithm}:`, ganttError);
+                }
+              }
+            } catch (algoError) {
+              console.error(`Erreur algorithme ${algorithm}:`, algoError);
+              compareResults[algorithm] = { error: algoError.message };
+            }
+          }
+
+          setResults(compareResults);
+          setGanttUrls(compareGanttUrls);
+          setImportSuccess(`Fichier "${fileName}" importé et ${algorithmsToCompare.length} algorithmes comparés avec succès!`);
+
+        } catch (comparisonError) {
+          setError(`Erreur lors de la comparaison: ${comparisonError.message}`);
         }
-      }
+      }, 100);
       
     } catch (error) {
       setError(error.message);
@@ -349,14 +465,6 @@ function FlowshopCompareForm() {
       </div>
 
       <div className={styles.content}>
-        {/* Section Import Excel */}
-        <ExcelImportSection 
-          onImport={handleExcelImport}
-          isImporting={isImporting}
-          templateType="flowshop"
-          API_URL={API_URL}
-        />
-
         {/* Section Export Excel */}
         <ExcelExportSection 
           jobsData={jobs.map(job => job.map(op => parseFloat(op.duration)))}
@@ -365,6 +473,14 @@ function FlowshopCompareForm() {
           machineNames={machineNames}
           unite={unite}
           apiEndpoint="/spt/export-excel"
+          API_URL={API_URL}
+        />
+
+        {/* Section Import Excel */}
+        <ExcelImportSection 
+          onImport={handleExcelImport}
+          isImporting={isImporting}
+          templateType="flowshop"
           API_URL={API_URL}
         />
 
@@ -411,33 +527,7 @@ function FlowshopCompareForm() {
           </div>
         </div>
 
-        {/* Algorithmes compatibles et exclus */}
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Compatibilité des algorithmes</h3>
-          <div className={styles.compatibilityGrid}>
-            <div className={styles.compatibleSection}>
-              <h4 className={styles.compatibleTitle}>✅ Algorithmes compatibles ({compatibleAlgorithms.length})</h4>
-              <div className={styles.algoTags}>
-                {compatibleAlgorithms.map(algo => (
-                  <span key={algo} className={styles.compatibleTag}>{algo}</span>
-                ))}
-              </div>
-            </div>
 
-            {excludedAlgorithms.length > 0 && (
-              <div className={styles.excludedSection}>
-                <h4 className={styles.excludedTitle}>❌ Algorithmes exclus ({excludedAlgorithms.length})</h4>
-                <div className={styles.excludedList}>
-                  {excludedAlgorithms.map(algo => (
-                    <div key={algo.name} className={styles.excludedItem}>
-                      <strong>{algo.name}</strong>: {algo.reason}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Tableau des noms de machines */}
         <div className={styles.section}>
@@ -634,6 +724,37 @@ function FlowshopCompareForm() {
                 >
                   + Ajouter un jour férié
                 </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Compatibilité des algorithmes */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>Compatibilité des algorithmes</h3>
+          
+          {/* Algorithmes compatibles */}
+          <div className={styles.planificationDetails}>
+            <h4>✅ Algorithmes compatibles ({compatibleAlgorithms.length})</h4>
+            <div className={styles.tasksList}>
+              {compatibleAlgorithms.map(algo => (
+                <div key={algo} className={styles.taskBadge}>
+                  {algo}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Algorithmes exclus */}
+          {excludedAlgorithms.length > 0 && (
+            <div className={styles.planificationDetails} style={{ marginTop: '1rem' }}>
+              <h4>❌ Algorithmes exclus ({excludedAlgorithms.length})</h4>
+              <div className={styles.tasksList}>
+                {excludedAlgorithms.map(algo => (
+                  <div key={algo.name} className={styles.taskBadge} style={{ backgroundColor: '#f8d7da', color: '#721c24' }}>
+                    <strong>{algo.name}</strong>: {algo.reason}
+                  </div>
+                ))}
               </div>
             </div>
           )}

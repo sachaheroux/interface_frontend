@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './JobshopSPTForm.module.css';
 import ExcelImportSection from './ExcelImportSection';
-import ExcelExportSection from './ExcelExportSection';
+import ExcelExportSectionJobshop from './ExcelExportSectionJobshop';
 
 const JobshopSPTForm = () => {
   const [jobs, setJobs] = useState([
@@ -276,8 +276,8 @@ const JobshopSPTForm = () => {
       </div>
 
       {/* Export Excel */}
-      <ExcelExportSection
-        jobs={jobs.map(job => job.tasks.map(task => [task.machine, task.duration]))}
+      <ExcelExportSectionJobshop
+        jobs={jobs}
         dueDates={jobs.map(job => job.dueDate)}
         jobNames={jobs.map(job => job.name)}
         machineNames={machineNames}

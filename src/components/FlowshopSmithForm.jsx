@@ -221,7 +221,7 @@ const FlowshopSmithForm = () => {
 
       {/* Export Excel - Placé tout en haut */}
       <ExcelExportSection
-        jobs={[jobs.map(job => [job.duration])]} // Format adapté pour Smith (une seule machine)
+        jobs={jobs.map(job => [job.duration])} // Format adapté pour Smith (une seule machine)
         dueDates={jobs.map(job => job.dueDate)}
         jobNames={jobs.map(job => job.name)}
         machineNames={["Machine 0"]} // Smith = une seule machine

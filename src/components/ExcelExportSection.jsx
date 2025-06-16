@@ -24,24 +24,26 @@ function ExcelExportSection({
       // Préparer les données pour l'export selon le format de l'algorithme
       let jobsDataFormatted;
       
-      if (algorithmEndpoint === 'contraintes') {
-        // Format Contraintes: jobs = [{name, durations, dueDate}, ...]
-        jobsDataFormatted = jobs.map(job => 
-          job.durations ? job.durations.map(d => parseFloat(d) || 0) : []
-        );
-      } else {
-        // Format standard (SPT, Johnson, etc.) ou format EDD
-        jobsDataFormatted = jobs.map(job => {
-          if (Array.isArray(job)) {
-            // Format standard: [[duration1, duration2, ...], ...]
-            return job.map(duration => parseFloat(duration) || 0);
-          } else if (job.map) {
-            // Format EDD: [{duration: "value"}, {duration: "value"}, ...]
-            return job.map(task => parseFloat(task.duration) || 0);
-          }
-          return [];
-        });
-      }
+      // Unifier le formatage pour tous les algorithmes comme Johnson qui fonctionne
+      jobsDataFormatted = jobs.map(job => {
+        if (Array.isArray(job)) {
+          return job.map(task => {
+            // Si c'est un objet avec une propriété duration (SPT, EDD)
+            if (task && typeof task === 'object' && task.duration !== undefined) {
+              return parseFloat(task.duration) || 0;
+            }
+            // Si c'est directement une valeur (Johnson, contraintes)
+            else {
+              return parseFloat(task) || 0;
+            }
+          });
+        }
+        // Si c'est un objet avec durations (contraintes)
+        else if (job && typeof job === 'object' && job.durations) {
+          return job.durations.map(d => parseFloat(d) || 0);
+        }
+        return [];
+      });
 
       const exportData = {
         jobs_data: jobsDataFormatted,

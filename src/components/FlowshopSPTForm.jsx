@@ -179,9 +179,9 @@ function FlowshopSPTForm() {
       // Reconstruire les jobs à partir des données importées
       if (importedData.jobs_data && importedData.jobs_data.length > 0) {
         setJobs(importedData.jobs_data.map(job => 
-          job.map((duration, index) => ({
+          job.map((task, index) => ({
             machine: String(index),
-            duration: String(duration)
+            duration: parseFloat(task[1]).toString()  // task[1] est la durée, comme dans EDD
           }))
         ));
       }

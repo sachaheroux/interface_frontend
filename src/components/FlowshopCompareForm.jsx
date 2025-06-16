@@ -467,12 +467,13 @@ function FlowshopCompareForm() {
       <div className={styles.content}>
         {/* Section Export Excel */}
         <ExcelExportSection 
-          jobsData={jobs.map(job => job.map(op => parseFloat(op.duration)))}
-          dueDates={dueDates.map(d => parseFloat(d))}
+          jobs={jobs}
+          dueDates={dueDates}
           jobNames={jobNames}
           machineNames={machineNames}
           unite={unite}
-          apiEndpoint="/spt/export-excel"
+          algorithmName="Comparaison_Flowshop"
+          algorithmEndpoint="spt"
           API_URL={API_URL}
         />
 

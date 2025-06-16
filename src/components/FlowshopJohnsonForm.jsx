@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./FlowshopJohnsonForm.module.css";
 import ExcelImportSection from "./ExcelImportSection";
+import ExcelExportSection from "./ExcelExportSection";
 
 function FlowshopJohnsonForm() {
   const [jobs, setJobs] = useState([
@@ -236,6 +237,18 @@ function FlowshopJohnsonForm() {
         error={error}
         algorithmName="Johnson"
         API_URL={API_URL}
+      />
+
+      {/* ===== EXPORT EXCEL ===== */}
+      <ExcelExportSection
+        jobs={jobs}
+        dueDates={dueDates}
+        jobNames={jobNames}
+        machineNames={machineNames}
+        unite={unite}
+        algorithmName="Johnson"
+        API_URL={API_URL}
+        algorithmEndpoint="johnson"
       />
 
       {/* ===== CONFIGURATION MACHINES ===== */}

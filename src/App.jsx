@@ -15,6 +15,8 @@ import FlowshopSmithForm from "./components/FlowshopSmithForm";
 import FlowshopSmithInfo from "./components/FlowshopSmithInfo";
 import FlowshopContraintesForm from "./components/FlowshopContraintesForm";
 import FlowshopContraintesInfo from "./components/FlowshopContraintesInfo";
+import FlowshopCompareForm from "./components/FlowshopCompareForm";
+import FlowshopCompareInfo from "./components/FlowshopCompareInfo";
 import FlowshopMachinesMultiplesForm from "./components/FlowshopMachinesMultiplesForm";
 import FlowshopMachinesMultiplesInfo from "./components/FlowshopMachinesMultiplesInfo";
 import JobshopSPTForm from "./components/JobshopSPTForm";
@@ -57,7 +59,7 @@ function App() {
   const [showDecisionTree, setShowDecisionTree] = useState(false);
 
   const systemes = {
-    "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Machines multiples", "Smith"],
+    "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Machines multiples", "Smith", "Comparer les algos"],
     "Jobshop": ["SPT", "EDD", "Contraintes"],
     "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL"],
     "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte"],
@@ -160,6 +162,7 @@ function App() {
           {!showDecisionTree && systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithForm />}
           {!showDecisionTree && systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesForm />}
           {!showDecisionTree && systeme === "Flowshop" && algorithme === "Machines multiples" && <FlowshopMachinesMultiplesForm />}
+          {!showDecisionTree && systeme === "Flowshop" && algorithme === "Comparer les algos" && <FlowshopCompareForm />}
           {!showDecisionTree && systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTForm />}
           {!showDecisionTree && systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDForm />}
           {!showDecisionTree && systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesForm />}
@@ -205,6 +208,7 @@ function App() {
                 {algorithme === "Smith" && <FlowshopSmithInfo />}
                 {algorithme === "Contraintes" && <FlowshopContraintesInfo />}
                 {algorithme === "Machines multiples" && <FlowshopMachinesMultiplesInfo />}
+                {algorithme === "Comparer les algos" && <FlowshopCompareInfo />}
               </>
             )}
             {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTInfo />}

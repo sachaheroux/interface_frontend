@@ -104,7 +104,7 @@ function ExcelExportSection({
                          machineNames && machineNames.length > 0;
 
   return (
-    <div style={{ marginBottom: '20px' }}>
+    <div style={{ marginBottom: '15px' }}>
       <button 
         className={`${styles.button} ${!hasDataToExport ? styles.disabled : ''}`}
         onClick={handleExportData}
@@ -115,26 +115,32 @@ function ExcelExportSection({
           backgroundColor: hasDataToExport ? '#007bff' : '#6c757d',
           color: 'white',
           border: 'none',
-          padding: '12px 20px',
+          padding: '10px 16px',
           borderRadius: '5px',
-          fontSize: '16px',
+          fontSize: '14px',
           fontWeight: 'bold',
           cursor: hasDataToExport ? 'pointer' : 'not-allowed',
-          transition: 'background-color 0.3s'
+          transition: 'background-color 0.3s',
+          textAlign: 'center',
+          lineHeight: '1.2'
         }}
       >
-        {isExporting ? '⏳ Export en cours...' : '📤 Exporter vers Excel'}
+        {isExporting 
+          ? '⏳ Export en cours...' 
+          : '📤 Exporter les données vers Excel'
+        }
       </button>
       
       {exportSuccess && (
         <div style={{
-          marginTop: '10px',
-          padding: '10px',
+          marginTop: '8px',
+          padding: '8px',
           backgroundColor: '#d4edda',
           color: '#155724',
           border: '1px solid #c3e6cb',
-          borderRadius: '5px',
-          fontSize: '14px'
+          borderRadius: '4px',
+          fontSize: '13px',
+          textAlign: 'center'
         }}>
           {exportSuccess}
         </div>
@@ -142,13 +148,14 @@ function ExcelExportSection({
       
       {exportError && (
         <div style={{
-          marginTop: '10px',
-          padding: '10px',
+          marginTop: '8px',
+          padding: '8px',
           backgroundColor: '#f8d7da',
           color: '#721c24',
           border: '1px solid #f5c6cb',
-          borderRadius: '5px',
-          fontSize: '14px'
+          borderRadius: '4px',
+          fontSize: '13px',
+          textAlign: 'center'
         }}>
           ❌ {exportError}
         </div>

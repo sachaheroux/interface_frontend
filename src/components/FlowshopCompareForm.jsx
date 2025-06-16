@@ -357,6 +357,17 @@ function FlowshopCompareForm() {
           API_URL={API_URL}
         />
 
+        {/* Section Export Excel */}
+        <ExcelExportSection 
+          jobsData={jobs.map(job => job.map(op => parseFloat(op.duration)))}
+          dueDates={dueDates.map(d => parseFloat(d))}
+          jobNames={jobNames}
+          machineNames={machineNames}
+          unite={unite}
+          apiEndpoint="/spt/export-excel"
+          API_URL={API_URL}
+        />
+
         {importSuccess && (
           <div className={styles.successSection}>
             <div className={styles.successBox}>
@@ -734,18 +745,7 @@ function FlowshopCompareForm() {
           </div>
         )}
 
-        {/* Section Export Excel */}
-        {results && (
-          <ExcelExportSection 
-            jobsData={jobs.map(job => job.map(op => parseFloat(op.duration)))}
-            dueDates={dueDates.map(d => parseFloat(d))}
-            jobNames={jobNames}
-            machineNames={machineNames}
-            unite={unite}
-            apiEndpoint="/spt/export-excel"
-            API_URL={API_URL}
-          />
-        )}
+
       </div>
     </div>
   );

@@ -704,78 +704,7 @@ function FlowshopCompareForm() {
               </div>
             </div>
 
-            {/* Détails pour chaque algorithme */}
-            {Object.entries(results).map(([algorithm, result]) => {
-              if (result.error) return null;
-              
-              return (
-                <div key={algorithm} className={styles.algorithmDetails}>
-                  <h4>📋 Détails - {algorithm}</h4>
-                  
-                  {/* Séquence si disponible */}
-                  {result.sequence && (
-                    <div className={styles.sequenceSection}>
-                      <div className={styles.sequenceTitle}>Séquence calculée</div>
-                      <div className={styles.sequenceValue}>
-                        {Array.isArray(result.sequence) 
-                          ? result.sequence.join(" → ")
-                          : "N/A"
-                        }
-                      </div>
-                    </div>
-                  )}
 
-                  {/* Métriques */}
-                  <div className={styles.metricsGrid}>
-                    <div className={styles.metric}>
-                      <div className={styles.metricValue}>{result.makespan}</div>
-                      <div className={styles.metricLabel}>Makespan ({unite})</div>
-                    </div>
-                    <div className={styles.metric}>
-                      <div className={styles.metricValue}>{result.flowtime?.toFixed(2) || "N/A"}</div>
-                      <div className={styles.metricLabel}>Temps de cycle moyen ({unite})</div>
-                    </div>
-                    <div className={styles.metric}>
-                      <div className={styles.metricValue}>{result.retard_cumule?.toFixed(2) || "0"}</div>
-                      <div className={styles.metricLabel}>Retard cumulé ({unite})</div>
-                    </div>
-                  </div>
-
-                  {/* Temps de complétion */}
-                  {result.completion_times && (
-                    <div className={styles.planificationDetails}>
-                      <h5>Temps de complétion</h5>
-                      <div className={styles.tasksList}>
-                        {Object.entries(result.completion_times).map(([job, time]) => (
-                          <div key={job} className={styles.taskBadge}>
-                            {job}: {time} {unite}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Planification détaillée */}
-                  {result.machines && (
-                    <div className={styles.planificationDetails}>
-                      <h5>Planification détaillée</h5>
-                      {Object.entries(result.machines).map(([machine, tasks]) => (
-                        <div key={machine} className={styles.machineDetail}>
-                          <strong>{machineNames[parseInt(machine)] || `Machine ${machine}`} :</strong>
-                          <div className={styles.tasksList}>
-                            {tasks.map((task, i) => (
-                              <span key={i} className={styles.taskBadge}>
-                                {jobNames[task.job] || `Job ${task.job}`} ({task.start}-{task.start + task.duration})
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
           </div>
         )}
 

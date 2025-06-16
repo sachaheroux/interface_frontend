@@ -7,17 +7,27 @@ function ExcelImportSection({
   importSuccess, 
   error, 
   algorithmName = "algorithme",
+  templateType = "flowshop",
   API_URL = "/api"
 }) {
   const [showImportOptions, setShowImportOptions] = useState(false);
 
-  const handleDownloadTemplate = (templateType) => {
+  const handleDownloadTemplate = (downloadType) => {
     try {
       let fileName;
-      if (templateType === 'exemple') {
-        fileName = 'Template-Flowshop_Exemple.xlsx';
+      if (templateType === 'jobshop') {
+        if (downloadType === 'exemple') {
+          fileName = 'Template-Jobshop_Exemple.xlsx';
+        } else {
+          fileName = 'Template-Jobshop_Vide.xlsx';
+        }
       } else {
-        fileName = 'Template-Flowshop_Vide.xlsx';
+        // flowshop par défaut
+        if (downloadType === 'exemple') {
+          fileName = 'Template-Flowshop_Exemple.xlsx';
+        } else {
+          fileName = 'Template-Flowshop_Vide.xlsx';
+        }
       }
       
       const link = document.createElement('a');

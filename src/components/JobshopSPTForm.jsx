@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styles from './JobshopSPTForm.module.css';
+import ExcelImportSection from './ExcelImportSection';
+import ExcelExportSection from './ExcelExportSection';
 
 const JobshopSPTForm = () => {
   const [jobs, setJobs] = useState([
@@ -26,8 +28,10 @@ const JobshopSPTForm = () => {
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
   const [ganttUrl, setGanttUrl] = useState(null);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
 
-  const API_URL = "https://interface-backend-1jgi.onrender.com";
+  const API_URL = "/api";
 
   // Fonction utilitaire pour générer des valeurs aléatoirement entre 1 et 9
   const getRandomDuration = () => Math.floor(Math.random() * 9) + 1;
@@ -191,6 +195,76 @@ const JobshopSPTForm = () => {
     }
   };
 
+  // Fonction pour l'import Excel
+  const handleExcelImport = async (formData, fileName) => {
+    setIsImporting(true);
+    setError('');
+    setImportSuccess(null);
+    
+    // Réinitialiser les résultats précédents
+    setResult(null);
+    setGanttUrl(null);
+
+    try {
+      const response = await fetch(`${API_URL}/jobshop/spt/import-excel`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erreur lors de l\'import');
+      }
+
+      const data = await response.json();
+      
+      // Remplacer complètement les données du formulaire avec les données importées
+      const importedData = data.imported_data;
+      
+      // Mettre à jour tous les états avec les données importées
+      setMachineNames(importedData.machine_names || []);
+      setTimeUnit(importedData.unite || 'heures');
+      
+      // Reconstruire les jobs à partir des données importées
+      if (importedData.jobs_data && importedData.jobs_data.length > 0) {
+        const importedJobs = importedData.jobs_data.map((jobTasks, index) => ({
+          name: importedData.job_names[index] || `Job ${index + 1}`,
+          dueDate: importedData.due_dates[index] || 0,
+          tasks: jobTasks.map(task => ({
+            machine: task[0], // [machine, duration] format
+            duration: task[1]
+          }))
+        }));
+        setJobs(importedJobs);
+      }
+      
+      // Afficher les résultats directement
+      setResult(data.results);
+      setImportSuccess(`Fichier "${fileName}" importé et traité avec succès! Les données du formulaire ont été remplacées par celles du fichier.`);
+      
+      // Générer le diagramme de Gantt
+      try {
+        const ganttResponse = await fetch(`${API_URL}/jobshop/spt/import-excel-gantt`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (ganttResponse.ok) {
+          const blob = await ganttResponse.blob();
+          const url = URL.createObjectURL(blob);
+          setGanttUrl(url);
+        }
+      } catch (ganttError) {
+        console.error('Erreur génération Gantt:', ganttError);
+      }
+      
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   return (
     <div className={styles.algorithmContainer}>
       {/* Header */}
@@ -200,6 +274,35 @@ const JobshopSPTForm = () => {
           Ordonnancement par temps de traitement le plus court (Shortest Processing Time) pour ateliers job-shop
         </p>
       </div>
+
+      {/* Export Excel */}
+      <ExcelExportSection
+        jobs={jobs.map(job => job.tasks.map(task => [task.machine, task.duration]))}
+        dueDates={jobs.map(job => job.dueDate)}
+        jobNames={jobs.map(job => job.name)}
+        machineNames={machineNames}
+        unite={timeUnit}
+        algorithmName="Jobshop_SPT"
+        algorithmEndpoint="jobshop/spt"
+        API_URL={API_URL}
+      />
+
+      {/* Import Excel */}
+      <ExcelImportSection
+        onImport={handleExcelImport}
+        isImporting={isImporting}
+        templateType="jobshop"
+        API_URL={API_URL}
+      />
+
+      {importSuccess && (
+        <div className={styles.successSection}>
+          <div className={styles.successBox}>
+            <span className={styles.successIcon}>✓</span>
+            <span className={styles.successText}>{importSuccess}</span>
+          </div>
+        </div>
+      )}
 
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>

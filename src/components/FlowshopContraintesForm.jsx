@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './FlowshopContraintesForm.module.css';
 import AgendaGrid from './AgendaGrid';
 import ExcelImportSection from './ExcelImportSection';
+import ExcelExportSection from './ExcelExportSection';
 
 const FlowshopContraintesForm = () => {
   const [jobs, setJobs] = useState([
@@ -355,6 +356,28 @@ const FlowshopContraintesForm = () => {
         </p>
       </div>
 
+      {/* Export Excel - Placé tout en haut */}
+      <ExcelExportSection
+        jobs={jobs.map(job => job.durations.map(duration => String(duration)))}
+        dueDates={jobs.map(job => String(job.dueDate))}
+        jobNames={jobs.map(job => job.name)}
+        machineNames={machineNames}
+        unite={timeUnit}
+        algorithmName="Contraintes"
+        API_URL={API_URL}
+        algorithmEndpoint="contraintes"
+      />
+
+      {/* Import Excel */}
+      <ExcelImportSection
+        onImport={handleExcelImport}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={error}
+        algorithmName="Contraintes"
+        API_URL={API_URL}
+      />
+
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
         <h2 className={styles.sectionTitle}>Configuration</h2>
@@ -411,16 +434,6 @@ const FlowshopContraintesForm = () => {
           </div>
         </div>
       </div>
-
-      {/* Import Excel */}
-      <ExcelImportSection
-        onImport={handleExcelImport}
-        isImporting={isImporting}
-        importSuccess={importSuccess}
-        error={error}
-        algorithmName="Contraintes"
-        API_URL={API_URL}
-      />
 
       {/* Paramètres d'agenda avancés */}
       <div className={`${styles.section} ${styles.agendaSection}`}>

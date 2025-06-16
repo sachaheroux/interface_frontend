@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './FlowshopSmithForm.module.css';
 import ExcelImportSection from './ExcelImportSection';
+import ExcelExportSection from './ExcelExportSection';
 
 const FlowshopSmithForm = () => {
   const [jobs, setJobs] = useState([
@@ -218,6 +219,28 @@ const FlowshopSmithForm = () => {
         </p>
       </div>
 
+      {/* Export Excel - Placé tout en haut */}
+      <ExcelExportSection
+        jobs={[jobs.map(job => [job.duration])]} // Format adapté pour Smith (une seule machine)
+        dueDates={jobs.map(job => job.dueDate)}
+        jobNames={jobs.map(job => job.name)}
+        machineNames={["Machine 0"]} // Smith = une seule machine
+        unite={timeUnit}
+        algorithmName="Smith"
+        API_URL={API_URL}
+        algorithmEndpoint="smith"
+      />
+
+      {/* Import Excel */}
+      <ExcelImportSection
+        onImport={handleExcelImport}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={error}
+        algorithmName="Smith"
+        API_URL={API_URL}
+      />
+
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
         <h2 className={styles.sectionTitle}>Configuration</h2>
@@ -256,16 +279,6 @@ const FlowshopSmithForm = () => {
           </div>
         </div>
       </div>
-
-      {/* Import Excel */}
-      <ExcelImportSection
-        onImport={handleExcelImport}
-        isImporting={isImporting}
-        importSuccess={importSuccess}
-        error={error}
-        algorithmName="Smith"
-        API_URL={API_URL}
-      />
 
       {/* Tableau des données */}
       <div className={styles.section}>

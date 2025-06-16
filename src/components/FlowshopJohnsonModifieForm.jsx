@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./FlowshopJohnsonModifieForm.module.css";
 import ExcelImportSection from "./ExcelImportSection";
+import ExcelExportSection from "./ExcelExportSection";
 
 function FlowshopJohnsonModifieForm() {
   const [jobs, setJobs] = useState([
@@ -212,6 +213,28 @@ function FlowshopJohnsonModifieForm() {
             Extension de l'algorithme de Johnson pour flowshops avec plus de 2 machines
           </p>
         </div>
+
+        {/* ===== EXPORT EXCEL - Placé tout en haut ===== */}
+        <ExcelExportSection
+          jobs={jobs}
+          dueDates={dueDates}
+          jobNames={jobNames}
+          machineNames={machineNames}
+          unite={unite}
+          algorithmName="Johnson Modifié"
+          API_URL={API_URL}
+          algorithmEndpoint="johnson_modifie"
+        />
+
+        {/* ===== IMPORT EXCEL ===== */}
+        <ExcelImportSection
+          onImport={handleExcelImport}
+          isImporting={isImporting}
+          importSuccess={importSuccess}
+          error={error}
+          algorithmName="Johnson Modifié"
+          API_URL={API_URL}
+        />
 
         {/* ===== CONFIGURATION ===== */}
         <div className={`${styles.section} ${styles.configSection}`}>

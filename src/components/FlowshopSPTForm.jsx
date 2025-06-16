@@ -250,6 +250,16 @@ function FlowshopSPTForm() {
           algorithmEndpoint="spt"
         />
 
+        {/* Import Excel - Placé juste après l'export */}
+        <ExcelImportSection
+          onImport={handleFileImport}
+          isImporting={isImporting}
+          importSuccess={importSuccess}
+          error={error}
+          algorithmName="SPT"
+          API_URL={API_URL}
+        />
+
         <div className={styles.configSection}>
           <div className={styles.configRow}>
             <div className={styles.inputGroup}>
@@ -306,16 +316,6 @@ function FlowshopSPTForm() {
             </div>
           </div>
         </div>
-
-        {/* Import Excel */}
-        <ExcelImportSection
-          onImport={handleFileImport}
-          isImporting={isImporting}
-          importSuccess={importSuccess}
-          error={error}
-          algorithmName="SPT"
-          API_URL={API_URL}
-        />
 
         {/* Tableau principal des jobs */}
         <div className={styles.section}>

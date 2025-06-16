@@ -209,6 +209,16 @@ function FlowshopJohnsonForm() {
         algorithmEndpoint="johnson"
       />
 
+      {/* ===== IMPORT EXCEL - Placé juste après l'export ===== */}
+      <ExcelImportSection
+        onImport={handleExcelImport}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={error}
+        algorithmName="Johnson"
+        API_URL={API_URL}
+      />
+
       {/* ===== CONFIGURATION ===== */}
       <div className={`${styles.section} ${styles.configSection}`}>
         <div className={styles.configRow}>
@@ -240,16 +250,6 @@ function FlowshopJohnsonForm() {
           </div>
         </div>
       </div>
-
-      {/* ===== IMPORT EXCEL ===== */}
-      <ExcelImportSection
-        onImport={handleExcelImport}
-        isImporting={isImporting}
-        importSuccess={importSuccess}
-        error={error}
-        algorithmName="Johnson"
-        API_URL={API_URL}
-      />
 
       {/* ===== CONFIGURATION MACHINES ===== */}
       <div className={styles.section}>

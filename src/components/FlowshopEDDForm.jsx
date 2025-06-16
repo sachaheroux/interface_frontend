@@ -201,6 +201,16 @@ function FlowshopEDDForm() {
           algorithmEndpoint="edd"
         />
 
+        {/* Import Excel - Placé juste après l'export */}
+        <ExcelImportSection
+          onImport={handleExcelImport}
+          isImporting={isImporting}
+          importSuccess={importSuccess}
+          error={error}
+          algorithmName="EDD"
+          API_URL={API_URL}
+        />
+
         {/* Section Configuration */}
         <div className={`${styles.section} ${styles.configSection}`}>
           <div className={styles.configRow}>
@@ -242,16 +252,6 @@ function FlowshopEDDForm() {
             </div>
           </div>
         </div>
-
-        {/* Import Excel */}
-        <ExcelImportSection
-          onImport={handleExcelImport}
-          isImporting={isImporting}
-          importSuccess={importSuccess}
-          error={error}
-          algorithmName="EDD"
-          API_URL={API_URL}
-        />
 
         {/* Configuration des machines */}
         <div className={styles.section}>

@@ -145,10 +145,7 @@ function FlowshopSPTForm() {
 
   // Fonction pour l'import Excel
 
-  const handleFileImport = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
+  const handleExcelImport = async (formData, fileName) => {
     setIsImporting(true);
     setError(null);
     setImportSuccess(null);
@@ -159,9 +156,6 @@ function FlowshopSPTForm() {
     setAgendaData(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
       const response = await fetch(`${API_URL}/spt/import-excel`, {
         method: 'POST',
         body: formData
@@ -199,7 +193,7 @@ function FlowshopSPTForm() {
       
       // Afficher les résultats directement
       setResult(data.results);
-      setImportSuccess(`Fichier '${file.name}' importé et traité avec succès! Les données du formulaire ont été remplacées par celles du fichier.`);
+      setImportSuccess(`Fichier "${fileName}" importé et traité avec succès! Les données du formulaire ont été remplacées par celles du fichier.`);
       
       // Générer le diagramme de Gantt si pas en mode avancé
       if (!showAdvanced) {
@@ -223,8 +217,6 @@ function FlowshopSPTForm() {
       setError(`Erreur import: ${error.message}`);
     } finally {
       setIsImporting(false);
-      // Réinitialiser l'input file
-      event.target.value = '';
     }
   };
 
@@ -252,7 +244,7 @@ function FlowshopSPTForm() {
 
         {/* Import Excel - Placé juste après l'export */}
         <ExcelImportSection
-          onImport={handleFileImport}
+          onImport={handleExcelImport}
           isImporting={isImporting}
           importSuccess={importSuccess}
           error={error}

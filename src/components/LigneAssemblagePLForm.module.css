@@ -550,13 +550,18 @@
 
 .chartContainer {
   text-align: center;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--border-radius);
 }
 
 .chart {
   max-width: 100%;
+  width: 100%;
   height: auto;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-sm);
+  object-fit: contain;
 }
 
 .downloadButton {
@@ -697,7 +702,7 @@
 .tableHeader {
   background: var(--background-section);
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 1px;
   font-weight: 600;
   color: var(--text-primary);
@@ -714,7 +719,7 @@
 
 .tableRow {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 1px;
   background: var(--border-color);
 }
@@ -770,6 +775,8 @@
   background: var(--background-section);
   border-radius: var(--border-radius);
   border: 1px solid var(--border-color);
+  width: 100%;
+  overflow: hidden;
 }
 
 .algorithmChart h4 {
@@ -813,5 +820,20 @@
   .algorithmBadge {
     width: 100%;
     max-width: 300px;
+  }
+  
+  .chart {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+  }
+  
+  .chartContainer {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  
+  .algorithmChart {
+    overflow-x: auto;
   }
 } 

@@ -254,7 +254,6 @@ const LigneAssemblageCompareForm = () => {
     // Critères de comparaison (par ordre de priorité) :
     // 1. Nombre de stations (plus petit = mieux)
     // 2. Efficacité (plus grand = mieux)
-    // 3. Écart à l'optimal (plus petit = mieux)
     
     let bestAlgorithm = null;
     let bestScore = null;
@@ -263,20 +262,17 @@ const LigneAssemblageCompareForm = () => {
       const metrics = result.data.metrics;
       const stations = metrics.nombre_stations || Infinity;
       const efficacite = metrics.efficacite || 0;
-      const ecart = metrics.ecart_optimal || Infinity;
 
       // Score composite : priorité au nombre de stations, puis efficacité
       const score = {
         stations,
         efficacite,
-        ecart,
         key
       };
 
       if (!bestScore || 
           stations < bestScore.stations || 
-          (stations === bestScore.stations && efficacite > bestScore.efficacite) ||
-          (stations === bestScore.stations && efficacite === bestScore.efficacite && ecart < bestScore.ecart)) {
+          (stations === bestScore.stations && efficacite > bestScore.efficacite)) {
         bestScore = score;
         bestAlgorithm = key;
       }
@@ -451,7 +447,6 @@ const LigneAssemblageCompareForm = () => {
               <div className={styles.tableHeaderCell}>Algorithme</div>
               <div className={styles.tableHeaderCell}>Stations</div>
               <div className={styles.tableHeaderCell}>Efficacité</div>
-              <div className={styles.tableHeaderCell}>Écart optimal</div>
               <div className={styles.tableHeaderCell}>Statut</div>
             </div>
             
@@ -469,9 +464,6 @@ const LigneAssemblageCompareForm = () => {
                 </div>
                 <div className={styles.tableCell}>
                   {result.error ? 'Erreur' : `${result.data?.metrics?.efficacite || 0}%`}
-                </div>
-                <div className={styles.tableCell}>
-                  {result.error ? 'Erreur' : `${result.data?.metrics?.ecart_optimal || 0}%`}
                 </div>
                 <div className={styles.tableCell}>
                   {result.error ? (
@@ -516,15 +508,6 @@ const LigneAssemblageCompareForm = () => {
               </div>
               <div className={styles.metricLabel}>
                 Efficacité
-              </div>
-            </div>
-
-            <div className={styles.metric}>
-              <div className={styles.metricValue}>
-                {results[bestAlgorithm].data?.metrics?.ecart_optimal || 0}%
-              </div>
-              <div className={styles.metricLabel}>
-                Écart à l'optimal
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './FlowshopContraintesForm.module.css';
 import AgendaGrid from './AgendaGrid';
-import ExcelImportSectionFlowshopMM from './ExcelImportSectionFlowshopMM';
+import ExcelImportSection from './ExcelImportSection';
 import ExcelExportSectionFlowshopMM from './ExcelExportSectionFlowshopMM';
 
 const FlowshopMachinesMultiplesForm = () => {
@@ -25,7 +25,8 @@ const FlowshopMachinesMultiplesForm = () => {
   const [feries, setFeries] = useState(['']);
   const [dueDateTimes, setDueDateTimes] = useState(jobs.map(() => ''));
   const [pauses, setPauses] = useState([{ start: '12:00', end: '13:00', name: 'Pause déjeuner' }]);
-  const [ganttImage, setGanttImage] = useState(null);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -304,23 +305,57 @@ const FlowshopMachinesMultiplesForm = () => {
     setPauses(newPauses);
   };
 
-  // Fonctions pour l'import/export Excel
-  const handleImportSuccess = (importedData, result) => {
-    // Mettre à jour l'interface avec les données importées
-    setJobs(importedData.jobs);
-    setMachineNames(importedData.stageNames);
-    setNumMachines(importedData.stageNames.length);
-    setMachinesPerStage(importedData.machinesPerStage);
-    setTimeUnit(importedData.unite);
-    setResult(result);
+  // Fonction pour l'import Excel
+  const handleExcelImport = async (formData, fileName) => {
+    setIsImporting(true);
     setError('');
-    setGanttImage(null);
-  };
+    setImportSuccess(null);
+         setResult(null);
+     setAgendaData(null);
 
-  const handleGanttGenerated = (imageUrl) => {
-    setGanttImage(imageUrl);
-    setResult(null); // Effacer les résultats précédents
-    setError('');
+    try {
+      const response = await fetch(`${API_URL}/flowshop/machines_multiples/import-excel`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erreur lors de l\'import');
+      }
+
+      const data = await response.json();
+      
+      // Mettre à jour les données du formulaire avec les données importées
+      if (data.imported_data) {
+        const importedData = data.imported_data;
+        
+        // Convertir au format FlowshopMM (avec tableaux de durées)
+        const newJobs = importedData.jobs_data.map((jobStages, jobIndex) => ({
+          name: importedData.job_names[jobIndex],
+          durations: jobStages.map(stageAlternatives => 
+            stageAlternatives.map(([machineId, duration]) => duration)
+          ),
+          dueDate: importedData.due_dates[jobIndex]
+        }));
+        
+        setJobs(newJobs);
+        setMachineNames(importedData.stage_names);
+        setNumMachines(importedData.stage_names.length);
+        setMachinesPerStage(importedData.machines_per_stage);
+        setTimeUnit(importedData.unite);
+      }
+      
+      // Afficher les résultats
+      setResult(data);
+      setImportSuccess(`Fichier "${fileName}" importé et traité avec succès ! ${data.imported_data.job_names.length} jobs et ${data.imported_data.stage_names.length} étapes détectés.`);
+
+    } catch (error) {
+      console.error('Erreur import Excel:', error);
+      setError(error.message);
+    } finally {
+      setIsImporting(false);
+    }
   };
 
   return (
@@ -341,9 +376,14 @@ const FlowshopMachinesMultiplesForm = () => {
         unite={timeUnit}
       />
       
-      <ExcelImportSectionFlowshopMM 
-        onImportSuccess={handleImportSuccess}
-        onGanttGenerated={handleGanttGenerated}
+      <ExcelImportSection
+        onImport={handleExcelImport}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={error}
+        algorithmName="FlowshopMM"
+        templateType="flowshop_mm"
+        API_URL={API_URL}
       />
 
       {/* Configuration */}
@@ -832,21 +872,7 @@ const FlowshopMachinesMultiplesForm = () => {
         </div>
       )}
 
-      {/* Gantt direct depuis import */}
-      {ganttImage && (
-        <div className={`${styles.section} ${styles.chartSection}`}>
-          <div className={styles.chartHeader}>
-            <h3>Diagramme de Gantt (Import direct)</h3>
-          </div>
-          <div className={styles.chartContainer}>
-            <img
-              src={ganttImage}
-              alt="Diagramme de Gantt depuis import"
-              className={styles.chart}
-            />
-          </div>
-        </div>
-      )}
+
 
 
     </div>

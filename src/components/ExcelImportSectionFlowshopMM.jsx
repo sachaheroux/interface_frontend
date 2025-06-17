@@ -2,40 +2,50 @@ import React, { useState } from 'react';
 import styles from './FlowshopContraintesForm.module.css';
 
 const ExcelImportSectionFlowshopMM = ({ onImportSuccess, onGanttGenerated }) => {
-  const [file, setFile] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [importResult, setImportResult] = useState(null);
-  const [error, setError] = useState('');
+  const [showImportOptions, setShowImportOptions] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
+  const [error, setError] = useState(null);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      // Vérifier l'extension
-      const validExtensions = ['.xlsx', '.xls'];
-      const fileExtension = selectedFile.name.toLowerCase().slice(selectedFile.name.lastIndexOf('.'));
-      
-      if (!validExtensions.includes(fileExtension)) {
-        setError('Veuillez sélectionner un fichier Excel (.xlsx ou .xls)');
-        setFile(null);
-        return;
+  const handleDownloadTemplate = (downloadType) => {
+    try {
+      let fileName;
+      if (downloadType === 'exemple') {
+        fileName = 'Template-FlowshopMM_Exemple.xlsx';
+      } else {
+        fileName = 'Template-FlowshopMM_Vide.xlsx';
       }
       
-      setFile(selectedFile);
-      setError('');
-      setImportResult(null);
+      const link = document.createElement('a');
+      link.href = `/${fileName}`;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Erreur téléchargement template:', error);
     }
   };
 
-  const handleImport = async () => {
-    if (!file) {
-      setError('Veuillez sélectionner un fichier');
+  const handleFileImport = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Vérifier l'extension
+    const validExtensions = ['.xlsx', '.xls'];
+    const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+    
+    if (!validExtensions.includes(fileExtension)) {
+      setError('Veuillez sélectionner un fichier Excel (.xlsx ou .xls)');
+      event.target.value = '';
       return;
     }
 
-    setIsUploading(true);
-    setError('');
+    setIsImporting(true);
+    setError(null);
+    setImportSuccess(null);
 
     try {
       const formData = new FormData();
@@ -52,7 +62,6 @@ const ExcelImportSectionFlowshopMM = ({ onImportSuccess, onGanttGenerated }) => 
       }
 
       const result = await response.json();
-      setImportResult(result);
       
       if (onImportSuccess) {
         // Transmettre les données formatées pour l'interface
@@ -71,22 +80,24 @@ const ExcelImportSectionFlowshopMM = ({ onImportSuccess, onGanttGenerated }) => 
         onImportSuccess(formattedData, result);
       }
 
+      setImportSuccess(`✅ Fichier "${file.name}" importé avec succès ! ${result.imported_data.job_names.length} jobs et ${result.imported_data.stage_names.length} étapes détectés.`);
+
     } catch (error) {
       console.error('Erreur import:', error);
       setError(error.message);
     } finally {
-      setIsUploading(false);
+      setIsImporting(false);
+      // Réinitialiser l'input file
+      event.target.value = '';
     }
   };
 
-  const handleGenerateGantt = async () => {
-    if (!file) {
-      setError('Veuillez sélectionner un fichier');
-      return;
-    }
+  const handleGanttDirect = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-    setIsUploading(true);
-    setError('');
+    setIsImporting(true);
+    setError(null);
 
     try {
       const formData = new FormData();
@@ -113,97 +124,99 @@ const ExcelImportSectionFlowshopMM = ({ onImportSuccess, onGanttGenerated }) => 
       console.error('Erreur Gantt:', error);
       setError(error.message);
     } finally {
-      setIsUploading(false);
+      setIsImporting(false);
+      event.target.value = '';
     }
-  };
-
-  const downloadTemplate = () => {
-    const link = document.createElement('a');
-    link.href = '/Template-FlowshopMM_Vide.xlsx';
-    link.download = 'Template-FlowshopMM_Vide.xlsx';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const downloadExample = () => {
-    const link = document.createElement('a');
-    link.href = '/Template-FlowshopMM_Exemple.xlsx';
-    link.download = 'Template-FlowshopMM_Exemple.xlsx';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>📊 Import Excel FlowshopMM</h2>
+      <h3 className={styles.sectionTitle}>📊 Import depuis Excel</h3>
       
-      <div className={styles.templateSection}>
-        <p>Téléchargez d'abord un template Excel :</p>
-        <div className={styles.templateButtons}>
-          <button onClick={downloadTemplate} className={styles.templateButton}>
-            📄 Template vide
-          </button>
-          <button onClick={downloadExample} className={styles.templateButton}>
-            📋 Exemple rempli
-          </button>
-        </div>
-        <p className={styles.formatInfo}>
-          <strong>Format spécial FlowshopMM :</strong> Les cellules peuvent contenir plusieurs durées séparées par des points-virgules.<br/>
-          <em>Exemple :</em> "35" (une machine) ou "35; 43.4; 33.5" (plusieurs machines sur la même étape)
-        </p>
-      </div>
-
-      <div className={styles.uploadSection}>
-        <div className={styles.fileInputGroup}>
-          <input
-            type="file"
-            accept=".xlsx,.xls"
-            onChange={handleFileChange}
-            className={styles.fileInput}
-            id="flowshop-mm-file-input"
+      <div className={styles.importToggle}>
+        <label className={styles.toggleLabel}>
+          <input 
+            type="checkbox" 
+            checked={showImportOptions} 
+            onChange={() => setShowImportOptions(!showImportOptions)}
+            className={styles.checkbox}
           />
-          <label htmlFor="flowshop-mm-file-input" className={styles.fileInputLabel}>
-            {file ? file.name : 'Choisir un fichier Excel'}
-          </label>
-        </div>
-
-        <div className={styles.actionButtons}>
-          <button 
-            onClick={handleImport}
-            disabled={!file || isUploading}
-            className={styles.importButton}
-          >
-            {isUploading ? 'Import en cours...' : '📊 Importer & Calculer'}
-          </button>
-          
-          <button 
-            onClick={handleGenerateGantt}
-            disabled={!file || isUploading}
-            className={styles.ganttButton}
-          >
-            {isUploading ? 'Génération...' : '📈 Gantt direct'}
-          </button>
-        </div>
+          <span className={styles.checkboxCustom}></span>
+          Activer l'import depuis Excel
+        </label>
       </div>
 
-      {error && (
-        <div className={styles.error}>
-          <strong>Erreur :</strong> {error}
-        </div>
-      )}
-
-      {importResult && (
-        <div className={styles.success}>
-          <h3>✅ Import réussi !</h3>
-          <div className={styles.resultSummary}>
-            <p><strong>Jobs importés :</strong> {importResult.imported_data.job_names.length}</p>
-            <p><strong>Étapes :</strong> {importResult.imported_data.stage_names.length}</p>
-            <p><strong>Unité :</strong> {importResult.imported_data.unite}</p>
-            <p><strong>Flowtime moyen :</strong> {importResult.flowtime_moyen?.toFixed(2) || 'N/A'}</p>
-            <p><strong>Makespan :</strong> {importResult.makespan?.toFixed(2) || 'N/A'}</p>
+      {showImportOptions && (
+        <div className={styles.importSection}>
+          <div className={styles.importInfo}>
+            <p className={styles.importDescription}>
+              Importez vos données depuis un fichier Excel pour un traitement automatique avec l'algorithme FlowshopMM.
+              Téléchargez d'abord un template pour voir la structure attendue (format machines multiples avec points-virgules).
+            </p>
           </div>
+          
+          <div className={styles.importActions}>
+            <div className={styles.templateButtons}>
+              <button 
+                className={styles.templateButton}
+                onClick={() => handleDownloadTemplate('exemple')}
+                type="button"
+              >
+                📄 Template avec exemple
+              </button>
+              <button 
+                className={styles.templateButton}
+                onClick={() => handleDownloadTemplate('vide')}
+                type="button"
+              >
+                📄 Template vide
+              </button>
+            </div>
+            
+            <div className={styles.importUpload}>
+              <label className={styles.uploadLabel}>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleFileImport}
+                  className={styles.fileInput}
+                  disabled={isImporting}
+                />
+                <span className={styles.uploadButton}>
+                  {isImporting ? '⏳ Import en cours...' : '📥 Importer & Calculer'}
+                </span>
+              </label>
+            </div>
+
+            <div className={styles.importUpload}>
+              <label className={styles.uploadLabel}>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleGanttDirect}
+                  className={styles.fileInput}
+                  disabled={isImporting}
+                />
+                <span className={styles.uploadButton}>
+                  {isImporting ? '⏳ Génération...' : '📈 Gantt direct'}
+                </span>
+              </label>
+            </div>
+          </div>
+          
+          {importSuccess && (
+            <div className={styles.successMessage}>
+              <span className={styles.successIcon}>✅</span>
+              {importSuccess}
+            </div>
+          )}
+          
+          {error && (
+            <div className={styles.errorMessage}>
+              <span className={styles.errorIcon}>❌</span>
+              {error}
+            </div>
+          )}
         </div>
       )}
     </div>

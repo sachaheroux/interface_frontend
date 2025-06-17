@@ -929,3 +929,91 @@
   font-size: var(--font-size-sm);
   font-weight: 500;
 }
+
+/* ===== STYLES COMPARAISON D'ALGORITHMES ===== */
+.algorithmsInfo {
+  background: var(--background-section);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.algorithmsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.algorithmBadge {
+  background: var(--primary-color);
+  color: white;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 9999px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.comparisonTableSection {
+  margin-bottom: var(--spacing-xl);
+}
+
+.comparisonTableSection h4 {
+  color: var(--primary-color);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--spacing-lg);
+}
+
+.tableContainer {
+  overflow-x: auto;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.table th,
+.table td {
+  padding: var(--spacing-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table th {
+  background: var(--background-section);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.bestAlgorithmsSection {
+  margin-bottom: var(--spacing-xl);
+}
+
+.bestAlgorithmsSection h4 {
+  color: var(--primary-color);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--spacing-lg);
+}
+
+.errorRow {
+  background-color: #fef2f2;
+}
+
+.successRow {
+  background-color: #f0fdf4;
+}
+
+.errorRow td {
+  color: #dc2626;
+}
+
+.successRow td {
+  color: #16a34a;
+}

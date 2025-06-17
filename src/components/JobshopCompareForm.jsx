@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./FlowshopSPTForm.module.css";
+import styles from "./JobshopSPTForm.module.css";
 import ExcelImportSection from "./ExcelImportSection";
 import ExcelExportSectionJobshop from "./ExcelExportSectionJobshop";
 
@@ -310,13 +310,14 @@ function JobshopCompareForm() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.algorithmContainer}>
+      {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>Comparaison des algorithmes Jobshop</h1>
-        <p className={styles.subtitle}>Comparez automatiquement tous les algorithmes Jobshop disponibles</p>
+        <h1 className={styles.title}>Jobshop - Comparaison des algorithmes</h1>
+        <p className={styles.subtitle}>
+          Comparez automatiquement tous les algorithmes Jobshop disponibles pour identifier la meilleure solution
+        </p>
       </div>
-
-      <div className={styles.content}>
         {/* Section Export Excel */}
         <ExcelExportSectionJobshop
           jobs={jobs}
@@ -522,7 +523,7 @@ function JobshopCompareForm() {
 
         {/* Algorithmes à comparer */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>🔄 Algorithmes Jobshop disponibles</h3>
+          <h2 className={styles.sectionTitle}>🔄 Algorithmes Jobshop disponibles</h2>
           <div className={styles.algorithmsInfo}>
             <p>Tous les algorithmes Jobshop seront comparés automatiquement :</p>
             <div className={styles.algorithmsList}>
@@ -550,14 +551,15 @@ function JobshopCompareForm() {
           className={styles.calculateButton} 
           onClick={compareAlgorithms}
           disabled={isCalculating}
+          type="button"
         >
           {isCalculating ? 'Comparaison en cours...' : 'Comparer tous les algorithmes Jobshop'}
         </button>
 
         {/* Résultats de comparaison */}
         {results && (
-          <div className={styles.resultsSection}>
-            <h3 className={styles.resultsTitle}>Résultats de la comparaison</h3>
+          <div className={`${styles.section} ${styles.resultsSection}`}>
+            <h2 className={styles.resultsTitle}>Résultats de la comparaison</h2>
             
             {/* Tableau comparatif */}
             <div className={styles.comparisonTableSection}>
@@ -628,7 +630,6 @@ function JobshopCompareForm() {
             ))}
           </div>
         )}
-      </div>
     </div>
   );
 }

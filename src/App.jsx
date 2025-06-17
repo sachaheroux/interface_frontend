@@ -25,6 +25,8 @@ import JobshopEDDForm from "./components/JobshopEDDForm";
 import JobshopEDDInfo from "./components/JobshopEDDInfo";
 import JobshopContraintesForm from "./components/JobshopContraintesForm";
 import JobshopContraintesInfo from "./components/JobshopContraintesInfo";
+import JobshopCompareForm from "./components/JobshopCompareForm";
+import JobshopCompareInfo from "./components/JobshopCompareInfo";
 import LigneAssemblagePrecedenceForm from "./components/LigneAssemblagePrecedenceForm";
 import LigneAssemblagePrecedenceInfo from "./components/LigneAssemblagePrecedenceInfo";
 import LigneAssemblageCOMSOALForm from "./components/LigneAssemblageCOMSOALForm";
@@ -60,7 +62,7 @@ function App() {
 
   const systemes = {
     "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Machines multiples", "Smith", "Comparer les algos"],
-    "Jobshop": ["SPT", "EDD", "Contraintes"],
+    "Jobshop": ["SPT", "EDD", "Contraintes", "Comparer les algos"],
     "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL"],
     "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte"],
     "Ligne de transfert": ["Buffer Buzzacott"],
@@ -166,6 +168,7 @@ function App() {
           {!showDecisionTree && systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTForm />}
           {!showDecisionTree && systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDForm />}
           {!showDecisionTree && systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesForm />}
+          {!showDecisionTree && systeme === "Jobshop" && algorithme === "Comparer les algos" && <JobshopCompareForm />}
           {!showDecisionTree && systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceForm />}
           {!showDecisionTree && systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && (
             <div className="algorithmContent">
@@ -191,7 +194,7 @@ function App() {
           {!showDecisionTree && systeme === "FMS" && algorithme === "Lots de production (Glouton)" && <FMSLotsProductionGloutonForm />}
           {!showDecisionTree && systeme === "FMS" && algorithme === "Lots de production (MIP)" && <FMSLotsProductionMIPForm />}
           {!showDecisionTree && systeme === "FMS" && algorithme === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueForm />}
-          {!showDecisionTree && algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && (algorithme === "Sac à dos (Prog. Dynamique)" || algorithme === "Sac à dos (Prog. Linéaire)" || algorithme === "Sac à dos (Algorithme Glouton)" || algorithme === "Lots de production (Glouton)" || algorithme === "Lots de production (MIP)" || algorithme === "Lots de chargement (Heuristique)")) && (
+          {!showDecisionTree && algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes" || algorithme === "Comparer les algos")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && (algorithme === "Sac à dos (Prog. Dynamique)" || algorithme === "Sac à dos (Prog. Linéaire)" || algorithme === "Sac à dos (Algorithme Glouton)" || algorithme === "Lots de production (Glouton)" || algorithme === "Lots de production (MIP)" || algorithme === "Lots de chargement (Heuristique)")) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -214,6 +217,7 @@ function App() {
             {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTInfo />}
             {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDInfo />}
             {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesInfo />}
+            {systeme === "Jobshop" && algorithme === "Comparer les algos" && <JobshopCompareInfo />}
             {systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceInfo />}
             {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && <LigneAssemblageCOMSOALInfo />}
             {systeme === "Ligne d'assemblage" && algorithme === "LPT" && <LigneAssemblageLPTInfo />}

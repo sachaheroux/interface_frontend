@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './ExcelExportSection.module.css';
+import styles from './FlowshopContraintesForm.module.css';
 
 const ExcelExportSectionFlowshopMM = ({ jobs, stageNames, machinesPerStage, unite }) => {
   const [isExporting, setIsExporting] = useState(false);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './ExcelImportSection.module.css';
+import styles from './FlowshopContraintesForm.module.css';
 
 const ExcelImportSectionFlowshopMM = ({ onImportSuccess, onGanttGenerated }) => {
   const [file, setFile] = useState(null);

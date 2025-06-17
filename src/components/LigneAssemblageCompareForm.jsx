@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styles from './LigneAssemblagePLForm.module.css';
+import ExcelImportSectionLigneAssemblage from './ExcelImportSectionLigneAssemblage';
+import ExcelExportSectionLigneAssemblage from './ExcelExportSectionLigneAssemblage';
 
 const LigneAssemblageCompareForm = () => {
   const [tasks, setTasks] = useState([
@@ -22,6 +24,9 @@ const LigneAssemblageCompareForm = () => {
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
   const [chartUrls, setChartUrls] = useState({});
+  const [isImporting, setIsImporting] = useState(false);
+  const [importSuccess, setImportSuccess] = useState(null);
+  const [importError, setImportError] = useState(null);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -243,6 +248,63 @@ const LigneAssemblageCompareForm = () => {
     return task ? task.name : `Tâche ${taskId}`;
   };
 
+  // Fonction d'import Excel
+  const handleImportExcel = async (formData, fileName) => {
+    setIsImporting(true);
+    setImportSuccess(null);
+    setImportError(null);
+
+    try {
+      // Utiliser l'endpoint PL pour l'import (format identique)
+      const response = await fetch(`${API_URL}/ligne_assemblage/pl/import-excel`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erreur lors de l\'import');
+      }
+
+      const data = await response.json();
+      console.log("Données importées:", data);
+
+      // Mettre à jour les données du formulaire
+      if (data.tasks_data && Array.isArray(data.tasks_data)) {
+        const importedTasks = data.tasks_data.map((task, index) => ({
+          id: task.id || (index + 1),
+          name: task.name || `Tâche ${task.id || (index + 1)}`,
+          predecessors: task.predecessors ? 
+            (Array.isArray(task.predecessors) ? task.predecessors.join(',') : task.predecessors.toString()) : '',
+          duration: parseFloat(task.duration) || 0
+        }));
+        setTasks(importedTasks);
+      }
+
+      if (data.cycle_time) {
+        setCycleTime(parseFloat(data.cycle_time));
+      }
+
+      if (data.unite) {
+        setTimeUnit(data.unite);
+      }
+
+      setImportSuccess(`✅ Import réussi ! ${data.tasks_data?.length || 0} tâches importées depuis ${fileName}`);
+      
+      // Effacer les messages après 3 secondes
+      setTimeout(() => setImportSuccess(null), 3000);
+
+    } catch (error) {
+      console.error('Erreur import Excel:', error);
+      setImportError(`❌ Erreur import: ${error.message}`);
+      
+      // Effacer les messages après 5 secondes
+      setTimeout(() => setImportError(null), 5000);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   // Fonction pour déterminer le meilleur algorithme
   const getBestAlgorithm = () => {
     const validResults = Object.entries(results).filter(([key, result]) => 
@@ -415,6 +477,29 @@ const LigneAssemblageCompareForm = () => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Import Excel */}
+      <ExcelImportSectionLigneAssemblage
+        onImport={handleImportExcel}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={importError}
+        algorithmName="Comparaison"
+        API_URL={API_URL}
+      />
+
+      {/* Export Excel */}
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>📤 Export vers Excel</h3>
+        <ExcelExportSectionLigneAssemblage
+          tasks={tasks}
+          cycleTime={cycleTime}
+          timeUnit={timeUnit}
+          algorithmName="Comparaison"
+          API_URL={API_URL}
+          algorithmEndpoint="ligne_assemblage/pl"
+        />
       </div>
 
       {/* Gestion d'erreur */}

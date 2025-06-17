@@ -503,23 +503,6 @@ const JobshopEDDForm = () => {
         <div className={`${styles.section} ${styles.resultsSection}`}>
           <h2 className={styles.resultsTitle}>Résultats de l'optimisation</h2>
 
-          {/* Séquence calculée */}
-          <div className={styles.sequenceSection}>
-            <h3 className={styles.sequenceTitle}>Séquence optimale calculée</h3>
-            <div className={styles.sequenceValue}>
-              {result.sequence && Array.isArray(result.sequence) ? (
-                result.sequence.join(' → ')
-              ) : result.order && Array.isArray(result.order) ? (
-                result.order.map(jobIndex => jobs[jobIndex]?.name || `Job ${jobIndex + 1}`).join(' → ')
-              ) : result.job_order && Array.isArray(result.job_order) ? (
-                result.job_order.join(' → ')
-              ) : (
-                // Simulation si pas de séquence fournie
-                jobs.map(job => job.name).join(' → ')
-              )}
-            </div>
-          </div>
-
           {/* Métriques */}
           <div className={styles.metricsGrid}>
             <div className={styles.metric}>
@@ -536,7 +519,7 @@ const JobshopEDDForm = () => {
                 {result.flowtime || result.metrics?.flowtime || 0}
               </div>
               <div className={styles.metricLabel}>
-                Flowtime ({timeUnit})
+                Flowtime moyen ({timeUnit})
               </div>
             </div>
             

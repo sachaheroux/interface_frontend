@@ -738,7 +738,7 @@ const JobshopContraintesForm = () => {
                 {result.flowtime || result.metrics?.flowtime || 0}
               </div>
               <div className={styles.metricLabel}>
-                Flowtime ({timeUnit})
+                Flowtime moyen ({timeUnit})
               </div>
             </div>
             

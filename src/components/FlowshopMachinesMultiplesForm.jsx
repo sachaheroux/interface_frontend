@@ -333,6 +333,19 @@ const FlowshopMachinesMultiplesForm = () => {
         </p>
       </div>
 
+      {/* Section Import/Export Excel */}
+      <ExcelExportSectionFlowshopMM 
+        jobs={jobs}
+        stageNames={machineNames}
+        machinesPerStage={machinesPerStage}
+        unite={timeUnit}
+      />
+      
+      <ExcelImportSectionFlowshopMM 
+        onImportSuccess={handleImportSuccess}
+        onGanttGenerated={handleGanttGenerated}
+      />
+
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
         <h2 className={styles.sectionTitle}>Configuration</h2>
@@ -525,19 +538,6 @@ const FlowshopMachinesMultiplesForm = () => {
           </table>
         </div>
       </div>
-
-      {/* Section Import/Export Excel */}
-      <ExcelImportSectionFlowshopMM 
-        onImportSuccess={handleImportSuccess}
-        onGanttGenerated={handleGanttGenerated}
-      />
-      
-      <ExcelExportSectionFlowshopMM 
-        jobs={jobs}
-        stageNames={machineNames}
-        machinesPerStage={machinesPerStage}
-        unite={timeUnit}
-      />
 
       {/* Paramètres d'agenda avancés */}
       <div className={`${styles.section} ${styles.agendaSection}`}>

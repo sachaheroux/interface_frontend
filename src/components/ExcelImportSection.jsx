@@ -21,6 +21,12 @@ function ExcelImportSection({
         } else {
           fileName = 'Template-Jobshop_Vide.xlsx';
         }
+      } else if (templateType === 'flowshop_mm') {
+        if (downloadType === 'exemple') {
+          fileName = 'Template-FlowshopMM_Exemple.xlsx';
+        } else {
+          fileName = 'Template-FlowshopMM_Vide.xlsx';
+        }
       } else {
         // flowshop par défaut
         if (downloadType === 'exemple') {

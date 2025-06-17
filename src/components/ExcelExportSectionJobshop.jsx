@@ -21,23 +21,22 @@ function ExcelExportSectionJobshop({
     setExportError(null);
 
     try {
-      // Préparer les données pour l'export au format Jobshop
-      // Format spécial : chaque tâche contient (séquence, temps)
+      // Préparer les données pour l'export au format attendu par le backend
+      // Le backend JobshopExportDataRequest attend: List[List[List[float]]] 
+      // Format: [[[machine, duration], [machine, duration]], [[machine, duration]]]
       const jobsDataFormatted = jobs.map(job => {
         if (Array.isArray(job)) {
-          // Si c'est déjà un array de [machine, duration]
-          return job.map((task, index) => ({
-            sequence: index + 1, // L'ordre dans le tableau = séquence
-            machine: task[0],    // Numéro de machine
-            duration: parseFloat(task[1]) || 0  // Durée
-          }));
+          // Si c'est déjà un array de [machine, duration], le garder tel quel
+          return job.map(task => [
+            parseFloat(task[0]) || 0,  // machine
+            parseFloat(task[1]) || 0   // duration
+          ]);
         } else if (job && job.tasks) {
-          // Si c'est un objet job avec tasks
-          return job.tasks.map((task, index) => ({
-            sequence: index + 1, // L'ordre dans le tableau = séquence
-            machine: task.machine,
-            duration: parseFloat(task.duration) || 0
-          }));
+          // Si c'est un objet job avec tasks, convertir au format [machine, duration]
+          return job.tasks.map(task => [
+            parseFloat(task.machine) || 0,    // machine
+            parseFloat(task.duration) || 0    // duration
+          ]);
         }
         return [];
       });
@@ -47,8 +46,7 @@ function ExcelExportSectionJobshop({
         due_dates: dueDates.map(date => parseFloat(date) || 0),
         job_names: jobNames,
         machine_names: machineNames,
-        unite: unite,
-        format_type: "jobshop" // Indiquer au backend que c'est du format jobshop
+        unite: unite
       };
 
       // Vérifier que nous avons des données à exporter

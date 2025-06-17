@@ -255,6 +255,9 @@ const LigneAssemblageCompareForm = () => {
     setImportError(null);
 
     try {
+      // Ajouter le format type pour indiquer au backend le format ligne d'assemblage
+      formData.append('format_type', 'ligne_assemblage');
+      
       // Utiliser l'endpoint PL pour l'import (format identique)
       const response = await fetch(`${API_URL}/ligne_assemblage/pl/import-excel`, {
         method: 'POST',
@@ -354,6 +357,26 @@ const LigneAssemblageCompareForm = () => {
           Comparaison automatique des algorithmes d'équilibrage : PL, LPT et COMSOAL
         </p>
       </div>
+
+      {/* Export Excel - Placé tout en haut */}
+      <ExcelExportSectionLigneAssemblage
+        tasks={tasks}
+        cycleTime={cycleTime}
+        timeUnit={timeUnit}
+        algorithmName="Comparaison"
+        API_URL={API_URL}
+        algorithmEndpoint="ligne_assemblage/pl"
+      />
+
+      {/* Import Excel - Placé juste après l'export */}
+      <ExcelImportSectionLigneAssemblage
+        onImport={handleImportExcel}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={importError}
+        algorithmName="Comparaison"
+        API_URL={API_URL}
+      />
 
       {/* Informations sur les algorithmes */}
       <div className={`${styles.section} ${styles.algorithmsInfo}`}>
@@ -479,28 +502,7 @@ const LigneAssemblageCompareForm = () => {
         </div>
       </div>
 
-      {/* Import Excel */}
-      <ExcelImportSectionLigneAssemblage
-        onImport={handleImportExcel}
-        isImporting={isImporting}
-        importSuccess={importSuccess}
-        error={importError}
-        algorithmName="Comparaison"
-        API_URL={API_URL}
-      />
 
-      {/* Export Excel */}
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>📤 Export vers Excel</h3>
-        <ExcelExportSectionLigneAssemblage
-          tasks={tasks}
-          cycleTime={cycleTime}
-          timeUnit={timeUnit}
-          algorithmName="Comparaison"
-          API_URL={API_URL}
-          algorithmEndpoint="ligne_assemblage/pl"
-        />
-      </div>
 
       {/* Gestion d'erreur */}
       {error && (

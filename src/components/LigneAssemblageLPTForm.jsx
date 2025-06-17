@@ -207,6 +207,9 @@ const LigneAssemblageLPTForm = () => {
     setImportError(null);
 
     try {
+      // Ajouter le format type pour indiquer au backend le format ligne d'assemblage
+      formData.append('format_type', 'ligne_assemblage');
+      
       const response = await fetch(`${API_URL}/ligne_assemblage/lpt/import-excel`, {
         method: 'POST',
         body: formData
@@ -265,6 +268,26 @@ const LigneAssemblageLPTForm = () => {
           Équilibrage par règle du temps de traitement le plus long (Longest Processing Time)
         </p>
       </div>
+
+      {/* Export Excel - Placé tout en haut */}
+      <ExcelExportSectionLigneAssemblage
+        tasks={tasks}
+        cycleTime={cycleTime}
+        timeUnit={timeUnit}
+        algorithmName="LPT"
+        API_URL={API_URL}
+        algorithmEndpoint="ligne_assemblage/lpt"
+      />
+
+      {/* Import Excel - Placé juste après l'export */}
+      <ExcelImportSectionLigneAssemblage
+        onImport={handleImportExcel}
+        isImporting={isImporting}
+        importSuccess={importSuccess}
+        error={importError}
+        algorithmName="LPT"
+        API_URL={API_URL}
+      />
 
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
@@ -378,28 +401,7 @@ const LigneAssemblageLPTForm = () => {
         </div>
       </div>
 
-      {/* Import Excel */}
-      <ExcelImportSectionLigneAssemblage
-        onImport={handleImportExcel}
-        isImporting={isImporting}
-        importSuccess={importSuccess}
-        error={importError}
-        algorithmName="LPT"
-        API_URL={API_URL}
-      />
 
-      {/* Export Excel */}
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>📤 Export vers Excel</h3>
-        <ExcelExportSectionLigneAssemblage
-          tasks={tasks}
-          cycleTime={cycleTime}
-          timeUnit={timeUnit}
-          algorithmName="LPT"
-          API_URL={API_URL}
-          algorithmEndpoint="ligne_assemblage/lpt"
-        />
-      </div>
 
       {/* Gestion d'erreur */}
       {error && (

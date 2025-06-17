@@ -70,7 +70,8 @@ function ExcelImportSectionLigneAssemblage({
           <div className={styles.importInfo}>
             <p className={styles.importDescription}>
               Importez vos données de tâches depuis un fichier Excel pour un traitement automatique avec l'algorithme {algorithmName}.
-              Téléchargez d'abord un template pour voir la structure attendue (Tâche, Durée, Prédécesseurs).
+              Format attendu : Colonne C = Tâche, Colonne D = Durée, Colonne E = Prédécesseurs (à partir de la ligne 7).
+              Téléchargez d'abord un template pour voir la structure exacte.
             </p>
           </div>
           

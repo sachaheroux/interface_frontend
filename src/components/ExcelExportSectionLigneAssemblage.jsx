@@ -43,9 +43,15 @@ function ExcelExportSectionLigneAssemblage({
       });
 
       const exportData = {
-        tasks_data: tasksDataFormatted,
+        tasks_data: tasksDataFormatted.map((task, index) => ({
+          task_id: index + 1,  // ID séquentiel pour colonne B (1, 2, 3...)
+          name: task.name,     // Colonne C
+          duration: task.duration, // Colonne D
+          predecessors: task.predecessors // Colonne E
+        })),
         cycle_time: cycleTime,
-        unite: timeUnit
+        unite: timeUnit,
+        format_type: "ligne_assemblage" // Identifier le format spécifique
       };
 
       // Vérifier que nous avons des données à exporter

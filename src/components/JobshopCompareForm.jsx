@@ -4,15 +4,29 @@ import ExcelImportSection from "./ExcelImportSection";
 import ExcelExportSectionJobshop from "./ExcelExportSectionJobshop";
 
 function JobshopCompareForm() {
-  // État initial avec format Jobshop: [machine, duration] par tâche
+  // État initial avec format Jobshop identique aux autres algorithmes
   const [jobs, setJobs] = useState([
-    [[0, 3], [1, 2], [2, 1]],  // Job 0: Machine 0 (3h), Machine 1 (2h), Machine 2 (1h)
-    [[1, 2], [0, 4], [2, 3]]   // Job 1: Machine 1 (2h), Machine 0 (4h), Machine 2 (3h)
+    { 
+      name: 'Job 1', 
+      tasks: [
+        { machine: 0, duration: 4 },
+        { machine: 1, duration: 2 },
+        { machine: 2, duration: 1 }
+      ], 
+      dueDate: 12 
+    },
+    { 
+      name: 'Job 2', 
+      tasks: [
+        { machine: 1, duration: 3 },
+        { machine: 0, duration: 2 },
+        { machine: 2, duration: 3 }
+      ], 
+      dueDate: 15 
+    }
   ]);
-  const [dueDates, setDueDates] = useState([10, 12]);
-  const [jobNames, setJobNames] = useState(["Job 0", "Job 1"]);
-  const [machineNames, setMachineNames] = useState(["Machine 0", "Machine 1", "Machine 2"]);
-  const [unite, setUnite] = useState("heures");
+  const [machineNames, setMachineNames] = useState(['Machine 0', 'Machine 1', 'Machine 2']);
+  const [timeUnit, setTimeUnit] = useState('heures');
 
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
@@ -30,37 +44,61 @@ function JobshopCompareForm() {
   // Tous les algorithmes Jobshop sont compatibles avec n'importe quelle configuration
   const algorithmsToCompare = ["SPT", "EDD", "Contraintes"];
 
+  // Gestion des jobs (identique aux autres algorithmes Jobshop)
   const addJob = () => {
-    const numMachines = machineNames.length;
-    // Créer une séquence aléatoire de toutes les machines pour le nouveau job
-    const machineSequence = Array.from({ length: numMachines }, (_, i) => i);
-    // Mélanger la séquence pour plus de variété
-    for (let i = machineSequence.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [machineSequence[i], machineSequence[j]] = [machineSequence[j], machineSequence[i]];
-    }
-    
-    const newJob = machineSequence.map(machine => [machine, getRandomDuration()]);
-    setJobs([...jobs, newJob]);
-    setDueDates([...dueDates, getRandomDueDate()]);
-    setJobNames([...jobNames, `Job ${jobs.length}`]);
+    const newJobNumber = jobs.length + 1;
+    setJobs([...jobs, {
+      name: `Job ${newJobNumber}`,
+      tasks: [{ machine: 0, duration: getRandomDuration() }],
+      dueDate: getRandomDueDate()
+    }]);
   };
 
   const removeJob = () => {
     if (jobs.length > 1) {
       setJobs(jobs.slice(0, -1));
-      setDueDates(dueDates.slice(0, -1));
-      setJobNames(jobNames.slice(0, -1));
     }
+  };
+
+  const updateJobName = (jobIndex, name) => {
+    const newJobs = [...jobs];
+    newJobs[jobIndex].name = name;
+    setJobs(newJobs);
+  };
+
+  const updateJobDueDate = (jobIndex, dueDate) => {
+    const newJobs = [...jobs];
+    newJobs[jobIndex].dueDate = parseFloat(dueDate) || 0;
+    setJobs(newJobs);
+  };
+
+  const addTaskToJob = (jobIndex) => {
+    const newJobs = [...jobs];
+    newJobs[jobIndex].tasks.push({ machine: 0, duration: getRandomDuration() });
+    setJobs(newJobs);
+  };
+
+  const removeTaskFromJob = (jobIndex, taskIndex) => {
+    const newJobs = [...jobs];
+    if (newJobs[jobIndex].tasks.length > 1) {
+      newJobs[jobIndex].tasks.splice(taskIndex, 1);
+      setJobs(newJobs);
+    }
+  };
+
+  const updateTask = (jobIndex, taskIndex, field, value) => {
+    const newJobs = [...jobs];
+    if (field === 'machine') {
+      newJobs[jobIndex].tasks[taskIndex].machine = parseInt(value);
+    } else if (field === 'duration') {
+      newJobs[jobIndex].tasks[taskIndex].duration = parseFloat(value) || 0;
+    }
+    setJobs(newJobs);
   };
 
   const addMachine = () => {
     const newMachineIndex = machineNames.length;
     setMachineNames([...machineNames, `Machine ${newMachineIndex}`]);
-    
-    // Ajouter une tâche sur la nouvelle machine à chaque job (à la fin)
-    const newJobs = jobs.map(job => [...job, [newMachineIndex, getRandomDuration()]]);
-    setJobs(newJobs);
   };
 
   const removeMachine = () => {
@@ -69,9 +107,18 @@ function JobshopCompareForm() {
       setMachineNames(machineNames.slice(0, -1));
       
       // Supprimer toutes les tâches sur cette machine de tous les jobs
-      const newJobs = jobs.map(job => job.filter(([machine]) => machine !== machineToRemove));
+      const newJobs = jobs.map(job => ({
+        ...job,
+        tasks: job.tasks.filter(task => task.machine !== machineToRemove)
+      }));
       setJobs(newJobs);
     }
+  };
+
+  const updateMachineName = (index, name) => {
+    const newNames = [...machineNames];
+    newNames[index] = name;
+    setMachineNames(newNames);
   };
 
   const compareAlgorithms = async () => {
@@ -84,11 +131,12 @@ function JobshopCompareForm() {
       const compareResults = {};
       const compareGanttUrls = {};
 
-      // Préparer les données au format Jobshop
+      // Préparer les données au format API Jobshop
       const jobshopData = jobs.map(job => 
-        job.map(([machine, duration]) => [machine, parseFloat(duration)])
+        job.tasks.map(task => [task.machine, parseFloat(task.duration)])
       );
-      const formattedDueDates = dueDates.map(d => parseFloat(d));
+      const formattedDueDates = jobs.map(job => parseFloat(job.dueDate));
+      const jobNames = jobs.map(job => job.name);
 
       // Lancer la comparaison pour tous les algorithmes Jobshop
       for (const algorithm of algorithmsToCompare) {
@@ -112,7 +160,7 @@ function JobshopCompareForm() {
             machine_names: machineNames,
             jobs_data: jobshopData,
             due_dates: formattedDueDates,
-            unite: unite
+            unite: timeUnit
           };
 
           // Calcul principal
@@ -210,21 +258,20 @@ function JobshopCompareForm() {
       if (data.imported_data) {
         const importedData = data.imported_data;
         
-        setJobNames(importedData.job_names || []);
         setMachineNames(importedData.machine_names || []);
-        setUnite(importedData.unite || 'heures');
+        setTimeUnit(importedData.unite || 'heures');
         
-        // Reconstruire les jobs au format Jobshop
+        // Reconstruire les jobs au format identique aux autres algorithmes Jobshop
         if (importedData.jobs_data && importedData.jobs_data.length > 0) {
-          const newJobs = importedData.jobs_data.map(job => 
-            job.map(([machine, duration]) => [machine, parseFloat(duration)])
-          );
-          setJobs(newJobs);
-        }
-        
-        // Mettre à jour les dates d'échéance
-        if (importedData.due_dates && importedData.due_dates.length > 0) {
-          setDueDates(importedData.due_dates.map(date => parseFloat(date)));
+          const importedJobs = importedData.jobs_data.map((jobTasks, index) => ({
+            name: importedData.job_names[index] || `Job ${index + 1}`,
+            dueDate: importedData.due_dates[index] || 0,
+            tasks: jobTasks.map(task => ({
+              machine: task[0], // [machine, duration] format
+              duration: task[1]
+            }))
+          }));
+          setJobs(importedJobs);
         }
       }
       
@@ -271,12 +318,12 @@ function JobshopCompareForm() {
 
       <div className={styles.content}>
         {/* Section Export Excel */}
-        <ExcelExportSectionJobshop 
+        <ExcelExportSectionJobshop
           jobs={jobs}
-          dueDates={dueDates}
-          jobNames={jobNames}
+          dueDates={jobs.map(job => job.dueDate)}
+          jobNames={jobs.map(job => job.name)}
           machineNames={machineNames}
-          unite={unite}
+          unite={timeUnit}
           algorithmName="Comparaison_Jobshop"
           algorithmEndpoint="jobshop/spt"
           API_URL={API_URL}
@@ -300,56 +347,75 @@ function JobshopCompareForm() {
         )}
 
         {/* Configuration */}
-        <div className={styles.configSection}>
+        <div className={`${styles.section} ${styles.configSection}`}>
           <div className={styles.configRow}>
             <div className={styles.inputGroup}>
-              <label>Unité de temps</label>
-              <select 
-                value={unite} 
-                onChange={e => setUnite(e.target.value)} 
+              <label htmlFor="timeUnit">Unité de temps</label>
+              <select
+                id="timeUnit"
+                value={timeUnit}
+                onChange={(e) => setTimeUnit(e.target.value)}
                 className={styles.select}
               >
-                <option value="minutes">minutes</option>
-                <option value="heures">heures</option>
-                <option value="jours">jours</option>
+                <option value="heures">Heures</option>
+                <option value="minutes">Minutes</option>
+                <option value="jours">Jours</option>
               </select>
             </div>
             
             <div className={styles.actionButtons}>
-              <button className={styles.addButton} onClick={addJob}>
+              <button
+                onClick={addJob}
+                className={styles.addButton}
+                type="button"
+              >
                 + Ajouter un job
               </button>
-              <button className={styles.removeButton} onClick={removeJob} disabled={jobs.length <= 1}>
+              
+              <button
+                onClick={removeJob}
+                disabled={jobs.length <= 1}
+                className={styles.removeButton}
+                type="button"
+              >
                 - Supprimer un job
               </button>
-              <button className={styles.addButton} onClick={addMachine}>
+              
+              <button
+                onClick={addMachine}
+                className={styles.addButton}
+                type="button"
+              >
                 + Ajouter une machine
               </button>
-              <button className={styles.removeButton} onClick={removeMachine} disabled={machineNames.length <= 1}>
+              
+              <button
+                onClick={removeMachine}
+                disabled={machineNames.length <= 1}
+                className={styles.removeButton}
+                type="button"
+              >
                 - Supprimer une machine
               </button>
             </div>
           </div>
         </div>
 
-        {/* Tableau des noms de machines */}
+        {/* Configuration des machines */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Configuration des machines</h3>
+          <h2 className={styles.sectionTitle}>Configuration des machines</h2>
           <div className={styles.machinesTable}>
             <div className={styles.tableRow}>
-              {machineNames.map((name, i) => (
-                <div key={i} className={styles.machineInput}>
-                  <label>M{i}</label>
+              {machineNames.map((name, index) => (
+                <div key={index} className={styles.machineInput}>
+                  <label htmlFor={`machine-${index}`}>Machine {index}</label>
                   <input
+                    id={`machine-${index}`}
                     type="text"
                     value={name}
-                    onChange={e => {
-                      const newNames = [...machineNames];
-                      newNames[i] = e.target.value;
-                      setMachineNames(newNames);
-                    }}
+                    onChange={(e) => updateMachineName(index, e.target.value)}
                     className={styles.input}
-                    placeholder={`Machine ${i}`}
+                    placeholder={`Machine ${index}`}
                   />
                 </div>
               ))}
@@ -357,92 +423,100 @@ function JobshopCompareForm() {
           </div>
         </div>
 
-        {/* Tableau principal des jobs */}
+        {/* Jobs - Vue compacte tabulaire identique aux autres algorithmes Jobshop */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Matrice des temps de traitement (Jobshop)</h3>
-          <div className={styles.dataTable}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th className={styles.jobNameHeader}>Job</th>
-                  <th className={styles.sequenceHeader}>Séquence machines + Durées ({unite})</th>
-                  <th className={styles.dueDateHeader}>Date due ({unite})</th>
-                </tr>
-              </thead>
-              <tbody>
-                {jobs.map((job, jobIdx) => (
-                  <tr key={jobIdx} className={styles.jobRow}>
-                    <td className={styles.jobNameCell}>
-                      <input
-                        type="text"
-                        value={jobNames[jobIdx]}
-                        onChange={e => {
-                          const newNames = [...jobNames];
-                          newNames[jobIdx] = e.target.value;
-                          setJobNames(newNames);
-                        }}
-                        className={styles.jobNameInput}
-                        placeholder={`Job ${jobIdx}`}
-                      />
-                    </td>
-                    <td className={styles.sequenceCell}>
-                      <div className={styles.jobshopSequence}>
-                        {job.map((task, taskIdx) => (
-                          <div key={taskIdx} className={styles.taskGroup}>
-                            <select
-                              value={task[0]}
-                              onChange={e => {
-                                const newJobs = [...jobs];
-                                newJobs[jobIdx][taskIdx][0] = parseInt(e.target.value);
-                                setJobs(newJobs);
-                              }}
-                              className={styles.machineSelect}
-                            >
-                              {machineNames.map((_, machineIdx) => (
-                                <option key={machineIdx} value={machineIdx}>
-                                  M{machineIdx}
-                                </option>
-                              ))}
-                            </select>
-                            <input
-                              type="number"
-                              step="0.1"
-                              min="0"
-                              value={task[1]}
-                              onChange={e => {
-                                const newJobs = [...jobs];
-                                newJobs[jobIdx][taskIdx][1] = parseFloat(e.target.value) || 0;
-                                setJobs(newJobs);
-                              }}
-                              className={styles.durationInput}
-                              placeholder="0"
-                            />
-                            {taskIdx < job.length - 1 && (
-                              <span className={styles.sequenceArrow}>→</span>
-                            )}
-                          </div>
-                        ))}
+          <h2 className={styles.sectionTitle}>Configuration des jobs ({jobs.length} jobs)</h2>
+          
+          <div className={styles.compactJobsContainer}>
+            <div className={styles.jobsHeader}>
+              <div className={styles.jobHeaderCell}>Job</div>
+              <div className={styles.jobHeaderCell}>Date due<br/>({timeUnit})</div>
+              <div className={styles.jobHeaderCell}>Tâches</div>
+              <div className={styles.jobHeaderCell}>Actions</div>
+            </div>
+            
+            {jobs.map((job, jobIndex) => (
+              <div key={jobIndex} className={styles.compactJobRow}>
+                <div className={styles.jobCell}>
+                  <div className={styles.jobNameContainer}>
+                    <div className={styles.jobNumber}>J{jobIndex + 1}</div>
+                    <input
+                      type="text"
+                      value={job.name}
+                      onChange={(e) => updateJobName(jobIndex, e.target.value)}
+                      className={styles.compactInput}
+                      placeholder={`Job ${jobIndex + 1}`}
+                    />
+                  </div>
+                </div>
+                
+                <div className={styles.jobCell}>
+                  <input
+                    type="number"
+                    value={job.dueDate}
+                    onChange={(e) => updateJobDueDate(jobIndex, e.target.value)}
+                    className={styles.dueDateInput}
+                    min="0"
+                    step="0.1"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div className={styles.jobCell}>
+                  <div className={styles.tasksCompact}>
+                    {job.tasks.map((task, taskIndex) => (
+                      <div key={taskIndex} className={styles.taskCompact}>
+                        <div className={styles.taskNumber}>{taskIndex + 1}</div>
+                        <select
+                          value={task.machine}
+                          onChange={(e) => updateTask(jobIndex, taskIndex, 'machine', e.target.value)}
+                          className={styles.compactSelect}
+                          title={`Tâche ${taskIndex + 1}: ${machineNames[task.machine]}`}
+                        >
+                          {machineNames.map((name, index) => (
+                            <option key={index} value={index}>
+                              {name}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="number"
+                          value={task.duration}
+                          onChange={(e) => updateTask(jobIndex, taskIndex, 'duration', e.target.value)}
+                          className={styles.compactNumberInput}
+                          min="0"
+                          step="0.1"
+                          placeholder="0"
+                          title={`Durée en ${timeUnit}`}
+                        />
+                        <button
+                          onClick={() => removeTaskFromJob(jobIndex, taskIndex)}
+                          disabled={job.tasks.length <= 1}
+                          className={styles.miniButton}
+                          type="button"
+                          title="Supprimer cette tâche"
+                        >
+                          ×
+                        </button>
                       </div>
-                    </td>
-                    <td className={styles.dueDateCell}>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        value={dueDates[jobIdx]}
-                        onChange={e => {
-                          const newDates = [...dueDates];
-                          newDates[jobIdx] = parseFloat(e.target.value) || 0;
-                          setDueDates(newDates);
-                        }}
-                        className={styles.dueDateInput}
-                        placeholder="0"
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className={styles.jobCell}>
+                  <div className={styles.jobActionsCompact}>
+                    <button
+                      onClick={() => addTaskToJob(jobIndex)}
+                      className={styles.miniButton}
+                      type="button"
+                      title="Ajouter une tâche"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -493,9 +567,9 @@ function JobshopCompareForm() {
                   <thead>
                     <tr>
                       <th>Algorithme</th>
-                      <th>Makespan ({unite})</th>
-                      <th>Flowtime moyen ({unite})</th>
-                      <th>Retard cumulé ({unite})</th>
+                      <th>Makespan ({timeUnit})</th>
+                      <th>Flowtime moyen ({timeUnit})</th>
+                      <th>Retard cumulé ({timeUnit})</th>
                       <th>Statut</th>
                     </tr>
                   </thead>
@@ -528,7 +602,7 @@ function JobshopCompareForm() {
                   return best ? (
                     <div key={criteria} className={styles.metric}>
                       <div className={styles.metricValue}>{best[1][criteria]?.toFixed(2)}</div>
-                      <div className={styles.metricLabel}>{criteriaNames[criteria]} - {best[0]} ({unite})</div>
+                      <div className={styles.metricLabel}>{criteriaNames[criteria]} - {best[0]} ({timeUnit})</div>
                     </div>
                   ) : null;
                 })}

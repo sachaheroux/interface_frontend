@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styles from './FlowshopContraintesForm.module.css';
 import AgendaGrid from './AgendaGrid';
+import ExcelImportSectionFlowshopMM from './ExcelImportSectionFlowshopMM';
+import ExcelExportSectionFlowshopMM from './ExcelExportSectionFlowshopMM';
 
 const FlowshopMachinesMultiplesForm = () => {
   const [jobs, setJobs] = useState([
@@ -23,6 +25,7 @@ const FlowshopMachinesMultiplesForm = () => {
   const [feries, setFeries] = useState(['']);
   const [dueDateTimes, setDueDateTimes] = useState(jobs.map(() => ''));
   const [pauses, setPauses] = useState([{ start: '12:00', end: '13:00', name: 'Pause déjeuner' }]);
+  const [ganttImage, setGanttImage] = useState(null);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -303,6 +306,25 @@ const FlowshopMachinesMultiplesForm = () => {
     setPauses(newPauses);
   };
 
+  // Fonctions pour l'import/export Excel
+  const handleImportSuccess = (importedData, result) => {
+    // Mettre à jour l'interface avec les données importées
+    setJobs(importedData.jobs);
+    setMachineNames(importedData.stageNames);
+    setNumMachines(importedData.stageNames.length);
+    setMachinesPerStage(importedData.machinesPerStage);
+    setTimeUnit(importedData.unite);
+    setResult(result);
+    setError('');
+    setGanttImage(null);
+  };
+
+  const handleGanttGenerated = (imageUrl) => {
+    setGanttImage(imageUrl);
+    setResult(null); // Effacer les résultats précédents
+    setError('');
+  };
+
   return (
     <div className={styles.algorithmContainer}>
       {/* Header */}
@@ -505,6 +527,19 @@ const FlowshopMachinesMultiplesForm = () => {
           </table>
         </div>
       </div>
+
+      {/* Section Import/Export Excel */}
+      <ExcelImportSectionFlowshopMM 
+        onImportSuccess={handleImportSuccess}
+        onGanttGenerated={handleGanttGenerated}
+      />
+      
+      <ExcelExportSectionFlowshopMM 
+        jobs={jobs}
+        stageNames={machineNames}
+        machinesPerStage={machinesPerStage}
+        unite={timeUnit}
+      />
 
       {/* Paramètres d'agenda avancés */}
       <div className={`${styles.section} ${styles.agendaSection}`}>
@@ -795,6 +830,22 @@ const FlowshopMachinesMultiplesForm = () => {
             >
               Télécharger le diagramme
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Diagramme de Gantt depuis import Excel */}
+      {ganttImage && (
+        <div className={`${styles.section} ${styles.chartSection}`}>
+          <div className={styles.chartHeader}>
+            <h3>Diagramme de Gantt (Import Excel)</h3>
+          </div>
+          <div className={styles.chartContainer}>
+            <img
+              src={ganttImage}
+              alt="Diagramme de Gantt depuis Excel"
+              className={styles.chart}
+            />
           </div>
         </div>
       )}

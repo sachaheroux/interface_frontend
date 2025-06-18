@@ -1066,6 +1066,33 @@
 }
 
 /* ===== OPTIONS D'OPTIMISATION ===== */
+.optimizationInfo {
+  margin-bottom: 1rem;
+}
+
+.alwaysActiveInfo {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 2px solid #10b981;
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  color: #064e3b;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.activeIcon {
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+}
+
+.activeDescription {
+  font-size: var(--font-size-sm);
+  color: #065f46;
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
 .optimizationOptions {
   background: var(--background-section);
   border-radius: var(--border-radius);
@@ -1165,6 +1192,20 @@
   font-weight: 600;
   color: #ef4444;
   margin-top: 0.25rem;
+}
+
+.reductionInfo {
+  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+  border: 1px solid #0288d1;
+  border-radius: var(--border-radius);
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  color: #01579b;
+}
+
+.reductionIcon {
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
 }
 
 /* En-tête de station avec icône */

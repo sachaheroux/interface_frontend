@@ -42,7 +42,7 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
   const [chartUrl, setChartUrl] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState('');
-  const [optimizeBalance, setOptimizeBalance] = useState(true);
+  const [allowStationReduction, setAllowStationReduction] = useState(false);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -238,7 +238,8 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
         tasks_data: tasksData,
         cycle_time: cycleTime,
         unite: timeUnit,
-        optimize_balance: optimizeBalance
+        optimize_balance: true, // Toujours activé
+        allow_station_reduction: allowStationReduction
       };
 
       console.log("Données envoyées:", requestData);
@@ -528,19 +529,28 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
       {/* Options d'optimisation */}
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Options d'optimisation avancée</h3>
+        <div className={styles.optimizationInfo}>
+          <div className={styles.alwaysActiveInfo}>
+            <span className={styles.activeIcon}>✅</span>
+            <strong>Optimisation de l'équilibrage :</strong> Toujours activée
+            <div className={styles.activeDescription}>
+              L'algorithme bi-objectif minimise automatiquement le nombre de stations puis l'écart des taux d'utilisation avec possibilité de doubler la capacité
+            </div>
+          </div>
+        </div>
         <div className={styles.optimizationOptions}>
           <label className={styles.checkboxLabel}>
             <input
               type="checkbox"
-              checked={optimizeBalance}
-              onChange={(e) => setOptimizeBalance(e.target.checked)}
+              checked={allowStationReduction}
+              onChange={(e) => setAllowStationReduction(e.target.checked)}
               className={styles.checkbox}
             />
             <span className={styles.checkboxText}>
-              Optimiser l'équilibrage des stations
+              Autoriser la suppression de stations
             </span>
             <span className={styles.checkboxDescription}>
-              Active l'algorithme bi-objectif : minimise le nombre de stations puis l'écart des taux d'utilisation avec possibilité de doubler la capacité
+              Permet à l'algorithme de supprimer des stations en doublant la capacité d'autres stations si cela améliore l'équilibrage (option avancée)
             </span>
           </label>
         </div>
@@ -646,6 +656,17 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
                     Stations doublées
                   </div>
                 </div>
+
+                {result.station_reduction_used && (
+                  <div className={styles.metric}>
+                    <div className={styles.metricValue}>
+                      ✅
+                    </div>
+                    <div className={styles.metricLabel}>
+                      Réduction de stations
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -658,6 +679,12 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
                 <div className={styles.doubledStationsAlert}>
                   <span className={styles.doubledStationsIcon}>🔧</span>
                   <strong>Optimisation appliquée :</strong> {result.doubled_stations.length} station(s) avec capacité doublée pour améliorer l'équilibrage
+                  {result.station_reduction_used && (
+                    <div className={styles.reductionInfo}>
+                      <span className={styles.reductionIcon}>🎯</span>
+                      <strong>Réduction de stations :</strong> L'algorithme a testé différents nombres de stations et choisi la configuration optimale
+                    </div>
+                  )}
                   <div className={styles.doubledStationsList}>
                     Stations optimisées : {result.doubled_stations.map(s => `Station ${s}`).join(', ')}
                   </div>

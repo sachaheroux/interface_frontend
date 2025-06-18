@@ -42,13 +42,13 @@ function ExcelExportSectionPrecedence({
 
       const exportData = {
         tasks_data: tasksDataFormatted.map((task, index) => ({
-          task_id: index + 1,  // ID séquentiel pour colonne B (1, 2, 3...)
-          name: task.name,     // Colonne C
-          duration: task.duration, // Colonne D
-          predecessors: task.predecessors // Colonne E
+          task_id: index + 1,
+          name: task.name,
+          duration: task.duration,
+          predecessors: task.predecessors
         })),
         unite: timeUnit,
-        format_type: "precedence" // Identifier le format spécifique
+        format_type: "precedence"
       };
 
       // Vérifier que nous avons des données à exporter
@@ -102,7 +102,9 @@ function ExcelExportSectionPrecedence({
   const hasDataToExport = tasks && tasks.length > 0;
 
   return (
-    <div style={{ marginBottom: '20px' }}>
+    <div className={styles.section}>
+      <h3 className={styles.sectionTitle}>📤 Export vers Excel</h3>
+      
       <button 
         className={`${styles.button} ${!hasDataToExport ? styles.disabled : ''}`}
         onClick={handleExportData}

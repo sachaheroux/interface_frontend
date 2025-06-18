@@ -6,11 +6,32 @@ function ExcelImportSectionPrecedence({
   API_URL = "/api",
   algorithmName = "Précédences"
 }) {
+  const [showImportOptions, setShowImportOptions] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importSuccess, setImportSuccess] = useState(null);
   const [importError, setImportError] = useState(null);
 
-  const handleFileUpload = async (event) => {
+  const handleDownloadTemplate = (downloadType) => {
+    try {
+      let fileName;
+      if (downloadType === 'exemple') {
+        fileName = 'Template-Precedence_Exemple.xlsx';
+      } else {
+        fileName = 'Template-Precedence_Vide.xlsx';
+      }
+      
+      const link = document.createElement('a');
+      link.href = `/${fileName}`;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Erreur téléchargement template:', error);
+    }
+  };
+
+  const handleFileImport = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -64,9 +85,6 @@ function ExcelImportSectionPrecedence({
       // Effacer le message de succès après 3 secondes
       setTimeout(() => setImportSuccess(null), 3000);
 
-      // Réinitialiser l'input file
-      event.target.value = '';
-
     } catch (error) {
       console.error(`Erreur import Excel ${algorithmName}:`, error);
       setImportError(error.message);
@@ -75,83 +93,85 @@ function ExcelImportSectionPrecedence({
       setTimeout(() => setImportError(null), 5000);
     } finally {
       setIsImporting(false);
+      // Réinitialiser l'input file
+      event.target.value = '';
     }
   };
 
   return (
-    <div style={{ marginBottom: '20px' }}>
-      <div style={{ position: 'relative' }}>
-        <input
-          type="file"
-          accept=".xlsx,.xls"
-          onChange={handleFileUpload}
-          disabled={isImporting}
-          style={{
-            position: 'absolute',
-            opacity: 0,
-            width: '100%',
-            height: '100%',
-            cursor: isImporting ? 'not-allowed' : 'pointer'
-          }}
-        />
-        <button 
-          className={`${styles.button} ${isImporting ? styles.disabled : ''}`}
-          disabled={isImporting}
-          type="button"
-          style={{
-            width: '100%',
-            backgroundColor: isImporting ? '#6c757d' : '#28a745',
-            color: 'white',
-            border: 'none',
-            padding: '16px 20px',
-            borderRadius: '8px',
-            fontSize: '15px',
-            fontWeight: 'bold',
-            cursor: isImporting ? 'not-allowed' : 'pointer',
-            transition: 'background-color 0.3s',
-            textAlign: 'center',
-            lineHeight: '1.4',
-            minHeight: '60px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: isImporting ? 'none' : '0 2px 4px rgba(40,167,69,0.3)'
-          }}
-        >
-          {isImporting ? (
-            <span>📥 Import {algorithmName} en cours...</span>
-          ) : (
-            <span>📥 Importer {algorithmName} depuis Excel</span>
-          )}
-        </button>
+    <div className={styles.section}>
+      <h3 className={styles.sectionTitle}>📊 Import depuis Excel</h3>
+      
+      <div className={styles.importToggle}>
+        <label className={styles.toggleLabel}>
+          <input 
+            type="checkbox" 
+            checked={showImportOptions} 
+            onChange={() => setShowImportOptions(!showImportOptions)}
+            className={styles.checkbox}
+          />
+          <span className={styles.checkboxCustom}></span>
+          Activer l'import depuis Excel
+        </label>
       </div>
 
-      {/* Messages de feedback */}
-      {importSuccess && (
-        <div style={{ 
-          marginTop: '8px', 
-          padding: '8px 12px', 
-          backgroundColor: '#d4edda', 
-          color: '#155724', 
-          borderRadius: '4px',
-          fontSize: '13px',
-          border: '1px solid #c3e6cb'
-        }}>
-          ✅ {importSuccess}
-        </div>
-      )}
-      
-      {importError && (
-        <div style={{ 
-          marginTop: '8px', 
-          padding: '8px 12px', 
-          backgroundColor: '#f8d7da', 
-          color: '#721c24', 
-          borderRadius: '4px',
-          fontSize: '13px',
-          border: '1px solid #f5c6cb'
-        }}>
-          ❌ {importError}
+      {showImportOptions && (
+        <div className={styles.importSection}>
+          <div className={styles.importInfo}>
+            <p className={styles.importDescription}>
+              Importez vos données de tâches depuis un fichier Excel pour un traitement automatique avec l'algorithme {algorithmName}.
+              Format attendu : Colonne C = Tâche, Colonne D = Durée, Colonne E = Prédécesseurs (à partir de la ligne 7).
+              Téléchargez d'abord un template pour voir la structure exacte.
+            </p>
+          </div>
+          
+          <div className={styles.importActions}>
+            <div className={styles.templateButtons}>
+              <button 
+                className={styles.templateButton}
+                onClick={() => handleDownloadTemplate('exemple')}
+                type="button"
+              >
+                📄 Template avec exemple
+              </button>
+              <button 
+                className={styles.templateButton}
+                onClick={() => handleDownloadTemplate('vide')}
+                type="button"
+              >
+                📄 Template vide
+              </button>
+            </div>
+            
+            <div className={styles.importUpload}>
+              <label className={styles.uploadLabel}>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleFileImport}
+                  className={styles.fileInput}
+                  disabled={isImporting}
+                />
+                <span className={styles.uploadButton}>
+                  {isImporting ? '⏳ Import en cours...' : '📥 Importer fichier Excel'}
+                </span>
+              </label>
+            </div>
+          </div>
+          
+          {importSuccess && (
+            <div className={styles.successMessage}>
+              <span className={styles.successIcon}>✅</span>
+              {importSuccess}
+            </div>
+          )}
+          
+          {importError && (
+            <div className={styles.errorMessage}>
+              <span className={styles.errorIcon}>❌</span>
+              {importError}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -653,29 +653,60 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
           {/* Configuration des stations */}
           <div className={styles.stationsDetails}>
             <h4>Configuration des stations</h4>
+            {result.doubled_stations && result.doubled_stations.length > 0 && (
+              <div className={styles.doubledStationsInfo}>
+                <div className={styles.doubledStationsAlert}>
+                  <span className={styles.doubledStationsIcon}>🔧</span>
+                  <strong>Optimisation appliquée :</strong> {result.doubled_stations.length} station(s) avec capacité doublée pour améliorer l'équilibrage
+                  <div className={styles.doubledStationsList}>
+                    Stations optimisées : {result.doubled_stations.map(s => `Station ${s}`).join(', ')}
+                  </div>
+                </div>
+              </div>
+            )}
             <div className={styles.stationsList}>
               {result.station_assignments && result.station_assignments.map((station, index) => (
                 <div key={index} className={`${styles.stationCard} ${station.doubled_capacity ? styles.doubledStation : ''}`}>
                   <div className={styles.stationHeader}>
-                    <strong>Station {station.station}</strong>
-                    {station.doubled_capacity && (
-                      <span className={styles.doubledBadge}>2x Capacité</span>
-                    )}
+                    <div className={styles.stationTitle}>
+                      {station.doubled_capacity && (
+                        <span className={styles.doubledIcon}>⚡</span>
+                      )}
+                      <strong>Station {station.station}</strong>
+                      {station.doubled_capacity && (
+                        <span className={styles.doubledBadge}>CAPACITÉ x2</span>
+                      )}
+                    </div>
                     <span className={styles.stationUtilization}>
                       {station.utilization?.toFixed(1) || 0}% d'utilisation
                     </span>
                   </div>
                   <div className={styles.stationTasks}>
-                    Tâches assignées : {Array.isArray(station.tasks) ? station.tasks.join(', ') : 'Aucune'}
+                    <strong>Tâches assignées :</strong> {Array.isArray(station.tasks) ? station.tasks.join(', ') : 'Aucune'}
                   </div>
-                  <div className={styles.stationLoad}>
-                    Charge : {station.load?.toFixed(1) || 0} {timeUnit}
-                    {station.doubled_capacity && (
-                      <span className={styles.capacityNote}>
-                        (capacité doublée : {(cycleTime * 2).toFixed(1)} {timeUnit})
-                      </span>
-                    )}
+                  <div className={styles.stationCapacityInfo}>
+                    <div className={styles.stationLoad}>
+                      <strong>Charge :</strong> {station.load?.toFixed(1) || 0} {timeUnit}
+                    </div>
+                    <div className={styles.stationCapacity}>
+                      <strong>Capacité :</strong> 
+                      {station.doubled_capacity ? (
+                        <span className={styles.doubledCapacityText}>
+                          {(cycleTime * 2).toFixed(1)} {timeUnit} 
+                          <span className={styles.capacityExplanation}>
+                            (doublée de {cycleTime} → {(cycleTime * 2).toFixed(1)} {timeUnit})
+                          </span>
+                        </span>
+                      ) : (
+                        <span>{cycleTime} {timeUnit} (normale)</span>
+                      )}
+                    </div>
                   </div>
+                  {station.doubled_capacity && (
+                    <div className={styles.optimizationNote}>
+                      💡 <strong>Optimisation :</strong> Cette station a été optimisée avec une capacité doublée pour améliorer l'équilibrage global de la ligne
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

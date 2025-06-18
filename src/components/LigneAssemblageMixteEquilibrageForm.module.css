@@ -1115,18 +1115,125 @@
 
 /* ===== STATIONS DOUBLÉES ===== */
 .doubledStation {
-  border: 2px solid #ef4444;
+  border: 3px solid #ef4444;
   background: linear-gradient(135deg, var(--background-main) 0%, #fef2f2 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+  position: relative;
+}
+
+.doubledStation::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(45deg, #ef4444, #f97316, #ef4444);
+  border-radius: var(--border-radius);
+  z-index: -1;
+  animation: doubledStationGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes doubledStationGlow {
+  0% { opacity: 0.5; }
+  100% { opacity: 0.8; }
+}
+
+/* Info générale sur les stations doublées */
+.doubledStationsInfo {
+  margin-bottom: 1.5rem;
+}
+
+.doubledStationsAlert {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 2px solid #ef4444;
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  color: #7f1d1d;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.doubledStationsIcon {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.doubledStationsList {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #ef4444;
+  margin-top: 0.25rem;
+}
+
+/* En-tête de station avec icône */
+.stationTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.doubledIcon {
+  font-size: 1.1rem;
+  color: #ef4444;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
 }
 
 .doubledBadge {
-  background: #ef4444;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--border-radius);
-  font-size: var(--font-size-sm);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+  border: 1px solid #dc2626;
+}
+
+/* Informations de capacité */
+.stationCapacityInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.stationLoad, .stationCapacity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.doubledCapacityText {
+  color: #ef4444;
   font-weight: 600;
+}
+
+.capacityExplanation {
+  color: #7f1d1d;
+  font-size: var(--font-size-sm);
+  font-weight: normal;
   margin-left: 0.5rem;
+}
+
+/* Note d'optimisation */
+.optimizationNote {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: var(--border-radius);
+  padding: 0.75rem;
+  margin-top: 1rem;
+  color: #78350f;
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
 }
 
 .capacityNote {

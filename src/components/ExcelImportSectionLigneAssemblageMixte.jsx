@@ -15,10 +15,12 @@ function ExcelImportSectionLigneAssemblageMixte({
   const handleDownloadTemplate = (downloadType) => {
     try {
       let fileName;
+      const isGoulot = algorithmEndpoint.includes("goulot");
+      
       if (downloadType === 'exemple') {
-        fileName = 'Template-LAM_Exemple.xlsx';
+        fileName = isGoulot ? 'Template-LAMGoulot_Exemple.xlsx' : 'Template-LAM_Exemple.xlsx';
       } else {
-        fileName = 'Template-LAM_Vide.xlsx';
+        fileName = isGoulot ? 'Template-LAMGoulot_Vide.xlsx' : 'Template-LAM_Vide.xlsx';
       }
       
       const link = document.createElement('a');
@@ -54,7 +56,7 @@ function ExcelImportSectionLigneAssemblageMixte({
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('format_type', 'ligne_assemblage_mixte');
+      formData.append('format_type', algorithmEndpoint.includes("goulot") ? 'ligne_assemblage_mixte_goulot' : 'ligne_assemblage_mixte_equilibrage');
 
       console.log(`Importing ${algorithmName} file:`, file.name);
 

@@ -34,7 +34,7 @@ function ExcelExportSectionLigneAssemblageMixte({
           models: task.models || []
         })),
         unite: timeUnit,
-        format_type: "ligne_assemblage_mixte",
+        format_type: algorithmEndpoint.includes("goulot") ? "ligne_assemblage_mixte_goulot" : "ligne_assemblage_mixte_equilibrage",
         ...additionalParams
       };
 

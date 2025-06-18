@@ -525,16 +525,6 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
         </div>
       </div>
 
-      {/* Gestion d'erreur */}
-      {error && (
-        <div className={styles.errorSection}>
-          <div className={styles.errorBox}>
-            <span className={styles.errorIcon}>⚠️</span>
-            <span className={styles.errorText}>{error}</span>
-          </div>
-        </div>
-      )}
-
       {/* Options d'optimisation */}
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Options d'optimisation avancée</h3>
@@ -555,6 +545,16 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
           </label>
         </div>
       </div>
+
+      {/* Gestion d'erreur */}
+      {error && (
+        <div className={styles.errorSection}>
+          <div className={styles.errorBox}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorText}>{error}</span>
+          </div>
+        </div>
+      )}
 
       {/* Bouton de calcul */}
       <button

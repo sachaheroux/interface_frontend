@@ -42,6 +42,7 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
   const [chartUrl, setChartUrl] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState('');
+  const [optimizeBalance, setOptimizeBalance] = useState(true);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -236,7 +237,8 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
         models: products.map(p => p.demand),
         tasks_data: tasksData,
         cycle_time: cycleTime,
-        unite: timeUnit
+        unite: timeUnit,
+        optimize_balance: optimizeBalance
       };
 
       console.log("Données envoyées:", requestData);
@@ -533,6 +535,27 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
         </div>
       )}
 
+      {/* Options d'optimisation */}
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>Options d'optimisation avancée</h3>
+        <div className={styles.optimizationOptions}>
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={optimizeBalance}
+              onChange={(e) => setOptimizeBalance(e.target.checked)}
+              className={styles.checkbox}
+            />
+            <span className={styles.checkboxText}>
+              Optimiser l'équilibrage des stations
+            </span>
+            <span className={styles.checkboxDescription}>
+              Active l'algorithme bi-objectif : minimise le nombre de stations puis l'écart des taux d'utilisation avec possibilité de doubler la capacité
+            </span>
+          </label>
+        </div>
+      </div>
+
       {/* Bouton de calcul */}
       <button
         onClick={calculateOptimization}
@@ -603,25 +626,55 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
                 Variance utilisation
               </div>
             </div>
+
+            {result.balance_optimized && (
+              <>
+                <div className={styles.metric}>
+                  <div className={styles.metricValue}>
+                    {result.utilization_gap?.toFixed(2) || 0}%
+                  </div>
+                  <div className={styles.metricLabel}>
+                    Écart min-max optimisé
+                  </div>
+                </div>
+
+                <div className={styles.metric}>
+                  <div className={styles.metricValue}>
+                    {result.doubled_stations?.length || 0}
+                  </div>
+                  <div className={styles.metricLabel}>
+                    Stations doublées
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Configuration des stations */}
           <div className={styles.stationsDetails}>
             <h4>Configuration des stations</h4>
             <div className={styles.stationsList}>
-              {result.station_assignments && Object.entries(result.station_assignments).map(([station, data]) => (
-                <div key={station} className={styles.stationCard}>
+              {result.station_assignments && result.station_assignments.map((station, index) => (
+                <div key={index} className={`${styles.stationCard} ${station.doubled_capacity ? styles.doubledStation : ''}`}>
                   <div className={styles.stationHeader}>
-                    <strong>Station {station}</strong>
+                    <strong>Station {station.station}</strong>
+                    {station.doubled_capacity && (
+                      <span className={styles.doubledBadge}>2x Capacité</span>
+                    )}
                     <span className={styles.stationUtilization}>
-                      {data.utilization?.toFixed(1) || 0}% d'utilisation
+                      {station.utilization?.toFixed(1) || 0}% d'utilisation
                     </span>
                   </div>
                   <div className={styles.stationTasks}>
-                    Tâches assignées : {Array.isArray(data.tasks) ? data.tasks.join(', ') : 'Aucune'}
+                    Tâches assignées : {Array.isArray(station.tasks) ? station.tasks.join(', ') : 'Aucune'}
                   </div>
                   <div className={styles.stationLoad}>
-                    Charge : {data.load?.toFixed(1) || 0} {timeUnit}
+                    Charge : {station.load?.toFixed(1) || 0} {timeUnit}
+                    {station.doubled_capacity && (
+                      <span className={styles.capacityNote}>
+                        (capacité doublée : {(cycleTime * 2).toFixed(1)} {timeUnit})
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}

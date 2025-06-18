@@ -1063,4 +1063,75 @@
 
 .helpText p:last-child {
   margin-bottom: 0;
+}
+
+/* ===== OPTIONS D'OPTIMISATION ===== */
+.optimizationOptions {
+  background: var(--background-section);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.checkboxLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  background: var(--background-main);
+  transition: all 0.2s ease;
+}
+
+.checkboxLabel:hover {
+  background: var(--background-hover);
+  border-color: var(--primary-light);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  margin-right: 0.75rem;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.checkboxText {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.checkboxDescription {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-left: 2.25rem;
+  line-height: 1.4;
+}
+
+/* ===== STATIONS DOUBLÉES ===== */
+.doubledStation {
+  border: 2px solid #ef4444;
+  background: linear-gradient(135deg, var(--background-main) 0%, #fef2f2 100%);
+}
+
+.doubledBadge {
+  background: #ef4444;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.capacityNote {
+  color: #ef4444;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  font-size: var(--font-size-sm);
 } 

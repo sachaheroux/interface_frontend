@@ -49,14 +49,10 @@ function ExcelExportSectionLigneAssemblage({
           duration: task.duration, // Colonne D
           predecessors: task.predecessors // Colonne E
         })),
-        cycle_time: cycleTime,
-        unite: timeUnit,
-        format_type: "ligne_assemblage", // Identifier le format spécifique
-        // Positions spécifiques pour l'export Excel
-        time_unit_label_cell: "H6",      // "Unité de temps" à H6
-        time_unit_value_cell: "H7",      // Valeur de l'unité à H7 (j/h/m)
-        cycle_time_label_cell: "H9",     // "Temps de cycle" à H9  
-        cycle_time_value_cell: "H10"     // Valeur du temps de cycle à H10
+        // Données pour placement spécifique dans Excel
+        time_unit: timeUnit,           // Valeur à placer en H7 (j/h/m)
+        cycle_time: cycleTime,         // Valeur à placer en H10
+        format_type: "ligne_assemblage" // Identifier le format spécifique
       };
 
       // Vérifier que nous avons des données à exporter

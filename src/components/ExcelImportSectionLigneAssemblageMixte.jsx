@@ -18,9 +18,9 @@ function ExcelImportSectionLigneAssemblageMixte({
       const isGoulot = algorithmEndpoint.includes("goulot");
       
       if (downloadType === 'exemple') {
-        fileName = isGoulot ? 'Template-LAMGoulot_Exemple.xlsx' : 'Template-LAM_Exemple.xlsx';
+        fileName = isGoulot ? 'Template-LAMVariation_Exemple.xlsx' : 'Template-LAM_Exemple.xlsx';
       } else {
-        fileName = isGoulot ? 'Template-LAMGoulot_Vide.xlsx' : 'Template-LAM_Vide.xlsx';
+        fileName = isGoulot ? 'Template-LAMVariation_Vide.xlsx' : 'Template-LAM_Vide.xlsx';
       }
       
       const link = document.createElement('a');

@@ -42,7 +42,7 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
   const [chartUrl, setChartUrl] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState('');
-  const [allowStationReduction, setAllowStationReduction] = useState(false);
+
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
 
@@ -238,8 +238,7 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
         tasks_data: tasksData,
         cycle_time: cycleTime,
         unite: timeUnit,
-        optimize_balance: true, // Toujours activé
-        allow_station_reduction: allowStationReduction
+        optimize_balance: true // Toujours activé
       };
 
       console.log("Données envoyées:", requestData);
@@ -526,35 +525,7 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
         </div>
       </div>
 
-      {/* Options d'optimisation */}
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Options d'optimisation avancée</h3>
-        <div className={styles.optimizationInfo}>
-          <div className={styles.alwaysActiveInfo}>
-            <span className={styles.activeIcon}>✅</span>
-            <strong>Optimisation de l'équilibrage :</strong> Toujours activée
-            <div className={styles.activeDescription}>
-              L'algorithme bi-objectif minimise automatiquement le nombre de stations puis l'écart des taux d'utilisation
-            </div>
-          </div>
-        </div>
-        <div className={styles.optimizationOptions}>
-          <label className={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              checked={allowStationReduction}
-              onChange={(e) => setAllowStationReduction(e.target.checked)}
-              className={styles.checkbox}
-            />
-            <span className={styles.checkboxText}>
-              Autoriser la réduction de stations
-            </span>
-            <span className={styles.checkboxDescription}>
-              Permet à l'algorithme de tester différents nombres de stations pour trouver le meilleur équilibrage (option avancée)
-            </span>
-          </label>
-        </div>
-      </div>
+
 
       {/* Gestion d'erreur */}
       {error && (
@@ -648,16 +619,7 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
                   </div>
                 </div>
 
-                {result.station_reduction_used && (
-                  <div className={styles.metric}>
-                    <div className={styles.metricValue}>
-                      ✅
-                    </div>
-                    <div className={styles.metricLabel}>
-                      Réduction de stations
-                    </div>
-                  </div>
-                )}
+
               </>
             )}
           </div>
@@ -665,14 +627,7 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
           {/* Configuration des stations */}
           <div className={styles.stationsDetails}>
             <h4>Configuration des stations</h4>
-            {result.station_reduction_used && (
-              <div className={styles.optimizationInfo}>
-                <div className={styles.reductionInfo}>
-                  <span className={styles.reductionIcon}>🎯</span>
-                  <strong>Réduction de stations :</strong> L'algorithme a testé différents nombres de stations et choisi la configuration optimale
-                </div>
-              </div>
-            )}
+
             <div className={styles.stationsList}>
               {result.station_assignments && result.station_assignments.map((station, index) => (
                 <div key={index} className={styles.stationCard}>

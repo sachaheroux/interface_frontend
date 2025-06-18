@@ -30,7 +30,8 @@ function ExcelExportSectionLigneAssemblageMixte({
         tasks_data: tasks.map((task, index) => ({
           task_id: task.id,
           name: task.name,
-          times: task.times || task.models?.map(m => m.time) || []
+          times: task.times || task.models?.map(m => m.time) || [],
+          models: task.models || []
         })),
         unite: timeUnit,
         format_type: "ligne_assemblage_mixte",

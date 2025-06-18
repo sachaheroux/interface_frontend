@@ -41,6 +41,8 @@ import LigneAssemblageMixteGoulotForm from "./components/LigneAssemblageMixteGou
 import LigneAssemblageMixteGoulotInfo from "./components/LigneAssemblageMixteGoulotInfo";
 import LigneAssemblageMixteEquilibrageForm from "./components/LigneAssemblageMixteEquilibrageForm";
 import LigneAssemblageMixteEquilibrageInfo from "./components/LigneAssemblageMixteEquilibrageInfo";
+import LigneAssemblageMixteEquilibragePlusPlusForm from "./components/LigneAssemblageMixteEquilibragePlusPlusForm";
+import LigneAssemblageMixteEquilibragePlusPlusInfo from "./components/LigneAssemblageMixteEquilibragePlusPlusInfo";
 import LigneTransfertBufferBuzzacottForm from "./components/LigneTransfertBufferBuzzacottForm";
 import LigneTransfertBufferBuzzacottInfo from "./components/LigneTransfertBufferBuzzacottInfo";
 import FMSSacADosForm from "./components/FMSSacADosForm";
@@ -66,7 +68,7 @@ function App() {
     "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Machines multiples", "Smith", "Comparer les algos"],
     "Jobshop": ["SPT", "EDD", "Contraintes", "Comparer les algos"],
     "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL", "Comparer les algos"],
-    "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte"],
+    "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte", "Équilibrage ++"],
     "Ligne de transfert": ["Buffer Buzzacott"],
     "FMS": ["Sac à dos (Prog. Dynamique)", "Sac à dos (Prog. Linéaire)", "Sac à dos (Algorithme Glouton)", "Lots de production (Glouton)", "Lots de production (MIP)", "Lots de chargement (Heuristique)"]
   };
@@ -194,6 +196,7 @@ function App() {
           )}
           {!showDecisionTree && systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotForm />}
           {!showDecisionTree && systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageForm />}
+          {!showDecisionTree && systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ++" && <LigneAssemblageMixteEquilibragePlusPlusForm />}
           {!showDecisionTree && systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottForm />}
           {!showDecisionTree && systeme === "FMS" && algorithme === "Sac à dos (Prog. Dynamique)" && <FMSSacADosForm />}
           {!showDecisionTree && systeme === "FMS" && algorithme === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLForm />}
@@ -201,7 +204,7 @@ function App() {
           {!showDecisionTree && systeme === "FMS" && algorithme === "Lots de production (Glouton)" && <FMSLotsProductionGloutonForm />}
           {!showDecisionTree && systeme === "FMS" && algorithme === "Lots de production (MIP)" && <FMSLotsProductionMIPForm />}
           {!showDecisionTree && systeme === "FMS" && algorithme === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueForm />}
-          {!showDecisionTree && algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes" || algorithme === "Comparer les algos")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL" || algorithme === "Comparer les algos")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && (algorithme === "Sac à dos (Prog. Dynamique)" || algorithme === "Sac à dos (Prog. Linéaire)" || algorithme === "Sac à dos (Algorithme Glouton)" || algorithme === "Lots de production (Glouton)" || algorithme === "Lots de production (MIP)" || algorithme === "Lots de chargement (Heuristique)")) && (
+          {!showDecisionTree && algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes" || algorithme === "Comparer les algos")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL" || algorithme === "Comparer les algos")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte" || algorithme === "Équilibrage ++")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && (algorithme === "Sac à dos (Prog. Dynamique)" || algorithme === "Sac à dos (Prog. Linéaire)" || algorithme === "Sac à dos (Algorithme Glouton)" || algorithme === "Lots de production (Glouton)" || algorithme === "Lots de production (MIP)" || algorithme === "Lots de chargement (Heuristique)")) && (
             <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
@@ -232,6 +235,7 @@ function App() {
             {systeme === "Ligne d'assemblage" && algorithme === "Comparer les algos" && <LigneAssemblageCompareInfo />}
             {systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotInfo />}
             {systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageInfo />}
+            {systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ++" && <LigneAssemblageMixteEquilibragePlusPlusInfo />}
             {systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottInfo />}
             {systeme === "FMS" && algorithme === "Sac à dos (Prog. Dynamique)" && <FMSSacADosInfo />}
             {systeme === "FMS" && algorithme === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLInfo />}

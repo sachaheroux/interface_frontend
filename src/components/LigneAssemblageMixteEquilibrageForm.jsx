@@ -1,5 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import styles from './LigneAssemblageMixteEquilibrageForm.module.css';
+import ExcelExportSectionLigneAssemblageMixte from './ExcelExportSectionLigneAssemblageMixte';
+import ExcelImportSectionLigneAssemblageMixte from './ExcelImportSectionLigneAssemblageMixte';
 
 const LigneAssemblageMixteEquilibrageForm = () => {
   const [products, setProducts] = useState([
@@ -42,6 +44,42 @@ const LigneAssemblageMixteEquilibrageForm = () => {
   const [error, setError] = useState('');
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
+
+  // Fonction pour gérer l'import Excel
+  const handleImportSuccess = (data) => {
+    try {
+      if (data.products_data && Array.isArray(data.products_data)) {
+        setProducts(data.products_data.map(p => ({
+          name: p.name || `Produit ${p.product_id}`,
+          demand: p.demand || 1
+        })));
+      }
+
+      if (data.tasks_data && Array.isArray(data.tasks_data)) {
+        setTasks(data.tasks_data.map(t => ({
+          id: t.task_id || t.id,
+          name: t.name || `Tâche ${t.task_id || t.id}`,
+          models: t.models || t.times?.map((time, index) => ({
+            predecessors: null,
+            time: time || 0
+          })) || []
+        })));
+      }
+
+      if (data.unite) {
+        setTimeUnit(data.unite);
+      }
+
+      if (data.cycle_time !== undefined) {
+        setCycleTime(data.cycle_time);
+      }
+
+      console.log("Données importées et appliquées:", { products, tasks, timeUnit, cycleTime });
+    } catch (error) {
+      console.error("Erreur lors de l'application des données importées:", error);
+      setError("Erreur lors de l'application des données importées");
+    }
+  };
 
   // Gestion des produits
   const addProduct = () => {
@@ -268,6 +306,25 @@ const LigneAssemblageMixteEquilibrageForm = () => {
             Équilibrage optimal multi-produits avec contraintes de précédence
           </p>
         </div>
+
+        {/* Export Excel - Placé tout en haut */}
+        <ExcelExportSectionLigneAssemblageMixte
+          products={products}
+          tasks={tasks}
+          timeUnit={timeUnit}
+          algorithmName="Équilibrage Mixte"
+          API_URL={API_URL}
+          algorithmEndpoint="ligne_assemblage_mixte/equilibrage"
+          additionalParams={{ cycle_time: cycleTime }}
+        />
+
+        {/* Import Excel - Placé juste après l'export */}
+        <ExcelImportSectionLigneAssemblageMixte
+          onImportSuccess={handleImportSuccess}
+          API_URL={API_URL}
+          algorithmName="Équilibrage Mixte"
+          algorithmEndpoint="ligne_assemblage_mixte/equilibrage"
+        />
 
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>

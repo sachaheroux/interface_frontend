@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styles from './LigneAssemblageMixteGoulotForm.module.css';
+import ExcelExportSectionLigneAssemblageMixte from './ExcelExportSectionLigneAssemblageMixte';
+import ExcelImportSectionLigneAssemblageMixte from './ExcelImportSectionLigneAssemblageMixte';
 
 const LigneAssemblageMixteGoulotForm = () => {
   const [products, setProducts] = useState([
@@ -29,6 +31,43 @@ const LigneAssemblageMixteGoulotForm = () => {
   const [chartUrl, setChartUrl] = useState(null);
 
   const API_URL = "https://interface-backend-1jgi.onrender.com";
+
+  // Fonction pour gérer l'import Excel
+  const handleImportSuccess = (data) => {
+    try {
+      if (data.products_data && Array.isArray(data.products_data)) {
+        setProducts(data.products_data.map(p => ({
+          name: p.name || `Produit ${p.product_id}`,
+          demand: p.demand || 1
+        })));
+      }
+
+      if (data.tasks_data && Array.isArray(data.tasks_data)) {
+        setTasks(data.tasks_data.map(t => ({
+          id: t.task_id || t.id,
+          name: t.name || `Tâche ${t.task_id || t.id}`,
+          times: t.times || []
+        })));
+      }
+
+      if (data.unite) {
+        setTimeUnit(data.unite);
+      }
+
+      if (data.s1 !== undefined) {
+        setS1(data.s1);
+      }
+
+      if (data.s2 !== undefined) {
+        setS2(data.s2);
+      }
+
+      console.log("Données importées et appliquées:", { products, tasks, timeUnit, s1, s2 });
+    } catch (error) {
+      console.error("Erreur lors de l'application des données importées:", error);
+      setError("Erreur lors de l'application des données importées");
+    }
+  };
 
   // Gestion des produits
   const addProduct = () => {
@@ -196,6 +235,25 @@ const LigneAssemblageMixteGoulotForm = () => {
           Optimisation de la séquence de production multi-produits
         </p>
       </div>
+
+      {/* Export Excel - Placé tout en haut */}
+      <ExcelExportSectionLigneAssemblageMixte
+        products={products}
+        tasks={tasks}
+        timeUnit={timeUnit}
+        algorithmName="Goulot Mixte"
+        API_URL={API_URL}
+        algorithmEndpoint="ligne_assemblage_mixte/goulot"
+        additionalParams={{ s1, s2 }}
+      />
+
+      {/* Import Excel - Placé juste après l'export */}
+      <ExcelImportSectionLigneAssemblageMixte
+        onImportSuccess={handleImportSuccess}
+        API_URL={API_URL}
+        algorithmName="Goulot Mixte"
+        algorithmEndpoint="ligne_assemblage_mixte/goulot"
+      />
 
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>

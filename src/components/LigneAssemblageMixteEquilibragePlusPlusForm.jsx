@@ -534,7 +534,7 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
             <span className={styles.activeIcon}>✅</span>
             <strong>Optimisation de l'équilibrage :</strong> Toujours activée
             <div className={styles.activeDescription}>
-              L'algorithme bi-objectif minimise automatiquement le nombre de stations puis l'écart des taux d'utilisation avec possibilité de doubler la capacité
+              L'algorithme bi-objectif minimise automatiquement le nombre de stations puis l'écart des taux d'utilisation
             </div>
           </div>
         </div>
@@ -547,10 +547,10 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
               className={styles.checkbox}
             />
             <span className={styles.checkboxText}>
-              Autoriser la suppression de stations
+              Autoriser la réduction de stations
             </span>
             <span className={styles.checkboxDescription}>
-              Permet à l'algorithme de supprimer des stations en doublant la capacité d'autres stations si cela améliore l'équilibrage (option avancée)
+              Permet à l'algorithme de tester différents nombres de stations pour trouver le meilleur équilibrage (option avancée)
             </span>
           </label>
         </div>
@@ -648,15 +648,6 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
                   </div>
                 </div>
 
-                <div className={styles.metric}>
-                  <div className={styles.metricValue}>
-                    {result.doubled_stations?.length || 0}
-                  </div>
-                  <div className={styles.metricLabel}>
-                    Stations doublées
-                  </div>
-                </div>
-
                 {result.station_reduction_used && (
                   <div className={styles.metric}>
                     <div className={styles.metricValue}>
@@ -674,35 +665,20 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
           {/* Configuration des stations */}
           <div className={styles.stationsDetails}>
             <h4>Configuration des stations</h4>
-            {result.doubled_stations && result.doubled_stations.length > 0 && (
-              <div className={styles.doubledStationsInfo}>
-                <div className={styles.doubledStationsAlert}>
-                  <span className={styles.doubledStationsIcon}>🔧</span>
-                  <strong>Optimisation appliquée :</strong> {result.doubled_stations.length} station(s) avec capacité doublée pour améliorer l'équilibrage
-                  {result.station_reduction_used && (
-                    <div className={styles.reductionInfo}>
-                      <span className={styles.reductionIcon}>🎯</span>
-                      <strong>Réduction de stations :</strong> L'algorithme a testé différents nombres de stations et choisi la configuration optimale
-                    </div>
-                  )}
-                  <div className={styles.doubledStationsList}>
-                    Stations optimisées : {result.doubled_stations.map(s => `Station ${s}`).join(', ')}
-                  </div>
+            {result.station_reduction_used && (
+              <div className={styles.optimizationInfo}>
+                <div className={styles.reductionInfo}>
+                  <span className={styles.reductionIcon}>🎯</span>
+                  <strong>Réduction de stations :</strong> L'algorithme a testé différents nombres de stations et choisi la configuration optimale
                 </div>
               </div>
             )}
             <div className={styles.stationsList}>
               {result.station_assignments && result.station_assignments.map((station, index) => (
-                <div key={index} className={`${styles.stationCard} ${station.doubled_capacity ? styles.doubledStation : ''}`}>
+                <div key={index} className={styles.stationCard}>
                   <div className={styles.stationHeader}>
                     <div className={styles.stationTitle}>
-                      {station.doubled_capacity && (
-                        <span className={styles.doubledIcon}>⚡</span>
-                      )}
                       <strong>Station {station.station}</strong>
-                      {station.doubled_capacity && (
-                        <span className={styles.doubledBadge}>CAPACITÉ x2</span>
-                      )}
                     </div>
                     <span className={styles.stationUtilization}>
                       {station.utilization?.toFixed(1) || 0}% d'utilisation
@@ -716,24 +692,9 @@ const LigneAssemblageMixteEquilibragePlusPlusForm = () => {
                       <strong>Charge :</strong> {station.load?.toFixed(1) || 0} {timeUnit}
                     </div>
                     <div className={styles.stationCapacity}>
-                      <strong>Capacité :</strong> 
-                      {station.doubled_capacity ? (
-                        <span className={styles.doubledCapacityText}>
-                          {(cycleTime * 2).toFixed(1)} {timeUnit} 
-                          <span className={styles.capacityExplanation}>
-                            (doublée de {cycleTime} → {(cycleTime * 2).toFixed(1)} {timeUnit})
-                          </span>
-                        </span>
-                      ) : (
-                        <span>{cycleTime} {timeUnit} (normale)</span>
-                      )}
+                      <strong>Capacité :</strong> {cycleTime} {timeUnit}
                     </div>
                   </div>
-                  {station.doubled_capacity && (
-                    <div className={styles.optimizationNote}>
-                      💡 <strong>Optimisation :</strong> Cette station a été optimisée avec une capacité doublée pour améliorer l'équilibrage global de la ligne
-                    </div>
-                  )}
                 </div>
               ))}
             </div>

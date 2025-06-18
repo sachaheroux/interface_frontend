@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styles from './LigneAssemblagePrecedenceForm.module.css';
+import ExcelImportSectionPrecedence from './ExcelImportSectionPrecedence';
+import ExcelExportSectionPrecedence from './ExcelExportSectionPrecedence';
 
 const LigneAssemblagePrecedenceForm = () => {
   const [tasks, setTasks] = useState([
@@ -181,6 +183,47 @@ const LigneAssemblagePrecedenceForm = () => {
     }
   };
 
+  // Fonction d'import Excel
+  const handleImportSuccess = (importedData) => {
+    try {
+      console.log("Données importées:", importedData);
+      
+      // Vérifier la structure des données
+      if (!importedData.tasks_data || !Array.isArray(importedData.tasks_data)) {
+        throw new Error("Format de données invalide");
+      }
+
+      // Convertir les données importées au format du formulaire
+      const importedTasks = importedData.tasks_data.map(task => ({
+        id: task.id,
+        name: task.name || `Tâche ${task.id}`,
+        predecessors: task.predecessors ? 
+          (Array.isArray(task.predecessors) ? 
+            task.predecessors.join(',') : 
+            task.predecessors.toString()) : '',
+        duration: task.duration || 0
+      }));
+
+      // Mettre à jour les tâches
+      setTasks(importedTasks);
+      
+      // Mettre à jour l'unité de temps si fournie
+      if (importedData.unite) {
+        setTimeUnit(importedData.unite);
+      }
+
+      // Réinitialiser les résultats
+      setResult(null);
+      setError('');
+      setDiagramUrl(null);
+
+      console.log("Import réussi, tâches mises à jour:", importedTasks);
+    } catch (error) {
+      console.error("Erreur lors du traitement des données importées:", error);
+      setError(`Erreur lors de l'import: ${error.message}`);
+    }
+  };
+
   return (
     <>
       {/* Header */}
@@ -226,6 +269,24 @@ const LigneAssemblagePrecedenceForm = () => {
               - Supprimer une tâche
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Import/Export Excel */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>📊 Import/Export Excel</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <ExcelExportSectionPrecedence
+            tasks={tasks}
+            timeUnit={timeUnit}
+            algorithmName="Précédences"
+            API_URL={API_URL}
+          />
+          <ExcelImportSectionPrecedence
+            onImportSuccess={handleImportSuccess}
+            API_URL={API_URL}
+            algorithmName="Précédences"
+          />
         </div>
       </div>
 

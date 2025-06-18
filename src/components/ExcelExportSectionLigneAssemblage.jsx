@@ -49,13 +49,8 @@ function ExcelExportSectionLigneAssemblage({
           duration: task.duration, // Colonne D
           predecessors: task.predecessors // Colonne E
         })),
-        // Placement explicite des données dans les cellules spécifiques
-        excel_metadata: {
-          "H6": "Unité de temps",        // Label en H6
-          "H7": timeUnit,                // Valeur unité en H7 (j/h/m)
-          "H9": "Temps de cycle",        // Label en H9
-          "H10": cycleTime               // Valeur temps de cycle en H10
-        },
+        cycle_time: cycleTime,
+        unite: timeUnit,
         format_type: "ligne_assemblage" // Identifier le format spécifique
       };
 

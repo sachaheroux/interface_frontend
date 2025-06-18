@@ -234,6 +234,21 @@ const LigneAssemblagePrecedenceForm = () => {
         </p>
       </div>
 
+      {/* Export Excel - Placé tout en haut */}
+      <ExcelExportSectionPrecedence
+        tasks={tasks}
+        timeUnit={timeUnit}
+        algorithmName="Précédences"
+        API_URL={API_URL}
+      />
+
+      {/* Import Excel - Placé juste après l'export */}
+      <ExcelImportSectionPrecedence
+        onImportSuccess={handleImportSuccess}
+        API_URL={API_URL}
+        algorithmName="Précédences"
+      />
+
       {/* Configuration */}
       <div className={`${styles.section} ${styles.configSection}`}>
         <div className={styles.configRow}>
@@ -271,21 +286,6 @@ const LigneAssemblagePrecedenceForm = () => {
           </div>
         </div>
       </div>
-
-      {/* Export Excel - Placé tout en haut */}
-      <ExcelExportSectionPrecedence
-        tasks={tasks}
-        timeUnit={timeUnit}
-        algorithmName="Précédences"
-        API_URL={API_URL}
-      />
-
-      {/* Import Excel - Placé juste après l'export */}
-      <ExcelImportSectionPrecedence
-        onImportSuccess={handleImportSuccess}
-        API_URL={API_URL}
-        algorithmName="Précédences"
-      />
 
       {/* Configuration des tâches - Vue compacte tabulaire */}
       <div className={styles.section}>

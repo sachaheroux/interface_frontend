@@ -82,6 +82,56 @@ const LigneAssemblagePLForm = () => {
     });
   };
 
+  // Fonction pour détecter les cycles dans le graphe de précédences
+  const detectCycles = () => {
+    const graph = {};
+    const visited = new Set();
+    const recursionStack = new Set();
+
+    // Construire le graphe
+    tasks.forEach(task => {
+      graph[task.id] = [];
+      if (task.predecessors && task.predecessors.trim() !== '') {
+        const predecessorIds = task.predecessors.split(',')
+          .map(p => parseInt(p.trim()))
+          .filter(p => !isNaN(p));
+        
+        // Pour chaque prédécesseur, ajouter une arête vers la tâche courante
+        predecessorIds.forEach(predId => {
+          if (!graph[predId]) graph[predId] = [];
+          graph[predId].push(task.id);
+        });
+      }
+    });
+
+    // Fonction DFS pour détecter les cycles
+    const hasCycleDFS = (node) => {
+      if (recursionStack.has(node)) return true; // Cycle détecté
+      if (visited.has(node)) return false;
+
+      visited.add(node);
+      recursionStack.add(node);
+
+      const neighbors = graph[node] || [];
+      for (const neighbor of neighbors) {
+        if (hasCycleDFS(neighbor)) return true;
+      }
+
+      recursionStack.delete(node);
+      return false;
+    };
+
+    // Vérifier tous les nœuds
+    for (const taskId of Object.keys(graph)) {
+      const numTaskId = parseInt(taskId);
+      if (!visited.has(numTaskId) && hasCycleDFS(numTaskId)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   const calculateOptimization = async () => {
     setIsCalculating(true);
     setError('');
@@ -97,8 +147,13 @@ const LigneAssemblagePLForm = () => {
       // Validation des prédécesseurs
       for (const task of tasks) {
         if (!validatePredecessors(task.predecessors, task.id)) {
-          throw new Error(`Prédécesseurs invalides pour la tâche ${task.id}. Utilisez uniquement des IDs de tâches antérieures séparés par des virgules.`);
+          throw new Error(`Prédécesseurs invalides pour la tâche ${task.id}. Utilisez uniquement des IDs de tâches existantes séparés par des virgules.`);
         }
+      }
+
+      // Vérification des cycles
+      if (detectCycles()) {
+        throw new Error(`Cycle détecté dans les relations de précédence. Vérifiez que les tâches ne forment pas de boucle (ex: A→B→C→A).`);
       }
 
       // Format des données pour l'API

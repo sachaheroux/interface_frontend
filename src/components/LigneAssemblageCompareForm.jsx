@@ -85,7 +85,7 @@ const LigneAssemblageCompareForm = () => {
     const predecessorIds = predecessors.split(',').map(p => p.trim()).filter(p => p !== '');
     return predecessorIds.every(id => {
       const numId = parseInt(id);
-      return !isNaN(numId) && numId < taskId && tasks.some(t => t.id === numId);
+      return !isNaN(numId) && numId !== taskId && tasks.some(t => t.id === numId);
     });
   };
 

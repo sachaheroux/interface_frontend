@@ -28,7 +28,8 @@ const LigneAssemblageLPTForm = () => {
   const [importSuccess, setImportSuccess] = useState(null);
   const [importError, setImportError] = useState(null);
 
-  const API_URL = "https://interface-backend-1jgi.onrender.com";
+  // Utilisation du proxy Vercel pour éviter les problèmes CORS
+  const API_URL = "/api";
 
   // Gestion des tâches
   const addTask = () => {

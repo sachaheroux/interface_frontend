@@ -68,13 +68,6 @@ const LigneAssemblagePrecedenceForm = () => {
     setTasks(newTasks);
   };
 
-  const getAvailablePredecessors = (currentTaskId) => {
-    return tasks
-      .filter(t => t.id !== currentTaskId) // Exclure seulement la tâche elle-même
-      .map(t => t.id)
-      .join(', ');
-  };
-
   const validatePredecessors = (predecessors, taskId) => {
     if (!predecessors || predecessors.trim() === '') return true;
     
@@ -336,11 +329,6 @@ const LigneAssemblagePrecedenceForm = () => {
                 />
               </div>
               
-              <div className={styles.taskCell}>
-                <div className={styles.availablePredecessors}>
-                  {getAvailablePredecessors(task.id) || "Aucun"}
-                </div>
-              </div>
             </div>
           ))}
         </div>

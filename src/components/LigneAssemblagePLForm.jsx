@@ -197,7 +197,17 @@ const LigneAssemblagePLForm = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+        let errorMessage = errorData.detail || `HTTP error! status: ${response.status}`;
+        
+        // Messages d'erreur plus explicites
+        if (errorMessage.includes('Infeasible')) {
+          errorMessage = `Problème infaisable: Les contraintes ne peuvent pas être satisfaites. Vérifiez:
+          • Le temps de cycle (doit être ≥ durée de la tâche la plus longue)
+          • Les relations de précédence (pas de cycles ou contraintes impossibles)
+          • La cohérence des données saisies`;
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();

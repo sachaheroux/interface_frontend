@@ -188,13 +188,20 @@ const LigneAssemblageLPTForm = () => {
 
       console.log("Données envoyées:", requestData);
 
+      // Ajouter un timeout pour éviter les boucles infinies
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 secondes timeout
+
       const response = await fetch(`${API_URL}/ligne_assemblage/lpt`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestData)
+        body: JSON.stringify(requestData),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -226,7 +233,11 @@ const LigneAssemblageLPTForm = () => {
 
     } catch (err) {
       console.error('Erreur:', err);
-      setError(`Erreur lors du calcul: ${err.message}`);
+      if (err.name === 'AbortError') {
+        setError(`Timeout: Le calcul a pris trop de temps (>30s). Vérifiez vos données de précédence pour éviter les cycles ou les contraintes impossibles.`);
+      } else {
+        setError(`Erreur lors du calcul: ${err.message}`);
+      }
     } finally {
       setIsCalculating(false);
     }

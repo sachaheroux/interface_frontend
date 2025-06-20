@@ -177,7 +177,7 @@ const LigneAssemblageMixteEquilibrageForm = () => {
 
   const getAvailablePredecessors = (currentTaskId) => {
     return tasks
-      .filter(t => t.id < currentTaskId)
+      .filter(t => t.id !== currentTaskId) // Exclure seulement la tâche elle-même
       .map(t => t.id)
       .join(', ');
   };

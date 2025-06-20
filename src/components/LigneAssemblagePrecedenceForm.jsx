@@ -70,7 +70,7 @@ const LigneAssemblagePrecedenceForm = () => {
 
   const getAvailablePredecessors = (currentTaskId) => {
     return tasks
-      .filter(t => t.id < currentTaskId)
+      .filter(t => t.id !== currentTaskId) // Exclure seulement la tâche elle-même
       .map(t => t.id)
       .join(', ');
   };
@@ -295,9 +295,8 @@ const LigneAssemblagePrecedenceForm = () => {
           <div className={styles.tasksHeader}>
             <div className={styles.taskHeaderCell}>Tâche</div>
             <div className={styles.taskHeaderCell}>Durée<br/>({timeUnit})</div>
-            <div className={styles.taskHeaderCell}>Prédécesseurs</div>
-            <div className={styles.taskHeaderCell}>Disponibles</div>
-          </div>
+                            <div className={styles.taskHeaderCell}>Prédécesseurs</div>
+              </div>
           
           {tasks.map((task, taskIndex) => (
             <div key={task.id} className={styles.compactTaskRow}>

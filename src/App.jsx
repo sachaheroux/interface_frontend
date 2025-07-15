@@ -157,7 +157,20 @@ function App() {
           )}
           
           {/* Vues existantes */}
-          {!showDecisionTree && !systeme && !algorithme && <WelcomeView />}
+          {!showDecisionTree && !systeme && !algorithme && (
+            <WelcomeView 
+              onNavigateToDecisionTree={() => {
+                setShowDecisionTree(true);
+                setSysteme("");
+                setAlgorithme("");
+              }}
+              onNavigateToSystems={() => {
+                setShowDecisionTree(false);
+                setSysteme("Flowshop"); // Démarre avec Flowshop par défaut
+                setAlgorithme("");
+              }}
+            />
+          )}
           {!showDecisionTree && systeme && !algorithme && <SystemDescription system={systeme} />}
           
           {/* Formulaires d'algorithmes existants */}

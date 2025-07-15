@@ -51,8 +51,10 @@
 }
 
 .nav-logo-icon {
-  font-size: 1.5rem;
-  color: var(--top-nav-blue);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: contain;
 }
 
 .nav-logo-text {

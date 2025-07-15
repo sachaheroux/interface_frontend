@@ -41,25 +41,26 @@ export default function TopNavigation({
   };
 
   const systems = [
-    "Flowshop",
-    "Jobshop", 
-    "Ligne d'assemblage",
-    "Ligne d'assemblage mixte",
-    "Ligne de transfert",
-    "FMS"
+    { name: "Flowshop", icon: "📊", subtitle: "Production en flux" },
+    { name: "Jobshop", icon: "🏗️", subtitle: "Ateliers flexibles" },
+    { name: "Ligne d'assemblage", icon: "🔧", subtitle: "Assemblage séquentiel" },
+    { name: "Ligne d'assemblage mixte", icon: "⚙️", subtitle: "Assemblage multi-produits" },
+    { name: "Ligne de transfert", icon: "🚛", subtitle: "Production continue" },
+    { name: "FMS", icon: "🤖", subtitle: "Systèmes flexibles" }
   ];
+
+  const getSystemInfo = (systemName) => {
+    return systems.find(s => s.name === systemName) || { icon: "🏭", subtitle: "" };
+  };
 
   return (
     <div className="top-navigation">
       <div className="nav-container">
         {/* Logo Section */}
-        <div className="nav-logo" onClick={() => handleNavClick('welcome')}>
-          <img src="/logo.png" alt="Logo" className="nav-logo-img" />
-          <div className="nav-logo-text">
-            <span className="nav-title">Systèmes Industriels</span>
-            <span className="nav-subtitle">Optimisation & Modélisation</span>
-          </div>
-        </div>
+        <a href="#" className="nav-logo" onClick={() => handleNavClick('welcome')}>
+          <span className="nav-logo-icon">📋</span>
+          <span className="nav-logo-text">Interface CAH</span>
+        </a>
 
         {/* Navigation Tabs */}
         <div className="nav-tabs">
@@ -79,27 +80,36 @@ export default function TopNavigation({
             <span className="nav-label">Aide à la Décision</span>
           </button>
 
-          <div className="nav-tab-dropdown" ref={dropdownRef}>
+          <div className="nav-system-selector" ref={dropdownRef}>
             <button 
-              className={`nav-tab ${currentMode === 'systems' ? 'active' : ''}`}
+              className="current-system-indicator"
               onClick={() => handleNavClick('systems')}
             >
-              <span className="nav-icon">🏭</span>
-              <span className="nav-label">Systèmes de Production</span>
-              <span className="dropdown-arrow">▼</span>
+              <span className="system-icon">
+                {currentSystem ? getSystemInfo(currentSystem).icon : "🏭"}
+              </span>
+              <span className="system-name">
+                {currentSystem || "Systèmes de Production"}
+              </span>
+              <span className={`dropdown-arrow ${showSystemDropdown ? 'open' : ''}`}>
+                ▼
+              </span>
             </button>
 
             {/* Dropdown Menu */}
             {showSystemDropdown && (
               <div className="system-dropdown">
-                <div className="dropdown-header">Choisir un système :</div>
                 {systems.map((system) => (
                   <button
-                    key={system}
-                    className={`dropdown-item ${currentSystem === system ? 'selected' : ''}`}
-                    onClick={() => handleSystemSelection(system)}
+                    key={system.name}
+                    className={`dropdown-item ${currentSystem === system.name ? 'selected' : ''}`}
+                    onClick={() => handleSystemSelection(system.name)}
                   >
-                    {system}
+                    <span className="dropdown-icon">{system.icon}</span>
+                    <div className="dropdown-text">
+                      <div>{system.name}</div>
+                      <div className="dropdown-subtitle">{system.subtitle}</div>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -107,12 +117,13 @@ export default function TopNavigation({
           </div>
         </div>
 
-        {/* Current System Indicator (when selected) */}
-        {currentMode === 'systems' && currentSystem && (
-          <div className="current-system-indicator">
-            <span className="system-name">{currentSystem}</span>
-          </div>
-        )}
+        {/* Actions */}
+        <div className="nav-actions">
+          <button className="nav-action-btn">
+            <span className="nav-icon">🔔</span>
+            <span className="notification-badge">2</span>
+          </button>
+        </div>
       </div>
     </div>
   );

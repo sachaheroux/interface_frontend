@@ -12,26 +12,31 @@ export default function CompactSidebar({
     return null;
   }
 
+  const getSystemIcon = (systemName) => {
+    const icons = {
+      "Flowshop": "📊",
+      "Jobshop": "🏗️", 
+      "Ligne d'assemblage": "🔧",
+      "Ligne d'assemblage mixte": "⚙️",
+      "Ligne de transfert": "🚛",
+      "FMS": "🤖"
+    };
+    return icons[systemName] || "🏭";
+  };
+
   return (
     <div className="compact-sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-title">
-          <span className="system-icon">🏭</span>
-          <div className="title-text">
-            <h3>{system}</h3>
-            <span className="algorithm-count">{algorithms.length} algorithmes</span>
-          </div>
+        <div className="system-badge">
+          {getSystemIcon(system)}
         </div>
-        <button className="sidebar-close" onClick={onClose} title="Fermer">
-          ✕
-        </button>
+        <div className="title-text">
+          <h3>{system}</h3>
+          <p className="algorithm-count">{algorithms.length} algorithmes disponibles</p>
+        </div>
       </div>
 
       <div className="algorithms-list">
-        <div className="list-header">
-          <span>Algorithmes disponibles</span>
-        </div>
-        
         {algorithms.map((algorithm, index) => (
           <button
             key={algorithm}
@@ -40,20 +45,20 @@ export default function CompactSidebar({
           >
             <span className="algorithm-number">{index + 1}</span>
             <span className="algorithm-name">{algorithm}</span>
-            {selectedAlgorithm === algorithm && (
-              <span className="algorithm-indicator">→</span>
-            )}
+            <span className="status-indicator"></span>
           </button>
         ))}
       </div>
 
       {/* Quick Actions */}
       <div className="sidebar-actions">
-        <button className="action-btn compare" title="Comparer les algorithmes">
-          📊 Comparer
+        <button className="action-btn" title="Comparer les algorithmes">
+          <span className="action-icon">📊</span>
+          Comparer
         </button>
-        <button className="action-btn info" title="Information sur le système">
-          ℹ️ Info
+        <button className="action-btn primary" title="Information sur le système">
+          <span className="action-icon">ℹ️</span>
+          Info Système
         </button>
       </div>
     </div>

@@ -32,7 +32,7 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
   };
 
   return (
-    <div className="welcome-container">
+    <div className="welcome-container welcome-view">
       {/* Hero Section avec Vidéo */}
       <section className="hero-section">
         <video 

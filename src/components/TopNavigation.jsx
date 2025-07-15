@@ -58,8 +58,8 @@ export default function TopNavigation({
       <div className="nav-container">
         {/* Logo Section */}
         <a href="#" className="nav-logo" onClick={() => handleNavClick('welcome')}>
-          <span className="nav-logo-icon">📋</span>
-          <span className="nav-logo-text">Interface CAH</span>
+          <img src="/logo.png" alt="Logo" className="nav-logo-icon" />
+          <span className="nav-logo-text">Systèmes Industriels</span>
         </a>
 
         {/* Navigation Tabs */}

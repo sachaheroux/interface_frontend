@@ -41,12 +41,17 @@
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .modern-main-layout {
   display: flex;
   flex: 1;
+  width: 100%;
   min-height: calc(100vh - 70px); /* Hauteur moins la top nav */
+  max-width: 100vw;
 }
 
 /* ===== STYLES LEGACY (maintenir pour compatibilité temporaire) ===== */
@@ -88,14 +93,19 @@
   background: var(--background-main);
   overflow-y: auto;
   min-height: calc(100vh - 70px);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .modern-content-area.full-width {
   width: 100%;
+  max-width: none;
 }
 
 .modern-content-area.with-info-panel {
-  /* La largeur sera ajustée par la grille CSS */
+  /* Utilisera toute la largeur disponible moins l'InfoPanel */
+  width: calc(100% - 320px);
 }
 
 /* Contenu des algorithmes */
@@ -103,6 +113,9 @@
   padding: var(--spacing-xl);
   min-height: 100%;
   background: var(--background-main);
+  width: 100%;
+  max-width: none;
+  flex: 1;
 }
 
 /* Info Panel Moderne */
@@ -117,12 +130,28 @@
   top: 70px;
   height: calc(100vh - 70px);
   box-shadow: -4px 0 15px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+/* Style pour forcer l'utilisation de tout l'espace */
+.welcome-view,
+.decision-tree,
+.system-description {
+  width: 100%;
+  max-width: none;
+  min-height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===== RESPONSIVE MODERNE ===== */
 @media (max-width: 1200px) {
   .modern-main-layout {
     flex-direction: row; /* Garde le layout horizontal */
+  }
+  
+  .modern-content-area.with-info-panel {
+    width: calc(100% - 300px);
   }
   
   .modern-info-panel {
@@ -139,6 +168,10 @@
 @media (max-width: 768px) {
   .modern-main-layout {
     flex-direction: column;
+  }
+  
+  .modern-content-area.with-info-panel {
+    width: 100%;
   }
   
   .modern-info-panel {

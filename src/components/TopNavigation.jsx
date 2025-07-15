@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from "react";
 import "./TopNavigation.css";
 
 export default function TopNavigation({ 
@@ -7,9 +8,46 @@ export default function TopNavigation({
   onSystemChange 
 }) {
   
+  const [showSystemDropdown, setShowSystemDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  
+  // Fermer le dropdown quand on clique en dehors
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowSystemDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
   const handleNavClick = (mode) => {
-    onModeChange(mode);
+    if (mode === 'systems') {
+      setShowSystemDropdown(!showSystemDropdown);
+    } else {
+      setShowSystemDropdown(false);
+      onModeChange(mode);
+    }
   };
+
+  const handleSystemSelection = (system) => {
+    onSystemChange(system);
+    setShowSystemDropdown(false);
+    onModeChange('systems');
+  };
+
+  const systems = [
+    "Flowshop",
+    "Jobshop", 
+    "Ligne d'assemblage",
+    "Ligne d'assemblage mixte",
+    "Ligne de transfert",
+    "FMS"
+  ];
 
   return (
     <div className="top-navigation">
@@ -41,31 +79,38 @@ export default function TopNavigation({
             <span className="nav-label">Aide à la Décision</span>
           </button>
 
-          <button 
-            className={`nav-tab ${currentMode === 'systems' ? 'active' : ''}`}
-            onClick={() => handleNavClick('systems')}
-          >
-            <span className="nav-icon">🏭</span>
-            <span className="nav-label">Systèmes de Production</span>
-          </button>
+          <div className="nav-tab-dropdown" ref={dropdownRef}>
+            <button 
+              className={`nav-tab ${currentMode === 'systems' ? 'active' : ''}`}
+              onClick={() => handleNavClick('systems')}
+            >
+              <span className="nav-icon">🏭</span>
+              <span className="nav-label">Systèmes de Production</span>
+              <span className="dropdown-arrow">▼</span>
+            </button>
+
+            {/* Dropdown Menu */}
+            {showSystemDropdown && (
+              <div className="system-dropdown">
+                <div className="dropdown-header">Choisir un système :</div>
+                {systems.map((system) => (
+                  <button
+                    key={system}
+                    className={`dropdown-item ${currentSystem === system ? 'selected' : ''}`}
+                    onClick={() => handleSystemSelection(system)}
+                  >
+                    {system}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* System Selector (visible when in systems mode) */}
-        {currentMode === 'systems' && (
-          <div className="nav-system-selector">
-            <select
-              value={currentSystem}
-              onChange={(e) => onSystemChange(e.target.value)}
-              className="system-select"
-            >
-              <option value="">-- Choisir un système --</option>
-              <option value="Flowshop">Flowshop</option>
-              <option value="Jobshop">Jobshop</option>
-              <option value="Ligne d'assemblage">Ligne d'assemblage</option>
-              <option value="Ligne d'assemblage mixte">Ligne d'assemblage mixte</option>
-              <option value="Ligne de transfert">Ligne de transfert</option>
-              <option value="FMS">FMS</option>
-            </select>
+        {/* Current System Indicator (when selected) */}
+        {currentMode === 'systems' && currentSystem && (
+          <div className="current-system-indicator">
+            <span className="system-name">{currentSystem}</span>
           </div>
         )}
       </div>

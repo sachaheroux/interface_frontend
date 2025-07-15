@@ -122,7 +122,7 @@ function App() {
 
   const handleNavigateToSystems = () => {
     setCurrentMode("systems");
-    setSelectedSystem("Flowshop"); // Démarre avec Flowshop par défaut
+    setSelectedSystem(""); // Laisse l'utilisateur choisir dans le dropdown
     setSelectedAlgorithm("");
   };
 
@@ -155,8 +155,8 @@ function App() {
 
         {/* Content Area */}
         <div className={`modern-content-area ${shouldShowInfoPanel ? 'with-info-panel' : 'full-width'}`}>
-          {/* Welcome View */}
-          {currentMode === "welcome" && (
+          {/* Welcome View - affichée par défaut et quand aucun système sélectionné */}
+          {(currentMode === "welcome" || (currentMode === "systems" && !selectedSystem)) && (
             <WelcomeView 
               onNavigateToDecisionTree={handleNavigateToDecisionTree}
               onNavigateToSystems={handleNavigateToSystems}

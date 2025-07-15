@@ -1,7 +1,5 @@
 import { useState } from "react";
 import "./App.css";
-import TopNavigation from "./components/TopNavigation";
-import CompactSidebar from "./components/CompactSidebar";
 import WelcomeView from "./components/WelcomeView";
 import SystemDescription from "./components/SystemDescription";
 import AlgorithmFormAndResult from "./components/AlgorithmFormAndResult";
@@ -62,10 +60,11 @@ import FMSLotsChargementHeuristiqueInfo from "./components/FMSLotsChargementHeur
 import DecisionTree from "./components/DecisionTree";
 
 function App() {
-  // Nouveau state management pour la navigation moderne
-  const [currentMode, setCurrentMode] = useState("welcome"); // welcome, decision, systems
+  // State management pour l'interface professionnelle
+  const [currentView, setCurrentView] = useState("welcome"); // welcome, decision, system, algorithm
   const [selectedSystem, setSelectedSystem] = useState("");
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Configuration des systèmes et algorithmes
   const systemsConfig = {
@@ -77,105 +76,185 @@ function App() {
     "FMS": ["Sac à dos (Prog. Dynamique)", "Sac à dos (Prog. Linéaire)", "Sac à dos (Algorithme Glouton)", "Lots de production (Glouton)", "Lots de production (MIP)", "Lots de chargement (Heuristique)"]
   };
 
-  // Handlers pour la navigation
-  const handleModeChange = (mode) => {
-    setCurrentMode(mode);
-    
-    if (mode === "welcome") {
-      setSelectedSystem("");
-      setSelectedAlgorithm("");
-    } else if (mode === "decision") {
+  // Navigation handlers
+  const handleNavigation = (view, system = "", algorithm = "") => {
+    setCurrentView(view);
+    if (system) setSelectedSystem(system);
+    if (algorithm) setSelectedAlgorithm(algorithm);
+    if (view === "welcome") {
       setSelectedSystem("");
       setSelectedAlgorithm("");
     }
   };
 
-  const handleSystemChange = (system) => {
+  const handleSystemSelect = (system) => {
     setSelectedSystem(system);
-    setSelectedAlgorithm(""); // Reset algorithm when system changes
-    if (system) {
-      setCurrentMode("systems");
+    setSelectedAlgorithm("");
+    setCurrentView("system");
+  };
+
+  const handleAlgorithmSelect = (algorithm) => {
+    setSelectedAlgorithm(algorithm);
+    setCurrentView("algorithm");
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  // Obtenir le titre et sous-titre de la page
+  const getPageInfo = () => {
+    switch (currentView) {
+      case "welcome":
+        return {
+          title: "Accueil",
+          subtitle: "Plateforme d'optimisation et de modélisation industrielle"
+        };
+      case "decision":
+        return {
+          title: "Aide à la Décision",
+          subtitle: "Trouvez le système de production adapté à vos besoins"
+        };
+      case "system":
+        return {
+          title: selectedSystem,
+          subtitle: `Système de production ${selectedSystem.toLowerCase()}`
+        };
+      case "algorithm":
+        return {
+          title: `${selectedSystem} - ${selectedAlgorithm}`,
+          subtitle: `Algorithme ${selectedAlgorithm} pour ${selectedSystem.toLowerCase()}`
+        };
+      default:
+        return {
+          title: "Systèmes Industriels",
+          subtitle: "Optimisation & Modélisation"
+        };
     }
   };
 
-  const handleAlgorithmChange = (algorithm) => {
-    setSelectedAlgorithm(algorithm);
-  };
-
-  const handleCloseSidebar = () => {
-    setSelectedSystem("");
-    setSelectedAlgorithm("");
-  };
-
-  const handleSystemRecommendation = (recommendedSystem) => {
-    setCurrentMode("systems");
-    setSelectedSystem(recommendedSystem);
-    setSelectedAlgorithm("");
-  };
-
-  // Navigation depuis WelcomeView
-  const handleNavigateToDecisionTree = () => {
-    setCurrentMode("decision");
-    setSelectedSystem("");
-    setSelectedAlgorithm("");
-  };
-
-  const handleNavigateToSystems = () => {
-    setCurrentMode("systems");
-    setSelectedSystem(""); // Laisse l'utilisateur choisir dans le dropdown
-    setSelectedAlgorithm("");
-  };
-
-  // Determine si on affiche l'InfoPanel
-  const shouldShowInfoPanel = currentMode === "systems" && selectedSystem && selectedAlgorithm;
-  const algorithms = selectedSystem ? systemsConfig[selectedSystem] || [] : [];
+  const pageInfo = getPageInfo();
 
   return (
-    <div className="modern-app-container">
-      {/* Top Navigation */}
-      <TopNavigation
-        currentMode={currentMode}
-        onModeChange={handleModeChange}
-        currentSystem={selectedSystem}
-        onSystemChange={handleSystemChange}
-      />
+    <div className="professional-app">
+      {/* Sidebar Professionnelle */}
+      <aside className={`professional-sidebar ${sidebarOpen ? 'open' : ''}`}>
+        {/* Header de la sidebar */}
+        <div className="sidebar-header">
+          <a href="#" className="sidebar-logo" onClick={() => handleNavigation("welcome")}>
+            <img src="/logo.png" alt="Logo" className="sidebar-logo-img" />
+            <div className="sidebar-logo-text">
+              <span className="sidebar-title">Systèmes Industriels</span>
+              <span className="sidebar-subtitle">Optimisation & Modélisation</span>
+            </div>
+          </a>
+        </div>
 
-      {/* Main Layout */}
-      <div className="modern-main-layout">
-        {/* Compact Sidebar - Conditionnelle */}
-        {currentMode === "systems" && selectedSystem && (
-          <CompactSidebar
-            system={selectedSystem}
-            algorithms={algorithms}
-            selectedAlgorithm={selectedAlgorithm}
-            onAlgorithmChange={handleAlgorithmChange}
-            onClose={handleCloseSidebar}
-          />
-        )}
+        {/* Navigation */}
+        <nav className="sidebar-nav">
+          {/* Section Navigation principale */}
+          <div className="sidebar-section">
+            <h3 className="sidebar-section-title">Navigation</h3>
+            
+                            <button 
+                  className={`sidebar-item ${currentView === 'welcome' ? 'active' : ''}`}
+                  onClick={() => handleNavigation("welcome")}
+                >
+                  <span className="sidebar-icon">⌂</span>
+                  <span className="sidebar-label">Accueil</span>
+                </button>
 
-        {/* Content Area */}
-        <div className={`modern-content-area ${shouldShowInfoPanel ? 'with-info-panel' : 'full-width'}`}>
-          {/* Welcome View - affichée par défaut et quand aucun système sélectionné */}
-          {(currentMode === "welcome" || (currentMode === "systems" && !selectedSystem)) && (
+                <button 
+                  className={`sidebar-item ${currentView === 'decision' ? 'active' : ''}`}
+                  onClick={() => handleNavigation("decision")}
+                >
+                  <span className="sidebar-icon">◈</span>
+                  <span className="sidebar-label">Aide à la Décision</span>
+                </button>
+          </div>
+
+          {/* Section Systèmes de Production */}
+          <div className="sidebar-section">
+            <h3 className="sidebar-section-title">Systèmes de Production</h3>
+            
+            {Object.entries(systemsConfig).map(([system, algorithms]) => (
+              <div key={system}>
+                <button 
+                  className={`sidebar-item ${selectedSystem === system && currentView === 'system' ? 'active' : ''}`}
+                  onClick={() => handleSystemSelect(system)}
+                >
+                  <span className="sidebar-icon">▣</span>
+                  <span className="sidebar-label">{system}</span>
+                  <span className="sidebar-badge">{algorithms.length}</span>
+                </button>
+
+                {/* Sous-menu des algorithmes */}
+                {selectedSystem === system && (
+                  <div className="sidebar-dropdown">
+                    {algorithms.map((algorithm) => (
+                      <button
+                        key={algorithm}
+                        className={`sidebar-item ${selectedAlgorithm === algorithm && currentView === 'algorithm' ? 'active' : ''}`}
+                        onClick={() => handleAlgorithmSelect(algorithm)}
+                      >
+                        <span className="sidebar-icon">◦</span>
+                        <span className="sidebar-label">{algorithm}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </nav>
+      </aside>
+
+      {/* Contenu Principal */}
+      <main className="professional-main">
+        {/* Header du contenu */}
+        <header className="content-header">
+          <div className="content-header-top">
+            <div>
+              <h1 className="content-title">{pageInfo.title}</h1>
+              <p className="content-subtitle">{pageInfo.subtitle}</p>
+            </div>
+            <div className="content-actions">
+              {currentView === "algorithm" && (
+                <button className="btn btn-secondary">
+                  <span>▤</span>
+                  Informations
+                </button>
+              )}
+              <button className="btn btn-ghost" onClick={toggleSidebar}>
+                <span>☰</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Zone de contenu */}
+        <div className="content-area">
+          {/* Welcome View */}
+          {currentView === "welcome" && (
             <WelcomeView 
-              onNavigateToDecisionTree={handleNavigateToDecisionTree}
-              onNavigateToSystems={handleNavigateToSystems}
+              onNavigateToDecisionTree={() => handleNavigation("decision")}
+              onNavigateToSystems={() => handleNavigation("system")}
             />
           )}
 
           {/* Decision Tree */}
-          {currentMode === "decision" && (
-            <DecisionTree onSystemRecommendation={handleSystemRecommendation} />
+          {currentView === "decision" && (
+            <DecisionTree onSystemRecommendation={(system) => handleSystemSelect(system)} />
           )}
 
           {/* System Description */}
-          {currentMode === "systems" && selectedSystem && !selectedAlgorithm && (
+          {currentView === "system" && selectedSystem && (
             <SystemDescription system={selectedSystem} />
           )}
 
           {/* Algorithm Forms */}
-          {currentMode === "systems" && selectedSystem && selectedAlgorithm && (
-            <div className="algorithm-content">
+          {currentView === "algorithm" && selectedSystem && selectedAlgorithm && (
+            <>
               {/* Flowshop Algorithms */}
               {selectedSystem === "Flowshop" && selectedAlgorithm === "SPT" && <FlowshopSPTForm />}
               {selectedSystem === "Flowshop" && selectedAlgorithm === "EDD" && <FlowshopEDDForm />}
@@ -219,54 +298,10 @@ function App() {
               {!["Flowshop", "Jobshop", "Ligne d'assemblage", "Ligne d'assemblage mixte", "Ligne de transfert", "FMS"].includes(selectedSystem) && (
                 <AlgorithmFormAndResult algorithm={selectedAlgorithm} />
               )}
-            </div>
+            </>
           )}
         </div>
-
-        {/* Info Panel - Conditionnelle */}
-        {shouldShowInfoPanel && (
-          <div className="modern-info-panel">
-            {/* Flowshop Info */}
-            {selectedSystem === "Flowshop" && selectedAlgorithm === "SPT" && <FlowshopSPTInfo />}
-            {selectedSystem === "Flowshop" && selectedAlgorithm === "EDD" && <FlowshopEDDInfo />}
-            {selectedSystem === "Flowshop" && selectedAlgorithm === "Johnson" && <FlowshopJohnsonInfo />}
-            {selectedSystem === "Flowshop" && selectedAlgorithm === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
-            {selectedSystem === "Flowshop" && selectedAlgorithm === "Smith" && <FlowshopSmithInfo />}
-            {selectedSystem === "Flowshop" && selectedAlgorithm === "Contraintes" && <FlowshopContraintesInfo />}
-            {selectedSystem === "Flowshop" && selectedAlgorithm === "Machines multiples" && <FlowshopMachinesMultiplesInfo />}
-            {selectedSystem === "Flowshop" && selectedAlgorithm === "Comparer les algos" && <FlowshopCompareInfo />}
-            
-            {/* Jobshop Info */}
-            {selectedSystem === "Jobshop" && selectedAlgorithm === "SPT" && <JobshopSPTInfo />}
-            {selectedSystem === "Jobshop" && selectedAlgorithm === "EDD" && <JobshopEDDInfo />}
-            {selectedSystem === "Jobshop" && selectedAlgorithm === "Contraintes" && <JobshopContraintesInfo />}
-            {selectedSystem === "Jobshop" && selectedAlgorithm === "Comparer les algos" && <JobshopCompareInfo />}
-            
-            {/* Ligne d'assemblage Info */}
-            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "Précédence" && <LigneAssemblagePrecedenceInfo />}
-            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "COMSOAL" && <LigneAssemblageCOMSOALInfo />}
-            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "LPT" && <LigneAssemblageLPTInfo />}
-            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "PL" && <LigneAssemblagePLInfo />}
-            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "Comparer les algos" && <LigneAssemblageCompareInfo />}
-            
-            {/* Ligne d'assemblage mixte Info */}
-            {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Variation du goulot" && <LigneAssemblageMixteGoulotInfo />}
-            {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageInfo />}
-            {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Équilibrage ++" && <LigneAssemblageMixteEquilibragePlusPlusInfo />}
-            
-            {/* Ligne de transfert Info */}
-            {selectedSystem === "Ligne de transfert" && selectedAlgorithm === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottInfo />}
-            
-            {/* FMS Info */}
-            {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Prog. Dynamique)" && <FMSSacADosInfo />}
-            {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLInfo />}
-            {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Algorithme Glouton)" && <FMSSacADosGloutonInfo />}
-            {selectedSystem === "FMS" && selectedAlgorithm === "Lots de production (Glouton)" && <FMSLotsProductionGloutonInfo />}
-            {selectedSystem === "FMS" && selectedAlgorithm === "Lots de production (MIP)" && <FMSLotsProductionMIPInfo />}
-            {selectedSystem === "FMS" && selectedAlgorithm === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueInfo />}
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   );
 }

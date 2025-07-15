@@ -34,94 +34,23 @@
   --spacing-2xl: 2.5rem;
 }
 
-/* ===== LAYOUT PRINCIPAL ===== */
-.appContainer {
-  display: flex;
+/* ===== LAYOUT PRINCIPAL MODERNE ===== */
+.modern-app-container {
   min-height: 100vh;
   background: var(--background-section);
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ===== SIDEBAR ===== */
-.sidebar {
-  width: 320px;
-  background: var(--background-main);
-  padding: var(--spacing-xl);
-  border-right: 2px solid var(--border-color);
-  box-shadow: var(--shadow-lg);
+.modern-main-layout {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 70px); /* Hauteur moins la top nav */
 }
 
-.sidebarHeader {
-  text-align: center;
-  margin-bottom: var(--spacing-2xl);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 2px solid var(--background-section);
-}
-
-.logo {
-  width: 180px;
-  margin-bottom: var(--spacing-lg);
-  transition: all 0.2s ease;
-}
-
-.logo:hover {
-  transform: scale(1.02);
-}
-
-.appTitle {
-  font-size: var(--font-size-xl);
-  font-weight: 700;
-  color: var(--primary-color);
-  margin: 0;
-  letter-spacing: -0.02em;
-}
-
-/* ===== SELECTS ===== */
-.selectGroup {
-  margin-bottom: var(--spacing-lg);
-}
-
-.selectLabel {
-  font-weight: 600;
-  font-size: var(--font-size-base);
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
-  display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* ===== BOUTON ARBRE DE DÉCISION ===== */
-.decision-tree-btn {
-  width: 100%;
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius);
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-md);
-  text-align: center;
-  letter-spacing: 0.02em;
-}
-
-.decision-tree-btn:hover {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-}
-
-.decision-tree-btn.active {
-  background: var(--primary-dark);
-  box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4);
-}
-
-.decision-tree-btn:active {
-  transform: translateY(0);
-}
+/* ===== STYLES LEGACY (maintenir pour compatibilité temporaire) ===== */
+/* Ces styles peuvent être supprimés après migration complète */
 
 .select {
   width: 100%;
@@ -153,101 +82,82 @@
   color: var(--text-primary);
 }
 
-/* ===== CONTENU PRINCIPAL ===== */
-.mainContent {
-  flex: 1;
-  display: flex;
-  padding: var(--spacing-xl);
-  background: var(--background-section);
-  gap: var(--spacing-xl);
-  height: calc(100vh - 4rem);
-  overflow: hidden;
-}
-
-.contentArea {
+/* ===== CONTENU PRINCIPAL MODERNE ===== */
+.modern-content-area {
   flex: 1;
   background: var(--background-main);
-  padding: 0;
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-color);
-  height: 100%;
   overflow-y: auto;
+  min-height: calc(100vh - 70px);
 }
 
-.contentAreaFullWidth {
+.modern-content-area.full-width {
   width: 100%;
-  background: var(--background-main);
-  padding: 0;
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-color);
-  height: 100%;
-  overflow-y: auto;
 }
 
-/* Classe pour les algorithmes qui ont besoin de padding */
-.algorithmContent {
+.modern-content-area.with-info-panel {
+  /* La largeur sera ajustée par la grille CSS */
+}
+
+/* Contenu des algorithmes */
+.algorithm-content {
   padding: var(--spacing-xl);
-  height: 100%;
+  min-height: 100%;
+  background: var(--background-main);
 }
 
-.infoPanel {
+/* Info Panel Moderne */
+.modern-info-panel {
   min-width: 320px;
-  max-width: 380px;
+  max-width: 400px;
   background: var(--background-main);
   padding: var(--spacing-lg);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-color);
-  height: 100%;
+  border-left: 2px solid var(--border-color);
   overflow-y: auto;
+  position: sticky;
+  top: 70px;
+  height: calc(100vh - 70px);
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.05);
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== RESPONSIVE MODERNE ===== */
 @media (max-width: 1200px) {
-  .sidebar {
-    width: 280px;
-    padding: var(--spacing-lg);
+  .modern-main-layout {
+    flex-direction: row; /* Garde le layout horizontal */
   }
   
-  .mainContent {
-    flex-direction: column;
-    padding: var(--spacing-lg);
-  }
-  
-  .infoPanel {
-    min-width: auto;
-    max-width: none;
+  .modern-info-panel {
+    min-width: 300px;
+    max-width: 350px;
     padding: var(--spacing-md);
+  }
+  
+  .algorithm-content {
+    padding: var(--spacing-lg);
   }
 }
 
 @media (max-width: 768px) {
-  .appContainer {
+  .modern-main-layout {
     flex-direction: column;
   }
   
-  .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 2px solid var(--border-color);
+  .modern-info-panel {
+    position: relative;
+    top: auto;
+    height: auto;
+    max-height: 50vh;
+    min-width: auto;
+    max-width: none;
+    border-left: none;
+    border-top: 2px solid var(--border-color);
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
   }
   
-  .sidebarHeader {
-    margin-bottom: var(--spacing-lg);
-  }
-  
-  .selectGroup {
-    margin-bottom: var(--spacing-md);
-  }
-  
-  .mainContent {
+  .algorithm-content {
     padding: var(--spacing-md);
   }
   
-  .contentArea,
-  .infoPanel {
-    padding: var(--spacing-lg);
+  .modern-content-area {
+    min-height: auto;
   }
 }

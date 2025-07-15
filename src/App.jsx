@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./App.css";
+import TopNavigation from "./components/TopNavigation";
+import CompactSidebar from "./components/CompactSidebar";
 import WelcomeView from "./components/WelcomeView";
 import SystemDescription from "./components/SystemDescription";
 import AlgorithmFormAndResult from "./components/AlgorithmFormAndResult";
@@ -60,11 +62,13 @@ import FMSLotsChargementHeuristiqueInfo from "./components/FMSLotsChargementHeur
 import DecisionTree from "./components/DecisionTree";
 
 function App() {
-  const [systeme, setSysteme] = useState("");
-  const [algorithme, setAlgorithme] = useState("");
-  const [showDecisionTree, setShowDecisionTree] = useState(false);
+  // Nouveau state management pour la navigation moderne
+  const [currentMode, setCurrentMode] = useState("welcome"); // welcome, decision, systems
+  const [selectedSystem, setSelectedSystem] = useState("");
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
 
-  const systemes = {
+  // Configuration des systèmes et algorithmes
+  const systemsConfig = {
     "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Machines multiples", "Smith", "Comparer les algos"],
     "Jobshop": ["SPT", "EDD", "Contraintes", "Comparer les algos"],
     "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL", "Comparer les algos"],
@@ -73,189 +77,193 @@ function App() {
     "FMS": ["Sac à dos (Prog. Dynamique)", "Sac à dos (Prog. Linéaire)", "Sac à dos (Algorithme Glouton)", "Lots de production (Glouton)", "Lots de production (MIP)", "Lots de chargement (Heuristique)"]
   };
 
-  const handleSystemRecommendation = (recommendedSystem) => {
-    setShowDecisionTree(false);
-    setSysteme(recommendedSystem);
-    setAlgorithme("");
+  // Handlers pour la navigation
+  const handleModeChange = (mode) => {
+    setCurrentMode(mode);
+    
+    if (mode === "welcome") {
+      setSelectedSystem("");
+      setSelectedAlgorithm("");
+    } else if (mode === "decision") {
+      setSelectedSystem("");
+      setSelectedAlgorithm("");
+    }
   };
 
+  const handleSystemChange = (system) => {
+    setSelectedSystem(system);
+    setSelectedAlgorithm(""); // Reset algorithm when system changes
+    if (system) {
+      setCurrentMode("systems");
+    }
+  };
+
+  const handleAlgorithmChange = (algorithm) => {
+    setSelectedAlgorithm(algorithm);
+  };
+
+  const handleCloseSidebar = () => {
+    setSelectedSystem("");
+    setSelectedAlgorithm("");
+  };
+
+  const handleSystemRecommendation = (recommendedSystem) => {
+    setCurrentMode("systems");
+    setSelectedSystem(recommendedSystem);
+    setSelectedAlgorithm("");
+  };
+
+  // Navigation depuis WelcomeView
+  const handleNavigateToDecisionTree = () => {
+    setCurrentMode("decision");
+    setSelectedSystem("");
+    setSelectedAlgorithm("");
+  };
+
+  const handleNavigateToSystems = () => {
+    setCurrentMode("systems");
+    setSelectedSystem("Flowshop"); // Démarre avec Flowshop par défaut
+    setSelectedAlgorithm("");
+  };
+
+  // Determine si on affiche l'InfoPanel
+  const shouldShowInfoPanel = currentMode === "systems" && selectedSystem && selectedAlgorithm;
+  const algorithms = selectedSystem ? systemsConfig[selectedSystem] || [] : [];
+
   return (
-    <div className="appContainer">
-      {/* Menu gauche */}
-      <div className="sidebar">
-        <div className="sidebarHeader">
-          <img src="/logo.png" alt="Logo" className="logo" />
-          <h1 className="appTitle">Modélisation des systèmes industriels</h1>
-        </div>
+    <div className="modern-app-container">
+      {/* Top Navigation */}
+      <TopNavigation
+        currentMode={currentMode}
+        onModeChange={handleModeChange}
+        currentSystem={selectedSystem}
+        onSystemChange={handleSystemChange}
+      />
 
-        {/* Bouton Aide à la décision */}
-        <div className="selectGroup">
-          <button
-            className={`decision-tree-btn ${showDecisionTree ? 'active' : ''}`}
-            onClick={() => {
-              setShowDecisionTree(!showDecisionTree);
-              if (!showDecisionTree) {
-                setSysteme("");
-                setAlgorithme("");
-              }
-            }}
-          >
-            🔒 Aide à la Décision
-          </button>
-        </div>
-
-        <div className="selectGroup">
-          <label className="selectLabel">
-            Système de production
-          </label>
-          <select
-            value={systeme}
-            onChange={(e) => {
-              setSysteme(e.target.value);
-              setAlgorithme("");
-              setShowDecisionTree(false);
-            }}
-            className="select"
-          >
-            <option value="">-- Choisir un système --</option>
-            {Object.keys(systemes).map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
-
-        {systeme && (
-          <div className="selectGroup">
-            <label className="selectLabel">
-              Algorithme
-            </label>
-            <select
-              value={algorithme}
-              onChange={(e) => setAlgorithme(e.target.value)}
-              className="select"
-            >
-              <option value="">-- Choisir un algorithme --</option>
-              {systemes[systeme].map((a) => (
-                <option key={a} value={a}>{a}</option>
-              ))}
-            </select>
-          </div>
+      {/* Main Layout */}
+      <div className="modern-main-layout">
+        {/* Compact Sidebar - Conditionnelle */}
+        {currentMode === "systems" && selectedSystem && (
+          <CompactSidebar
+            system={selectedSystem}
+            algorithms={algorithms}
+            selectedAlgorithm={selectedAlgorithm}
+            onAlgorithmChange={handleAlgorithmChange}
+            onClose={handleCloseSidebar}
+          />
         )}
-      </div>
 
-      {/* Contenu principal + Info */}
-      <div className="mainContent">
-        {/* Partie principale */}
-        <div className={
-          (systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage" || systeme === "Ligne d'assemblage mixte" || systeme === "Ligne de transfert" || systeme === "FMS") && algorithme
-            ? "contentArea" 
-            : "contentAreaFullWidth"
-        }>
-          {/* Arbre de décision */}
-          {showDecisionTree && (
-            <DecisionTree onSystemRecommendation={handleSystemRecommendation} />
-          )}
-          
-          {/* Vues existantes */}
-          {!showDecisionTree && !systeme && !algorithme && (
+        {/* Content Area */}
+        <div className={`modern-content-area ${shouldShowInfoPanel ? 'with-info-panel' : 'full-width'}`}>
+          {/* Welcome View */}
+          {currentMode === "welcome" && (
             <WelcomeView 
-              onNavigateToDecisionTree={() => {
-                setShowDecisionTree(true);
-                setSysteme("");
-                setAlgorithme("");
-              }}
-              onNavigateToSystems={() => {
-                setShowDecisionTree(false);
-                setSysteme("Flowshop"); // Démarre avec Flowshop par défaut
-                setAlgorithme("");
-              }}
+              onNavigateToDecisionTree={handleNavigateToDecisionTree}
+              onNavigateToSystems={handleNavigateToSystems}
             />
           )}
-          {!showDecisionTree && systeme && !algorithme && <SystemDescription system={systeme} />}
-          
-          {/* Formulaires d'algorithmes existants */}
-          {!showDecisionTree && systeme === "Flowshop" && algorithme === "SPT" && <FlowshopSPTForm />}
-          {!showDecisionTree && systeme === "Flowshop" && algorithme === "EDD" && <FlowshopEDDForm />}
-          {!showDecisionTree && systeme === "Flowshop" && algorithme === "Johnson" && <FlowshopJohnsonForm />}
-          {!showDecisionTree && systeme === "Flowshop" && algorithme === "Johnson modifié" && <FlowshopJohnsonModifieForm />}
-          {!showDecisionTree && systeme === "Flowshop" && algorithme === "Smith" && <FlowshopSmithForm />}
-          {!showDecisionTree && systeme === "Flowshop" && algorithme === "Contraintes" && <FlowshopContraintesForm />}
-          {!showDecisionTree && systeme === "Flowshop" && algorithme === "Machines multiples" && <FlowshopMachinesMultiplesForm />}
-          {!showDecisionTree && systeme === "Flowshop" && algorithme === "Comparer les algos" && <FlowshopCompareForm />}
-          {!showDecisionTree && systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTForm />}
-          {!showDecisionTree && systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDForm />}
-          {!showDecisionTree && systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesForm />}
-          {!showDecisionTree && systeme === "Jobshop" && algorithme === "Comparer les algos" && <JobshopCompareForm />}
-          {!showDecisionTree && systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceForm />}
-          {!showDecisionTree && systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && (
-            <div className="algorithmContent">
-              <LigneAssemblageCOMSOALForm />
-            </div>
+
+          {/* Decision Tree */}
+          {currentMode === "decision" && (
+            <DecisionTree onSystemRecommendation={handleSystemRecommendation} />
           )}
-          {!showDecisionTree && systeme === "Ligne d'assemblage" && algorithme === "LPT" && (
-            <div className="algorithmContent">
-              <LigneAssemblageLPTForm />
-            </div>
+
+          {/* System Description */}
+          {currentMode === "systems" && selectedSystem && !selectedAlgorithm && (
+            <SystemDescription system={selectedSystem} />
           )}
-          {!showDecisionTree && systeme === "Ligne d'assemblage" && algorithme === "PL" && (
-            <div className="algorithmContent">
-              <LigneAssemblagePLForm />
+
+          {/* Algorithm Forms */}
+          {currentMode === "systems" && selectedSystem && selectedAlgorithm && (
+            <div className="algorithm-content">
+              {/* Flowshop Algorithms */}
+              {selectedSystem === "Flowshop" && selectedAlgorithm === "SPT" && <FlowshopSPTForm />}
+              {selectedSystem === "Flowshop" && selectedAlgorithm === "EDD" && <FlowshopEDDForm />}
+              {selectedSystem === "Flowshop" && selectedAlgorithm === "Johnson" && <FlowshopJohnsonForm />}
+              {selectedSystem === "Flowshop" && selectedAlgorithm === "Johnson modifié" && <FlowshopJohnsonModifieForm />}
+              {selectedSystem === "Flowshop" && selectedAlgorithm === "Smith" && <FlowshopSmithForm />}
+              {selectedSystem === "Flowshop" && selectedAlgorithm === "Contraintes" && <FlowshopContraintesForm />}
+              {selectedSystem === "Flowshop" && selectedAlgorithm === "Machines multiples" && <FlowshopMachinesMultiplesForm />}
+              {selectedSystem === "Flowshop" && selectedAlgorithm === "Comparer les algos" && <FlowshopCompareForm />}
+              
+              {/* Jobshop Algorithms */}
+              {selectedSystem === "Jobshop" && selectedAlgorithm === "SPT" && <JobshopSPTForm />}
+              {selectedSystem === "Jobshop" && selectedAlgorithm === "EDD" && <JobshopEDDForm />}
+              {selectedSystem === "Jobshop" && selectedAlgorithm === "Contraintes" && <JobshopContraintesForm />}
+              {selectedSystem === "Jobshop" && selectedAlgorithm === "Comparer les algos" && <JobshopCompareForm />}
+              
+              {/* Ligne d'assemblage Algorithms */}
+              {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "Précédence" && <LigneAssemblagePrecedenceForm />}
+              {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "COMSOAL" && <LigneAssemblageCOMSOALForm />}
+              {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "LPT" && <LigneAssemblageLPTForm />}
+              {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "PL" && <LigneAssemblagePLForm />}
+              {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "Comparer les algos" && <LigneAssemblageCompareForm />}
+              
+              {/* Ligne d'assemblage mixte Algorithms */}
+              {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Variation du goulot" && <LigneAssemblageMixteGoulotForm />}
+              {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageForm />}
+              {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Équilibrage ++" && <LigneAssemblageMixteEquilibragePlusPlusForm />}
+              
+              {/* Ligne de transfert Algorithms */}
+              {selectedSystem === "Ligne de transfert" && selectedAlgorithm === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottForm />}
+              
+              {/* FMS Algorithms */}
+              {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Prog. Dynamique)" && <FMSSacADosForm />}
+              {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLForm />}
+              {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Algorithme Glouton)" && <FMSSacADosGloutonForm />}
+              {selectedSystem === "FMS" && selectedAlgorithm === "Lots de production (Glouton)" && <FMSLotsProductionGloutonForm />}
+              {selectedSystem === "FMS" && selectedAlgorithm === "Lots de production (MIP)" && <FMSLotsProductionMIPForm />}
+              {selectedSystem === "FMS" && selectedAlgorithm === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueForm />}
+              
+              {/* Fallback pour algorithmes non mappés */}
+              {!["Flowshop", "Jobshop", "Ligne d'assemblage", "Ligne d'assemblage mixte", "Ligne de transfert", "FMS"].includes(selectedSystem) && (
+                <AlgorithmFormAndResult algorithm={selectedAlgorithm} />
+              )}
             </div>
-          )}
-          {!showDecisionTree && systeme === "Ligne d'assemblage" && algorithme === "Comparer les algos" && (
-            <div className="algorithmContent">
-              <LigneAssemblageCompareForm />
-            </div>
-          )}
-          {!showDecisionTree && systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotForm />}
-          {!showDecisionTree && systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageForm />}
-          {!showDecisionTree && systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ++" && <LigneAssemblageMixteEquilibragePlusPlusForm />}
-          {!showDecisionTree && systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottForm />}
-          {!showDecisionTree && systeme === "FMS" && algorithme === "Sac à dos (Prog. Dynamique)" && <FMSSacADosForm />}
-          {!showDecisionTree && systeme === "FMS" && algorithme === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLForm />}
-          {!showDecisionTree && systeme === "FMS" && algorithme === "Sac à dos (Algorithme Glouton)" && <FMSSacADosGloutonForm />}
-          {!showDecisionTree && systeme === "FMS" && algorithme === "Lots de production (Glouton)" && <FMSLotsProductionGloutonForm />}
-          {!showDecisionTree && systeme === "FMS" && algorithme === "Lots de production (MIP)" && <FMSLotsProductionMIPForm />}
-          {!showDecisionTree && systeme === "FMS" && algorithme === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueForm />}
-          {!showDecisionTree && algorithme && !(systeme === "Flowshop") && !(systeme === "Jobshop" && (algorithme === "SPT" || algorithme === "EDD" || algorithme === "Contraintes" || algorithme === "Comparer les algos")) && !(systeme === "Ligne d'assemblage" && (algorithme === "Précédence" || algorithme === "COMSOAL" || algorithme === "LPT" || algorithme === "PL" || algorithme === "Comparer les algos")) && !(systeme === "Ligne d'assemblage mixte" && (algorithme === "Variation du goulot" || algorithme === "Équilibrage ligne mixte" || algorithme === "Équilibrage ++")) && !(systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott") && !(systeme === "FMS" && (algorithme === "Sac à dos (Prog. Dynamique)" || algorithme === "Sac à dos (Prog. Linéaire)" || algorithme === "Sac à dos (Algorithme Glouton)" || algorithme === "Lots de production (Glouton)" || algorithme === "Lots de production (MIP)" || algorithme === "Lots de chargement (Heuristique)")) && (
-            <AlgorithmFormAndResult algorithm={algorithme} />
           )}
         </div>
 
-        {/* Info à droite */}
-        {!showDecisionTree && (systeme === "Flowshop" || systeme === "Jobshop" || systeme === "Ligne d'assemblage" || systeme === "Ligne d'assemblage mixte" || systeme === "Ligne de transfert" || systeme === "FMS") && algorithme && (
-          <div className="infoPanel">
-            {systeme === "Flowshop" && (
-              <>
-                {algorithme === "SPT" && <FlowshopSPTInfo />}
-                {algorithme === "EDD" && <FlowshopEDDInfo />}
-                {algorithme === "Johnson" && <FlowshopJohnsonInfo />}
-                {algorithme === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
-                {algorithme === "Smith" && <FlowshopSmithInfo />}
-                {algorithme === "Contraintes" && <FlowshopContraintesInfo />}
-                {algorithme === "Machines multiples" && <FlowshopMachinesMultiplesInfo />}
-                {algorithme === "Comparer les algos" && <FlowshopCompareInfo />}
-              </>
-            )}
-            {systeme === "Jobshop" && algorithme === "SPT" && <JobshopSPTInfo />}
-            {systeme === "Jobshop" && algorithme === "EDD" && <JobshopEDDInfo />}
-            {systeme === "Jobshop" && algorithme === "Contraintes" && <JobshopContraintesInfo />}
-            {systeme === "Jobshop" && algorithme === "Comparer les algos" && <JobshopCompareInfo />}
-            {systeme === "Ligne d'assemblage" && algorithme === "Précédence" && <LigneAssemblagePrecedenceInfo />}
-            {systeme === "Ligne d'assemblage" && algorithme === "COMSOAL" && <LigneAssemblageCOMSOALInfo />}
-            {systeme === "Ligne d'assemblage" && algorithme === "LPT" && <LigneAssemblageLPTInfo />}
-            {systeme === "Ligne d'assemblage" && algorithme === "PL" && <LigneAssemblagePLInfo />}
-            {systeme === "Ligne d'assemblage" && algorithme === "Comparer les algos" && <LigneAssemblageCompareInfo />}
-            {systeme === "Ligne d'assemblage mixte" && algorithme === "Variation du goulot" && <LigneAssemblageMixteGoulotInfo />}
-            {systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageInfo />}
-            {systeme === "Ligne d'assemblage mixte" && algorithme === "Équilibrage ++" && <LigneAssemblageMixteEquilibragePlusPlusInfo />}
-            {systeme === "Ligne de transfert" && algorithme === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottInfo />}
-            {systeme === "FMS" && algorithme === "Sac à dos (Prog. Dynamique)" && <FMSSacADosInfo />}
-            {systeme === "FMS" && algorithme === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLInfo />}
-            {systeme === "FMS" && algorithme === "Sac à dos (Algorithme Glouton)" && <FMSSacADosGloutonInfo />}
-            {systeme === "FMS" && algorithme === "Lots de production (Glouton)" && <FMSLotsProductionGloutonInfo />}
-            {systeme === "FMS" && algorithme === "Lots de production (MIP)" && <FMSLotsProductionMIPInfo />}
-            {systeme === "FMS" && algorithme === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueInfo />}
+        {/* Info Panel - Conditionnelle */}
+        {shouldShowInfoPanel && (
+          <div className="modern-info-panel">
+            {/* Flowshop Info */}
+            {selectedSystem === "Flowshop" && selectedAlgorithm === "SPT" && <FlowshopSPTInfo />}
+            {selectedSystem === "Flowshop" && selectedAlgorithm === "EDD" && <FlowshopEDDInfo />}
+            {selectedSystem === "Flowshop" && selectedAlgorithm === "Johnson" && <FlowshopJohnsonInfo />}
+            {selectedSystem === "Flowshop" && selectedAlgorithm === "Johnson modifié" && <FlowshopJohnsonModifieInfo />}
+            {selectedSystem === "Flowshop" && selectedAlgorithm === "Smith" && <FlowshopSmithInfo />}
+            {selectedSystem === "Flowshop" && selectedAlgorithm === "Contraintes" && <FlowshopContraintesInfo />}
+            {selectedSystem === "Flowshop" && selectedAlgorithm === "Machines multiples" && <FlowshopMachinesMultiplesInfo />}
+            {selectedSystem === "Flowshop" && selectedAlgorithm === "Comparer les algos" && <FlowshopCompareInfo />}
+            
+            {/* Jobshop Info */}
+            {selectedSystem === "Jobshop" && selectedAlgorithm === "SPT" && <JobshopSPTInfo />}
+            {selectedSystem === "Jobshop" && selectedAlgorithm === "EDD" && <JobshopEDDInfo />}
+            {selectedSystem === "Jobshop" && selectedAlgorithm === "Contraintes" && <JobshopContraintesInfo />}
+            {selectedSystem === "Jobshop" && selectedAlgorithm === "Comparer les algos" && <JobshopCompareInfo />}
+            
+            {/* Ligne d'assemblage Info */}
+            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "Précédence" && <LigneAssemblagePrecedenceInfo />}
+            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "COMSOAL" && <LigneAssemblageCOMSOALInfo />}
+            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "LPT" && <LigneAssemblageLPTInfo />}
+            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "PL" && <LigneAssemblagePLInfo />}
+            {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "Comparer les algos" && <LigneAssemblageCompareInfo />}
+            
+            {/* Ligne d'assemblage mixte Info */}
+            {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Variation du goulot" && <LigneAssemblageMixteGoulotInfo />}
+            {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageInfo />}
+            {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Équilibrage ++" && <LigneAssemblageMixteEquilibragePlusPlusInfo />}
+            
+            {/* Ligne de transfert Info */}
+            {selectedSystem === "Ligne de transfert" && selectedAlgorithm === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottInfo />}
+            
+            {/* FMS Info */}
+            {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Prog. Dynamique)" && <FMSSacADosInfo />}
+            {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLInfo />}
+            {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Algorithme Glouton)" && <FMSSacADosGloutonInfo />}
+            {selectedSystem === "FMS" && selectedAlgorithm === "Lots de production (Glouton)" && <FMSLotsProductionGloutonInfo />}
+            {selectedSystem === "FMS" && selectedAlgorithm === "Lots de production (MIP)" && <FMSLotsProductionMIPInfo />}
+            {selectedSystem === "FMS" && selectedAlgorithm === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueInfo />}
           </div>
         )}
       </div>

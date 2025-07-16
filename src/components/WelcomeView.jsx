@@ -89,7 +89,7 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
               className="feature-card" 
               onClick={() => handleFeatureClick('decision-tree')}
             >
-              <div className="feature-icon">◎</div>
+              <div className="feature-icon">✅</div>
               <h3>Aide à la Décision</h3>
               <p>Arbre de décision intelligent pour identifier automatiquement le système de production optimal selon vos contraintes</p>
               <span className="card-action">Essayer →</span>
@@ -230,13 +230,13 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
                 className="btn-primary"
                 onClick={() => handleFeatureClick('decision-tree')}
               >
-                ◎ Commencer l'Aide à la Décision
+                ✅ Commencer l'Aide à la Décision
               </button>
               <button 
                 className="btn-secondary"
                 onClick={() => handleFeatureClick('systems')}
               >
-                ▣ Explorer les Systèmes
+                🔨 Explorer les Systèmes
               </button>
             </div>
           </div>

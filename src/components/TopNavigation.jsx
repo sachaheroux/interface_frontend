@@ -76,7 +76,7 @@ export default function TopNavigation({
             className={`nav-tab ${currentMode === 'decision' ? 'active' : ''}`}
             onClick={() => handleNavClick('decision')}
           >
-            <span className="nav-icon">◎</span>
+            <span className="nav-icon">✅</span>
             <span className="nav-label">Aide à la Décision</span>
           </button>
 

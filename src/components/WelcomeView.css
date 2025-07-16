@@ -224,6 +224,8 @@
   font-size: 3rem;
   margin-bottom: 1.5rem;
   display: block;
+  filter: grayscale(100%) brightness(0.5);
+  -webkit-filter: grayscale(100%) brightness(0.5);
 }
 
 .feature-card h3 {
@@ -450,6 +452,12 @@
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
+}
+
+/* Icônes monochrome dans les boutons */
+.btn-primary::first-child, .btn-secondary::first-child {
+  filter: grayscale(100%) brightness(0.5);
+  -webkit-filter: grayscale(100%) brightness(0.5);
 }
 
 /* ===== ANIMATIONS ===== */

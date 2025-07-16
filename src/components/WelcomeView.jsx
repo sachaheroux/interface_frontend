@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ClipboardList, Settings, BarChart3, Users } from "lucide-react";
 import "./WelcomeView.css";
 
 export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSystems }) {
@@ -89,7 +90,7 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
               className="feature-card" 
               onClick={() => handleFeatureClick('decision-tree')}
             >
-              <div className="feature-icon">✅</div>
+              <div className="feature-icon"><ClipboardList size={32} /></div>
               <h3>Aide à la Décision</h3>
               <p>Arbre de décision intelligent pour identifier automatiquement le système de production optimal selon vos contraintes</p>
               <span className="card-action">Essayer →</span>
@@ -99,7 +100,7 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
               className="feature-card" 
               onClick={() => handleFeatureClick('systems')}
             >
-              <div className="feature-icon">◯</div>
+              <div className="feature-icon"><Settings size={32} /></div>
               <h3>Algorithmes Avancés</h3>
               <p>SPT, EDD, Johnson, contraintes OR-Tools et bien plus. Algorithmes éprouvés pour tous types de systèmes</p>
               <span className="card-action">Explorer →</span>
@@ -109,7 +110,7 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
               className="feature-card" 
               onClick={() => handleFeatureClick('visualization')}
             >
-              <div className="feature-icon">⫽</div>
+              <div className="feature-icon"><BarChart3 size={32} /></div>
               <h3>Visualisation Intelligente</h3>
               <p>Diagrammes de Gantt interactifs, métriques de performance en temps réel et exports professionnels</p>
               <span className="card-action">Voir →</span>
@@ -119,7 +120,7 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
               className="feature-card" 
               onClick={() => handleFeatureClick('education')}
             >
-              <div className="feature-icon">◦</div>
+              <div className="feature-icon"><Users size={32} /></div>
               <h3>Mode Éducatif</h3>
               <p>Interface pédagogique parfaite pour l'apprentissage et l'enseignement de l'optimisation industrielle</p>
               <span className="card-action">Apprendre →</span>
@@ -230,13 +231,13 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
                 className="btn-primary"
                 onClick={() => handleFeatureClick('decision-tree')}
               >
-                ✅ Commencer l'Aide à la Décision
+                <ClipboardList size={18} /> Commencer l'Aide à la Décision
               </button>
               <button 
                 className="btn-secondary"
                 onClick={() => handleFeatureClick('systems')}
               >
-                🔨 Explorer les Systèmes
+                <Settings size={18} /> Explorer les Systèmes
               </button>
             </div>
           </div>

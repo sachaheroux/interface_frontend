@@ -224,8 +224,12 @@
   font-size: 3rem;
   margin-bottom: 1.5rem;
   display: block;
-  filter: grayscale(100%) brightness(0.5);
-  -webkit-filter: grayscale(100%) brightness(0.5);
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  color: var(--primary-color);
 }
 
 .feature-card h3 {
@@ -458,6 +462,14 @@
 .btn-primary::first-child, .btn-secondary::first-child {
   filter: grayscale(100%) brightness(0.5);
   -webkit-filter: grayscale(100%) brightness(0.5);
+}
+
+/* Styles pour les icônes SVG Lucide dans les boutons */
+.btn-primary svg,
+.btn-secondary svg {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  color: currentColor;
 }
 
 /* ===== ANIMATIONS ===== */

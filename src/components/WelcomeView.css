@@ -472,6 +472,30 @@
   color: currentColor;
 }
 
+/* Styles pour les icônes CheckCircle dans la liste des bénéfices */
+.benefits-list li svg {
+  margin-right: 0.75rem;
+  color: #22c55e;
+  vertical-align: middle;
+}
+
+/* Styles pour les icônes ArrowRight dans les card-action */
+.card-action svg {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .card-action svg {
+  transform: translateX(4px);
+}
+
+/* Styles pour les icônes dans le scroll indicator et process arrows */
+.scroll-arrow svg,
+.process-arrow svg {
+  color: currentColor;
+}
+
 /* ===== ANIMATIONS ===== */
 @keyframes heroFadeIn {
   from {

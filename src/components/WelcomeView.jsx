@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { ClipboardList, Settings, BarChart3, Users } from "lucide-react";
+import { 
+  Brain, 
+  Cog, 
+  TrendingUp, 
+  GraduationCap, 
+  CheckCircle, 
+  ChevronDown, 
+  ArrowRight 
+} from "lucide-react";
 import "./WelcomeView.css";
 
 export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSystems }) {
@@ -64,7 +72,7 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
             </p>
             <button className="scroll-indicator" onClick={scrollToFeatures}>
               <span>Découvrir les fonctionnalités</span>
-              <div className="scroll-arrow">↓</div>
+              <div className="scroll-arrow"><ChevronDown size={20} /></div>
             </button>
           </div>
         </div>
@@ -90,40 +98,40 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
               className="feature-card" 
               onClick={() => handleFeatureClick('decision-tree')}
             >
-              <div className="feature-icon"><ClipboardList size={32} /></div>
+              <div className="feature-icon"><Brain size={32} /></div>
               <h3>Aide à la Décision</h3>
               <p>Arbre de décision intelligent pour identifier automatiquement le système de production optimal selon vos contraintes</p>
-              <span className="card-action">Essayer →</span>
+              <span className="card-action">Essayer <ArrowRight size={16} /></span>
             </div>
 
             <div 
               className="feature-card" 
               onClick={() => handleFeatureClick('systems')}
             >
-              <div className="feature-icon"><Settings size={32} /></div>
+              <div className="feature-icon"><Cog size={32} /></div>
               <h3>Algorithmes Avancés</h3>
               <p>SPT, EDD, Johnson, contraintes OR-Tools et bien plus. Algorithmes éprouvés pour tous types de systèmes</p>
-              <span className="card-action">Explorer →</span>
+              <span className="card-action">Explorer <ArrowRight size={16} /></span>
             </div>
 
             <div 
               className="feature-card" 
               onClick={() => handleFeatureClick('visualization')}
             >
-              <div className="feature-icon"><BarChart3 size={32} /></div>
+              <div className="feature-icon"><TrendingUp size={32} /></div>
               <h3>Visualisation Intelligente</h3>
               <p>Diagrammes de Gantt interactifs, métriques de performance en temps réel et exports professionnels</p>
-              <span className="card-action">Voir →</span>
+              <span className="card-action">Voir <ArrowRight size={16} /></span>
             </div>
 
             <div 
               className="feature-card" 
               onClick={() => handleFeatureClick('education')}
             >
-              <div className="feature-icon"><Users size={32} /></div>
+              <div className="feature-icon"><GraduationCap size={32} /></div>
               <h3>Mode Éducatif</h3>
               <p>Interface pédagogique parfaite pour l'apprentissage et l'enseignement de l'optimisation industrielle</p>
-              <span className="card-action">Apprendre →</span>
+              <span className="card-action">Apprendre <ArrowRight size={16} /></span>
             </div>
           </div>
         </div>
@@ -141,10 +149,10 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
                 chaque minute d'inefficacité représente des pertes significatives.
               </p>
               <ul className="benefits-list">
-                <li>✅ Réduction des temps de cycle</li>
-                <li>✅ Minimisation des goulots d'étranglement</li>
-                <li>✅ Optimisation des ressources</li>
-                <li>✅ Amélioration de la qualité</li>
+                <li><CheckCircle size={18} /> Réduction des temps de cycle</li>
+                <li><CheckCircle size={18} /> Minimisation des goulots d'étranglement</li>
+                <li><CheckCircle size={18} /> Optimisation des ressources</li>
+                <li><CheckCircle size={18} /> Amélioration de la qualité</li>
               </ul>
             </div>
             <div className="explanation-visual">
@@ -177,17 +185,17 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
                   <span className="step-number">1</span>
                   <span className="step-text">Analyse</span>
                 </div>
-                <div className="process-arrow">→</div>
+                <div className="process-arrow"><ArrowRight size={24} /></div>
                 <div className="process-step">
                   <span className="step-number">2</span>
                   <span className="step-text">Modélisation</span>
                 </div>
-                <div className="process-arrow">→</div>
+                <div className="process-arrow"><ArrowRight size={24} /></div>
                 <div className="process-step">
                   <span className="step-number">3</span>
                   <span className="step-text">Optimisation</span>
                 </div>
-                <div className="process-arrow">→</div>
+                <div className="process-arrow"><ArrowRight size={24} /></div>
                 <div className="process-step">
                   <span className="step-number">4</span>
                   <span className="step-text">Résultats</span>
@@ -231,13 +239,13 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
                 className="btn-primary"
                 onClick={() => handleFeatureClick('decision-tree')}
               >
-                <ClipboardList size={18} /> Commencer l'Aide à la Décision
+                <Brain size={18} /> Commencer l'Aide à la Décision
               </button>
               <button 
                 className="btn-secondary"
                 onClick={() => handleFeatureClick('systems')}
               >
-                <Settings size={18} /> Explorer les Systèmes
+                <Cog size={18} /> Explorer les Systèmes
               </button>
             </div>
           </div>

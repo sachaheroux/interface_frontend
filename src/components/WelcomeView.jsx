@@ -44,7 +44,7 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
           onLoadedData={() => setIsVideoLoaded(true)}
           onError={() => setIsVideoLoaded(false)}
         >
-          <source src="/industrial-automation.mp4" type="video/mp4" />
+          <source src="/factory-automation.mp4.mp4" type="video/mp4" />
           <source src="https://assets.mixkit.co/videos/preview/mixkit-robot-working-in-a-production-line-34651-large.mp4" type="video/mp4" />
           <source src="https://videos.pexels.com/video-files/5699456/5699456-uhd_2560_1440_25fps.mp4" type="video/mp4" />
           {/* Fallback pour navigateurs qui ne supportent pas la vidéo */}

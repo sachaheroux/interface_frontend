@@ -9,7 +9,8 @@ import {
   GitBranch, 
   Network, 
   CircleDot, 
-  Settings 
+  Settings,
+  Hammer 
 } from "lucide-react";
 import "./TopNavigation.css";
 
@@ -62,7 +63,7 @@ export default function TopNavigation({
   ];
 
   const getSystemInfo = (systemName) => {
-    return systems.find(s => s.name === systemName) || { icon: <Settings size={16} />, subtitle: "" };
+    return systems.find(s => s.name === systemName) || { icon: <Hammer size={16} />, subtitle: "" };
   };
 
   return (
@@ -114,7 +115,7 @@ export default function TopNavigation({
               onClick={() => handleNavClick('systems')}
             >
               <span className="system-icon">
-                {currentSystem ? getSystemInfo(currentSystem).icon : <Settings size={16} />}
+                {currentSystem ? getSystemInfo(currentSystem).icon : <Hammer size={16} />}
               </span>
               <span className="system-name">
                 {currentSystem || "Systèmes de Production"}

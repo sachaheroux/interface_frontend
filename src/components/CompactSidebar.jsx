@@ -4,7 +4,8 @@ import {
   GitBranch, 
   Network, 
   CircleDot, 
-  Settings 
+  Settings,
+  Hammer 
 } from "lucide-react";
 import "./CompactSidebar.css";
 
@@ -29,7 +30,7 @@ export default function CompactSidebar({
       "Ligne de transfert": <CircleDot size={20} />,
       "FMS": <Settings size={20} />
     };
-    return icons[systemName] || <Settings size={20} />;
+    return icons[systemName] || <Hammer size={20} />;
   };
 
   return (

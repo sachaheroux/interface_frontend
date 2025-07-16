@@ -41,16 +41,16 @@ export default function TopNavigation({
   };
 
   const systems = [
-    { name: "Flowshop", icon: "📊", subtitle: "Production en flux" },
-    { name: "Jobshop", icon: "🏗️", subtitle: "Ateliers flexibles" },
-    { name: "Ligne d'assemblage", icon: "🔧", subtitle: "Assemblage séquentiel" },
-    { name: "Ligne d'assemblage mixte", icon: "⚙️", subtitle: "Assemblage multi-produits" },
-    { name: "Ligne de transfert", icon: "🚛", subtitle: "Production continue" },
-    { name: "FMS", icon: "🤖", subtitle: "Systèmes flexibles" }
+    { name: "Flowshop", icon: "▦", subtitle: "Production en flux" },
+    { name: "Jobshop", icon: "⬡", subtitle: "Ateliers flexibles" },
+    { name: "Ligne d'assemblage", icon: "◐", subtitle: "Assemblage séquentiel" },
+    { name: "Ligne d'assemblage mixte", icon: "◯", subtitle: "Assemblage multi-produits" },
+    { name: "Ligne de transfert", icon: "◈", subtitle: "Production continue" },
+    { name: "FMS", icon: "◼", subtitle: "Systèmes flexibles" }
   ];
 
   const getSystemInfo = (systemName) => {
-    return systems.find(s => s.name === systemName) || { icon: "🏭", subtitle: "" };
+    return systems.find(s => s.name === systemName) || { icon: "▣", subtitle: "" };
   };
 
   return (
@@ -68,7 +68,7 @@ export default function TopNavigation({
             className={`nav-tab ${currentMode === 'welcome' ? 'active' : ''}`}
             onClick={() => handleNavClick('welcome')}
           >
-            <span className="nav-icon">🏠</span>
+            <span className="nav-icon">⌂</span>
             <span className="nav-label">Accueil</span>
           </button>
 
@@ -76,7 +76,7 @@ export default function TopNavigation({
             className={`nav-tab ${currentMode === 'decision' ? 'active' : ''}`}
             onClick={() => handleNavClick('decision')}
           >
-            <span className="nav-icon">🧭</span>
+            <span className="nav-icon">◎</span>
             <span className="nav-label">Aide à la Décision</span>
           </button>
 
@@ -86,7 +86,7 @@ export default function TopNavigation({
               onClick={() => handleNavClick('systems')}
             >
               <span className="system-icon">
-                {currentSystem ? getSystemInfo(currentSystem).icon : "🏭"}
+                {currentSystem ? getSystemInfo(currentSystem).icon : "▣"}
               </span>
               <span className="system-name">
                 {currentSystem || "Systèmes de Production"}
@@ -120,7 +120,7 @@ export default function TopNavigation({
         {/* Actions */}
         <div className="nav-actions">
           <button className="nav-action-btn">
-            <span className="nav-icon">🔔</span>
+            <span className="nav-icon">◉</span>
             <span className="notification-badge">2</span>
           </button>
         </div>

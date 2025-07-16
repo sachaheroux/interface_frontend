@@ -14,14 +14,14 @@ export default function CompactSidebar({
 
   const getSystemIcon = (systemName) => {
     const icons = {
-      "Flowshop": "📊",
-      "Jobshop": "🏗️", 
-      "Ligne d'assemblage": "🔧",
-      "Ligne d'assemblage mixte": "⚙️",
-      "Ligne de transfert": "🚛",
-      "FMS": "🤖"
+      "Flowshop": "▦",
+      "Jobshop": "⬡", 
+      "Ligne d'assemblage": "◐",
+      "Ligne d'assemblage mixte": "◯",
+      "Ligne de transfert": "◈",
+      "FMS": "◼"
     };
-    return icons[systemName] || "🏭";
+    return icons[systemName] || "▣";
   };
 
   return (
@@ -53,11 +53,11 @@ export default function CompactSidebar({
       {/* Quick Actions */}
       <div className="sidebar-actions">
         <button className="action-btn" title="Comparer les algorithmes">
-          <span className="action-icon">📊</span>
+          <span className="action-icon">⫽</span>
           Comparer
         </button>
         <button className="action-btn primary" title="Information sur le système">
-          <span className="action-icon">ℹ️</span>
+          <span className="action-icon">◌</span>
           Info Système
         </button>
       </div>

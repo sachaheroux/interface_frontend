@@ -1,4 +1,16 @@
 import { useState, useEffect, useRef } from "react";
+import { 
+  Home, 
+  Brain, 
+  Users, 
+  FileText, 
+  Factory, 
+  Grid3x3, 
+  GitBranch, 
+  Network, 
+  CircleDot, 
+  Settings 
+} from "lucide-react";
 import "./TopNavigation.css";
 
 export default function TopNavigation({ 
@@ -41,16 +53,16 @@ export default function TopNavigation({
   };
 
   const systems = [
-    { name: "Flowshop", icon: "▦", subtitle: "Production en flux" },
-    { name: "Jobshop", icon: "⬡", subtitle: "Ateliers flexibles" },
-    { name: "Ligne d'assemblage", icon: "◐", subtitle: "Assemblage séquentiel" },
-    { name: "Ligne d'assemblage mixte", icon: "◯", subtitle: "Assemblage multi-produits" },
-    { name: "Ligne de transfert", icon: "◈", subtitle: "Production continue" },
-    { name: "FMS", icon: "◼", subtitle: "Systèmes flexibles" }
+    { name: "Flowshop", icon: <Factory size={16} />, subtitle: "Production en flux" },
+    { name: "Jobshop", icon: <Grid3x3 size={16} />, subtitle: "Ateliers flexibles" },
+    { name: "Ligne d'assemblage", icon: <GitBranch size={16} />, subtitle: "Assemblage séquentiel" },
+    { name: "Ligne d'assemblage mixte", icon: <Network size={16} />, subtitle: "Assemblage multi-produits" },
+    { name: "Ligne de transfert", icon: <CircleDot size={16} />, subtitle: "Production continue" },
+    { name: "FMS", icon: <Settings size={16} />, subtitle: "Systèmes flexibles" }
   ];
 
   const getSystemInfo = (systemName) => {
-    return systems.find(s => s.name === systemName) || { icon: "🔨", subtitle: "" };
+    return systems.find(s => s.name === systemName) || { icon: <Settings size={16} />, subtitle: "" };
   };
 
   return (
@@ -68,7 +80,7 @@ export default function TopNavigation({
             className={`nav-tab ${currentMode === 'welcome' ? 'active' : ''}`}
             onClick={() => handleNavClick('welcome')}
           >
-            <span className="nav-icon">⌂</span>
+            <span className="nav-icon"><Home size={16} /></span>
             <span className="nav-label">Accueil</span>
           </button>
 
@@ -76,7 +88,7 @@ export default function TopNavigation({
             className={`nav-tab ${currentMode === 'decision' ? 'active' : ''}`}
             onClick={() => handleNavClick('decision')}
           >
-            <span className="nav-icon">✅</span>
+            <span className="nav-icon"><Brain size={16} /></span>
             <span className="nav-label">Aide à la Décision</span>
           </button>
 
@@ -84,7 +96,7 @@ export default function TopNavigation({
             className={`nav-tab ${currentMode === 'courses' ? 'active' : ''}`}
             onClick={() => handleNavClick('courses')}
           >
-            <span className="nav-icon">👥</span>
+            <span className="nav-icon"><Users size={16} /></span>
             <span className="nav-label">Cours</span>
           </button>
 
@@ -92,7 +104,7 @@ export default function TopNavigation({
             className={`nav-tab ${currentMode === 'assignments' ? 'active' : ''}`}
             onClick={() => handleNavClick('assignments')}
           >
-            <span className="nav-icon">🗎</span>
+            <span className="nav-icon"><FileText size={16} /></span>
             <span className="nav-label">Devoirs</span>
           </button>
 
@@ -102,7 +114,7 @@ export default function TopNavigation({
               onClick={() => handleNavClick('systems')}
             >
               <span className="system-icon">
-                {currentSystem ? getSystemInfo(currentSystem).icon : "🔨"}
+                {currentSystem ? getSystemInfo(currentSystem).icon : <Settings size={16} />}
               </span>
               <span className="system-name">
                 {currentSystem || "Systèmes de Production"}

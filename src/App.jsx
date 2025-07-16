@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Users } from "lucide-react";
 import "./App.css";
 import TopNavigation from "./components/TopNavigation";
 import CompactSidebar from "./components/CompactSidebar";
@@ -170,7 +171,7 @@ function App() {
           {currentMode === "courses" && (
             <div className="courses-content">
               <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '12px', margin: '2rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '2rem', color: '#6b7280', filter: 'grayscale(100%) brightness(0.5)' }}>👥</div>
+                <div style={{ marginBottom: '2rem', color: '#6b7280' }}><Users size={48} /></div>
                 <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Section Cours</h2>
                 <p style={{ color: '#6b7280', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto' }}>
                   Cette section contiendra les cours théoriques sur l'optimisation des systèmes de production.

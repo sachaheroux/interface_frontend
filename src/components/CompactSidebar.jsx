@@ -1,3 +1,11 @@
+import { 
+  Factory, 
+  Grid3x3, 
+  GitBranch, 
+  Network, 
+  CircleDot, 
+  Settings 
+} from "lucide-react";
 import "./CompactSidebar.css";
 
 export default function CompactSidebar({ 
@@ -14,14 +22,14 @@ export default function CompactSidebar({
 
   const getSystemIcon = (systemName) => {
     const icons = {
-      "Flowshop": "▦",
-      "Jobshop": "⬡", 
-      "Ligne d'assemblage": "◐",
-      "Ligne d'assemblage mixte": "◯",
-      "Ligne de transfert": "◈",
-      "FMS": "◼"
+      "Flowshop": <Factory size={20} />,
+      "Jobshop": <Grid3x3 size={20} />, 
+      "Ligne d'assemblage": <GitBranch size={20} />,
+      "Ligne d'assemblage mixte": <Network size={20} />,
+      "Ligne de transfert": <CircleDot size={20} />,
+      "FMS": <Settings size={20} />
     };
-    return icons[systemName] || "🔨";
+    return icons[systemName] || <Settings size={20} />;
   };
 
   return (

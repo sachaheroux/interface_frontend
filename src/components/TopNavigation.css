@@ -102,11 +102,15 @@
 .nav-icon {
   font-size: 1.1rem;
   opacity: 0.8;
+  filter: grayscale(100%) brightness(0.5);
+  -webkit-filter: grayscale(100%) brightness(0.5);
 }
 
 .nav-tab.active .nav-icon {
   opacity: 1;
   color: var(--top-nav-active-text);
+  filter: grayscale(100%) brightness(0.3);
+  -webkit-filter: grayscale(100%) brightness(0.3);
 }
 
 .nav-label {

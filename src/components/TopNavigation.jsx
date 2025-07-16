@@ -84,7 +84,7 @@ export default function TopNavigation({
             className={`nav-tab ${currentMode === 'courses' ? 'active' : ''}`}
             onClick={() => handleNavClick('courses')}
           >
-            <span className="nav-icon">◐</span>
+            <span className="nav-icon">👥</span>
             <span className="nav-label">Cours</span>
           </button>
 
@@ -92,7 +92,7 @@ export default function TopNavigation({
             className={`nav-tab ${currentMode === 'assignments' ? 'active' : ''}`}
             onClick={() => handleNavClick('assignments')}
           >
-            <span className="nav-icon">◈</span>
+            <span className="nav-icon">🗎</span>
             <span className="nav-label">Devoirs</span>
           </button>
 

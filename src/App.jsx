@@ -170,7 +170,7 @@ function App() {
           {currentMode === "courses" && (
             <div className="courses-content">
               <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '12px', margin: '2rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '2rem', color: '#6b7280' }}>◐</div>
+                <div style={{ fontSize: '3rem', marginBottom: '2rem', color: '#6b7280', filter: 'grayscale(100%) brightness(0.5)' }}>👥</div>
                 <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Section Cours</h2>
                 <p style={{ color: '#6b7280', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto' }}>
                   Cette section contiendra les cours théoriques sur l'optimisation des systèmes de production.
@@ -184,7 +184,7 @@ function App() {
           {currentMode === "assignments" && (
             <div className="assignments-content">
               <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '12px', margin: '2rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '2rem', color: '#6b7280' }}>◈</div>
+                <div style={{ fontSize: '3rem', marginBottom: '2rem', color: '#6b7280', filter: 'grayscale(100%) brightness(0.5)' }}>🗎</div>
                 <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Section Devoirs</h2>
                 <p style={{ color: '#6b7280', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto' }}>
                   Cette section permettra aux étudiants de soumettre leurs devoirs et aux enseignants de créer des exercices.

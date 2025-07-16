@@ -81,10 +81,8 @@ function App() {
   const handleModeChange = (mode) => {
     setCurrentMode(mode);
     
-    if (mode === "welcome") {
-      setSelectedSystem("");
-      setSelectedAlgorithm("");
-    } else if (mode === "decision") {
+    // Reset des sélections pour certains modes
+    if (["welcome", "decision", "courses", "assignments"].includes(mode)) {
       setSelectedSystem("");
       setSelectedAlgorithm("");
     }
@@ -166,6 +164,34 @@ function App() {
           {/* Decision Tree */}
           {currentMode === "decision" && (
             <DecisionTree onSystemRecommendation={handleSystemRecommendation} />
+          )}
+
+          {/* Cours - Mode éducatif */}
+          {currentMode === "courses" && (
+            <div className="courses-content">
+              <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '12px', margin: '2rem' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '2rem', color: '#6b7280' }}>◐</div>
+                <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Section Cours</h2>
+                <p style={{ color: '#6b7280', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto' }}>
+                  Cette section contiendra les cours théoriques sur l'optimisation des systèmes de production.
+                  Contenu pédagogique et tutoriels à venir.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Devoirs - Mode éducatif */}
+          {currentMode === "assignments" && (
+            <div className="assignments-content">
+              <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '12px', margin: '2rem' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '2rem', color: '#6b7280' }}>◈</div>
+                <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Section Devoirs</h2>
+                <p style={{ color: '#6b7280', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto' }}>
+                  Cette section permettra aux étudiants de soumettre leurs devoirs et aux enseignants de créer des exercices.
+                  Système de gestion des devoirs à venir.
+                </p>
+              </div>
+            </div>
           )}
 
           {/* System Description */}

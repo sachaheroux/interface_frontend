@@ -80,6 +80,22 @@ export default function TopNavigation({
             <span className="nav-label">Aide à la Décision</span>
           </button>
 
+          <button 
+            className={`nav-tab ${currentMode === 'courses' ? 'active' : ''}`}
+            onClick={() => handleNavClick('courses')}
+          >
+            <span className="nav-icon">◐</span>
+            <span className="nav-label">Cours</span>
+          </button>
+
+          <button 
+            className={`nav-tab ${currentMode === 'assignments' ? 'active' : ''}`}
+            onClick={() => handleNavClick('assignments')}
+          >
+            <span className="nav-icon">◈</span>
+            <span className="nav-label">Devoirs</span>
+          </button>
+
           <div className="nav-system-selector" ref={dropdownRef}>
             <button 
               className="current-system-indicator"

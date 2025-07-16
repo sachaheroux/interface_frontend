@@ -144,6 +144,8 @@
 
 .system-icon {
   font-size: 1.1rem;
+  filter: grayscale(100%) brightness(0.5);
+  -webkit-filter: grayscale(100%) brightness(0.5);
 }
 
 .system-name {

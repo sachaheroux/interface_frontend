@@ -50,7 +50,7 @@ export default function TopNavigation({
   ];
 
   const getSystemInfo = (systemName) => {
-    return systems.find(s => s.name === systemName) || { icon: "▣", subtitle: "" };
+    return systems.find(s => s.name === systemName) || { icon: "🔨", subtitle: "" };
   };
 
   return (
@@ -102,7 +102,7 @@ export default function TopNavigation({
               onClick={() => handleNavClick('systems')}
             >
               <span className="system-icon">
-                {currentSystem ? getSystemInfo(currentSystem).icon : "▣"}
+                {currentSystem ? getSystemInfo(currentSystem).icon : "🔨"}
               </span>
               <span className="system-name">
                 {currentSystem || "Systèmes de Production"}

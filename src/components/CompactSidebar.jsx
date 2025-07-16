@@ -21,7 +21,7 @@ export default function CompactSidebar({
       "Ligne de transfert": "◈",
       "FMS": "◼"
     };
-    return icons[systemName] || "▣";
+    return icons[systemName] || "🔨";
   };
 
   return (

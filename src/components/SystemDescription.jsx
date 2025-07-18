@@ -10,7 +10,7 @@ export default function SystemDescription({ system }) {
     Jobshop: "/Jobshop.jpg",
     "Ligne d'assemblage": "/Ligneassemblage.jpg",
     "Ligne d'assemblage mixte": "/lignedassemblagemixte.png",
-    "Ligne de transfert": "/lignedetransfert.png",
+    "Ligne de transfert": "/Lignetransfert.jpg",
     FMS: "/fms.png"
   };
 
@@ -158,12 +158,12 @@ export default function SystemDescription({ system }) {
       [
         ["Définition", "La <strong>ligne d'assemblage</strong> est un système <strong>séquentiel</strong> où un produit progresse d'un poste à l'autre. Chaque poste effectue une tâche spécifique."],
         ["", "Utilisée dans les industries <strong>automobile</strong> et <strong>électroménager</strong>."],
-        ["Cas d'usage", "Exemple : chaîne de montage d'un grille-pain. Étapes :"],
+        ["Cas d'usage", "Exemple : chaîne de montage automobile. Étapes :"],
         ["", [
-          "1. <strong>Insertion de la résistance</strong>",
-          "2. <strong>Montage du boîtier</strong>",
-          "3. <strong>Installation du levier</strong>",
-          "4. <strong>Contrôle final</strong>"
+          "1. <strong>Soudage de la carrosserie</strong>",
+          "2. <strong>Peinture et séchage</strong>",
+          "3. <strong>Montage du moteur</strong>",
+          "4. <strong>Assemblage final et tests</strong>"
         ]],
         ["Avantages", [
           "<strong>Productivité élevée</strong>",
@@ -220,24 +220,29 @@ export default function SystemDescription({ system }) {
     "Ligne de transfert": [
       "Ligne de transfert (système automatisé rigide)",
       [
-        ["Définition", "La <strong>ligne de transfert</strong> automatise le déplacement des pièces entre stations fixes. Chaque poste effectue une tâche unique."],
-        ["", "Utilisée pour la <strong>production de masse</strong> standardisée."],
-        ["Cas d'usage", "Exemple : production de boîtiers plastiques. Étapes :"],
+        ["Définition", "La <strong>ligne de transfert</strong> est un système entièrement automatisé où les pièces se déplacent automatiquement entre stations fixes. Chaque poste effectue une opération spécialisée."],
+        ["", "Utilisée pour la <strong>production de masse</strong> avec des volumes très élevés et une standardisation totale."],
+        ["Cas d'usage", "Exemple : ligne de production de sodas automatisée. Étapes typiques :"],
         ["", [
-          "1. <strong>Injection plastique</strong>",
-          "2. <strong>Démoulage automatique</strong>",
-          "3. <strong>Découpe</strong>",
-          "4. <strong>Contrôle optique</strong>"
+          "1. <strong>Alimentation des bouteilles vides</strong>",
+          "2. <strong>Remplissage automatique</strong>",
+          "3. <strong>Capsulage robotisé</strong>",
+          "4. <strong>Étiquetage et contrôle qualité</strong>"
         ]],
+        ["", "Chaque bouteille suit exactement le même parcours avec des temps de cycle précis et une synchronisation parfaite."],
         ["Avantages", [
-          "<strong>Cadence élevée</strong>",
+          "<strong>Cadence très élevée</strong> et constante",
           "<strong>Automatisation complète</strong>",
-          "<strong>Coûts réduits en main-d'œuvre</strong>"
+          "<strong>Qualité standardisée</strong>",
+          "<strong>Coûts unitaires faibles</strong>",
+          "<strong>Productivité maximale</strong>"
         ]],
         ["Inconvénients", [
-          "<strong>Flexibilité nulle</strong>",
-          "<strong>Investissement élevé</strong>",
-          "<strong>Dépendance à chaque poste</strong>"
+          "<strong>Flexibilité nulle</strong> - un seul produit",
+          "<strong>Investissement initial énorme</strong>",
+          "<strong>Maintenance spécialisée</strong>",
+          "<strong>Arrêt total</strong> si panne d'un poste",
+          "<strong>Temps de changement</strong> très longs"
         ]]
       ]
     ],

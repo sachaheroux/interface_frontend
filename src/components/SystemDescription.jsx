@@ -16,10 +16,10 @@ export default function SystemDescription({ system }) {
 
   const renderTitle = (title) => (
     <h1 style={{ 
-      fontSize: "clamp(2.5rem, 6vw, 4rem)",
+      fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
       fontWeight: "700",
-      marginBottom: "1.5rem",
-      lineHeight: "1.1",
+      marginBottom: "1rem",
+      lineHeight: "1.2",
       background: "linear-gradient(135deg, #ffffff 0%, #93c5fd 100%)",
       backgroundClip: "text",
       WebkitBackgroundClip: "text",
@@ -30,9 +30,9 @@ export default function SystemDescription({ system }) {
 
   const sectionTitle = (text) => (
     <h3 style={{ 
-      fontSize: "1.5rem", 
-      marginTop: "2.5rem", 
-      marginBottom: "1rem", 
+      fontSize: "clamp(1.1rem, 2.5vw, 1.3rem)", 
+      marginTop: "1.5rem", 
+      marginBottom: "0.75rem", 
       color: "#ffffff",
       textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
       fontWeight: "600",
@@ -43,11 +43,11 @@ export default function SystemDescription({ system }) {
 
   const text = (html) => (
     <p style={{ 
-      fontSize: "1.125rem", 
-      lineHeight: "1.8", 
+      fontSize: "clamp(0.9rem, 2vw, 1rem)", 
+      lineHeight: "1.6", 
       color: "#f8fafc",
       textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
-      marginBottom: "1.25rem",
+      marginBottom: "1rem",
       opacity: "0.95"
     }} dangerouslySetInnerHTML={{ __html: html }}></p>
   );
@@ -55,13 +55,13 @@ export default function SystemDescription({ system }) {
   const list = (items) => (
     <ul style={{ 
       marginLeft: "1.5rem", 
-      fontSize: "1.125rem", 
-      lineHeight: "1.8", 
+      fontSize: "clamp(0.9rem, 2vw, 1rem)", 
+      lineHeight: "1.6", 
       color: "#f8fafc",
       textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
       opacity: "0.95"
     }}>
-      {items.map((item, i) => <li key={i} style={{ marginBottom: "0.5rem" }} dangerouslySetInnerHTML={{ __html: item }}></li>)}
+      {items.map((item, i) => <li key={i} style={{ marginBottom: "0.4rem" }} dangerouslySetInnerHTML={{ __html: item }}></li>)}
     </ul>
   );
 
@@ -250,8 +250,7 @@ export default function SystemDescription({ system }) {
         backgroundImage: `url(${background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        height: "100vh",
-        minHeight: "600px",
+        minHeight: "100vh",
         width: "100%"
       }}
     >
@@ -266,8 +265,10 @@ export default function SystemDescription({ system }) {
           background: "linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(0, 0, 0, 0.9) 100%)",
           zIndex: 2,
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center"
+          alignItems: "flex-start",
+          justifyContent: "center",
+          paddingTop: "4rem",
+          overflowY: "auto"
         }}
       >
         {/* Contenu du texte - structure identique au hero-content */}
@@ -276,7 +277,7 @@ export default function SystemDescription({ system }) {
             textAlign: "center",
             color: "var(--welcome-text-light, #ffffff)",
             maxWidth: "1200px",
-            padding: "2rem",
+            padding: "clamp(1rem, 3vw, 2rem)",
             width: "100%"
           }}
         >

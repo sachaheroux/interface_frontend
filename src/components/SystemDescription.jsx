@@ -19,7 +19,7 @@ export default function SystemDescription({ system }) {
       fontSize: "clamp(1.2rem, 4vw, 3.5rem)",
       fontWeight: "700",
       marginBottom: "clamp(0.3rem, 1.5vw, 1.5rem)",
-      lineHeight: "1.1",
+      lineHeight: "1.3",
       background: "linear-gradient(135deg, #ffffff 0%, #93c5fd 100%)",
       backgroundClip: "text",
       WebkitBackgroundClip: "text",

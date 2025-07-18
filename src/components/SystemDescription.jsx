@@ -8,27 +8,53 @@ export default function SystemDescription({ system }) {
   const backgrounds = {
     Flowshop: "/flowshop.png",
     Jobshop: "/jobshop.png",
-    "Ligne d'assemblage": "/lignedassemblage.png",
+    "Ligne d'assemblage": "/ligneassemblage.png",
     "Ligne d'assemblage mixte": "/lignedassemblagemixte.png",
     "Ligne de transfert": "/lignedetransfert.png",
     FMS: "/fms.png"
   };
 
   const renderTitle = (title) => (
-    <h2 style={{ fontSize: "1.8rem", color: "#ffffff", marginBottom: "1rem" }}>{title}</h2>
+    <h2 style={{ 
+      fontSize: "2.2rem", 
+      color: "#ffffff", 
+      marginBottom: "1.5rem",
+      textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+      fontWeight: "700",
+      letterSpacing: "-0.02em"
+    }}>{title}</h2>
   );
 
   const sectionTitle = (text) => (
-    <h3 style={{ fontSize: "1.3rem", marginTop: "1.5rem", marginBottom: "0.5rem", color: "#ffffff" }}>{text}</h3>
+    <h3 style={{ 
+      fontSize: "1.4rem", 
+      marginTop: "2rem", 
+      marginBottom: "0.75rem", 
+      color: "#ffffff",
+      textShadow: "1px 1px 3px rgba(0,0,0,0.7)",
+      fontWeight: "600"
+    }}>{text}</h3>
   );
 
   const text = (html) => (
-    <p style={{ fontSize: "1.05rem", lineHeight: "1.6", color: "#ffffff" }} dangerouslySetInnerHTML={{ __html: html }}></p>
+    <p style={{ 
+      fontSize: "1.1rem", 
+      lineHeight: "1.7", 
+      color: "#ffffff",
+      textShadow: "1px 1px 2px rgba(0,0,0,0.6)",
+      marginBottom: "1rem"
+    }} dangerouslySetInnerHTML={{ __html: html }}></p>
   );
 
   const list = (items) => (
-    <ul style={{ marginLeft: "1.5rem", fontSize: "1.05rem", lineHeight: "1.8", color: "#ffffff" }}>
-      {items.map((item, i) => <li key={i} dangerouslySetInnerHTML={{ __html: item }}></li>)}
+    <ul style={{ 
+      marginLeft: "1.5rem", 
+      fontSize: "1.1rem", 
+      lineHeight: "1.8", 
+      color: "#ffffff",
+      textShadow: "1px 1px 2px rgba(0,0,0,0.6)"
+    }}>
+      {items.map((item, i) => <li key={i} style={{ marginBottom: "0.3rem" }} dangerouslySetInnerHTML={{ __html: item }}></li>)}
     </ul>
   );
 
@@ -213,6 +239,7 @@ export default function SystemDescription({ system }) {
   return (
     <div
       style={{
+        position: "relative",
         backgroundImage: `url(${background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -221,12 +248,30 @@ export default function SystemDescription({ system }) {
         minHeight: "600px"
       }}
     >
+      {/* Overlay noir sur toute l'image */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.6)",
+          zIndex: 1
+        }}
+      />
+      
+      {/* Contenu du texte */}
       <div
         style={{
           ...baseStyle,
-          backgroundColor: "rgba(0,0,0,0.65)",
+          position: "relative",
+          zIndex: 2,
+          backgroundColor: "rgba(255,255,255,0.05)",
           borderRadius: "1rem",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
+          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+          backdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.1)"
         }}
       >
         {renderTitle(title)}

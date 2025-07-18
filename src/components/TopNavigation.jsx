@@ -101,6 +101,26 @@ export default function TopNavigation({
               </span>
             </button>
 
+            {/* Dropdown Menu */}
+            {showSystemDropdown && (
+              <div className="system-dropdown">
+                {systems.map((system) => (
+                  <button
+                    key={system.name}
+                    className={`dropdown-item ${currentSystem === system.name ? 'selected' : ''}`}
+                    onClick={() => handleSystemSelection(system.name)}
+                  >
+                    <span className="dropdown-icon">{system.icon}</span>
+                    <div className="dropdown-text">
+                      <div>{system.name}</div>
+                      <div className="dropdown-subtitle">{system.subtitle}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <button 
             className={`nav-tab ${currentMode === 'courses' ? 'active' : ''}`}
             onClick={() => handleNavClick('courses')}
@@ -124,26 +144,6 @@ export default function TopNavigation({
             <span className="nav-icon"><Brain size={16} /></span>
             <span className="nav-label">Aide à la Décision</span>
           </button>
-
-            {/* Dropdown Menu */}
-            {showSystemDropdown && (
-              <div className="system-dropdown">
-                {systems.map((system) => (
-                  <button
-                    key={system.name}
-                    className={`dropdown-item ${currentSystem === system.name ? 'selected' : ''}`}
-                    onClick={() => handleSystemSelection(system.name)}
-                  >
-                    <span className="dropdown-icon">{system.icon}</span>
-                    <div className="dropdown-text">
-                      <div>{system.name}</div>
-                      <div className="dropdown-subtitle">{system.subtitle}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Actions */}

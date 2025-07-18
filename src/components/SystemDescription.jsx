@@ -7,7 +7,7 @@ export default function SystemDescription({ system }) {
 
   const backgrounds = {
     Flowshop: "/flowshop.png",
-    Jobshop: "/Jobshop.jpeg",
+    Jobshop: "/Jobshop.jpg",
     "Ligne d'assemblage": "/Ligneassemblage.jpg",
     "Ligne d'assemblage mixte": "/lignedassemblagemixte.png",
     "Ligne de transfert": "/lignedetransfert.png",

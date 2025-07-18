@@ -286,7 +286,7 @@ export default function SystemDescription({ system }) {
         backgroundImage: `url(${background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        minHeight: "100vh",
+        height: "100vh",
         width: "100%"
       }}
     >
@@ -301,9 +301,12 @@ export default function SystemDescription({ system }) {
           background: "linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(0, 0, 0, 0.9) 100%)",
           zIndex: 2,
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-start",
           justifyContent: "center",
-          padding: "clamp(1rem, 5vh, 3rem) clamp(0.5rem, 2vw, 1rem)",
+          paddingTop: "clamp(0.5rem, 2vh, 1rem)",
+          paddingBottom: "clamp(1rem, 3vh, 2rem)",
+          paddingLeft: "clamp(0.5rem, 2vw, 1rem)",
+          paddingRight: "clamp(0.5rem, 2vw, 1rem)",
           overflowY: "auto"
         }}
       >

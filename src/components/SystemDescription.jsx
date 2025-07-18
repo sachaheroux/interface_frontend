@@ -15,46 +15,53 @@ export default function SystemDescription({ system }) {
   };
 
   const renderTitle = (title) => (
-    <h2 style={{ 
-      fontSize: "2.2rem", 
-      color: "#ffffff", 
-      marginBottom: "1.5rem",
-      textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+    <h1 style={{ 
+      fontSize: "clamp(2.5rem, 6vw, 4rem)",
       fontWeight: "700",
-      letterSpacing: "-0.02em"
-    }}>{title}</h2>
+      marginBottom: "1.5rem",
+      lineHeight: "1.1",
+      background: "linear-gradient(135deg, #ffffff 0%, #93c5fd 100%)",
+      backgroundClip: "text",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      textShadow: "0 4px 8px rgba(0, 0, 0, 0.3)"
+    }}>{title}</h1>
   );
 
   const sectionTitle = (text) => (
     <h3 style={{ 
-      fontSize: "1.4rem", 
-      marginTop: "2rem", 
-      marginBottom: "0.75rem", 
+      fontSize: "1.5rem", 
+      marginTop: "2.5rem", 
+      marginBottom: "1rem", 
       color: "#ffffff",
-      textShadow: "1px 1px 3px rgba(0,0,0,0.7)",
-      fontWeight: "600"
+      textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
+      fontWeight: "600",
+      borderBottom: "2px solid rgba(147, 197, 253, 0.3)",
+      paddingBottom: "0.5rem"
     }}>{text}</h3>
   );
 
   const text = (html) => (
     <p style={{ 
-      fontSize: "1.1rem", 
-      lineHeight: "1.7", 
-      color: "#ffffff",
-      textShadow: "1px 1px 2px rgba(0,0,0,0.6)",
-      marginBottom: "1rem"
+      fontSize: "1.125rem", 
+      lineHeight: "1.8", 
+      color: "#f8fafc",
+      textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
+      marginBottom: "1.25rem",
+      opacity: "0.95"
     }} dangerouslySetInnerHTML={{ __html: html }}></p>
   );
 
   const list = (items) => (
     <ul style={{ 
       marginLeft: "1.5rem", 
-      fontSize: "1.1rem", 
+      fontSize: "1.125rem", 
       lineHeight: "1.8", 
-      color: "#ffffff",
-      textShadow: "1px 1px 2px rgba(0,0,0,0.6)"
+      color: "#f8fafc",
+      textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
+      opacity: "0.95"
     }}>
-      {items.map((item, i) => <li key={i} style={{ marginBottom: "0.3rem" }} dangerouslySetInnerHTML={{ __html: item }}></li>)}
+      {items.map((item, i) => <li key={i} style={{ marginBottom: "0.5rem" }} dangerouslySetInnerHTML={{ __html: item }}></li>)}
     </ul>
   );
 
@@ -237,52 +244,54 @@ export default function SystemDescription({ system }) {
   const [title, sections] = block;
 
   return (
-    <div
+    <section 
       style={{
         position: "relative",
         backgroundImage: `url(${background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        padding: "3rem 0",
-        height: "100%",
-        minHeight: "600px"
+        height: "100vh",
+        minHeight: "600px",
+        width: "100%"
       }}
     >
-      {/* Overlay gradiant identique à la vidéo d'accueil */}
+      {/* Overlay identique à la vidéo d'accueil */}
       <div
         style={{
           position: "absolute",
           top: 0,
           left: 0,
-          right: 0,
-          bottom: 0,
-          background: "linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(0, 0, 0, 0.9) 100%)",
-          zIndex: 1
-        }}
-      />
-      
-      {/* Contenu du texte */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
           width: "100%",
           height: "100%",
-          padding: "3rem 4rem",
-          backgroundColor: "rgba(255,255,255,0.03)",
-          backdropFilter: "blur(3px)",
-          border: "1px solid rgba(255,255,255,0.08)"
+          background: "linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(0, 0, 0, 0.9) 100%)",
+          zIndex: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
         }}
       >
-        {renderTitle(title)}
-        {sections.map(([subtitle, val], i) => (
-          <div key={i}>
-            {subtitle && sectionTitle(subtitle)}
-            {Array.isArray(val) ? list(val) : text(val)}
+        {/* Contenu du texte - structure identique au hero-content */}
+        <div
+          style={{
+            textAlign: "center",
+            color: "var(--welcome-text-light, #ffffff)",
+            maxWidth: "1200px",
+            padding: "2rem",
+            width: "100%"
+          }}
+        >
+          {renderTitle(title)}
+          <div style={{ textAlign: "left", marginTop: "2rem" }}>
+            {sections.map(([subtitle, val], i) => (
+              <div key={i}>
+                {subtitle && sectionTitle(subtitle)}
+                {Array.isArray(val) ? list(val) : text(val)}
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 

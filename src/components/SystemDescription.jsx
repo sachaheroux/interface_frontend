@@ -6,7 +6,7 @@ export default function SystemDescription({ system }) {
   };
 
   const backgrounds = {
-    Flowshop: "/flowshop.png",
+    Flowshop: "/Flowshop1.jpg",
     Jobshop: "/Jobshop.jpg",
     "Ligne d'assemblage": "/Ligneassemblage.jpg",
     "Ligne d'assemblage mixte": "/lignedassemblagemixte.png",
@@ -104,25 +104,27 @@ export default function SystemDescription({ system }) {
       "Flowshop (atelier à flux linéaire)",
       [
         ["Définition", "Le <strong>Flowshop</strong> est un système où toutes les tâches suivent le même ordre de passage sur les machines. Chaque produit effectue les étapes dans un <strong>ordonnancement fixe</strong>, sans retour en arrière."],
-        ["", "Utilisé dans des environnements <strong>standardisés</strong> comme l'automobile ou l'électronique."],
-        ["Cas d'usage", "Exemple : fabrication de cartes électroniques. Chaque carte passe par :"],
+        ["", "Utilisé dans des environnements <strong>standardisés</strong> comme la cosmétique, l'alimentaire ou l'électronique."],
+        ["Cas d'usage", "Exemple : petite chaîne de production de parfums artisanaux. Chaque flacon passe par :"],
         ["", [
-          "1. <strong>Machine de gravure</strong>",
-          "2. <strong>Machine de perçage</strong>",
-          "3. <strong>Poste de soudure</strong>",
-          "4. <strong>Contrôle qualité</strong>"
+          "1. <strong>Préparation de la fragrance</strong>",
+          "2. <strong>Remplissage des flacons</strong>",
+          "3. <strong>Pose du bouchon</strong>",
+          "4. <strong>Étiquetage et emballage</strong>"
         ]],
-        ["", "Chaque produit suit le même itinéraire : c'est typiquement un Flowshop."],
+        ["", "Chaque parfum suit exactement le même itinéraire dans le même ordre : c'est typiquement un Flowshop."],
         ["Avantages", [
           "<strong>Simplicité de planification</strong>",
           "<strong>Réduction des transitions</strong>",
           "<strong>Facilité d'automatisation</strong>",
-          "<strong>Visibilité claire du flux</strong>"
+          "<strong>Visibilité claire du flux</strong>",
+          "<strong>Qualité constante</strong>"
         ]],
         ["Inconvénients", [
           "<strong>Peu flexible</strong> pour produits variés",
           "<strong>Goulots d'étranglement</strong> possibles",
-          "<strong>Temps d'attente</strong> entre postes"
+          "<strong>Temps d'attente</strong> entre postes",
+          "<strong>Dépendance à la séquence</strong>"
         ]]
       ]
     ],

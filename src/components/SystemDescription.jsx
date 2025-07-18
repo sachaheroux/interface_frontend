@@ -248,7 +248,7 @@ export default function SystemDescription({ system }) {
         minHeight: "600px"
       }}
     >
-      {/* Overlay noir sur toute l'image */}
+      {/* Overlay gradiant identique à la vidéo d'accueil */}
       <div
         style={{
           position: "absolute",
@@ -256,7 +256,7 @@ export default function SystemDescription({ system }) {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.6)",
+          background: "linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(0, 0, 0, 0.9) 100%)",
           zIndex: 1
         }}
       />

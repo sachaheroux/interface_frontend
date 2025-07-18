@@ -11,7 +11,8 @@ import {
 import "./WelcomeView.css";
 
 export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSystems }) {
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(true);
+  const [videoError, setVideoError] = useState(false);
 
   const handleFeatureClick = (feature) => {
     switch(feature) {
@@ -50,8 +51,14 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
           muted 
           playsInline
           className="hero-video"
-          onLoadedData={() => setIsVideoLoaded(true)}
-          onError={() => setIsVideoLoaded(false)}
+          onLoadedData={() => {
+            setIsVideoLoaded(true);
+            setVideoError(false);
+          }}
+          onError={() => {
+            setIsVideoLoaded(false);
+            setVideoError(true);
+          }}
         >
           <source src="/factory-automation.mp4.mp4" type="video/mp4" />
           <source src="https://assets.mixkit.co/videos/preview/mixkit-robot-working-in-a-production-line-34651-large.mp4" type="video/mp4" />
@@ -77,8 +84,8 @@ export default function WelcomeView({ onNavigateToDecisionTree, onNavigateToSyst
           </div>
         </div>
 
-        {/* Fallback image si vidéo ne charge pas */}
-        {!isVideoLoaded && (
+        {/* Fallback image seulement en cas d'erreur de chargement vidéo */}
+        {videoError && (
           <div className="hero-fallback">
             <img src="/fond.jpg" alt="Industrie moderne" />
           </div>

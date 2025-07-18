@@ -52,18 +52,54 @@ export default function SystemDescription({ system }) {
     }} dangerouslySetInnerHTML={{ __html: html }}></p>
   );
 
-  const list = (items) => (
-    <ul style={{ 
-      marginLeft: "1.5rem", 
-      fontSize: "clamp(0.9rem, 2vw, 1rem)", 
-      lineHeight: "1.6", 
-      color: "#f8fafc",
-      textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
-      opacity: "0.95"
-    }}>
-      {items.map((item, i) => <li key={i} style={{ marginBottom: "0.4rem" }} dangerouslySetInnerHTML={{ __html: item }}></li>)}
-    </ul>
-  );
+  const list = (items) => {
+    // Détecte si c'est une liste d'étapes numérotées (contient "1.", "2.", etc.)
+    const isStepList = items.some(item => /^\d+\.\s*<strong>/.test(item));
+    
+    if (isStepList) {
+      // Format horizontal avec flèches pour les étapes
+      return (
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: "0.5rem",
+          fontSize: "clamp(0.85rem, 1.8vw, 0.95rem)",
+          color: "#f8fafc",
+          textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
+          opacity: "0.95",
+          marginBottom: "1rem"
+        }}>
+          {items.map((item, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span dangerouslySetInnerHTML={{ __html: item.replace(/^\d+\.\s*/, '') }}></span>
+              {i < items.length - 1 && (
+                <span style={{ 
+                  color: "#93c5fd", 
+                  fontSize: "1.2em",
+                  fontWeight: "bold"
+                }}>→</span>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    
+    // Format vertical normal pour les autres listes
+    return (
+      <ul style={{ 
+        marginLeft: "1.5rem", 
+        fontSize: "clamp(0.9rem, 2vw, 1rem)", 
+        lineHeight: "1.6", 
+        color: "#f8fafc",
+        textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
+        opacity: "0.95"
+      }}>
+        {items.map((item, i) => <li key={i} style={{ marginBottom: "0.4rem" }} dangerouslySetInnerHTML={{ __html: item }}></li>)}
+      </ul>
+    );
+  };
 
   const content = {
     Flowshop: [

@@ -264,14 +264,14 @@ export default function SystemDescription({ system }) {
       {/* Contenu du texte */}
       <div
         style={{
-          ...baseStyle,
           position: "relative",
           zIndex: 2,
-          backgroundColor: "rgba(255,255,255,0.05)",
-          borderRadius: "1rem",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-          backdropFilter: "blur(8px)",
-          border: "1px solid rgba(255,255,255,0.1)"
+          width: "100%",
+          height: "100%",
+          padding: "3rem 4rem",
+          backgroundColor: "rgba(255,255,255,0.03)",
+          backdropFilter: "blur(3px)",
+          border: "1px solid rgba(255,255,255,0.08)"
         }}
       >
         {renderTitle(title)}

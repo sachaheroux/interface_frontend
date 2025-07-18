@@ -7,7 +7,7 @@ export default function SystemDescription({ system }) {
 
   const backgrounds = {
     Flowshop: "/flowshop.png",
-    Jobshop: "/jobshop.png",
+    Jobshop: "/Jobshop.jpeg",
     "Ligne d'assemblage": "/Ligneassemblage.jpg",
     "Ligne d'assemblage mixte": "/lignedassemblagemixte.png",
     "Ligne de transfert": "/lignedetransfert.png",
@@ -132,22 +132,26 @@ export default function SystemDescription({ system }) {
       "Jobshop (atelier à gamme variable)",
       [
         ["Définition", "Le <strong>Jobshop</strong> est un système où chaque produit suit un <strong>ordre spécifique de passage</strong> sur les machines. Il n'y a pas de séquence uniforme."],
-        ["", "Utilisé pour la <strong>production unitaire</strong>, les <strong>petites séries</strong> et <strong>prototypage</strong>."],
-        ["Cas d'usage", "Exemple : fabrication de pièces mécaniques. Une commande suit :"],
+        ["", "Utilisé pour la <strong>production artisanale</strong>, les <strong>petites séries</strong> et la <strong>fabrication sur mesure</strong>."],
+        ["Cas d'usage", "Exemple : atelier de couture. Chaque commande suit un parcours personnalisé :"],
         ["", [
-          "1. <strong>Tournage → Fraisage → Contrôle</strong>",
-          "2. <strong>Perçage → Traitement thermique → Soudage</strong>"
+          "1. <strong>Coupe du tissu</strong>",
+          "2. <strong>Assemblage des pièces</strong>",
+          "3. <strong>Surfilage des bords</strong>",
+          "4. <strong>Finitions et repassage</strong>"
         ]],
-        ["", "Chaque produit suit un chemin personnalisé."],
+        ["", "Une robe suit : Coupe → Assemblage → Surfilage → Finitions, tandis qu'un pantalon pourrait suivre : Coupe → Surfilage → Assemblage → Finitions."],
         ["Avantages", [
-          "<strong>Grande flexibilité</strong>",
-          "<strong>Adapté aux commandes uniques</strong>",
-          "<strong>Machines polyvalentes</strong>"
+          "<strong>Grande flexibilité</strong> pour pièces uniques",
+          "<strong>Adapté aux commandes sur mesure</strong>",
+          "<strong>Postes de travail polyvalents</strong>",
+          "<strong>Qualité artisanale élevée</strong>"
         ]],
         ["Inconvénients", [
           "<strong>Planification complexe</strong>",
-          "<strong>Temps de réglage fréquents</strong>",
-          "<strong>Files d'attente et conflits</strong>"
+          "<strong>Temps de changement</strong> fréquents",
+          "<strong>Files d'attente</strong> aux postes populaires",
+          "<strong>Coordination difficile</strong>"
         ]]
       ]
     ],

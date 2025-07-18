@@ -16,9 +16,9 @@ export default function SystemDescription({ system }) {
 
   const renderTitle = (title) => (
     <h1 style={{ 
-      fontSize: "clamp(1.2rem, 4vw, 2.5rem)",
+      fontSize: "clamp(1.2rem, 4vw, 3.5rem)",
       fontWeight: "700",
-      marginBottom: "clamp(0.3rem, 1.5vw, 1rem)",
+      marginBottom: "clamp(0.3rem, 1.5vw, 1.5rem)",
       lineHeight: "1.1",
       background: "linear-gradient(135deg, #ffffff 0%, #93c5fd 100%)",
       backgroundClip: "text",
@@ -30,24 +30,24 @@ export default function SystemDescription({ system }) {
 
   const sectionTitle = (text) => (
     <h3 style={{ 
-      fontSize: "clamp(0.9rem, 2.5vw, 1.2rem)", 
-      marginTop: "clamp(0.8rem, 2vw, 1.5rem)", 
-      marginBottom: "clamp(0.3rem, 1.5vw, 0.8rem)", 
+      fontSize: "clamp(0.9rem, 2.5vw, 1.8rem)", 
+      marginTop: "clamp(0.8rem, 2vw, 2.5rem)", 
+      marginBottom: "clamp(0.3rem, 1.5vw, 1.2rem)", 
       color: "#ffffff",
       textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
       fontWeight: "600",
       borderBottom: "2px solid rgba(147, 197, 253, 0.3)",
-      paddingBottom: "0.3rem"
+      paddingBottom: "0.5rem"
     }}>{text}</h3>
   );
 
   const text = (html) => (
     <p style={{ 
-      fontSize: "clamp(0.75rem, 2vw, 0.95rem)", 
-      lineHeight: "clamp(1.3, 0.1vw + 1.2, 1.6)", 
+      fontSize: "clamp(0.75rem, 2vw, 1.3rem)", 
+      lineHeight: "clamp(1.3, 0.1vw + 1.2, 1.7)", 
       color: "#f8fafc",
       textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
-      marginBottom: "clamp(0.5rem, 1.5vw, 1rem)",
+      marginBottom: "clamp(0.5rem, 1.5vw, 1.5rem)",
       opacity: "0.95"
     }} dangerouslySetInnerHTML={{ __html: html }}></p>
   );
@@ -63,20 +63,20 @@ export default function SystemDescription({ system }) {
           display: "flex",
           flexWrap: "wrap",
           alignItems: "center",
-          gap: "clamp(0.2rem, 0.8vw, 0.5rem)",
-          fontSize: "clamp(0.7rem, 1.8vw, 0.85rem)",
+          gap: "clamp(0.2rem, 0.8vw, 0.8rem)",
+          fontSize: "clamp(0.7rem, 1.8vw, 1.2rem)",
           color: "#f8fafc",
           textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
           opacity: "0.95",
-          marginBottom: "clamp(0.5rem, 1.5vw, 1rem)"
+          marginBottom: "clamp(0.5rem, 1.5vw, 1.5rem)"
         }}>
           {items.map((item, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: "clamp(0.2rem, 0.8vw, 0.4rem)" }}>
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: "clamp(0.2rem, 0.8vw, 0.6rem)" }}>
               <span dangerouslySetInnerHTML={{ __html: item.replace(/^\d+\.\s*/, '') }}></span>
               {i < items.length - 1 && (
                 <span style={{ 
                   color: "#93c5fd", 
-                  fontSize: "clamp(1em, 1.2vw, 1.2em)",
+                  fontSize: "clamp(1em, 1.2vw, 1.4em)",
                   fontWeight: "bold"
                 }}>→</span>
               )}
@@ -89,14 +89,14 @@ export default function SystemDescription({ system }) {
     // Format vertical normal pour les autres listes
     return (
       <ul style={{ 
-        marginLeft: "clamp(0.8rem, 1.5vw, 1.5rem)", 
-        fontSize: "clamp(0.75rem, 2vw, 0.95rem)", 
-        lineHeight: "clamp(1.3, 0.1vw + 1.2, 1.6)", 
+        marginLeft: "clamp(0.8rem, 1.5vw, 2rem)", 
+        fontSize: "clamp(0.75rem, 2vw, 1.3rem)", 
+        lineHeight: "clamp(1.3, 0.1vw + 1.2, 1.7)", 
         color: "#f8fafc",
         textShadow: "0 1px 3px rgba(0, 0, 0, 0.4)",
         opacity: "0.95"
       }}>
-        {items.map((item, i) => <li key={i} style={{ marginBottom: "clamp(0.2rem, 0.8vw, 0.5rem)" }} dangerouslySetInnerHTML={{ __html: item }}></li>)}
+        {items.map((item, i) => <li key={i} style={{ marginBottom: "clamp(0.2rem, 0.8vw, 0.8rem)" }} dangerouslySetInnerHTML={{ __html: item }}></li>)}
       </ul>
     );
   };

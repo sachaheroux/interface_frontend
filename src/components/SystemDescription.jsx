@@ -9,7 +9,7 @@ export default function SystemDescription({ system }) {
     Flowshop: "/Flowshop1.jpg",
     Jobshop: "/Jobshop.jpg",
     "Ligne d'assemblage": "/Ligneassemblage.jpg",
-    "Ligne d'assemblage mixte": "/lignedassemblagemixte.png",
+    "Ligne d'assemblage mixte": "/Ligneassemblamixte.jpg",
     "Ligne de transfert": "/Lignetransfert.jpg",
     FMS: "/FMS.jpg"
   };
@@ -187,16 +187,16 @@ export default function SystemDescription({ system }) {
         ["", "Utilisée dans l'<strong>automobile</strong>, l'<strong>électronique</strong> et l'<strong>agroalimentaire</strong> pour maximiser l'utilisation des équipements."],
         ["Principe clé", "Contrairement à une ligne mono-produit, elle nécessite un <strong>séquençage intelligent</strong> pour :"],
         ["", [
-          "• <strong>Lisser la charge</strong> des postes critiques",
-          "• <strong>Respecter les contraintes</strong> de précédence",
-          "• <strong>Minimiser les variations</strong> de temps de cycle",
-          "• <strong>Éviter les goulots d'étranglement</strong>"
+          "1. <strong>Lisser la charge</strong> des postes critiques",
+          "2. <strong>Respecter les contraintes</strong> de précédence",
+          "3. <strong>Minimiser les variations</strong> de temps de cycle",
+          "4. <strong>Éviter les goulots d'étranglement</strong>"
         ]],
         ["Cas d'usage", "Exemple : ligne automobile produisant 3 modèles de véhicules :"],
         ["", [
-          "• <strong>Berline (40%)</strong> - temps standard",
-          "• <strong>SUV (35%)</strong> - temps plus long au poste peinture", 
-          "• <strong>Coupé (25%)</strong> - temps plus long à l'assemblage"
+          "1. <strong>Berline (40%)</strong> - temps standard",
+          "2. <strong>SUV (35%)</strong> - temps plus long au poste peinture", 
+          "3. <strong>Coupé (25%)</strong> - temps plus long à l'assemblage"
         ]],
         ["", "Le système détermine l'ordre optimal : Berline → SUV → Berline → Coupé → Berline → SUV..."],
         ["Défis spécifiques", [

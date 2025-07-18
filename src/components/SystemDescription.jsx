@@ -234,15 +234,12 @@ export default function SystemDescription({ system }) {
           "<strong>Cadence très élevée</strong> et constante",
           "<strong>Automatisation complète</strong>",
           "<strong>Qualité standardisée</strong>",
-          "<strong>Coûts unitaires faibles</strong>",
-          "<strong>Productivité maximale</strong>"
+          "<strong>Coûts unitaires faibles</strong>"
         ]],
         ["Inconvénients", [
           "<strong>Flexibilité nulle</strong> - un seul produit",
           "<strong>Investissement initial énorme</strong>",
-          "<strong>Maintenance spécialisée</strong>",
-          "<strong>Arrêt total</strong> si panne d'un poste",
-          "<strong>Temps de changement</strong> très longs"
+          "<strong>Arrêt total</strong> si panne d'un poste"
         ]]
       ]
     ],

@@ -107,35 +107,7 @@
   font-weight: 600;
 }
 
-.algorithm-number {
-  width: 28px;
-  height: 28px;
-  background: var(--sidebar-border);
-  color: var(--sidebar-text-muted);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  font-weight: 600;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.algorithm-item.active .algorithm-number {
-  background: var(--sidebar-active-text);
-  color: white;
-}
-
-.algorithm-item:hover .algorithm-number {
-  background: var(--sidebar-text-muted);
-  color: white;
-}
-
-.algorithm-item.active:hover .algorithm-number {
-  background: var(--sidebar-active-text);
-  color: white;
-}
+/* Algorithm numbers removed - styles cleaned up */
 
 .algorithm-name {
   flex: 1;

@@ -67,6 +67,7 @@ function App() {
   const [currentMode, setCurrentMode] = useState("welcome"); // welcome, decision, systems
   const [selectedSystem, setSelectedSystem] = useState("");
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
+  const [showSystemInfo, setShowSystemInfo] = useState(false);
 
   // Configuration des systèmes et algorithmes
   const systemsConfig = {
@@ -92,6 +93,7 @@ function App() {
   const handleSystemChange = (system) => {
     setSelectedSystem(system);
     setSelectedAlgorithm(""); // Reset algorithm when system changes
+    setShowSystemInfo(false); // Reset system info when system changes
     if (system) {
       setCurrentMode("systems");
     }
@@ -99,6 +101,7 @@ function App() {
 
   const handleAlgorithmChange = (algorithm) => {
     setSelectedAlgorithm(algorithm);
+    setShowSystemInfo(false); // Hide system info when selecting an algorithm
   };
 
   const handleCloseSidebar = () => {
@@ -125,6 +128,11 @@ function App() {
     setSelectedAlgorithm("");
   };
 
+  const handleSystemInfo = (system) => {
+    setShowSystemInfo(true);
+    setSelectedAlgorithm(""); // Reset algorithm when showing system info
+  };
+
   // Determine si on affiche l'InfoPanel
   const shouldShowInfoPanel = currentMode === "systems" && selectedSystem && selectedAlgorithm;
   const algorithms = selectedSystem ? systemsConfig[selectedSystem] || [] : [];
@@ -148,6 +156,7 @@ function App() {
             algorithms={algorithms}
             selectedAlgorithm={selectedAlgorithm}
             onAlgorithmChange={handleAlgorithmChange}
+            onSystemInfo={handleSystemInfo}
             onClose={handleCloseSidebar}
           />
         )}
@@ -196,7 +205,7 @@ function App() {
           )}
 
           {/* System Description */}
-          {currentMode === "systems" && selectedSystem && !selectedAlgorithm && (
+          {currentMode === "systems" && selectedSystem && (!selectedAlgorithm || showSystemInfo) && (
             <SystemDescription system={selectedSystem} />
           )}
 

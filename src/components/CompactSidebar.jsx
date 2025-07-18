@@ -14,6 +14,7 @@ export default function CompactSidebar({
   algorithms, 
   selectedAlgorithm, 
   onAlgorithmChange,
+  onSystemInfo,
   onClose 
 }) {
   
@@ -52,8 +53,7 @@ export default function CompactSidebar({
             className={`algorithm-item ${selectedAlgorithm === algorithm ? 'active' : ''}`}
             onClick={() => onAlgorithmChange(algorithm)}
           >
-            <span className="algorithm-number">{index + 1}</span>
-            <span className="algorithm-name">{algorithm}</span>
+            <span className="algorithm-name">{algorithm.toUpperCase()}</span>
             <span className="status-indicator"></span>
           </button>
         ))}
@@ -61,11 +61,19 @@ export default function CompactSidebar({
 
       {/* Quick Actions */}
       <div className="sidebar-actions">
-        <button className="action-btn" title="Comparer les algorithmes">
+        <button 
+          className="action-btn" 
+          title="Comparer les algorithmes"
+          onClick={() => onAlgorithmChange("Comparer les algos")}
+        >
           <span className="action-icon">⫽</span>
           Comparer
         </button>
-        <button className="action-btn primary" title="Information sur le système">
+        <button 
+          className="action-btn primary" 
+          title="Information sur le système"
+          onClick={() => onSystemInfo && onSystemInfo(system)}
+        >
           <span className="action-icon">◌</span>
           Info Système
         </button>

@@ -35,9 +35,7 @@ export default function SystemDescription({ system }) {
       marginBottom: "clamp(0.3rem, 1.5vw, 1.2rem)", 
       color: "#ffffff",
       textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
-      fontWeight: "600",
-      borderBottom: "2px solid rgba(147, 197, 253, 0.3)",
-      paddingBottom: "0.5rem"
+      fontWeight: "600"
     }}>{text}</h3>
   );
 

@@ -11,7 +11,7 @@ export default function SystemDescription({ system }) {
     "Ligne d'assemblage": "/Ligneassemblage.jpg",
     "Ligne d'assemblage mixte": "/lignedassemblagemixte.png",
     "Ligne de transfert": "/Lignetransfert.jpg",
-    FMS: "/fms.png"
+    FMS: "/FMS.jpg"
   };
 
   const renderTitle = (title) => (
@@ -248,24 +248,28 @@ export default function SystemDescription({ system }) {
     FMS: [
       "FMS – Flexible Manufacturing System",
       [
-        ["Définition", "Le <strong>FMS</strong> est un système <strong>flexible</strong> combinant machines automatisées et <strong>pilotage informatique</strong>."],
-        ["", "Permet de produire plusieurs types de pièces sans reconfiguration lourde."],
-        ["Cas d'usage", "Exemple : atelier piloté par logiciel avec machines CNC, robots et AGV :"],
+        ["Définition", "Le <strong>FMS</strong> est un système <strong>hautement flexible</strong> combinant machines automatisées, robots et <strong>pilotage informatique avancé</strong>."],
+        ["", "Permet de produire <strong>plusieurs types de pièces différentes</strong> sans reconfiguration manuelle lourde grâce à un contrôle numérique centralisé."],
+        ["Cas d'usage", "Exemple : atelier intelligent piloté par logiciel avec machines CNC, robots et AGV :"],
         ["", [
           "1. <strong>Réception de l'ordre de fabrication</strong>",
-          "2. <strong>Chargement automatique</strong>",
-          "3. <strong>Usinage CNC</strong>",
-          "4. <strong>Contrôle qualité</strong>"
+          "2. <strong>Transport automatique des pièces</strong>",
+          "3. <strong>Usinage CNC adaptatif</strong>",
+          "4. <strong>Contrôle qualité automatisé</strong>"
         ]],
+        ["", "Le système s'adapte automatiquement selon le produit : une pièce simple utilise une machine, une pièce complexe mobilise plusieurs postes."],
         ["Avantages", [
-          "<strong>Grande flexibilité</strong>",
+          "<strong>Grande flexibilité</strong> de production",
           "<strong>Réduction des temps morts</strong>",
-          "<strong>Utilisation optimale des ressources</strong>"
+          "<strong>Utilisation optimale</strong> des ressources",
+          "<strong>Adaptabilité</strong> aux demandes variées",
+          "<strong>Qualité constante</strong>"
         ]],
         ["Inconvénients", [
-          "<strong>Coût élevé</strong> à l'installation",
-          "<strong>Maintenance spécialisée</strong>",
-          "<strong>Dépendance au système de pilotage</strong>"
+          "<strong>Investissement initial énorme</strong>",
+          "<strong>Complexité de programmation</strong>",
+          "<strong>Maintenance haute technologie</strong>",
+          "<strong>Dépendance totale</strong> au système informatique"
         ]]
       ]
     ]

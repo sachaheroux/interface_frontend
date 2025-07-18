@@ -85,13 +85,21 @@ export default function TopNavigation({
             <span className="nav-label">Accueil</span>
           </button>
 
-          <button 
-            className={`nav-tab ${currentMode === 'decision' ? 'active' : ''}`}
-            onClick={() => handleNavClick('decision')}
-          >
-            <span className="nav-icon"><Brain size={16} /></span>
-            <span className="nav-label">Aide à la Décision</span>
-          </button>
+          <div className="nav-system-selector" ref={dropdownRef}>
+            <button 
+              className={`nav-tab ${currentMode === 'systems' ? 'active' : ''}`}
+              onClick={() => handleNavClick('systems')}
+            >
+              <span className="nav-icon">
+                {currentSystem ? getSystemInfo(currentSystem).icon : <Hammer size={16} />}
+              </span>
+              <span className="nav-label">
+                {currentSystem || "Systèmes de Production"}
+              </span>
+              <span className={`dropdown-arrow ${showSystemDropdown ? 'open' : ''}`}>
+                ▼
+              </span>
+            </button>
 
           <button 
             className={`nav-tab ${currentMode === 'courses' ? 'active' : ''}`}
@@ -109,21 +117,13 @@ export default function TopNavigation({
             <span className="nav-label">Devoirs</span>
           </button>
 
-          <div className="nav-system-selector" ref={dropdownRef}>
-            <button 
-              className="current-system-indicator"
-              onClick={() => handleNavClick('systems')}
-            >
-              <span className="system-icon">
-                {currentSystem ? getSystemInfo(currentSystem).icon : <Hammer size={16} />}
-              </span>
-              <span className="system-name">
-                {currentSystem || "Systèmes de Production"}
-              </span>
-              <span className={`dropdown-arrow ${showSystemDropdown ? 'open' : ''}`}>
-                ▼
-              </span>
-            </button>
+          <button 
+            className={`nav-tab ${currentMode === 'decision' ? 'active' : ''}`}
+            onClick={() => handleNavClick('decision')}
+          >
+            <span className="nav-icon"><Brain size={16} /></span>
+            <span className="nav-label">Aide à la Décision</span>
+          </button>
 
             {/* Dropdown Menu */}
             {showSystemDropdown && (
@@ -149,7 +149,7 @@ export default function TopNavigation({
         {/* Actions */}
         <div className="nav-actions">
           <button className="nav-action-btn">
-            <span className="nav-icon">◉</span>
+            <span className="nav-icon"><CircleDot size={16} /></span>
             <span className="notification-badge">2</span>
           </button>
         </div>

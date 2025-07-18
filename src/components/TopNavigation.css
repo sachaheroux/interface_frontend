@@ -123,23 +123,16 @@
   position: relative;
 }
 
-.current-system-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: var(--top-nav-active-bg);
-  color: var(--top-nav-active-text);
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
+/* Styles supprimés : current-system-indicator maintenant utilise nav-tab */
+
+.dropdown-arrow {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  transition: transform 0.2s ease;
 }
 
-.current-system-indicator:hover {
-  background: #bfdbfe;
+.dropdown-arrow.open {
+  transform: rotate(180deg);
 }
 
 .system-icon {
@@ -327,9 +320,7 @@
     display: none;
   }
   
-  .current-system-indicator {
-    padding: 0.5rem 0.75rem;
-  }
+  /* Style responsive supprimé : current-system-indicator maintenant utilise nav-tab */
   
   .system-name {
     display: none;

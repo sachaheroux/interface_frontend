@@ -61,14 +61,17 @@ export default function CompactSidebar({
 
       {/* Quick Actions */}
       <div className="sidebar-actions">
-        <button 
-          className="action-btn" 
-          title="Comparer les algorithmes"
-          onClick={() => onAlgorithmChange("Comparer les algos")}
-        >
-          <span className="action-icon">⚖</span>
-          Comparer
-        </button>
+        {/* Bouton Comparer - seulement pour les systèmes avec assez d'algorithmes */}
+        {!["Ligne de transfert", "Ligne d'assemblage mixte"].includes(system) && (
+          <button 
+            className="action-btn" 
+            title="Comparer les algorithmes"
+            onClick={() => onAlgorithmChange("Comparer les algos")}
+          >
+            <span className="action-icon">⚖</span>
+            Comparer
+          </button>
+        )}
         <button 
           className="action-btn primary" 
           title="Information sur le système"

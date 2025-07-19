@@ -66,7 +66,7 @@ export default function CompactSidebar({
           title="Comparer les algorithmes"
           onClick={() => onAlgorithmChange("Comparer les algos")}
         >
-          <span className="action-icon">⫽</span>
+          <span className="action-icon">⚖</span>
           Comparer
         </button>
         <button 
@@ -74,7 +74,7 @@ export default function CompactSidebar({
           title="Information sur le système"
           onClick={() => onSystemInfo && onSystemInfo(system)}
         >
-          <span className="action-icon">◌</span>
+          <span className="action-icon">ⓘ</span>
           Info Système
         </button>
       </div>

@@ -71,9 +71,9 @@ function App() {
 
   // Configuration des systèmes et algorithmes
   const systemsConfig = {
-    "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Machines multiples", "Smith", "Comparer les algos"],
-    "Jobshop": ["SPT", "EDD", "Contraintes", "Comparer les algos"],
-    "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL", "Comparer les algos"],
+    "Flowshop": ["SPT", "EDD", "Johnson", "Johnson modifié", "Contraintes", "Machines multiples", "Smith"],
+    "Jobshop": ["SPT", "EDD", "Contraintes"],
+    "Ligne d'assemblage": ["Précédence", "COMSOAL", "LPT", "PL"],
     "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte", "Équilibrage ++"],
     "Ligne de transfert": ["Buffer Buzzacott"],
     "FMS": ["Sac à dos (Prog. Dynamique)", "Sac à dos (Prog. Linéaire)", "Sac à dos (Algorithme Glouton)", "Lots de production (Glouton)", "Lots de production (MIP)", "Lots de chargement (Heuristique)"]

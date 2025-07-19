@@ -121,13 +121,12 @@
   min-width: 320px;
   max-width: 400px;
   background: var(--background-main);
-  padding: var(--spacing-lg);
-  border-left: 2px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
   overflow-y: auto;
   position: sticky;
   top: 70px;
   height: calc(100vh - 70px);
-  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.05);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
   flex-shrink: 0;
 }
 
@@ -176,12 +175,12 @@
     position: relative;
     top: auto;
     height: auto;
-    max-height: 50vh;
+    max-height: 60vh;
     min-width: auto;
     max-width: none;
     border-left: none;
-    border-top: 2px solid var(--border-color);
-    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
   }
   
   .algorithm-content {

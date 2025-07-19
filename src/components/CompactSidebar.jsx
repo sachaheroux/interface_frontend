@@ -53,7 +53,7 @@ export default function CompactSidebar({
             className={`algorithm-item ${selectedAlgorithm === algorithm ? 'active' : ''}`}
             onClick={() => onAlgorithmChange(algorithm)}
           >
-            <span className="algorithm-name">{algorithm.toUpperCase()}</span>
+            <span className="algorithm-name">{algorithm}</span>
             <span className="status-indicator"></span>
           </button>
         ))}

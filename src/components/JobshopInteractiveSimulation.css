@@ -44,6 +44,7 @@
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
   border: 1px solid var(--border-color);
+  width: 100%;
 }
 
 .jobs-compact-zone h3 {
@@ -57,6 +58,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  width: 100%;
 }
 
 .job-compact-row {
@@ -67,12 +69,15 @@
   padding: var(--spacing-md);
   border: 1px solid var(--border-color);
   gap: var(--spacing-md);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .job-info {
   display: flex;
   flex-direction: column;
   min-width: 120px;
+  flex-shrink: 0;
 }
 
 .job-name {
@@ -92,6 +97,8 @@
   align-items: center;
   gap: var(--spacing-xs);
   flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .task-block-compact {
@@ -137,6 +144,8 @@
   border-radius: 8px;
   overflow: visible;
   background: white;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .gantt-header {
@@ -144,6 +153,7 @@
   background: #f5f5f5;
   border-bottom: 1px solid #ddd;
   overflow: visible;
+  width: fit-content;
 }
 
 .machine-label {
@@ -154,22 +164,26 @@
   justify-content: center;
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .time-labels-container {
   display: flex;
   flex: 1;
+  width: fit-content;
 }
 
 .time-label {
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: #666;
+  flex-shrink: 0;
 }
 
 .machine-row {
   display: flex;
   border-bottom: 1px solid var(--border-color);
+  width: fit-content;
 }
 
 .machine-row:last-child {
@@ -186,11 +200,13 @@
   font-weight: 600;
   color: var(--text-primary);
   border-right: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .machine-timeline {
   display: flex;
   overflow: visible;
+  width: fit-content;
 }
 
 .time-slot {
@@ -205,6 +221,7 @@
   transition: all 0.2s ease;
   position: relative;
   overflow: visible;
+  flex-shrink: 0;
 }
 
 .time-slot:hover {
@@ -384,10 +401,15 @@
 @media (max-width: 1200px) {
   .gantt-container {
     overflow-x: auto;
+    width: 100%;
   }
   
   .machine-timeline {
     min-width: 600px;
+  }
+  
+  .jobs-compact-zone {
+    width: 100%;
   }
 }
 
@@ -412,10 +434,17 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-sm);
+    width: 100%;
   }
   
   .job-info {
     min-width: auto;
+    width: 100%;
+  }
+  
+  .job-tasks-compact {
+    width: 100%;
+    justify-content: flex-start;
   }
   
   .validation-buttons {
@@ -440,6 +469,7 @@
   .job-tasks-compact {
     flex-direction: row;
     flex-wrap: wrap;
+    width: 100%;
   }
   
   .task-block-compact {

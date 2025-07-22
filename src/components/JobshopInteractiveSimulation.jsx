@@ -123,7 +123,7 @@ const JobshopInteractiveSimulation = () => {
       }
     });
 
-    // Calculer le flowtime moyen
+    // Calculer le flowtime moyen (somme des temps de fin de chaque job)
     let totalFlowtime = 0;
     let completedJobs = 0;
     jobs.forEach(job => {
@@ -399,7 +399,7 @@ const JobshopInteractiveSimulation = () => {
         {/* Résultats */}
         {showResults && (
           <div className="results-zone">
-            <h3>🏆 Comparaison des performances</h3>
+            <h3>🏆 Votre solution</h3>
             <div className="results-grid">
               <div className="result-card user">
                 <h4>Votre solution</h4>
@@ -418,64 +418,6 @@ const JobshopInteractiveSimulation = () => {
                   </div>
                 </div>
               </div>
-
-              {algorithmResults && (
-                <>
-                  <div className="result-card algorithm">
-                    <h4>Algorithme SPT</h4>
-                    <div className="metrics">
-                      <div className="metric">
-                        <span className="metric-label">Makespan:</span>
-                        <span className="metric-value">{algorithmResults.spt.makespan}</span>
-                      </div>
-                      <div className="metric">
-                        <span className="metric-label">Retard total:</span>
-                        <span className="metric-value">{algorithmResults.spt.totalDelay}</span>
-                      </div>
-                      <div className="metric">
-                        <span className="metric-label">Flowtime moyen:</span>
-                        <span className="metric-value">{algorithmResults.spt.flowtime}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="result-card algorithm">
-                    <h4>Algorithme EDD</h4>
-                    <div className="metrics">
-                      <div className="metric">
-                        <span className="metric-label">Makespan:</span>
-                        <span className="metric-value">{algorithmResults.edd.makespan}</span>
-                      </div>
-                      <div className="metric">
-                        <span className="metric-label">Retard total:</span>
-                        <span className="metric-value">{algorithmResults.edd.totalDelay}</span>
-                      </div>
-                      <div className="metric">
-                        <span className="metric-label">Flowtime moyen:</span>
-                        <span className="metric-value">{algorithmResults.edd.flowtime}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="result-card algorithm">
-                    <h4>Programmation par Contraintes</h4>
-                    <div className="metrics">
-                      <div className="metric">
-                        <span className="metric-label">Makespan:</span>
-                        <span className="metric-value">{algorithmResults.cp.makespan}</span>
-                      </div>
-                      <div className="metric">
-                        <span className="metric-label">Retard total:</span>
-                        <span className="metric-value">{algorithmResults.cp.totalDelay}</span>
-                      </div>
-                      <div className="metric">
-                        <span className="metric-label">Flowtime moyen:</span>
-                        <span className="metric-value">{algorithmResults.cp.flowtime}</span>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         )}

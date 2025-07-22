@@ -250,7 +250,7 @@ const JobshopInteractiveSimulation = () => {
                       left: `${time * TIME_SLOT_WIDTH}px`,
                       fontSize: '12px',
                       fontWeight: '500',
-                      color: '#666',
+                      color: '#333',
                       textAlign: 'center',
                       width: '20px',
                       marginLeft: '-10px'

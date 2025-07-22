@@ -61,6 +61,7 @@ import FMSLotsProductionMIPInfo from "./components/FMSLotsProductionMIPInfo";
 import FMSLotsChargementHeuristiqueForm from "./components/FMSLotsChargementHeuristiqueForm";
 import FMSLotsChargementHeuristiqueInfo from "./components/FMSLotsChargementHeuristiqueInfo";
 import DecisionTree from "./components/DecisionTree";
+import JobshopInteractiveSimulation from "./components/JobshopInteractiveSimulation";
 
 function App() {
   // Nouveau state management pour la navigation moderne
@@ -77,6 +78,11 @@ function App() {
     "Ligne d'assemblage mixte": ["Variation du goulot", "Équilibrage ligne mixte", "Équilibrage ++"],
     "Ligne de transfert": ["Buffer Buzzacott"],
     "FMS": ["Sac à dos (Prog. Dynamique)", "Sac à dos (Prog. Linéaire)", "Sac à dos (Algorithme Glouton)", "Lots de production (Glouton)", "Lots de production (MIP)", "Lots de chargement (Heuristique)"]
+  };
+
+  // Configuration des cours
+  const coursesConfig = {
+    "Jobshop": ["Simulation Interactive"]
   };
 
   // Handlers pour la navigation
@@ -134,8 +140,10 @@ function App() {
   };
 
   // Determine si on affiche l'InfoPanel
-  const shouldShowInfoPanel = currentMode === "systems" && selectedSystem && selectedAlgorithm;
-  const algorithms = selectedSystem ? systemsConfig[selectedSystem] || [] : [];
+  const shouldShowInfoPanel = (currentMode === "systems" && selectedSystem && selectedAlgorithm) || 
+                              (currentMode === "courses" && selectedSystem && selectedAlgorithm);
+  const algorithms = selectedSystem ? 
+    (currentMode === "systems" ? systemsConfig[selectedSystem] || [] : coursesConfig[selectedSystem] || []) : [];
 
   return (
     <div className="modern-app-container">
@@ -150,7 +158,7 @@ function App() {
       {/* Main Layout */}
       <div className="modern-main-layout">
         {/* Compact Sidebar - Conditionnelle */}
-        {currentMode === "systems" && selectedSystem && (
+        {(currentMode === "systems" || currentMode === "courses") && selectedSystem && (
           <CompactSidebar
             system={selectedSystem}
             algorithms={algorithms}
@@ -177,7 +185,7 @@ function App() {
           )}
 
           {/* Cours - Mode éducatif */}
-          {currentMode === "courses" && (
+          {currentMode === "courses" && !selectedSystem && (
             <div className="courses-content">
               <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '12px', margin: '2rem' }}>
                 <div style={{ marginBottom: '2rem', color: '#6b7280' }}><Users size={48} /></div>
@@ -187,6 +195,16 @@ function App() {
                   Contenu pédagogique et tutoriels à venir.
                 </p>
               </div>
+            </div>
+          )}
+
+          {/* Cours - Contenu spécifique */}
+          {currentMode === "courses" && selectedSystem && selectedAlgorithm && (
+            <div className="algorithm-content">
+              {/* Jobshop Interactive Simulation */}
+              {selectedSystem === "Jobshop" && selectedAlgorithm === "Simulation Interactive" && (
+                <JobshopInteractiveSimulation />
+              )}
             </div>
           )}
 

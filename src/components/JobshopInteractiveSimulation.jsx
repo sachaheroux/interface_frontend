@@ -242,7 +242,7 @@ const JobshopInteractiveSimulation = () => {
               <div className="machine-label">Machine</div>
               {Array.from({ length: GANTT_LENGTH }, (_, time) => (
                 <div key={time} className="time-label" style={{ width: `${TIME_SLOT_WIDTH}px` }}>
-                  {time}
+                  {time + 1}
                 </div>
               ))}
             </div>

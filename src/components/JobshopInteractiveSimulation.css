@@ -215,7 +215,7 @@
   z-index: 2;
   height: 32px;
   min-width: 32px;
-  max-width: 120px;
+  /* Suppression de max-width pour permettre les grandes largeurs */
 }
 
 /* ===== ZONE DE VALIDATION ===== */

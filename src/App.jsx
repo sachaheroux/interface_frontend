@@ -141,9 +141,10 @@ function App() {
 
   // Determine si on affiche l'InfoPanel
   const shouldShowInfoPanel = (currentMode === "systems" && selectedSystem && selectedAlgorithm) || 
-                              (currentMode === "courses" && selectedSystem && selectedAlgorithm);
+                              (currentMode === "courses" && selectedAlgorithm);
   const algorithms = selectedSystem ? 
-    (currentMode === "systems" ? systemsConfig[selectedSystem] || [] : coursesConfig[selectedSystem] || []) : [];
+    (currentMode === "systems" ? systemsConfig[selectedSystem] || [] : coursesConfig[selectedSystem] || []) : 
+    (currentMode === "courses" ? coursesConfig["Jobshop"] || [] : []);
 
   return (
     <div className="modern-app-container">
@@ -158,10 +159,10 @@ function App() {
       {/* Main Layout */}
       <div className="modern-main-layout">
         {/* Compact Sidebar - Conditionnelle */}
-        {(currentMode === "systems" || currentMode === "courses") && selectedSystem && (
+        {(currentMode === "systems" || currentMode === "courses") && (
           <CompactSidebar
-            system={selectedSystem}
-            algorithms={algorithms}
+            system={selectedSystem || "Jobshop"}
+            algorithms={currentMode === "courses" ? coursesConfig["Jobshop"] || [] : algorithms}
             selectedAlgorithm={selectedAlgorithm}
             onAlgorithmChange={handleAlgorithmChange}
             onSystemInfo={handleSystemInfo}
@@ -190,19 +191,41 @@ function App() {
               <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '12px', margin: '2rem' }}>
                 <div style={{ marginBottom: '2rem', color: '#6b7280' }}><Users size={48} /></div>
                 <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Section Cours</h2>
-                <p style={{ color: '#6b7280', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto' }}>
+                <p style={{ color: '#6b7280', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', marginBottom: '2rem' }}>
                   Cette section contiendra les cours théoriques sur l'optimisation des systèmes de production.
                   Contenu pédagogique et tutoriels à venir.
                 </p>
+                
+                {/* Sélection rapide pour commencer */}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                  <button 
+                    onClick={() => handleSystemChange("Jobshop")}
+                    style={{
+                      background: 'var(--primary-color)',
+                      color: 'white',
+                      border: 'none',
+                      padding: '1rem 2rem',
+                      borderRadius: '8px',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseOver={(e) => e.target.style.background = 'var(--primary-hover)'}
+                    onMouseOut={(e) => e.target.style.background = 'var(--primary-color)'}
+                  >
+                    🎮 Commencer la Simulation Jobshop
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
           {/* Cours - Contenu spécifique */}
-          {currentMode === "courses" && selectedSystem && selectedAlgorithm && (
+          {currentMode === "courses" && selectedAlgorithm && (
             <div className="algorithm-content">
               {/* Jobshop Interactive Simulation */}
-              {selectedSystem === "Jobshop" && selectedAlgorithm === "Simulation Interactive" && (
+              {selectedAlgorithm === "Simulation Interactive" && (
                 <JobshopInteractiveSimulation />
               )}
             </div>

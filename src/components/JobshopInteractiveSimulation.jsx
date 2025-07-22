@@ -162,6 +162,9 @@ const JobshopInteractiveSimulation = () => {
   // Ajout d'une variable pour la longueur totale du Gantt (nombre de cases)
   const GANTT_LENGTH = 30;
 
+  // Largeur fixe par case de temps
+  const TIME_SLOT_WIDTH = 40; // pixels
+
   // Dans la zone Gantt, lors du drag, surligne toutes les cases cibles
   const isDroppable = (machineIdx, timeIdx) => {
     if (!draggedTask || !dragOverSlot) return false;
@@ -206,11 +209,17 @@ const JobshopInteractiveSimulation = () => {
                         style={{
                           background: job.color,
                           opacity: draggedTask && draggedTask.jobId === job.id && draggedTask.taskIndex === index ? 0.6 : 1,
-                          width: `calc(${task.duration} * 100% / ${GANTT_LENGTH})`,
-                          minWidth: 32,
-                          maxWidth: 120,
+                          width: `${task.duration * TIME_SLOT_WIDTH}px`,
+                          height: '36px',
                           display: 'inline-block',
-                          boxSizing: 'border-box'
+                          boxSizing: 'border-box',
+                          margin: '2px',
+                          borderRadius: '4px',
+                          color: 'white',
+                          fontSize: '12px',
+                          padding: '0 4px',
+                          textAlign: 'center',
+                          lineHeight: '36px'
                         }}
                         draggable
                         onDragStart={() => handleDragStart(job.id, index)}
@@ -245,7 +254,14 @@ const JobshopInteractiveSimulation = () => {
                       <div
                         key={time}
                         className={`time-slot${isDroppable(machineIndex, time) ? ' droppable' : ''}`}
-                        style={{ position: 'relative' }}
+                        style={{ 
+                          position: 'relative',
+                          width: `${TIME_SLOT_WIDTH}px`,
+                          height: '40px',
+                          border: '1px solid #ddd',
+                          display: 'inline-block',
+                          boxSizing: 'border-box'
+                        }}
                         onDragOver={e => { e.preventDefault(); handleDragOver(machineIndex, time); }}
                         onDragLeave={handleDragLeave}
                         onDrop={() => handleDrop(machineIndex, time)}
@@ -256,17 +272,18 @@ const JobshopInteractiveSimulation = () => {
                             className="gantt-task-block"
                             style={{
                               background: placedTask.color,
-                              width: `calc(${placedTask.duration} * 100% / ${GANTT_LENGTH})`,
-                              minWidth: 32,
-                              maxWidth: 120,
+                              width: `${placedTask.duration * TIME_SLOT_WIDTH}px`,
+                              height: '36px',
                               left: 0,
+                              top: '2px',
                               color: 'white',
                               borderRadius: 4,
                               fontSize: 12,
                               padding: '0 4px',
                               position: 'absolute',
-                              height: '36px',
-                              zIndex: 2
+                              zIndex: 2,
+                              textAlign: 'center',
+                              lineHeight: '36px'
                             }}
                           >
                             {placedTask.name}

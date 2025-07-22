@@ -177,6 +177,7 @@
   font-size: var(--font-size-sm);
   color: var(--text-muted);
   transition: all 0.2s ease;
+  position: relative;
 }
 
 .time-slot:hover {
@@ -186,6 +187,27 @@
 .time-slot.droppable {
   background: rgba(59, 130, 246, 0.1);
   border: 2px dashed var(--primary-color);
+}
+
+/* ===== BLOCS DE TÂCHES DANS LE GANTT ===== */
+.gantt-task-block {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 2;
 }
 
 /* ===== ZONE DE VALIDATION ===== */

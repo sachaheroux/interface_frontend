@@ -231,7 +231,7 @@ const JobshopInteractiveSimulation = () => {
                             className="gantt-task-block"
                             style={{
                               background: placedTask.color,
-                              width: `calc(${placedTask.duration * 100}% / 30 - 2px)`,
+                              width: `${placedTask.duration * 100}%`,
                               left: 0,
                               color: 'white',
                               borderRadius: 4,

@@ -240,11 +240,22 @@ const JobshopInteractiveSimulation = () => {
           <div className="gantt-container" style={{ overflow: 'visible' }}>
             <div className="gantt-header">
               <div className="machine-label">Machine</div>
-              {Array.from({ length: GANTT_LENGTH }, (_, time) => (
-                <div key={time} className="time-label" style={{ width: `${TIME_SLOT_WIDTH}px` }}>
-                  {time + 1}
-                </div>
-              ))}
+              <div className="time-labels-container" style={{ display: 'flex', position: 'relative' }}>
+                {Array.from({ length: GANTT_LENGTH }, (_, time) => (
+                  <div 
+                    key={time} 
+                    className="time-label" 
+                    style={{ 
+                      width: `${TIME_SLOT_WIDTH}px`,
+                      textAlign: 'center',
+                      fontSize: '12px',
+                      padding: '4px 0'
+                    }}
+                  >
+                    {time + 1}
+                  </div>
+                ))}
+              </div>
             </div>
             
             {machineNames.map((machine, machineIndex) => (

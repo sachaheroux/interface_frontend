@@ -133,6 +133,12 @@
   align-items: center;
   justify-content: center;
   border-right: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+}
+
+.time-labels-container {
+  display: flex;
+  flex: 1;
 }
 
 .time-label {
@@ -141,6 +147,7 @@
   text-align: center;
   font-size: var(--font-size-sm);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 500;
 }
 
 .machine-row {

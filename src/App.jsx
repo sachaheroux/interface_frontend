@@ -162,7 +162,7 @@ function App() {
 
   // Determine si on affiche l'InfoPanel
   const shouldShowInfoPanel = (currentMode === "systems" && selectedSystem && selectedAlgorithm) || 
-                              (currentMode === "courses" && selectedCourse);
+                              (currentMode === "courses" && selectedCourse && selectedCourse !== "Jobshop");
   const algorithms = selectedSystem ? 
     (currentMode === "systems" ? systemsConfig[selectedSystem] || [] : []) : [];
 

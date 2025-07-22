@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import './JobshopInteractiveSimulation.css';
 
+const JOB_COLORS = [
+  '#3b82f6', // bleu
+  '#10b981', // vert
+  '#f59e42', // orange
+  '#a78bfa', // violet
+  '#ef4444', // rouge
+  '#fbbf24', // jaune
+];
+
 const JobshopInteractiveSimulation = () => {
   // Données du jeu fourni par l'utilisateur
   const initialJobs = [
     {
       id: 1,
       name: 'Job 1',
+      color: JOB_COLORS[0],
       tasks: [
         { machine: 0, duration: 9, name: 'M1:9' },
         { machine: 1, duration: 1, name: 'M2:1' },
@@ -17,6 +27,7 @@ const JobshopInteractiveSimulation = () => {
     {
       id: 2,
       name: 'Job 2',
+      color: JOB_COLORS[1],
       tasks: [
         { machine: 0, duration: 3, name: 'M1:3' },
         { machine: 2, duration: 5, name: 'M3:5' },
@@ -27,6 +38,7 @@ const JobshopInteractiveSimulation = () => {
     {
       id: 3,
       name: 'Job 3',
+      color: JOB_COLORS[2],
       tasks: [
         { machine: 0, duration: 2, name: 'M1:2' },
         { machine: 1, duration: 7, name: 'M2:7' },
@@ -37,6 +49,7 @@ const JobshopInteractiveSimulation = () => {
     {
       id: 4,
       name: 'Job 4',
+      color: JOB_COLORS[3],
       tasks: [
         { machine: 1, duration: 5, name: 'M2:5' },
         { machine: 0, duration: 3, name: 'M1:3' },
@@ -48,12 +61,14 @@ const JobshopInteractiveSimulation = () => {
 
   const [jobs, setJobs] = useState(initialJobs);
   const [machineNames] = useState(['M1', 'M2', 'M3']);
+  // userSchedule = [{jobId, taskIndex, machine, start, duration, color, name}]
   const [userSchedule, setUserSchedule] = useState([]);
+  const [draggedTask, setDraggedTask] = useState(null);
+  const [dragOverSlot, setDragOverSlot] = useState(null);
   const [algorithmResults, setAlgorithmResults] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Calcul des résultats des algorithmes
   useEffect(() => {
     calculateAlgorithmResults();
   }, []);
@@ -102,6 +117,48 @@ const JobshopInteractiveSimulation = () => {
     setCurrentStep(0);
   };
 
+  // Drag & Drop handlers
+  const handleDragStart = (jobId, taskIndex) => {
+    setDraggedTask({ jobId, taskIndex });
+  };
+
+  const handleDragOver = (machine, time) => {
+    setDragOverSlot({ machine, time });
+  };
+
+  const handleDragLeave = () => {
+    setDragOverSlot(null);
+  };
+
+  const handleDrop = (machine, time) => {
+    if (!draggedTask) return;
+    // Trouver le job et la tâche
+    const job = jobs.find(j => j.id === draggedTask.jobId);
+    const task = job.tasks[draggedTask.taskIndex];
+    // Ajouter la tâche à l'emploi du temps utilisateur
+    setUserSchedule(prev => [
+      ...prev,
+      {
+        jobId: job.id,
+        taskIndex: draggedTask.taskIndex,
+        machine,
+        start: time,
+        duration: task.duration,
+        color: job.color,
+        name: job.name + ' - ' + task.name
+      }
+    ]);
+    setDraggedTask(null);
+    setDragOverSlot(null);
+  };
+
+  // Vérifie si une tâche est déjà placée à cet endroit
+  const getTaskAt = (machine, time) => {
+    return userSchedule.find(
+      t => t.machine === machine && time >= t.start && time < t.start + t.duration
+    );
+  };
+
   return (
     <div className="jobshop-simulation">
       <div className="simulation-header">
@@ -116,21 +173,28 @@ const JobshopInteractiveSimulation = () => {
         <div className="tasks-zone">
           <h3>📦 Tâches disponibles</h3>
           <div className="tasks-container">
-            {jobs.map(job => (
+            {jobs.map((job, jobIdx) => (
               <div key={job.id} className="job-tasks">
                 <h4>{job.name} (Due: {job.dueDate})</h4>
                 <div className="task-blocks">
-                  {job.tasks.map((task, index) => (
-                    <div 
-                      key={index}
-                      className="task-block"
-                      draggable
-                      data-job-id={job.id}
-                      data-task-index={index}
-                    >
-                      {task.name}
-                    </div>
-                  ))}
+                  {job.tasks.map((task, index) => {
+                    // Vérifier si la tâche a déjà été placée
+                    const alreadyPlaced = userSchedule.some(
+                      t => t.jobId === job.id && t.taskIndex === index
+                    );
+                    if (alreadyPlaced) return null;
+                    return (
+                      <div
+                        key={index}
+                        className="task-block"
+                        style={{ background: job.color, opacity: draggedTask && draggedTask.jobId === job.id && draggedTask.taskIndex === index ? 0.6 : 1 }}
+                        draggable
+                        onDragStart={() => handleDragStart(job.id, index)}
+                      >
+                        {task.name}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -151,11 +215,38 @@ const JobshopInteractiveSimulation = () => {
               <div key={machineIndex} className="machine-row">
                 <div className="machine-name">{machine}</div>
                 <div className="machine-timeline">
-                  {Array.from({ length: 30 }, (_, time) => (
-                    <div key={time} className="time-slot" data-machine={machineIndex} data-time={time}>
-                      {/* Les tâches placées par l'utilisateur apparaîtront ici */}
-                    </div>
-                  ))}
+                  {Array.from({ length: 30 }, (_, time) => {
+                    const placedTask = getTaskAt(machineIndex, time);
+                    const isDroppable = dragOverSlot && dragOverSlot.machine === machineIndex && dragOverSlot.time === time;
+                    return (
+                      <div
+                        key={time}
+                        className={`time-slot${isDroppable ? ' droppable' : ''}`}
+                        onDragOver={e => { e.preventDefault(); handleDragOver(machineIndex, time); }}
+                        onDragLeave={handleDragLeave}
+                        onDrop={() => handleDrop(machineIndex, time)}
+                      >
+                        {placedTask && (
+                          <div
+                            className="gantt-task-block"
+                            style={{
+                              background: placedTask.color,
+                              width: `calc(${placedTask.duration * 100}% / 30 - 2px)`,
+                              left: 0,
+                              color: 'white',
+                              borderRadius: 4,
+                              fontSize: 12,
+                              padding: '0 4px',
+                              position: 'absolute',
+                              zIndex: 2
+                            }}
+                          >
+                            {placedTask.name}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}

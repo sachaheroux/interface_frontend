@@ -240,18 +240,17 @@ const JobshopInteractiveSimulation = () => {
           <div className="gantt-container" style={{ overflow: 'visible' }}>
             <div className="gantt-header">
               <div className="machine-label">Machine</div>
-              <div className="time-labels-container" style={{ display: 'flex', position: 'relative' }}>
+              <div className="time-labels-container" style={{ display: 'flex', position: 'relative', height: '30px' }}>
                 {Array.from({ length: GANTT_LENGTH }, (_, time) => (
                   <div 
                     key={time} 
                     className="time-label" 
                     style={{ 
-                      width: `${TIME_SLOT_WIDTH}px`,
-                      textAlign: 'left',
+                      position: 'absolute',
+                      left: `${time * TIME_SLOT_WIDTH}px`,
                       fontSize: '12px',
-                      padding: '4px 0',
-                      paddingLeft: '8px',
-                      position: 'relative'
+                      fontWeight: '500',
+                      color: '#666'
                     }}
                   >
                     {time + 1}

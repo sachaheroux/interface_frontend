@@ -79,41 +79,50 @@
 .algorithm-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.875rem 1.25rem;
-  margin: 0 0.75rem;
-  border-radius: 8px;
-  text-decoration: none;
-  color: var(--sidebar-text);
   font-weight: 500;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  background: transparent;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.25rem;
+  background: none;
   border: none;
-  width: calc(100% - 1.5rem);
+  width: 100%;
+  cursor: pointer;
+}
+.algorithm-item.active {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+.algo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  margin-right: 0.75rem;
+  opacity: 0.7;
+  transition: background 0.2s;
+}
+.algorithm-item:not(.active) .algo-dot {
+  background: var(--border-color);
+  opacity: 0.4;
+}
+.algorithm-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: inherit;
   text-align: left;
-  position: relative;
+  flex: 1;
 }
 
 .algorithm-item:hover {
-  background: var(--sidebar-hover-bg);
-  color: var(--sidebar-text);
-}
-
-.algorithm-item.active {
-  background: var(--sidebar-active-bg);
-  color: var(--sidebar-active-text);
-  font-weight: 600;
+  background: var(--background-hover);
+  color: var(--primary-color);
 }
 
 /* Algorithm numbers removed - styles cleaned up */
-
-.algorithm-name {
-  flex: 1;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-}
 
 /* ===== ACTIONS EN BAS ===== */
 .sidebar-actions {

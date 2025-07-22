@@ -47,14 +47,14 @@ export default function CompactSidebar({
       </div>
 
       <div className="algorithms-list">
-        {algorithms.map((algorithm, index) => (
+        {algorithms.map((algorithm) => (
           <button
             key={algorithm}
-            className={`algorithm-item ${selectedAlgorithm === algorithm ? 'active' : ''}`}
+            className={`algorithm-item${selectedAlgorithm === algorithm ? ' active' : ''}`}
             onClick={() => onAlgorithmChange(algorithm)}
           >
+            <span className="algo-dot" />
             <span className="algorithm-name">{algorithm}</span>
-            <span className="status-indicator"></span>
           </button>
         ))}
       </div>

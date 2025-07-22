@@ -250,10 +250,22 @@ const JobshopInteractiveSimulation = () => {
                       left: `${time * TIME_SLOT_WIDTH}px`,
                       fontSize: '12px',
                       fontWeight: '500',
-                      color: '#666'
+                      color: '#666',
+                      textAlign: 'center',
+                      width: '20px',
+                      marginLeft: '-10px'
                     }}
                   >
                     {time + 1}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '-15px',
+                      left: '50%',
+                      width: '1px',
+                      height: '15px',
+                      backgroundColor: '#999',
+                      transform: 'translateX(-50%)'
+                    }}></div>
                   </div>
                 ))}
               </div>

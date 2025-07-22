@@ -68,6 +68,7 @@ const JobshopInteractiveSimulation = () => {
   const [algorithmResults, setAlgorithmResults] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [userResult, setUserResult] = useState(null);
 
   useEffect(() => {
     calculateAlgorithmResults();
@@ -99,16 +100,52 @@ const JobshopInteractiveSimulation = () => {
   };
 
   const evaluateUserSolution = () => {
-    // Simulation du calcul des performances de la solution utilisateur
-    const userResult = {
-      makespan: 22, // Exemple
-      totalDelay: 8, // Exemple
-      flowtime: 15.5, // Exemple
+    // Calculer le vrai makespan basé sur les tâches placées
+    let maxMakespan = 0;
+    
+    // Pour chaque machine, trouver la fin de la dernière tâche
+    machineNames.forEach((machine, machineIndex) => {
+      const machineTasks = userSchedule.filter(t => t.machine === machineIndex);
+      if (machineTasks.length > 0) {
+        const machineMakespan = Math.max(...machineTasks.map(t => t.start + t.duration));
+        maxMakespan = Math.max(maxMakespan, machineMakespan);
+      }
+    });
+
+    // Calculer le retard total
+    let totalDelay = 0;
+    jobs.forEach(job => {
+      const jobTasks = userSchedule.filter(t => t.jobId === job.id);
+      if (jobTasks.length > 0) {
+        const jobEndTime = Math.max(...jobTasks.map(t => t.start + t.duration));
+        const delay = Math.max(0, jobEndTime - job.dueDate);
+        totalDelay += delay;
+      }
+    });
+
+    // Calculer le flowtime moyen
+    let totalFlowtime = 0;
+    let completedJobs = 0;
+    jobs.forEach(job => {
+      const jobTasks = userSchedule.filter(t => t.jobId === job.id);
+      if (jobTasks.length === job.tasks.length) { // Job completé
+        const jobEndTime = Math.max(...jobTasks.map(t => t.start + t.duration));
+        totalFlowtime += jobEndTime;
+        completedJobs++;
+      }
+    });
+    const avgFlowtime = completedJobs > 0 ? totalFlowtime / completedJobs : 0;
+
+    const result = {
+      makespan: maxMakespan,
+      totalDelay: totalDelay,
+      flowtime: avgFlowtime,
       schedule: "Votre solution"
     };
 
+    setUserResult(result);
     setShowResults(true);
-    return userResult;
+    return result;
   };
 
   const resetSimulation = () => {
@@ -119,6 +156,12 @@ const JobshopInteractiveSimulation = () => {
 
   // Drag & Drop handlers
   const handleDragStart = (jobId, taskIndex) => {
+    setDraggedTask({ jobId, taskIndex });
+  };
+
+  const handleDragStartFromGantt = (jobId, taskIndex) => {
+    // Supprimer la tâche de l'emploi du temps avant de la redragger
+    setUserSchedule(prev => prev.filter(t => !(t.jobId === jobId && t.taskIndex === taskIndex)));
     setDraggedTask({ jobId, taskIndex });
   };
 
@@ -316,8 +359,11 @@ const JobshopInteractiveSimulation = () => {
                               textAlign: 'center',
                               lineHeight: '36px',
                               whiteSpace: 'nowrap',
-                              overflow: 'hidden'
+                              overflow: 'hidden',
+                              cursor: 'grab'
                             }}
+                            draggable
+                            onDragStart={() => handleDragStartFromGantt(placedTask.jobId, placedTask.taskIndex)}
                           >
                             {placedTask.name}
                           </div>
@@ -360,15 +406,15 @@ const JobshopInteractiveSimulation = () => {
                 <div className="metrics">
                   <div className="metric">
                     <span className="metric-label">Makespan:</span>
-                    <span className="metric-value">22</span>
+                    <span className="metric-value">{userResult ? userResult.makespan : 0}</span>
                   </div>
                   <div className="metric">
                     <span className="metric-label">Retard total:</span>
-                    <span className="metric-value">8</span>
+                    <span className="metric-value">{userResult ? userResult.totalDelay : 0}</span>
                   </div>
                   <div className="metric">
                     <span className="metric-label">Flowtime moyen:</span>
-                    <span className="metric-value">15.5</span>
+                    <span className="metric-value">{userResult ? userResult.flowtime.toFixed(1) : 0}</span>
                   </div>
                 </div>
               </div>

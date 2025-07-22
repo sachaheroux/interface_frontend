@@ -62,6 +62,7 @@ import FMSLotsChargementHeuristiqueForm from "./components/FMSLotsChargementHeur
 import FMSLotsChargementHeuristiqueInfo from "./components/FMSLotsChargementHeuristiqueInfo";
 import DecisionTree from "./components/DecisionTree";
 import JobshopInteractiveSimulation from "./components/JobshopInteractiveSimulation";
+import CoursesSidebar from "./components/CoursesSidebar";
 
 function App() {
   // Nouveau state management pour la navigation moderne
@@ -82,7 +83,9 @@ function App() {
 
   // Configuration des cours
   const coursesConfig = {
-    "Jobshop": ["Simulation Interactive"]
+    "Cours Théoriques": ["Introduction aux systèmes", "Ordonnancement de base", "Algorithmes avancés"],
+    "Simulations Interactives": ["Jobshop", "Flowshop", "Ligne d'assemblage"],
+    "Exercices Pratiques": ["Cas d'étude 1", "Cas d'étude 2", "Projet final"]
   };
 
   // Handlers pour la navigation
@@ -159,14 +162,25 @@ function App() {
       {/* Main Layout */}
       <div className="modern-main-layout">
         {/* Compact Sidebar - Conditionnelle */}
-        {(currentMode === "systems" || currentMode === "courses") && (
+        {currentMode === "systems" && selectedSystem && (
           <CompactSidebar
-            system={selectedSystem || "Jobshop"}
-            algorithms={currentMode === "courses" ? coursesConfig["Jobshop"] || [] : algorithms}
+            system={selectedSystem}
+            algorithms={algorithms}
             selectedAlgorithm={selectedAlgorithm}
             onAlgorithmChange={handleAlgorithmChange}
             onSystemInfo={handleSystemInfo}
             onClose={handleCloseSidebar}
+          />
+        )}
+
+        {/* Cours Sidebar - Indépendante */}
+        {currentMode === "courses" && (
+          <CoursesSidebar
+            selectedCategory={selectedSystem || "Cours Théoriques"}
+            selectedCourse={selectedAlgorithm}
+            onCategoryChange={handleSystemChange}
+            onCourseChange={handleAlgorithmChange}
+            coursesConfig={coursesConfig}
           />
         )}
 
@@ -224,9 +238,37 @@ function App() {
           {/* Cours - Contenu spécifique */}
           {currentMode === "courses" && selectedAlgorithm && (
             <div className="algorithm-content">
-              {/* Jobshop Interactive Simulation */}
-              {selectedAlgorithm === "Simulation Interactive" && (
+              {/* Simulations Interactives */}
+              {selectedAlgorithm === "Jobshop" && (
                 <JobshopInteractiveSimulation />
+              )}
+              {selectedAlgorithm === "Flowshop" && (
+                <div style={{ padding: '2rem', textAlign: 'center' }}>
+                  <h2>Simulation Flowshop</h2>
+                  <p>Contenu à venir...</p>
+                </div>
+              )}
+              {selectedAlgorithm === "Ligne d'assemblage" && (
+                <div style={{ padding: '2rem', textAlign: 'center' }}>
+                  <h2>Simulation Ligne d'assemblage</h2>
+                  <p>Contenu à venir...</p>
+                </div>
+              )}
+              
+              {/* Cours Théoriques */}
+              {selectedAlgorithm === "Introduction aux systèmes" && (
+                <div style={{ padding: '2rem' }}>
+                  <h2>Introduction aux systèmes de production</h2>
+                  <p>Contenu théorique à venir...</p>
+                </div>
+              )}
+              
+              {/* Exercices Pratiques */}
+              {selectedAlgorithm === "Cas d'étude 1" && (
+                <div style={{ padding: '2rem' }}>
+                  <h2>Cas d'étude 1</h2>
+                  <p>Exercice pratique à venir...</p>
+                </div>
               )}
             </div>
           )}

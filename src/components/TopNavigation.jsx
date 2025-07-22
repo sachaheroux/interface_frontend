@@ -41,11 +41,6 @@ export default function TopNavigation({
   const handleNavClick = (mode) => {
     if (mode === 'systems') {
       setShowSystemDropdown(!showSystemDropdown);
-    } else if (mode === 'courses') {
-      setShowSystemDropdown(false);
-      onModeChange(mode);
-      // Sélectionner automatiquement Jobshop pour les cours
-      onSystemChange("Jobshop");
     } else {
       setShowSystemDropdown(false);
       onModeChange(mode);

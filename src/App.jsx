@@ -95,8 +95,8 @@ function App() {
   // Handlers pour la navigation
   const handleModeChange = (mode) => {
     setCurrentMode(mode);
-    // Reset navigation systèmes
-    if (["welcome", "decision", "systems", "courses", "assignments"].includes(mode)) {
+    // Reset navigation systèmes seulement si on quitte le mode systems
+    if (["welcome", "decision", "courses", "assignments"].includes(mode)) {
       setSelectedSystem("");
       setSelectedAlgorithm("");
       setShowSystemInfo(false);

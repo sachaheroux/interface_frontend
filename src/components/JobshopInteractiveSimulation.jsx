@@ -237,17 +237,20 @@ const JobshopInteractiveSimulation = () => {
         {/* Zone de Gantt */}
         <div className="gantt-zone">
           <h3>📊 Diagramme de Gantt</h3>
-          <div className="gantt-container">
+          <div className="gantt-container" style={{ overflow: 'visible' }}>
             <div className="gantt-header">
               <div className="machine-label">Machine</div>
-              {Array.from({ length: GANTT_LENGTH }, (_, i) => (
-                <div key={i} className="time-label">{i}</div>
+              {Array.from({ length: GANTT_LENGTH }, (_, time) => (
+                <div key={time} className="time-label" style={{ width: `${TIME_SLOT_WIDTH}px` }}>
+                  {time}
+                </div>
               ))}
             </div>
+            
             {machineNames.map((machine, machineIndex) => (
               <div key={machineIndex} className="machine-row">
                 <div className="machine-name">{machine}</div>
-                <div className="machine-timeline">
+                <div className="machine-timeline" style={{ overflow: 'visible' }}>
                   {Array.from({ length: GANTT_LENGTH }, (_, time) => {
                     const placedTask = getTaskAt(machineIndex, time);
                     return (
@@ -260,7 +263,8 @@ const JobshopInteractiveSimulation = () => {
                           height: '40px',
                           border: '1px solid #ddd',
                           display: 'inline-block',
-                          boxSizing: 'border-box'
+                          boxSizing: 'border-box',
+                          overflow: 'visible'
                         }}
                         onDragOver={e => { e.preventDefault(); handleDragOver(machineIndex, time); }}
                         onDragLeave={handleDragLeave}
@@ -283,7 +287,9 @@ const JobshopInteractiveSimulation = () => {
                               position: 'absolute',
                               zIndex: 2,
                               textAlign: 'center',
-                              lineHeight: '36px'
+                              lineHeight: '36px',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden'
                             }}
                           >
                             {placedTask.name}

@@ -65,11 +65,15 @@ import JobshopInteractiveSimulation from "./components/JobshopInteractiveSimulat
 import CoursesSidebar from "./components/CoursesSidebar";
 
 function App() {
-  // Nouveau state management pour la navigation moderne
-  const [currentMode, setCurrentMode] = useState("welcome"); // welcome, decision, systems
+  // États pour la navigation des systèmes de production
+  const [currentMode, setCurrentMode] = useState("welcome");
   const [selectedSystem, setSelectedSystem] = useState("");
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
   const [showSystemInfo, setShowSystemInfo] = useState(false);
+
+  // États pour la navigation des cours (indépendants)
+  const [selectedCourseCategory, setSelectedCourseCategory] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState("");
 
   // Configuration des systèmes et algorithmes
   const systemsConfig = {
@@ -91,11 +95,16 @@ function App() {
   // Handlers pour la navigation
   const handleModeChange = (mode) => {
     setCurrentMode(mode);
-    
-    // Reset des sélections pour certains modes
-    if (["welcome", "decision", "courses", "assignments"].includes(mode)) {
+    // Reset navigation systèmes
+    if (["welcome", "decision", "systems", "courses", "assignments"].includes(mode)) {
       setSelectedSystem("");
       setSelectedAlgorithm("");
+      setShowSystemInfo(false);
+    }
+    // Reset navigation cours si on change d'onglet
+    if (mode !== "courses") {
+      setSelectedCourseCategory("");
+      setSelectedCourse("");
     }
   };
 
@@ -142,12 +151,20 @@ function App() {
     setSelectedAlgorithm(""); // Reset algorithm when showing system info
   };
 
+  // Handlers pour la navigation des cours
+  const handleCourseCategoryChange = (category) => {
+    setSelectedCourseCategory(category);
+    setSelectedCourse("");
+  };
+  const handleCourseChange = (course) => {
+    setSelectedCourse(course);
+  };
+
   // Determine si on affiche l'InfoPanel
   const shouldShowInfoPanel = (currentMode === "systems" && selectedSystem && selectedAlgorithm) || 
-                              (currentMode === "courses" && selectedAlgorithm);
+                              (currentMode === "courses" && selectedCourse);
   const algorithms = selectedSystem ? 
-    (currentMode === "systems" ? systemsConfig[selectedSystem] || [] : coursesConfig[selectedSystem] || []) : 
-    (currentMode === "courses" ? coursesConfig["Jobshop"] || [] : []);
+    (currentMode === "systems" ? systemsConfig[selectedSystem] || [] : []) : [];
 
   return (
     <div className="modern-app-container">
@@ -156,37 +173,36 @@ function App() {
         currentMode={currentMode}
         onModeChange={handleModeChange}
         currentSystem={selectedSystem}
-        onSystemChange={handleSystemChange}
+        onSystemChange={setSelectedSystem}
       />
 
       {/* Main Layout */}
       <div className="modern-main-layout">
-        {/* Compact Sidebar - Conditionnelle */}
+        {/* Sidebar systèmes de production */}
         {currentMode === "systems" && selectedSystem && (
           <CompactSidebar
             system={selectedSystem}
             algorithms={algorithms}
             selectedAlgorithm={selectedAlgorithm}
-            onAlgorithmChange={handleAlgorithmChange}
+            onAlgorithmChange={setSelectedAlgorithm}
             onSystemInfo={handleSystemInfo}
             onClose={handleCloseSidebar}
           />
         )}
-
-        {/* Cours Sidebar - Indépendante */}
+        {/* Sidebar cours indépendante */}
         {currentMode === "courses" && (
           <CoursesSidebar
-            selectedCategory={selectedSystem || "Cours Théoriques"}
-            selectedCourse={selectedAlgorithm}
-            onCategoryChange={handleSystemChange}
-            onCourseChange={handleAlgorithmChange}
+            selectedCategory={selectedCourseCategory}
+            selectedCourse={selectedCourse}
+            onCategoryChange={handleCourseCategoryChange}
+            onCourseChange={handleCourseChange}
             coursesConfig={coursesConfig}
           />
         )}
 
         {/* Content Area */}
         <div className={`modern-content-area ${shouldShowInfoPanel ? 'with-info-panel' : 'full-width'}`}>
-          {/* Welcome View - affichée par défaut et quand aucun système sélectionné */}
+          {/* Welcome View */}
           {(currentMode === "welcome" || (currentMode === "systems" && !selectedSystem)) && (
             <WelcomeView 
               onNavigateToDecisionTree={handleNavigateToDecisionTree}
@@ -200,71 +216,46 @@ function App() {
           )}
 
           {/* Cours - Mode éducatif */}
-          {currentMode === "courses" && !selectedSystem && (
+          {currentMode === "courses" && !selectedCourse && (
             <div className="courses-content">
               <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '12px', margin: '2rem' }}>
                 <div style={{ marginBottom: '2rem', color: '#6b7280' }}><Users size={48} /></div>
                 <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Section Cours</h2>
                 <p style={{ color: '#6b7280', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', marginBottom: '2rem' }}>
-                  Cette section contiendra les cours théoriques sur l'optimisation des systèmes de production.
-                  Contenu pédagogique et tutoriels à venir.
+                  Sélectionnez une catégorie et un cours dans la barre latérale pour commencer.
                 </p>
-                
-                {/* Sélection rapide pour commencer */}
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                  <button 
-                    onClick={() => handleSystemChange("Jobshop")}
-                    style={{
-                      background: 'var(--primary-color)',
-                      color: 'white',
-                      border: 'none',
-                      padding: '1rem 2rem',
-                      borderRadius: '8px',
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseOver={(e) => e.target.style.background = 'var(--primary-hover)'}
-                    onMouseOut={(e) => e.target.style.background = 'var(--primary-color)'}
-                  >
-                    🎮 Commencer la Simulation Jobshop
-                  </button>
-                </div>
               </div>
             </div>
           )}
 
           {/* Cours - Contenu spécifique */}
-          {currentMode === "courses" && selectedAlgorithm && (
+          {currentMode === "courses" && selectedCourse && (
             <div className="algorithm-content">
               {/* Simulations Interactives */}
-              {selectedAlgorithm === "Jobshop" && (
+              {selectedCourse === "Jobshop" && (
                 <JobshopInteractiveSimulation />
               )}
-              {selectedAlgorithm === "Flowshop" && (
+              {selectedCourse === "Flowshop" && (
                 <div style={{ padding: '2rem', textAlign: 'center' }}>
                   <h2>Simulation Flowshop</h2>
                   <p>Contenu à venir...</p>
                 </div>
               )}
-              {selectedAlgorithm === "Ligne d'assemblage" && (
+              {selectedCourse === "Ligne d'assemblage" && (
                 <div style={{ padding: '2rem', textAlign: 'center' }}>
                   <h2>Simulation Ligne d'assemblage</h2>
                   <p>Contenu à venir...</p>
                 </div>
               )}
-              
               {/* Cours Théoriques */}
-              {selectedAlgorithm === "Introduction aux systèmes" && (
+              {selectedCourse === "Introduction aux systèmes" && (
                 <div style={{ padding: '2rem' }}>
                   <h2>Introduction aux systèmes de production</h2>
                   <p>Contenu théorique à venir...</p>
                 </div>
               )}
-              
               {/* Exercices Pratiques */}
-              {selectedAlgorithm === "Cas d'étude 1" && (
+              {selectedCourse === "Cas d'étude 1" && (
                 <div style={{ padding: '2rem' }}>
                   <h2>Cas d'étude 1</h2>
                   <p>Exercice pratique à venir...</p>
@@ -304,28 +295,23 @@ function App() {
               {selectedSystem === "Flowshop" && selectedAlgorithm === "Contraintes" && <FlowshopContraintesForm />}
               {selectedSystem === "Flowshop" && selectedAlgorithm === "Machines multiples" && <FlowshopMachinesMultiplesForm />}
               {selectedSystem === "Flowshop" && selectedAlgorithm === "Comparer les algos" && <FlowshopCompareForm />}
-              
               {/* Jobshop Algorithms */}
               {selectedSystem === "Jobshop" && selectedAlgorithm === "SPT" && <JobshopSPTForm />}
               {selectedSystem === "Jobshop" && selectedAlgorithm === "EDD" && <JobshopEDDForm />}
               {selectedSystem === "Jobshop" && selectedAlgorithm === "Contraintes" && <JobshopContraintesForm />}
               {selectedSystem === "Jobshop" && selectedAlgorithm === "Comparer les algos" && <JobshopCompareForm />}
-              
               {/* Ligne d'assemblage Algorithms */}
               {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "Précédence" && <LigneAssemblagePrecedenceForm />}
               {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "COMSOAL" && <LigneAssemblageCOMSOALForm />}
               {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "LPT" && <LigneAssemblageLPTForm />}
               {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "PL" && <LigneAssemblagePLForm />}
               {selectedSystem === "Ligne d'assemblage" && selectedAlgorithm === "Comparer les algos" && <LigneAssemblageCompareForm />}
-              
               {/* Ligne d'assemblage mixte Algorithms */}
               {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Variation du goulot" && <LigneAssemblageMixteGoulotForm />}
               {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Équilibrage ligne mixte" && <LigneAssemblageMixteEquilibrageForm />}
               {selectedSystem === "Ligne d'assemblage mixte" && selectedAlgorithm === "Équilibrage ++" && <LigneAssemblageMixteEquilibragePlusPlusForm />}
-              
               {/* Ligne de transfert Algorithms */}
               {selectedSystem === "Ligne de transfert" && selectedAlgorithm === "Buffer Buzzacott" && <LigneTransfertBufferBuzzacottForm />}
-              
               {/* FMS Algorithms */}
               {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Prog. Dynamique)" && <FMSSacADosForm />}
               {selectedSystem === "FMS" && selectedAlgorithm === "Sac à dos (Prog. Linéaire)" && <FMSSacADosPLForm />}
@@ -333,7 +319,6 @@ function App() {
               {selectedSystem === "FMS" && selectedAlgorithm === "Lots de production (Glouton)" && <FMSLotsProductionGloutonForm />}
               {selectedSystem === "FMS" && selectedAlgorithm === "Lots de production (MIP)" && <FMSLotsProductionMIPForm />}
               {selectedSystem === "FMS" && selectedAlgorithm === "Lots de chargement (Heuristique)" && <FMSLotsChargementHeuristiqueForm />}
-              
               {/* Fallback pour algorithmes non mappés */}
               {!["Flowshop", "Jobshop", "Ligne d'assemblage", "Ligne d'assemblage mixte", "Ligne de transfert", "FMS"].includes(selectedSystem) && (
                 <AlgorithmFormAndResult algorithm={selectedAlgorithm} />

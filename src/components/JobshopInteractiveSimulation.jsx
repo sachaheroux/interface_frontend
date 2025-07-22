@@ -247,7 +247,7 @@ const JobshopInteractiveSimulation = () => {
                     className="time-label" 
                     style={{ 
                       position: 'absolute',
-                      left: `${time * TIME_SLOT_WIDTH}px`,
+                      left: `${(time + 1) * TIME_SLOT_WIDTH}px`,
                       fontSize: '12px',
                       fontWeight: '500',
                       color: '#333',

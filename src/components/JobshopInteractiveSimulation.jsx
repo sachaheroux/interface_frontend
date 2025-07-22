@@ -208,7 +208,9 @@ const JobshopInteractiveSimulation = () => {
                           opacity: draggedTask && draggedTask.jobId === job.id && draggedTask.taskIndex === index ? 0.6 : 1,
                           width: `calc(${task.duration} * 100% / ${GANTT_LENGTH})`,
                           minWidth: 32,
-                          maxWidth: 120
+                          maxWidth: 120,
+                          display: 'inline-block',
+                          boxSizing: 'border-box'
                         }}
                         draggable
                         onDragStart={() => handleDragStart(job.id, index)}
@@ -243,6 +245,7 @@ const JobshopInteractiveSimulation = () => {
                       <div
                         key={time}
                         className={`time-slot${isDroppable(machineIndex, time) ? ' droppable' : ''}`}
+                        style={{ position: 'relative' }}
                         onDragOver={e => { e.preventDefault(); handleDragOver(machineIndex, time); }}
                         onDragLeave={handleDragLeave}
                         onDrop={() => handleDrop(machineIndex, time)}
@@ -262,6 +265,7 @@ const JobshopInteractiveSimulation = () => {
                               fontSize: 12,
                               padding: '0 4px',
                               position: 'absolute',
+                              height: '36px',
                               zIndex: 2
                             }}
                           >

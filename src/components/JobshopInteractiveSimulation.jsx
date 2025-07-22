@@ -223,22 +223,28 @@ const JobshopInteractiveSimulation = () => {
 
   return (
     <div className="jobshop-simulation">
-      <div className="simulation-header">
-        <h1>🎮 Simulation Interactive Jobshop</h1>
-        <p className="simulation-description">
-          Ordonnancez manuellement les tâches pour essayer de battre les performances des algorithmes classiques !
+      {/* Contexte d'usine */}
+      <div className="factory-context">
+        <h2>🏭 Usine de Production Automobile</h2>
+        <p>
+          Votre usine reçoit 4 commandes de pièces automobiles qui doivent passer sur 3 machines spécialisées 
+          (M1: Découpe, M2: Assemblage, M3: Finition) dans des ordres différents selon les spécifications de chaque commande. 
+          Optimisez l'ordonnancement pour minimiser les retards et améliorer l'efficacité de production !
         </p>
       </div>
 
       <div className="simulation-content">
-        {/* Zone des tâches disponibles */}
-        <div className="tasks-zone">
-          <h3>📦 Tâches disponibles</h3>
-          <div className="tasks-container">
+        {/* Zone des jobs en format compact */}
+        <div className="jobs-compact-zone">
+          <h3>📋 Commandes reçues</h3>
+          <div className="jobs-compact-container">
             {jobs.map((job, jobIdx) => (
-              <div key={job.id} className="job-tasks">
-                <h4>{job.name} (Due: {job.dueDate})</h4>
-                <div className="task-blocks">
+              <div key={job.id} className="job-compact-row">
+                <div className="job-info">
+                  <span className="job-name">{job.name}</span>
+                  <span className="job-due">Date due: {job.dueDate}</span>
+                </div>
+                <div className="job-tasks-compact">
                   {job.tasks.map((task, index) => {
                     // Vérifier si la tâche a déjà été placée
                     const alreadyPlaced = userSchedule.some(
@@ -248,21 +254,22 @@ const JobshopInteractiveSimulation = () => {
                     return (
                       <div
                         key={index}
-                        className="task-block"
+                        className="task-block-compact"
                         style={{
                           background: job.color,
                           opacity: draggedTask && draggedTask.jobId === job.id && draggedTask.taskIndex === index ? 0.6 : 1,
                           width: `${task.duration * TIME_SLOT_WIDTH}px`,
-                          height: '36px',
+                          height: '30px',
                           display: 'inline-block',
                           boxSizing: 'border-box',
-                          margin: '0px',
+                          margin: '0 2px',
                           borderRadius: '4px',
                           color: 'white',
-                          fontSize: '12px',
+                          fontSize: '11px',
                           padding: '0 4px',
                           textAlign: 'center',
-                          lineHeight: '36px'
+                          lineHeight: '30px',
+                          cursor: 'grab'
                         }}
                         draggable
                         onDragStart={() => handleDragStart(job.id, index)}
@@ -279,7 +286,7 @@ const JobshopInteractiveSimulation = () => {
 
         {/* Zone de Gantt */}
         <div className="gantt-zone">
-          <h3>📊 Diagramme de Gantt</h3>
+          <h3>📊 Planning de production</h3>
           <div className="gantt-container" style={{ overflow: 'visible' }}>
             <div className="gantt-header">
               <div className="machine-label">Machine</div>

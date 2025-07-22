@@ -213,7 +213,7 @@ const JobshopInteractiveSimulation = () => {
                           height: '36px',
                           display: 'inline-block',
                           boxSizing: 'border-box',
-                          margin: '2px',
+                          margin: '0px',
                           borderRadius: '4px',
                           color: 'white',
                           fontSize: '12px',

@@ -178,6 +178,8 @@ const JobshopInteractiveSimulation = () => {
     // Trouver le job et la tâche
     const job = jobs.find(j => j.id === draggedTask.jobId);
     const task = job.tasks[draggedTask.taskIndex];
+    // Empêcher le drop sur une mauvaise machine
+    if (machine !== task.machine) return;
     // Ajouter la tâche à l'emploi du temps utilisateur
     setUserSchedule(prev => [
       ...prev,
@@ -211,9 +213,11 @@ const JobshopInteractiveSimulation = () => {
   // Dans la zone Gantt, lors du drag, surligne toutes les cases cibles
   const isDroppable = (machineIdx, timeIdx) => {
     if (!draggedTask || !dragOverSlot) return false;
-    if (dragOverSlot.machine !== machineIdx) return false;
     const job = jobs.find(j => j.id === draggedTask.jobId);
     const task = job.tasks[draggedTask.taskIndex];
+    // N'autorise le drop que sur la bonne machine
+    if (machineIdx !== task.machine) return false;
+    if (dragOverSlot.machine !== machineIdx) return false;
     // Surligne la plage de temps correspondant à la durée de la tâche
     return (
       timeIdx >= dragOverSlot.time &&

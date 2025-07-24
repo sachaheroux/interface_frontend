@@ -108,9 +108,9 @@
 }
 
 .lam-tasks-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
   width: 100%;
 }
 
@@ -118,16 +118,20 @@
   background: white;
   border: 2px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
   cursor: grab;
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-height: 50px;
 }
 
 .lam-task-block:hover {
   border-color: var(--primary-color);
   box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .lam-task-block.assigned {
@@ -139,32 +143,51 @@
 .lam-task-name {
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
   font-size: var(--font-size-base);
+  min-width: 120px;
+  flex-shrink: 0;
 }
 
 .lam-task-times {
   display: flex;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xs);
+  gap: var(--spacing-md);
+  flex: 1;
 }
 
 .lam-time-a {
   color: #3b82f6;
   font-weight: 500;
   font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.lam-time-a::before {
+  content: "A:";
+  font-weight: 600;
 }
 
 .lam-time-b {
   color: #10b981;
   font-weight: 500;
   font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.lam-time-b::before {
+  content: "B:";
+  font-weight: 600;
 }
 
 .lam-task-predecessors {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
   font-style: italic;
+  min-width: 100px;
+  text-align: right;
 }
 
 /* ===== ZONE DES POSTES ===== */

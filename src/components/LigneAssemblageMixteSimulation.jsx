@@ -6,7 +6,7 @@ const LigneAssemblageMixteSimulation = () => {
   const PRODUCT_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
   
   // Configuration initiale
-  const CYCLE_TIME = 12; // Temps de cycle maximum en minutes
+  const CYCLE_TIME = 45; // Temps de cycle maximum en minutes (augmenté)
   const INITIAL_STATIONS = 4; // Nombre initial de postes
   
   // Tâches avec temps pour chaque produit
@@ -39,6 +39,29 @@ const LigneAssemblageMixteSimulation = () => {
   const [draggedTask, setDraggedTask] = useState(null);
   const [results, setResults] = useState(null);
 
+  // Fonction pour trier les tâches par ordre des prédécesseurs
+  const sortTasksByPredecessors = (tasks) => {
+    const sorted = [];
+    const visited = new Set();
+    
+    const visit = (taskId) => {
+      if (visited.has(taskId)) return;
+      visited.add(taskId);
+      
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        // Visiter d'abord tous les prédécesseurs
+        task.predecessors.forEach(pred => visit(pred));
+        sorted.push(task);
+      }
+    };
+    
+    // Visiter toutes les tâches
+    tasks.forEach(task => visit(task.id));
+    
+    return sorted;
+  };
+
   // Calculer l'équilibrage
   const calculateBalancing = () => {
     const stationTimes = {};
@@ -61,19 +84,15 @@ const LigneAssemblageMixteSimulation = () => {
     });
     
     // Calculer les métriques
-    const maxTimes = Object.values(stationTimes).map(station => 
-      Math.max(station.productA, station.productB)
+    const avgTimes = Object.values(stationTimes).map(station => 
+      (station.productA + station.productB) / 2 // Moyenne des deux produits
     );
-    const minTimes = Object.values(stationTimes).map(station => 
-      Math.min(station.productA, station.productB)
-    );
-    
-    const maxTime = Math.max(...maxTimes);
-    const minTime = Math.min(...minTimes);
-    const avgTime = maxTimes.reduce((sum, time) => sum + time, 0) / maxTimes.length;
+    const maxTime = Math.max(...avgTimes);
+    const minTime = Math.min(...avgTimes);
+    const avgTime = avgTimes.reduce((sum, time) => sum + time, 0) / avgTimes.length;
     
     const balanceEfficiency = ((minTime / maxTime) * 100).toFixed(1);
-    const cycleTimeViolation = maxTimes.filter(time => time > CYCLE_TIME).length;
+    const cycleTimeViolation = avgTimes.filter(time => time > CYCLE_TIME).length;
     
     return {
       stationTimes,
@@ -151,10 +170,10 @@ const LigneAssemblageMixteSimulation = () => {
     // Vérifier le temps de cycle
     const currentStationTime = currentStationTasks.reduce((total, taskId) => {
       const task = tasks.find(t => t.id === taskId);
-      return total + Math.max(task.productA, task.productB);
+      return total + ((task.productA + task.productB) / 2); // Moyenne des deux produits
     }, 0);
 
-    const newTaskTime = Math.max(draggedTask.productA, draggedTask.productB);
+    const newTaskTime = (draggedTask.productA + draggedTask.productB) / 2; // Moyenne des deux produits
     if (currentStationTime + newTaskTime > CYCLE_TIME) {
       alert(`La tâche "${draggedTask.name}" ne peut pas être placée car elle dépasserait le temps de cycle de ${CYCLE_TIME} minutes.`);
       return;
@@ -187,7 +206,7 @@ const LigneAssemblageMixteSimulation = () => {
             </ul>
           </div>
           <div className="lam-context-note">
-            <strong>Note :</strong> Les temps affichés sont en minutes. Le temps de cycle est calculé en prenant le maximum entre les deux produits pour chaque tâche.
+            <strong>Note :</strong> Les temps affichés sont en minutes. Le temps de cycle est calculé en prenant la moyenne des temps des deux produits pour chaque tâche.
           </div>
         </div>
       </div>
@@ -198,7 +217,7 @@ const LigneAssemblageMixteSimulation = () => {
         <div className="lam-tasks-zone">
           <h3>Tâches disponibles</h3>
           <div className="lam-tasks-container">
-            {tasks.map(task => (
+            {sortTasksByPredecessors(tasks).map(task => (
               <div
                 key={task.id}
                 className={`lam-task-block ${stationAssignments[task.id] ? 'assigned' : ''}`}
@@ -211,8 +230,8 @@ const LigneAssemblageMixteSimulation = () => {
               >
                 <div className="lam-task-name">{task.name}</div>
                 <div className="lam-task-times">
-                  <span className="lam-time-a">Produit A: {task.productA}min</span>
-                  <span className="lam-time-b">Produit B: {task.productB}min</span>
+                  <span className="lam-time-a">{task.productA}min</span>
+                  <span className="lam-time-b">{task.productB}min</span>
                 </div>
                 {task.predecessors.length > 0 && (
                   <div className="lam-task-predecessors">
@@ -255,7 +274,7 @@ const LigneAssemblageMixteSimulation = () => {
                 .filter(Boolean);
 
               const stationTime = stationTasks.reduce((total, task) => 
-                total + Math.max(task.productA, task.productB), 0
+                total + ((task.productA + task.productB) / 2), 0 // Moyenne des deux produits
               );
 
               return (
@@ -344,7 +363,7 @@ const LigneAssemblageMixteSimulation = () => {
                       <strong>Poste {stationId}:</strong>
                       <span>Produit A: {times.productA}min</span>
                       <span>Produit B: {times.productB}min</span>
-                      <span>Max: {Math.max(times.productA, times.productB)}min</span>
+                      <span>Moyenne: {((times.productA + times.productB) / 2).toFixed(1)}min</span>
                     </div>
                   ))}
                 </div>

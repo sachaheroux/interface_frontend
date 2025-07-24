@@ -166,6 +166,8 @@ function App() {
   const algorithms = selectedSystem ? 
     (currentMode === "systems" ? systemsConfig[selectedSystem] || [] : []) : [];
 
+  const hasSidebar = (currentMode === "systems" && selectedSystem) || currentMode === "courses";
+
   return (
     <div className="modern-app-container">
       {/* Top Navigation */}
@@ -177,9 +179,9 @@ function App() {
       />
 
       {/* Main Layout */}
-      <div className="modern-main-layout">
+      <div className={`modern-main-layout${hasSidebar ? ' with-sidebar' : ''}`}>
         {/* Sidebar systèmes de production */}
-        {currentMode === "systems" && selectedSystem && (
+        {hasSidebar && currentMode === "systems" && selectedSystem && (
           <CompactSidebar
             system={selectedSystem}
             algorithms={algorithms}
@@ -190,7 +192,7 @@ function App() {
           />
         )}
         {/* Sidebar cours indépendante */}
-        {currentMode === "courses" && (
+        {hasSidebar && currentMode === "courses" && (
           <CoursesSidebar
             selectedCategory={selectedCourseCategory}
             selectedCourse={selectedCourse}
@@ -201,7 +203,7 @@ function App() {
         )}
 
         {/* Content Area */}
-        <div className={`modern-content-area${(currentMode === "systems" && selectedSystem) || currentMode === "courses" ? ' with-sidebar' : ''}${shouldShowInfoPanel ? ' with-info-panel' : ' full-width'}`}>
+        <div className={`modern-content-area${hasSidebar ? ' with-sidebar' : ''}${shouldShowInfoPanel ? ' with-info-panel' : ' full-width'}`}>
           {/* Welcome View */}
           {(currentMode === "welcome" || (currentMode === "systems" && !selectedSystem)) && (
             <WelcomeView 

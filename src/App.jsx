@@ -1,9 +1,15 @@
-import { useState } from "react";
-import { Users } from "lucide-react";
-import "./App.css";
-import TopNavigation from "./components/TopNavigation";
-import CompactSidebar from "./components/CompactSidebar";
-import WelcomeView from "./components/WelcomeView";
+import React, { useState, useEffect } from 'react';
+import TopNavigation from './components/TopNavigation';
+import CompactSidebar from './components/CompactSidebar';
+import CoursesSidebar from './components/CoursesSidebar';
+import WelcomeView from './components/WelcomeView';
+import DecisionTree from './components/DecisionTree';
+import JobshopInteractiveSimulation from './components/JobshopInteractiveSimulation';
+import FlowshopInteractiveSimulation from './components/FlowshopInteractiveSimulation';
+import LigneAssemblageMixteSimulation from './components/LigneAssemblageMixteSimulation';
+import LigneAssemblageMixteSequencage from './components/LigneAssemblageMixteSequencage';
+import { Users, Factory, BookOpen, Brain } from 'lucide-react';
+import './App.css';
 import SystemDescription from "./components/SystemDescription";
 import AlgorithmFormAndResult from "./components/AlgorithmFormAndResult";
 import FlowshopSPTForm from "./components/FlowshopSPTForm";
@@ -60,10 +66,7 @@ import FMSLotsProductionMIPForm from "./components/FMSLotsProductionMIPForm";
 import FMSLotsProductionMIPInfo from "./components/FMSLotsProductionMIPInfo";
 import FMSLotsChargementHeuristiqueForm from "./components/FMSLotsChargementHeuristiqueForm";
 import FMSLotsChargementHeuristiqueInfo from "./components/FMSLotsChargementHeuristiqueInfo";
-import DecisionTree from "./components/DecisionTree";
-import JobshopInteractiveSimulation from "./components/JobshopInteractiveSimulation";
-import FlowshopInteractiveSimulation from "./components/FlowshopInteractiveSimulation";
-import CoursesSidebar from "./components/CoursesSidebar";
+
 
 function App() {
   // États pour la navigation des systèmes de production
@@ -260,6 +263,14 @@ function App() {
                   <h2>Cas d'étude 1</h2>
                   <p>Exercice pratique à venir...</p>
                 </div>
+              )}
+              {/* Ligne d'assemblage mixte Simulation */}
+              {selectedCourse === "Ligne d'assemblage mixte" && (
+                <LigneAssemblageMixteSimulation />
+              )}
+              {/* Ligne d'assemblage mixte Sequencage */}
+              {selectedCourse === "Ligne d'assemblage mixte Sequencage" && (
+                <LigneAssemblageMixteSequencage />
               )}
             </div>
           )}

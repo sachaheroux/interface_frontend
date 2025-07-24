@@ -207,7 +207,7 @@ function App() {
         )}
 
         {/* Content Area */}
-        <div className={`modern-content-area${hasSidebar ? ' with-sidebar' : ''}${shouldShowInfoPanel ? ' with-info-panel' : ' full-width'}`}>
+        <div className={`modern-content-area${hasSidebar ? ' with-sidebar' : ''}${shouldShowInfoPanel ? ' with-info-panel' : ''}`}>
           {/* Welcome View */}
           {(currentMode === "welcome" || (currentMode === "systems" && !selectedSystem)) && (
             <WelcomeView 

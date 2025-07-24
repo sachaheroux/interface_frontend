@@ -225,12 +225,55 @@ const JobshopInteractiveSimulation = () => {
     <div className="jobshop-simulation">
       {/* Contexte d'usine */}
       <div className="factory-context">
-        <h2>🏭 Usine de Production Automobile</h2>
-        <p>
-          Votre usine reçoit 4 commandes de pièces automobiles qui doivent passer sur 3 machines spécialisées 
-          (M1: Découpe, M2: Assemblage, M3: Finition) dans des ordres différents selon les spécifications de chaque commande. 
-          Optimisez l'ordonnancement pour minimiser les retards et améliorer l'efficacité de production !
-        </p>
+        <h2>Contexte de la simulation</h2>
+        <div className="context-block">
+          <p>
+            Vous êtes responsable de la production dans une usine d’assemblage de robots de service haut de gamme, destinés à des clients exigeants des secteurs de la santé, de l’hôtellerie et de la logistique.<br/><br/>
+            Suite à des imprévus (pannes, changements de spécifications, réorganisations), le planning de production est menacé. Les robots en cours de fabrication doivent être livrés rapidement, et chaque heure de retard impacte la réputation de l’usine.
+          </p>
+          <div className="context-mission">
+            <strong>Votre mission</strong><br/>
+            Réorganisez la planification de fin de production pour limiter les retards et préserver la confiance des clients.
+          </div>
+          <div className="context-ressources">
+            <strong>Ressources disponibles</strong>
+            <ul>
+              <li><b>M1</b> : Assemblage de base (châssis, moteurs)</li>
+              <li><b>M2</b> : Calibration des capteurs et tests de précision</li>
+              <li><b>M3</b> : Programmation finale et essais fonctionnels</li>
+            </ul>
+          </div>
+          <div className="context-jobs">
+            <strong>Robots à planifier</strong>
+            <div className="context-table-wrapper">
+              <table className="context-table">
+                <thead>
+                  <tr>
+                    <th>Robot</th>
+                    <th>Séquence des opérations</th>
+                    <th>Durées (h)</th>
+                    <th>Date due</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>J1</td><td>M1 → M2 → M3</td><td>9 → 2 → 1</td><td>12</td></tr>
+                  <tr><td>J2</td><td>M1 → M3 → M2</td><td>3 → 5 → 6</td><td>14</td></tr>
+                  <tr><td>J3</td><td>M1 → M2 → M1</td><td>2 → 7 → 6</td><td>17</td></tr>
+                  <tr><td>J4</td><td>M2 → M1 → M3</td><td>5 → 3 → 4</td><td>25</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="context-note">
+              <em>Remarque : J3 retourne à M1 en fin de parcours pour un ajustement mécanique spécifique (bras articulés). Chaque robot est un prototype, d’où l’ordre varié des opérations.</em>
+            </div>
+          </div>
+          <div className="context-defi">
+            <strong>Défi</strong><br/>
+            Glissez-déposez les tâches dans le diagramme de Gantt pour créer un ordonnancement réaliste qui respecte au mieux les contraintes.<br/>
+            Essayez de minimiser le retard total ou le nombre de robots en retard.<br/>
+            Saurez-vous faire mieux que les algorithmes vus en classe ?
+          </div>
+        </div>
       </div>
 
       <div className="simulation-content">

@@ -17,6 +17,69 @@
   box-shadow: var(--shadow-lg);
 }
 
+.context-block {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.context-mission,
+.context-ressources,
+.context-jobs,
+.context-defi {
+  margin: var(--spacing-lg) 0;
+}
+
+.context-ressources ul {
+  list-style: disc inside;
+  padding-left: 0;
+  margin: 0 auto;
+  display: inline-block;
+  text-align: left;
+}
+
+.context-ressources li {
+  margin-bottom: 4px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.context-table-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: var(--spacing-md) 0;
+}
+
+.context-table {
+  border-collapse: collapse;
+  background: rgba(255,255,255,0.97);
+  color: #333;
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 380px;
+  max-width: 100%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.context-table th, .context-table td {
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.context-table th {
+  background: #f3f4f6;
+  color: #222;
+  font-weight: 600;
+}
+
+.context-note {
+  margin-top: var(--spacing-sm);
+  color: #f3f4f6;
+  font-size: 0.98rem;
+  font-style: italic;
+}
+
 .factory-context h2 {
   font-size: var(--font-size-2xl);
   font-weight: 700;
@@ -476,5 +539,18 @@
     flex: 1;
     min-width: 60px;
     font-size: 10px;
+  }
+} 
+
+@media (max-width: 600px) {
+  .context-block {
+    padding: 0 2px;
+  }
+  .context-table {
+    min-width: 220px;
+    font-size: 0.95rem;
+  }
+  .context-table th, .context-table td {
+    padding: 6px 6px;
   }
 } 

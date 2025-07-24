@@ -256,7 +256,6 @@
   background: white;
   width: fit-content;
   max-width: 100%;
-  min-width: 0;
 }
 
 .flowshop-gantt-header {

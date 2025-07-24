@@ -180,6 +180,16 @@ const JobshopInteractiveSimulation = () => {
     const task = job.tasks[draggedTask.taskIndex];
     // Empêcher le drop sur une mauvaise machine
     if (machine !== task.machine) return;
+    // Si ce n'est pas la première tâche du job, vérifier la fin de la tâche précédente
+    if (draggedTask.taskIndex > 0) {
+      const prevTaskIndex = draggedTask.taskIndex - 1;
+      const prevTaskPlaced = userSchedule.find(
+        t => t.jobId === job.id && t.taskIndex === prevTaskIndex
+      );
+      if (!prevTaskPlaced) return; // Tâche précédente non placée
+      const prevTaskEnd = prevTaskPlaced.start + prevTaskPlaced.duration;
+      if (time < prevTaskEnd) return; // Placement trop tôt
+    }
     // Ajouter la tâche à l'emploi du temps utilisateur
     setUserSchedule(prev => [
       ...prev,
@@ -218,6 +228,16 @@ const JobshopInteractiveSimulation = () => {
     // N'autorise le drop que sur la bonne machine
     if (machineIdx !== task.machine) return false;
     if (dragOverSlot.machine !== machineIdx) return false;
+    // Si ce n'est pas la première tâche du job, vérifier la fin de la tâche précédente
+    if (draggedTask.taskIndex > 0) {
+      const prevTaskIndex = draggedTask.taskIndex - 1;
+      const prevTaskPlaced = userSchedule.find(
+        t => t.jobId === job.id && t.taskIndex === prevTaskIndex
+      );
+      if (!prevTaskPlaced) return false;
+      const prevTaskEnd = prevTaskPlaced.start + prevTaskPlaced.duration;
+      if (timeIdx < prevTaskEnd) return false;
+    }
     // Surligne la plage de temps correspondant à la durée de la tâche
     return (
       timeIdx >= dragOverSlot.time &&

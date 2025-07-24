@@ -92,7 +92,7 @@ function App() {
   // Configuration des cours
   const coursesConfig = {
     "Cours Théoriques": ["Introduction aux systèmes", "Ordonnancement de base", "Algorithmes avancés"],
-    "Simulations Interactives": ["Jobshop", "Flowshop", "Ligne d'assemblage"],
+    "Simulations Interactives": ["Jobshop", "Flowshop", "Ligne d'assemblage", "Ligne d'assemblage mixte", "Ligne d'assemblage mixte Sequencage"],
     "Exercices Pratiques": ["Cas d'étude 1", "Cas d'étude 2", "Projet final"]
   };
 

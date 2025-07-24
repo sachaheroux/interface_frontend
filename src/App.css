@@ -36,14 +36,10 @@
 
 /* ===== LAYOUT PRINCIPAL MODERNE ===== */
 .modern-app-container {
-  min-height: 100vh;
-  background: var(--background-section);
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
   display: flex;
-  flex-direction: column;
+  min-height: 100vh;
   width: 100vw;
   overflow-x: hidden;
-  padding-top: 70px; /* Ajuste à la hauteur réelle de la top-navigation */
 }
 
 .modern-main-layout {

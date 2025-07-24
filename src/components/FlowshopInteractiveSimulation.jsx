@@ -185,7 +185,7 @@ const FlowshopInteractiveSimulation = () => {
   };
 
   // Ajout d'une variable pour la longueur totale du Gantt (nombre de cases)
-  const GANTT_LENGTH = 36;
+  const GANTT_LENGTH = 30;
 
   // Largeur fixe par case de temps
   const TIME_SLOT_WIDTH = 40; // pixels

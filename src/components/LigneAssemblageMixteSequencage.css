@@ -1,7 +1,9 @@
 /* ===== CONTENU PRINCIPAL ===== */
 .lam-sequencage {
-  padding: var(--spacing-xl);
-  box-sizing: border-box;
+  padding: var(--spacing-lg);
+  background: var(--background-main);
+  height: auto;
+  overflow: visible;
 }
 
 /* ===== CONTEXTE DE SÉQUENÇAGE ===== */

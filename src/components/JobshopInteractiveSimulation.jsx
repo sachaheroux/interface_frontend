@@ -228,6 +228,19 @@ const JobshopInteractiveSimulation = () => {
   // Largeur fixe par case de temps
   const TIME_SLOT_WIDTH = 40; // pixels
 
+  // Fonction pour déterminer la couleur de la ligne sous chaque unité de temps
+  const getTimeLineColor = (time) => {
+    // Couleurs des jobs selon leurs dates dues
+    const dueDateColors = {
+      12: '#3b82f6', // bleu pour Job 1 (due date 12)
+      14: '#10b981', // vert pour Job 2 (due date 14)
+      17: '#f59e42', // orange pour Job 3 (due date 17)
+      25: '#a78bfa'  // mauve pour Job 4 (due date 25)
+    };
+    
+    return dueDateColors[time] || '#999'; // gris par défaut si pas de date due
+  };
+
   // Dans la zone Gantt, lors du drag, surligne toutes les cases cibles
   const isDroppable = (machineIdx, timeIdx) => {
     if (!draggedTask || !dragOverSlot) return false;
@@ -383,7 +396,7 @@ const JobshopInteractiveSimulation = () => {
                       left: `${time * TIME_SLOT_WIDTH}px`,
                       fontSize: '12px',
                       fontWeight: '500',
-                      color: '#333',
+                      color: getTimeLineColor(time),
                       textAlign: 'center',
                       width: '20px',
                       marginLeft: '-10px'
@@ -394,9 +407,9 @@ const JobshopInteractiveSimulation = () => {
                       position: 'absolute',
                       bottom: '-15px',
                       left: '50%',
-                      width: '1px',
+                      width: '2px',
                       height: '15px',
-                      backgroundColor: '#999',
+                      backgroundColor: getTimeLineColor(time),
                       transform: 'translateX(-50%)'
                     }}></div>
                   </div>

@@ -142,6 +142,16 @@
   flex-direction: column;
 }
 
+/* Force l'accueil et l'aide à la décision à prendre toute la largeur même si parent en flex */
+.welcome-view, .decision-tree {
+  flex: 1 1 100vw !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: stretch !important;
+}
+
 /* ===== RESPONSIVE MODERNE ===== */
 @media (max-width: 1200px) {
   .modern-main-layout {

@@ -98,12 +98,6 @@
   max-width: none;
 }
 
-.modern-content-area.with-sidebar {
-  width: calc(100% - 260px);
-  max-width: calc(100% - 260px);
-  box-sizing: border-box;
-}
-
 .modern-content-area.with-info-panel {
   /* Utilisera toute la largeur disponible moins l'InfoPanel */
   width: calc(100% - 320px);

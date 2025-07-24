@@ -43,6 +43,7 @@
   flex-direction: column;
   width: 100vw;
   overflow-x: hidden;
+  padding-top: 70px; /* Ajuste à la hauteur réelle de la top-navigation */
 }
 
 .modern-main-layout {
@@ -140,16 +141,6 @@
   min-height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
-}
-
-/* Force l'accueil et l'aide à la décision à prendre toute la largeur même si parent en flex */
-.welcome-view, .decision-tree {
-  flex: 1 1 100vw !important;
-  width: 100vw !important;
-  max-width: 100vw !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  align-self: stretch !important;
 }
 
 /* ===== RESPONSIVE MODERNE ===== */

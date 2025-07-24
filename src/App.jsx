@@ -62,6 +62,7 @@ import FMSLotsChargementHeuristiqueForm from "./components/FMSLotsChargementHeur
 import FMSLotsChargementHeuristiqueInfo from "./components/FMSLotsChargementHeuristiqueInfo";
 import DecisionTree from "./components/DecisionTree";
 import JobshopInteractiveSimulation from "./components/JobshopInteractiveSimulation";
+import FlowshopInteractiveSimulation from "./components/FlowshopInteractiveSimulation";
 import CoursesSidebar from "./components/CoursesSidebar";
 
 function App() {
@@ -238,10 +239,7 @@ function App() {
                 <JobshopInteractiveSimulation />
               )}
               {selectedCourse === "Flowshop" && (
-                <div style={{ padding: '2rem', textAlign: 'center' }}>
-                  <h2>Simulation Flowshop</h2>
-                  <p>Contenu à venir...</p>
-                </div>
+                <FlowshopInteractiveSimulation />
               )}
               {selectedCourse === "Ligne d'assemblage" && (
                 <div style={{ padding: '2rem', textAlign: 'center' }}>

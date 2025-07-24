@@ -631,15 +631,15 @@
 } 
 
 .courses-content > div {
-  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%) !important;
-  color: #fff;
+  background: #fff !important;
+  color: var(--text-primary);
   box-shadow: 0 4px 24px rgba(30,64,175,0.10);
 }
 
 .courses-content h2 {
-  color: #fff !important;
+  color: var(--text-primary) !important;
 }
 
 .courses-content p {
-  color: #e0e7ef !important;
+  color: var(--text-secondary) !important;
 } 

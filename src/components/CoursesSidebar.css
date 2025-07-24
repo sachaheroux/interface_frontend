@@ -1,13 +1,17 @@
 /* ===== COURSES SIDEBAR ===== */
 .courses-sidebar {
-  min-width: 280px;
-  max-width: 320px;
-  background: var(--background-main);
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
+  position: fixed;
+  top: 70px;
+  left: 0;
   height: calc(100vh - 70px);
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  width: 260px; /* ou la largeur réelle de ta sidebar */
+  z-index: 90;
+  background: var(--sidebar-bg, #fff);
+  box-shadow: 2px 0 8px rgba(0,0,0,0.03);
+}
+
+.modern-content-area {
+  margin-left: 260px;
 }
 
 /* ===== HEADER ===== */

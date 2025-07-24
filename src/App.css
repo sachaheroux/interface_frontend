@@ -102,6 +102,12 @@
   width: calc(100% - 320px);
 }
 
+.modern-content-area.with-sidebar {
+  width: calc(100vw - 260px);
+  max-width: calc(100vw - 260px);
+  box-sizing: border-box;
+}
+
 /* Contenu des algorithmes */
 .algorithm-content {
   padding: var(--spacing-xl);

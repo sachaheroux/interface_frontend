@@ -190,6 +190,14 @@ const JobshopInteractiveSimulation = () => {
       const prevTaskEnd = prevTaskPlaced.start + prevTaskPlaced.duration;
       if (time < prevTaskEnd) return; // Placement trop tôt
     }
+    // Empêcher le drop si la plage est déjà occupée sur la machine
+    const overlap = userSchedule.some(t =>
+      t.machine === machine &&
+      ((time >= t.start && time < t.start + t.duration) ||
+       (time + task.duration - 1 >= t.start && time + task.duration - 1 < t.start + t.duration) ||
+       (t.start >= time && t.start < time + task.duration))
+    );
+    if (overlap) return;
     // Ajouter la tâche à l'emploi du temps utilisateur
     setUserSchedule(prev => [
       ...prev,
@@ -238,6 +246,14 @@ const JobshopInteractiveSimulation = () => {
       const prevTaskEnd = prevTaskPlaced.start + prevTaskPlaced.duration;
       if (timeIdx < prevTaskEnd) return false;
     }
+    // Empêcher le drop si la plage est déjà occupée sur la machine
+    const overlap = userSchedule.some(t =>
+      t.machine === machineIdx &&
+      ((timeIdx >= t.start && timeIdx < t.start + t.duration) ||
+       (timeIdx + task.duration - 1 >= t.start && timeIdx + task.duration - 1 < t.start + t.duration) ||
+       (t.start >= timeIdx && t.start < timeIdx + task.duration))
+    );
+    if (overlap) return false;
     // Surligne la plage de temps correspondant à la durée de la tâche
     return (
       timeIdx >= dragOverSlot.time &&

@@ -242,9 +242,7 @@ function App() {
                 <JobshopInteractiveSimulation />
               )}
               {selectedCourse === "Flowshop" && (
-                <div className="algorithm-content simulation-interactive">
-                  <FlowshopInteractiveSimulation />
-                </div>
+                <FlowshopInteractiveSimulation />
               )}
               {selectedCourse === "Ligne d'assemblage" && (
                 <div style={{ padding: '2rem', textAlign: 'center' }}>
@@ -268,15 +266,11 @@ function App() {
               )}
               {/* Ligne d'assemblage mixte Simulation */}
               {selectedCourse === "Ligne d'assemblage mixte" && (
-                <div className="algorithm-content simulation-interactive">
-                  <LigneAssemblageMixteSimulation />
-                </div>
+                <LigneAssemblageMixteSimulation />
               )}
               {/* Ligne d'assemblage mixte Sequencage */}
               {selectedCourse === "Ligne d'assemblage mixte Sequencage" && (
-                <div className="algorithm-content simulation-interactive">
-                  <LigneAssemblageMixteSequencage />
-                </div>
+                <LigneAssemblageMixteSequencage />
               )}
             </div>
           )}

@@ -6,13 +6,6 @@
   box-sizing: border-box;
 }
 
-/* Règle spécifique pour quand il y a une sidebar */
-.modern-content-area.with-sidebar .lam-sequencage {
-  width: calc(100vw - 260px);
-  max-width: calc(100vw - 260px);
-  box-sizing: border-box;
-}
-
 /* ===== CONTEXTE DE SÉQUENÇAGE ===== */
 .lam-sequencage-context {
   position: relative;

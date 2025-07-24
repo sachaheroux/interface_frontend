@@ -6,13 +6,6 @@
   box-sizing: border-box;
 }
 
-/* Règle spécifique pour quand il y a une sidebar */
-.modern-content-area.with-sidebar .lam-simulation {
-  width: calc(100vw - 260px);
-  max-width: calc(100vw - 260px);
-  box-sizing: border-box;
-}
-
 /* ===== CONTEXTE D'USINE ===== */
 .lam-factory-context {
   position: relative;

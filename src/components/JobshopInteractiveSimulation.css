@@ -344,6 +344,14 @@
   z-index: 1;
 }
 
+.time-slot.not-droppable {
+  background: rgba(239, 68, 68, 0.13); /* rouge très clair */
+  border: 2px dashed #ef4444;
+  cursor: not-allowed;
+  transition: background 0.2s;
+  z-index: 1;
+}
+
 /* ===== BLOCS DE TÂCHES DANS LE GANTT ===== */
 .gantt-task-block {
   position: absolute;

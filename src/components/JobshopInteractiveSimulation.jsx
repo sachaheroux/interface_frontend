@@ -394,10 +394,14 @@ const JobshopInteractiveSimulation = () => {
                 <div className="machine-timeline" style={{ overflow: 'visible' }}>
                   {Array.from({ length: GANTT_LENGTH }, (_, time) => {
                     const placedTask = getTaskAt(machineIndex, time);
+                    // Détermine si la case est survolée pendant un drag
+                    const isDragOver = draggedTask && dragOverSlot && dragOverSlot.machine === machineIndex && dragOverSlot.time === time;
+                    // Peut-on drop ici ?
+                    const canDrop = isDroppable(machineIndex, time);
                     return (
                       <div
                         key={time}
-                        className={`time-slot${isDroppable(machineIndex, time) ? ' droppable' : ''}`}
+                        className={`time-slot${canDrop ? ' droppable' : ''}${isDragOver && !canDrop ? ' not-droppable' : ''}`}
                         style={{ 
                           position: 'relative',
                           width: `${TIME_SLOT_WIDTH}px`,

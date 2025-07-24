@@ -629,3 +629,17 @@
     transform: none;
   }
 } 
+
+.courses-content > div {
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%) !important;
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(30,64,175,0.10);
+}
+
+.courses-content h2 {
+  color: #fff !important;
+}
+
+.courses-content p {
+  color: #e0e7ef !important;
+} 

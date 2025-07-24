@@ -18,8 +18,8 @@ const FlowshopInteractiveSimulation = () => {
       name: 'Smartphone Alpha',
       color: JOB_COLORS[0],
       tasks: [
-        { machine: 0, duration: 6, name: 'M1:6' },
-        { machine: 1, duration: 4, name: 'M2:4' },
+        { machine: 0, duration: 8, name: 'M1:8' },
+        { machine: 1, duration: 3, name: 'M2:3' },
         { machine: 2, duration: 2, name: 'M3:2' }
       ]
     },
@@ -28,9 +28,9 @@ const FlowshopInteractiveSimulation = () => {
       name: 'Smartphone Beta',
       color: JOB_COLORS[1],
       tasks: [
-        { machine: 0, duration: 3, name: 'M1:3' },
-        { machine: 1, duration: 5, name: 'M2:5' },
-        { machine: 2, duration: 3, name: 'M3:3' }
+        { machine: 0, duration: 2, name: 'M1:2' },
+        { machine: 1, duration: 7, name: 'M2:7' },
+        { machine: 2, duration: 4, name: 'M3:4' }
       ]
     },
     {
@@ -38,9 +38,9 @@ const FlowshopInteractiveSimulation = () => {
       name: 'Smartphone Gamma',
       color: JOB_COLORS[2],
       tasks: [
-        { machine: 0, duration: 4, name: 'M1:4' },
-        { machine: 1, duration: 3, name: 'M2:3' },
-        { machine: 2, duration: 4, name: 'M3:4' }
+        { machine: 0, duration: 5, name: 'M1:5' },
+        { machine: 1, duration: 4, name: 'M2:4' },
+        { machine: 2, duration: 6, name: 'M3:6' }
       ]
     },
     {
@@ -48,9 +48,9 @@ const FlowshopInteractiveSimulation = () => {
       name: 'Smartphone Delta',
       color: JOB_COLORS[3],
       tasks: [
-        { machine: 0, duration: 2, name: 'M1:2' },
+        { machine: 0, duration: 3, name: 'M1:3' },
         { machine: 1, duration: 6, name: 'M2:6' },
-        { machine: 2, duration: 2, name: 'M3:2' }
+        { machine: 2, duration: 3, name: 'M3:3' }
       ]
     }
   ];
@@ -73,16 +73,16 @@ const FlowshopInteractiveSimulation = () => {
     // Simulation des résultats des algorithmes
     const results = {
       johnson: {
-        makespan: 20,
-        schedule: "Johnson: Alpha → Beta → Delta → Gamma"
+        makespan: 28,
+        schedule: "Johnson: Beta → Delta → Gamma → Alpha"
       },
       spt: {
-        makespan: 22,
+        makespan: 35,
         schedule: "SPT: Beta → Delta → Gamma → Alpha"
       },
       lpt: {
-        makespan: 24,
-        schedule: "LPT: Alpha → Gamma → Beta → Delta"
+        makespan: 32,
+        schedule: "LPT: Alpha → Gamma → Delta → Beta"
       }
     };
     setAlgorithmResults(results);
@@ -257,10 +257,10 @@ const FlowshopInteractiveSimulation = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>Alpha</td><td>M1 → M2 → M3</td><td>6 → 4 → 2</td></tr>
-                  <tr><td>Beta</td><td>M1 → M2 → M3</td><td>3 → 5 → 3</td></tr>
-                  <tr><td>Gamma</td><td>M1 → M2 → M3</td><td>4 → 3 → 4</td></tr>
-                  <tr><td>Delta</td><td>M1 → M2 → M3</td><td>2 → 6 → 2</td></tr>
+                  <tr><td>Alpha</td><td>M1 → M2 → M3</td><td>8 → 3 → 2</td></tr>
+                  <tr><td>Beta</td><td>M1 → M2 → M3</td><td>2 → 7 → 4</td></tr>
+                  <tr><td>Gamma</td><td>M1 → M2 → M3</td><td>5 → 4 → 6</td></tr>
+                  <tr><td>Delta</td><td>M1 → M2 → M3</td><td>3 → 6 → 3</td></tr>
                 </tbody>
               </table>
             </div>

@@ -559,7 +559,6 @@
   padding: var(--spacing-lg) 0;
   border-bottom: 2px solid var(--border-color);
   margin-bottom: var(--spacing-md);
-  overflow-x: auto;
 }
 
 .lam-sequencage-graph-bar {

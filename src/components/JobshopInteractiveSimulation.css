@@ -518,7 +518,6 @@
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1200px) {
   .jobshop-gantt-container {
-    overflow-x: auto;
     width: 100%;
   }
   

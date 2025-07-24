@@ -108,8 +108,8 @@
 }
 
 .lam-tasks-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-xs);
   width: 100%;
 }
@@ -539,19 +539,19 @@
     align-items: flex-start;
   }
   
-  .lam-validation-buttons {
+  .validation-buttons {
     flex-direction: column;
   }
   
-  .lam-results-grid {
+  .results-grid {
     grid-template-columns: 1fr;
   }
   
-  .lam-stations-container {
+  .stations-container {
     grid-template-columns: 1fr;
   }
   
-  .lam-tasks-container {
+  .tasks-container {
     grid-template-columns: 1fr;
   }
 }

@@ -8,6 +8,13 @@
   width: 100%;
 }
 
+/* Règle spécifique pour quand il y a une sidebar */
+.modern-content-area.with-sidebar .flowshop-simulation {
+  width: calc(100vw - 260px);
+  max-width: calc(100vw - 260px);
+  box-sizing: border-box;
+}
+
 /* ===== CONTEXTE D'USINE ===== */
 .flowshop-factory-context {
   position: relative;

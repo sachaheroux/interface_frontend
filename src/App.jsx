@@ -167,8 +167,7 @@ function App() {
   const algorithms = selectedSystem ? 
     (currentMode === "systems" ? systemsConfig[selectedSystem] || [] : []) : [];
 
-  const hasSidebar = (currentMode === "systems" && selectedSystem) || 
-                     (currentMode === "courses" && selectedCourseCategory && !["Jobshop", "Flowshop", "Ligne d'assemblage"].includes(selectedCourse));
+  const hasSidebar = (currentMode === "systems" && selectedSystem) || currentMode === "courses";
 
   return (
     <div className="modern-app-container">

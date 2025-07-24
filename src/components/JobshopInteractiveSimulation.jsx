@@ -277,18 +277,18 @@ const JobshopInteractiveSimulation = () => {
   return (
     <div className="jobshop-simulation">
       {/* Contexte d'usine */}
-      <div className="factory-context">
+      <div className="jobshop-factory-context">
         <h2>Contexte de la simulation</h2>
-        <div className="context-block">
+        <div className="jobshop-context-block">
           <p>
-            Vous êtes responsable de la production dans une usine d’assemblage de robots de service haut de gamme, destinés à des clients exigeants des secteurs de la santé, de l’hôtellerie et de la logistique.<br/><br/>
-            Suite à des imprévus (pannes, changements de spécifications, réorganisations), le planning de production est menacé. Les robots en cours de fabrication doivent être livrés rapidement, et chaque heure de retard impacte la réputation de l’usine.
+            Vous êtes responsable de la production dans une usine d'assemblage de robots de service haut de gamme, destinés à des clients exigeants des secteurs de la santé, de l'hôtellerie et de la logistique.<br/><br/>
+            Suite à des imprévus (pannes, changements de spécifications, réorganisations), le planning de production est menacé. Les robots en cours de fabrication doivent être livrés rapidement, et chaque heure de retard impacte la réputation de l'usine.
           </p>
-          <div className="context-mission">
+          <div className="jobshop-context-mission">
             <strong>Votre mission</strong><br/>
             Réorganisez la planification de fin de production pour limiter les retards et préserver la confiance des clients.
           </div>
-          <div className="context-ressources">
+          <div className="jobshop-context-ressources">
             <strong>Ressources disponibles</strong>
             <ul>
               <li><b>M1</b> : Assemblage de base (châssis, moteurs)</li>
@@ -296,10 +296,10 @@ const JobshopInteractiveSimulation = () => {
               <li><b>M3</b> : Programmation finale et essais fonctionnels</li>
             </ul>
           </div>
-          <div className="context-jobs">
+          <div className="jobshop-context-jobs">
             <strong>Robots à planifier</strong>
-            <div className="context-table-wrapper">
-              <table className="context-table">
+            <div className="jobshop-context-table-wrapper">
+              <table className="jobshop-context-table">
                 <thead>
                   <tr>
                     <th>Robot</th>
@@ -316,11 +316,11 @@ const JobshopInteractiveSimulation = () => {
                 </tbody>
               </table>
             </div>
-            <div className="context-note">
-              <em>Remarque : J3 retourne à M1 en fin de parcours pour un ajustement mécanique spécifique (bras articulés). Chaque robot est un prototype, d’où l’ordre varié des opérations.</em>
+            <div className="jobshop-context-note">
+              <em>Remarque : J3 retourne à M1 en fin de parcours pour un ajustement mécanique spécifique (bras articulés). Chaque robot est un prototype, d'où l'ordre varié des opérations.</em>
             </div>
           </div>
-          <div className="context-defi">
+          <div className="jobshop-context-defi">
             <strong>Défi</strong><br/>
             Glissez-déposez les tâches dans le diagramme de Gantt pour créer un ordonnancement réaliste qui respecte au mieux les contraintes.<br/>
             Essayez de minimiser le retard total ou le nombre de robots en retard.<br/>
@@ -329,18 +329,18 @@ const JobshopInteractiveSimulation = () => {
         </div>
       </div>
 
-      <div className="simulation-content">
+      <div className="jobshop-simulation-content">
         {/* Zone des jobs en format compact */}
-        <div className="jobs-compact-zone">
+        <div className="jobshop-jobs-compact-zone">
           <h3>📋 Commandes reçues</h3>
-          <div className="jobs-compact-container">
+          <div className="jobshop-jobs-compact-container">
             {jobs.map((job, jobIdx) => (
-              <div key={job.id} className="job-compact-row">
-                <div className="job-info">
-                  <span className="job-name">{job.name}</span>
-                  <span className="job-due">Date due: {job.dueDate}</span>
+              <div key={job.id} className="jobshop-job-compact-row">
+                <div className="jobshop-job-info">
+                  <span className="jobshop-job-name">{job.name}</span>
+                  <span className="jobshop-job-due">Date due: {job.dueDate}</span>
                 </div>
-                <div className="job-tasks-compact">
+                <div className="jobshop-job-tasks-compact">
                   {job.tasks.map((task, index) => {
                     // Vérifier si la tâche a déjà été placée
                     const alreadyPlaced = userSchedule.some(
@@ -350,7 +350,7 @@ const JobshopInteractiveSimulation = () => {
                     return (
                       <div
                         key={index}
-                        className="task-block-compact"
+                        className="jobshop-task-block-compact"
                         style={{
                           background: job.color,
                           opacity: draggedTask && draggedTask.jobId === job.id && draggedTask.taskIndex === index ? 0.6 : 1,
@@ -381,16 +381,16 @@ const JobshopInteractiveSimulation = () => {
         </div>
 
         {/* Zone de Gantt */}
-        <div className="gantt-zone">
+        <div className="jobshop-gantt-zone">
           <h3>📊 Planning de production</h3>
-          <div className="gantt-container" style={{ overflow: 'visible' }}>
-            <div className="gantt-header">
-              <div className="machine-label">Machine</div>
-              <div className="time-labels-container" style={{ display: 'flex', position: 'relative', height: '30px' }}>
+          <div className="jobshop-gantt-container" style={{ overflow: 'visible' }}>
+            <div className="jobshop-gantt-header">
+              <div className="jobshop-machine-label">Machine</div>
+              <div className="jobshop-time-labels-container" style={{ display: 'flex', position: 'relative', height: '30px' }}>
                 {Array.from({ length: GANTT_LENGTH }, (_, time) => (
                   <div 
                     key={time} 
-                    className="time-label" 
+                    className="jobshop-time-label" 
                     style={{ 
                       position: 'absolute',
                       left: `${time * TIME_SLOT_WIDTH}px`,
@@ -418,9 +418,9 @@ const JobshopInteractiveSimulation = () => {
             </div>
             
             {machineNames.map((machine, machineIndex) => (
-              <div key={machineIndex} className="machine-row">
-                <div className="machine-name">{machine}</div>
-                <div className="machine-timeline" style={{ overflow: 'visible' }}>
+              <div key={machineIndex} className="jobshop-machine-row">
+                <div className="jobshop-machine-name">{machine}</div>
+                <div className="jobshop-machine-timeline" style={{ overflow: 'visible' }}>
                   {Array.from({ length: GANTT_LENGTH }, (_, time) => {
                     const placedTask = getTaskAt(machineIndex, time);
                     // Détermine si la case est survolée pendant un drag
@@ -430,7 +430,7 @@ const JobshopInteractiveSimulation = () => {
                     return (
                       <div
                         key={time}
-                        className={`time-slot${canDrop ? ' droppable' : ''}${isDragOver && !canDrop ? ' not-droppable' : ''}`}
+                        className={`jobshop-time-slot${canDrop ? ' droppable' : ''}${isDragOver && !canDrop ? ' not-droppable' : ''}`}
                         style={{ 
                           position: 'relative',
                           width: `${TIME_SLOT_WIDTH}px`,
@@ -447,7 +447,7 @@ const JobshopInteractiveSimulation = () => {
                         {/* Affichage du bloc si la tâche commence à ce temps */}
                         {placedTask && placedTask.start === time && (
                           <div
-                            className="gantt-task-block"
+                            className="jobshop-gantt-task-block"
                             style={{
                               background: placedTask.color,
                               width: `${placedTask.duration * TIME_SLOT_WIDTH}px`,
@@ -485,17 +485,17 @@ const JobshopInteractiveSimulation = () => {
         </div>
 
         {/* Zone de validation */}
-        <div className="validation-zone">
+        <div className="jobshop-validation-zone">
           <h3>✅ Évaluation</h3>
-          <div className="validation-buttons">
+          <div className="jobshop-validation-buttons">
             <button 
-              className="evaluate-btn"
+              className="jobshop-evaluate-btn"
               onClick={evaluateUserSolution}
             >
               Évaluer ma solution
             </button>
             <button 
-              className="reset-btn"
+              className="jobshop-reset-btn"
               onClick={resetSimulation}
             >
               Recommencer
@@ -505,23 +505,23 @@ const JobshopInteractiveSimulation = () => {
 
         {/* Résultats */}
         {showResults && (
-          <div className="results-zone">
+          <div className="jobshop-results-zone">
             <h3>🏆 Votre solution</h3>
-            <div className="results-grid">
-              <div className="result-card user">
+            <div className="jobshop-results-grid">
+              <div className="jobshop-result-card user">
                 <h4>Votre solution</h4>
-                <div className="metrics">
-                  <div className="metric">
-                    <span className="metric-label">Makespan:</span>
-                    <span className="metric-value">{userResult ? userResult.makespan : 0}</span>
+                <div className="jobshop-metrics">
+                  <div className="jobshop-metric">
+                    <span className="jobshop-metric-label">Makespan:</span>
+                    <span className="jobshop-metric-value">{userResult ? userResult.makespan : 0}</span>
                   </div>
-                  <div className="metric">
-                    <span className="metric-label">Retard total:</span>
-                    <span className="metric-value">{userResult ? userResult.totalDelay : 0}</span>
+                  <div className="jobshop-metric">
+                    <span className="jobshop-metric-label">Retard total:</span>
+                    <span className="jobshop-metric-value">{userResult ? userResult.totalDelay : 0}</span>
                   </div>
-                  <div className="metric">
-                    <span className="metric-label">Flowtime moyen:</span>
-                    <span className="metric-value">{userResult ? userResult.flowtime.toFixed(1) : 0}</span>
+                  <div className="jobshop-metric">
+                    <span className="jobshop-metric-label">Flowtime moyen:</span>
+                    <span className="jobshop-metric-value">{userResult ? userResult.flowtime.toFixed(1) : 0}</span>
                   </div>
                 </div>
               </div>

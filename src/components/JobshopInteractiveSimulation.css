@@ -7,7 +7,7 @@
 }
 
 /* ===== CONTEXTE D'USINE ===== */
-.factory-context {
+.jobshop-factory-context {
   position: relative;
   background: none;
   color: white;
@@ -20,7 +20,7 @@
   min-height: 340px;
 }
 
-.factory-context::before {
+.jobshop-factory-context::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -29,7 +29,7 @@
   filter: brightness(0.85) blur(0.5px);
 }
 
-.context-block {
+.jobshop-context-block {
   position: relative;
   z-index: 1;
   max-width: 900px;
@@ -42,23 +42,23 @@
   color: #fff;
 }
 
-.context-block h2, .context-block strong {
+.jobshop-context-block h2, .jobshop-context-block strong {
   text-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
-.context-block p, .context-block ul, .context-block li, .context-block em {
+.jobshop-context-block p, .jobshop-context-block ul, .jobshop-context-block li, .jobshop-context-block em {
   color: #f3f4f6;
   text-shadow: 0 1px 4px rgba(0,0,0,0.18);
 }
 
-.context-mission,
-.context-ressources,
-.context-jobs,
-.context-defi {
+.jobshop-context-mission,
+.jobshop-context-ressources,
+.jobshop-context-jobs,
+.jobshop-context-defi {
   margin: var(--spacing-lg) 0;
 }
 
-.context-ressources {
+.jobshop-context-ressources {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,14 +66,14 @@
   width: 100%;
 }
 
-.context-ressources strong {
+.jobshop-context-ressources strong {
   text-align: center;
   width: 100%;
   display: block;
   margin-bottom: 8px;
 }
 
-.context-ressources ul {
+.jobshop-context-ressources ul {
   width: 100%;
   max-width: 500px;
   margin: 0 auto 8px auto;
@@ -82,7 +82,7 @@
   display: block;
 }
 
-.context-ressources li {
+.jobshop-context-ressources li {
   display: inline-block;
   margin: 0 16px 4px 16px;
   font-size: 1rem;
@@ -91,13 +91,13 @@
   min-width: 180px;
 }
 
-.context-table-wrapper {
+.jobshop-context-table-wrapper {
   display: flex;
   justify-content: center;
   margin: var(--spacing-md) 0;
 }
 
-.context-table {
+.jobshop-context-table {
   border-collapse: collapse;
   background: rgba(255,255,255,0.97);
   color: #222;
@@ -108,33 +108,33 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
 }
 
-.context-table th, .context-table td {
+.jobshop-context-table th, .jobshop-context-table td {
   padding: 8px 16px;
   border: 1px solid #e0e0e0;
   text-align: center;
 }
 
-.context-table th {
+.jobshop-context-table th {
   background: #f3f4f6;
   color: #222;
   font-weight: 600;
 }
 
-.context-note {
+.jobshop-context-note {
   margin-top: var(--spacing-sm);
   color: #e0e7ef;
   font-size: 0.98rem;
   font-style: italic;
 }
 
-.factory-context h2 {
+.jobshop-factory-context h2 {
   font-size: var(--font-size-2xl);
   font-weight: 700;
   margin-bottom: var(--spacing-md);
   color: white;
 }
 
-.factory-context p {
+.jobshop-factory-context p {
   font-size: var(--font-size-lg);
   line-height: 1.6;
   max-width: 800px;
@@ -142,14 +142,14 @@
   color: rgba(255, 255, 255, 0.95);
 }
 
-.simulation-content {
+.jobshop-simulation-content {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
 }
 
 /* ===== ZONE DES JOBS COMPACT ===== */
-.jobs-compact-zone {
+.jobshop-jobs-compact-zone {
   background: var(--background-section);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
@@ -157,21 +157,21 @@
   width: 100%;
 }
 
-.jobs-compact-zone h3 {
+.jobshop-jobs-compact-zone h3 {
   color: var(--text-primary);
   font-size: var(--font-size-lg);
   font-weight: 600;
   margin-bottom: var(--spacing-lg);
 }
 
-.jobs-compact-container {
+.jobshop-jobs-compact-container {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
   width: 100%;
 }
 
-.job-compact-row {
+.jobshop-job-compact-row {
   display: flex;
   align-items: center;
   background: white;
@@ -183,26 +183,26 @@
   box-sizing: border-box;
 }
 
-.job-info {
+.jobshop-job-info {
   display: flex;
   flex-direction: column;
   min-width: 120px;
   flex-shrink: 0;
 }
 
-.job-name {
+.jobshop-job-name {
   color: var(--primary-color);
   font-size: var(--font-size-base);
   font-weight: 600;
 }
 
-.job-due {
+.jobshop-job-due {
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
   margin-top: 2px;
 }
 
-.job-tasks-compact {
+.jobshop-job-tasks-compact {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -211,7 +211,7 @@
   min-width: 0;
 }
 
-.task-block-compact {
+.jobshop-task-block-compact {
   background: var(--primary-color);
   color: white;
   border-radius: var(--border-radius);
@@ -224,32 +224,32 @@
   box-sizing: border-box;
 }
 
-.task-block-compact:hover {
+.jobshop-task-block-compact:hover {
   background: var(--primary-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-.task-block-compact:active {
+.jobshop-task-block-compact:active {
   cursor: grabbing;
 }
 
 /* ===== ZONE GANTT ===== */
-.gantt-zone {
+.jobshop-gantt-zone {
   background: var(--background-section);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
   border: 1px solid var(--border-color);
 }
 
-.gantt-zone h3 {
+.jobshop-gantt-zone h3 {
   color: var(--text-primary);
   font-size: var(--font-size-lg);
   font-weight: 600;
   margin-bottom: var(--spacing-lg);
 }
 
-.gantt-container {
+.jobshop-gantt-container {
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: visible;
@@ -258,7 +258,7 @@
   max-width: 100%;
 }
 
-.gantt-header {
+.jobshop-gantt-header {
   display: flex;
   background: #f5f5f5;
   border-bottom: 1px solid #ddd;
@@ -266,7 +266,7 @@
   width: fit-content;
 }
 
-.machine-label {
+.jobshop-machine-label {
   min-width: 80px;
   padding: var(--spacing-sm);
   display: flex;
@@ -277,30 +277,30 @@
   flex-shrink: 0;
 }
 
-.time-labels-container {
+.jobshop-time-labels-container {
   display: flex;
   flex: 1;
   width: fit-content;
 }
 
-.time-label {
+.jobshop-time-label {
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: #666;
   flex-shrink: 0;
 }
 
-.machine-row {
+.jobshop-machine-row {
   display: flex;
   border-bottom: 1px solid var(--border-color);
   width: fit-content;
 }
 
-.machine-row:last-child {
+.jobshop-machine-row:last-child {
   border-bottom: none;
 }
 
-.machine-name {
+.jobshop-machine-name {
   min-width: 80px;
   padding: var(--spacing-sm);
   background: var(--background-section);
@@ -313,13 +313,13 @@
   flex-shrink: 0;
 }
 
-.machine-timeline {
+.jobshop-machine-timeline {
   display: flex;
   overflow: visible;
   width: fit-content;
 }
 
-.time-slot {
+.jobshop-time-slot {
   flex: 1;
   height: 40px;
   border-right: 1px solid var(--border-color);
@@ -334,17 +334,17 @@
   flex-shrink: 0;
 }
 
-.time-slot:hover {
+.jobshop-time-slot:hover {
   background: var(--background-hover);
 }
 
-.time-slot.droppable {
+.jobshop-time-slot.droppable {
   background: rgba(59, 130, 246, 0.18);
   border: 2px dashed var(--primary-color);
   z-index: 1;
 }
 
-.time-slot.not-droppable {
+.jobshop-time-slot.not-droppable {
   background: rgba(239, 68, 68, 0.13); /* rouge très clair */
   border: 2px dashed #ef4444;
   cursor: not-allowed;
@@ -353,7 +353,7 @@
 }
 
 /* ===== BLOCS DE TÂCHES DANS LE GANTT ===== */
-.gantt-task-block {
+.jobshop-gantt-task-block {
   position: absolute;
   overflow: visible;
   top: 0;
@@ -378,7 +378,7 @@
 }
 
 /* ===== ZONE DE VALIDATION ===== */
-.validation-zone {
+.jobshop-validation-zone {
   grid-column: 1 / -1;
   background: var(--background-section);
   border-radius: var(--border-radius-lg);
@@ -387,20 +387,20 @@
   text-align: center;
 }
 
-.validation-zone h3 {
+.jobshop-validation-zone h3 {
   color: var(--text-primary);
   font-size: var(--font-size-lg);
   font-weight: 600;
   margin-bottom: var(--spacing-lg);
 }
 
-.validation-buttons {
+.jobshop-validation-buttons {
   display: flex;
   gap: var(--spacing-md);
   justify-content: center;
 }
 
-.evaluate-btn {
+.jobshop-evaluate-btn {
   background: var(--primary-color);
   color: white;
   border: none;
@@ -412,13 +412,13 @@
   transition: all 0.2s ease;
 }
 
-.evaluate-btn:hover {
+.jobshop-evaluate-btn:hover {
   background: var(--primary-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-.reset-btn {
+.jobshop-reset-btn {
   background: var(--background-main);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
@@ -430,13 +430,13 @@
   transition: all 0.2s ease;
 }
 
-.reset-btn:hover {
+.jobshop-reset-btn:hover {
   background: var(--background-hover);
   border-color: var(--primary-color);
 }
 
 /* ===== ZONE RÉSULTATS ===== */
-.results-zone {
+.jobshop-results-zone {
   grid-column: 1 / -1;
   background: var(--background-section);
   border-radius: var(--border-radius-lg);
@@ -444,7 +444,7 @@
   border: 1px solid var(--border-color);
 }
 
-.results-zone h3 {
+.jobshop-results-zone h3 {
   color: var(--text-primary);
   font-size: var(--font-size-lg);
   font-weight: 600;
@@ -452,13 +452,13 @@
   text-align: center;
 }
 
-.results-grid {
+.jobshop-results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--spacing-lg);
 }
 
-.result-card {
+.jobshop-result-card {
   background: white;
   border-radius: var(--border-radius);
   padding: var(--spacing-lg);
@@ -466,21 +466,21 @@
   transition: all 0.2s ease;
 }
 
-.result-card:hover {
+.jobshop-result-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
 
-.result-card.user {
+.jobshop-result-card.user {
   border-left: 4px solid #10b981;
   background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
 }
 
-.result-card.algorithm {
+.jobshop-result-card.algorithm {
   border-left: 4px solid var(--primary-color);
 }
 
-.result-card h4 {
+.jobshop-result-card h4 {
   color: var(--text-primary);
   font-size: var(--font-size-lg);
   font-weight: 600;
@@ -488,13 +488,13 @@
   text-align: center;
 }
 
-.metrics {
+.jobshop-metrics {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
 }
 
-.metric {
+.jobshop-metric {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -503,13 +503,13 @@
   border-radius: var(--border-radius);
 }
 
-.metric-label {
+.jobshop-metric-label {
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
   font-weight: 500;
 }
 
-.metric-value {
+.jobshop-metric-value {
   color: var(--text-primary);
   font-size: var(--font-size-sm);
   font-weight: 600;
@@ -517,16 +517,16 @@
 
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1200px) {
-  .gantt-container {
+  .jobshop-gantt-container {
     overflow-x: auto;
     width: 100%;
   }
   
-  .machine-timeline {
+  .jobshop-machine-timeline {
     min-width: 600px;
   }
   
-  .jobs-compact-zone {
+  .jobshop-jobs-compact-zone {
     width: 100%;
   }
 }
@@ -536,61 +536,61 @@
     padding: var(--spacing-md);
   }
   
-  .factory-context {
+  .jobshop-factory-context {
     padding: var(--spacing-lg);
   }
   
-  .factory-context h2 {
+  .jobshop-factory-context h2 {
     font-size: var(--font-size-xl);
   }
   
-  .factory-context p {
+  .jobshop-factory-context p {
     font-size: var(--font-size-base);
   }
   
-  .job-compact-row {
+  .jobshop-job-compact-row {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-sm);
     width: 100%;
   }
   
-  .job-info {
+  .jobshop-job-info {
     min-width: auto;
     width: 100%;
   }
   
-  .job-tasks-compact {
+  .jobshop-job-tasks-compact {
     width: 100%;
     justify-content: flex-start;
   }
   
-  .validation-buttons {
+  .jobshop-validation-buttons {
     flex-direction: column;
     align-items: center;
   }
   
-  .results-grid {
+  .jobshop-results-grid {
     grid-template-columns: 1fr;
   }
   
-  .machine-timeline {
+  .jobshop-machine-timeline {
     min-width: 400px;
   }
 }
 
 @media (max-width: 480px) {
-  .machine-timeline {
+  .jobshop-machine-timeline {
     min-width: 300px;
   }
   
-  .job-tasks-compact {
+  .jobshop-job-tasks-compact {
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
   }
   
-  .task-block-compact {
+  .jobshop-task-block-compact {
     flex: 1;
     min-width: 60px;
     font-size: 10px;
@@ -598,21 +598,21 @@
 } 
 
 @media (max-width: 600px) {
-  .context-block {
+  .jobshop-context-block {
     padding: 0 2px;
   }
-  .context-table {
+  .jobshop-context-table {
     min-width: 220px;
     font-size: 0.95rem;
   }
-  .context-table th, .context-table td {
+  .jobshop-context-table th, .jobshop-context-table td {
     padding: 6px 6px;
   }
-  .context-ressources ul {
+  .jobshop-context-ressources ul {
     max-width: 100%;
     width: 100%;
   }
-  .context-ressources li {
+  .jobshop-context-ressources li {
     min-width: 120px;
     margin: 0 4px 4px 4px;
   }

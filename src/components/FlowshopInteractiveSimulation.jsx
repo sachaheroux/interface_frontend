@@ -226,18 +226,18 @@ const FlowshopInteractiveSimulation = () => {
   return (
     <div className="flowshop-simulation">
       {/* Contexte d'usine */}
-      <div className="factory-context">
+      <div className="flowshop-factory-context">
         <h2>Contexte de la simulation</h2>
-        <div className="context-block">
+        <div className="flowshop-context-block">
           <p>
             Vous êtes responsable de la production dans une usine de fabrication de smartphones haut de gamme. L'usine produit différents modèles selon les commandes des opérateurs téléphoniques.<br/><br/>
             L'objectif est d'optimiser l'ordonnancement pour minimiser le makespan (temps total de production). Dans le Flowshop, tous les produits suivent la même séquence de machines.
           </p>
-          <div className="context-mission">
+          <div className="flowshop-context-mission">
             <strong>Votre mission</strong><br/>
             Optimisez l'ordonnancement pour minimiser le makespan (temps total de production).
           </div>
-          <div className="context-ressources">
+          <div className="flowshop-context-ressources">
             <strong>Ressources disponibles</strong>
             <ul>
               <li><b>M1</b> : Assemblage de la carte mère et processeur</li>
@@ -245,10 +245,10 @@ const FlowshopInteractiveSimulation = () => {
               <li><b>M3</b> : Tests qualité et packaging final</li>
             </ul>
           </div>
-          <div className="context-jobs">
+          <div className="flowshop-context-jobs">
             <strong>Smartphones à planifier</strong>
-            <div className="context-table-wrapper">
-              <table className="context-table">
+            <div className="flowshop-context-table-wrapper">
+              <table className="flowshop-context-table">
                 <thead>
                   <tr>
                     <th>Smartphone</th>
@@ -264,11 +264,11 @@ const FlowshopInteractiveSimulation = () => {
                 </tbody>
               </table>
             </div>
-            <div className="context-note">
+            <div className="flowshop-context-note">
               <em>Remarque : Dans le Flowshop, tous les produits suivent la même séquence M1 → M2 → M3. L'ordre de passage des produits peut influencer le makespan total.</em>
             </div>
           </div>
-          <div className="context-defi">
+          <div className="flowshop-context-defi">
             <strong>Défi</strong><br/>
             Glissez-déposez les tâches dans le diagramme de Gantt pour créer un ordonnancement qui minimise le makespan.<br/>
             Essayez de faire mieux que les algorithmes classiques (Johnson, SPT, LPT) !
@@ -276,18 +276,18 @@ const FlowshopInteractiveSimulation = () => {
         </div>
       </div>
 
-      <div className="simulation-content">
+      <div className="flowshop-simulation-content">
         {/* Zone des jobs en format compact */}
-        <div className="jobs-compact-zone">
+        <div className="flowshop-jobs-compact-zone">
           <h3>📱 Smartphones à produire</h3>
-          <div className="jobs-compact-container">
+          <div className="flowshop-jobs-compact-container">
             {jobs.map((job, jobIdx) => (
-              <div key={job.id} className="job-compact-row">
-                <div className="job-info">
-                  <span className="job-name">{job.name}</span>
-                  <span className="job-due">Séquence: M1 → M2 → M3</span>
+              <div key={job.id} className="flowshop-job-compact-row">
+                <div className="flowshop-job-info">
+                  <span className="flowshop-job-name">{job.name}</span>
+                  <span className="flowshop-job-due">Séquence: M1 → M2 → M3</span>
                 </div>
-                <div className="job-tasks-compact">
+                <div className="flowshop-job-tasks-compact">
                   {job.tasks.map((task, index) => {
                     // Vérifier si la tâche a déjà été placée
                     const alreadyPlaced = userSchedule.some(
@@ -297,7 +297,7 @@ const FlowshopInteractiveSimulation = () => {
                     return (
                       <div
                         key={index}
-                        className="task-block-compact"
+                        className="flowshop-task-block-compact"
                         style={{
                           background: job.color,
                           opacity: draggedTask && draggedTask.jobId === job.id && draggedTask.taskIndex === index ? 0.6 : 1,
@@ -328,16 +328,16 @@ const FlowshopInteractiveSimulation = () => {
         </div>
 
         {/* Zone de Gantt */}
-        <div className="gantt-zone">
+        <div className="flowshop-gantt-zone">
           <h3>📊 Planning de production</h3>
-          <div className="gantt-container" style={{ overflow: 'visible' }}>
-            <div className="gantt-header">
-              <div className="machine-label">Machine</div>
-              <div className="time-labels-container" style={{ display: 'flex', position: 'relative', height: '30px' }}>
+          <div className="flowshop-gantt-container" style={{ overflow: 'visible' }}>
+            <div className="flowshop-gantt-header">
+              <div className="flowshop-machine-label">Machine</div>
+              <div className="flowshop-time-labels-container" style={{ display: 'flex', position: 'relative', height: '30px' }}>
                 {Array.from({ length: GANTT_LENGTH }, (_, time) => (
                   <div 
                     key={time} 
-                    className="time-label" 
+                    className="flowshop-time-label" 
                     style={{ 
                       position: 'absolute',
                       left: `${time * TIME_SLOT_WIDTH}px`,
@@ -365,9 +365,9 @@ const FlowshopInteractiveSimulation = () => {
             </div>
             
             {machineNames.map((machine, machineIndex) => (
-              <div key={machineIndex} className="machine-row">
-                <div className="machine-name">{machine}</div>
-                <div className="machine-timeline" style={{ overflow: 'visible' }}>
+              <div key={machineIndex} className="flowshop-machine-row">
+                <div className="flowshop-machine-name">{machine}</div>
+                <div className="flowshop-machine-timeline" style={{ overflow: 'visible' }}>
                   {Array.from({ length: GANTT_LENGTH }, (_, time) => {
                     const placedTask = getTaskAt(machineIndex, time);
                     // Détermine si la case est survolée pendant un drag
@@ -377,7 +377,7 @@ const FlowshopInteractiveSimulation = () => {
                     return (
                       <div
                         key={time}
-                        className={`time-slot${canDrop ? ' droppable' : ''}${isDragOver && !canDrop ? ' not-droppable' : ''}`}
+                        className={`flowshop-time-slot${canDrop ? ' droppable' : ''}${isDragOver && !canDrop ? ' not-droppable' : ''}`}
                         style={{ 
                           position: 'relative',
                           width: `${TIME_SLOT_WIDTH}px`,
@@ -394,7 +394,7 @@ const FlowshopInteractiveSimulation = () => {
                         {/* Affichage du bloc si la tâche commence à ce temps */}
                         {placedTask && placedTask.start === time && (
                           <div
-                            className="gantt-task-block"
+                            className="flowshop-gantt-task-block"
                             style={{
                               background: placedTask.color,
                               width: `${placedTask.duration * TIME_SLOT_WIDTH}px`,
@@ -432,17 +432,17 @@ const FlowshopInteractiveSimulation = () => {
         </div>
 
         {/* Zone de validation */}
-        <div className="validation-zone">
+        <div className="flowshop-validation-zone">
           <h3>✅ Évaluation</h3>
-          <div className="validation-buttons">
+          <div className="flowshop-validation-buttons">
             <button 
-              className="evaluate-btn"
+              className="flowshop-evaluate-btn"
               onClick={evaluateUserSolution}
             >
               Évaluer ma solution
             </button>
             <button 
-              className="reset-btn"
+              className="flowshop-reset-btn"
               onClick={resetSimulation}
             >
               Recommencer
@@ -452,15 +452,15 @@ const FlowshopInteractiveSimulation = () => {
 
         {/* Résultats */}
         {showResults && (
-          <div className="results-zone">
+          <div className="flowshop-results-zone">
             <h3>🏆 Votre solution</h3>
-            <div className="results-grid">
-              <div className="result-card user">
+            <div className="flowshop-results-grid">
+              <div className="flowshop-result-card user">
                 <h4>Votre solution</h4>
-                <div className="metrics">
-                  <div className="metric">
-                    <span className="metric-label">Makespan:</span>
-                    <span className="metric-value">{userResult ? userResult.makespan : 0}</span>
+                <div className="flowshop-metrics">
+                  <div className="flowshop-metric">
+                    <span className="flowshop-metric-label">Makespan:</span>
+                    <span className="flowshop-metric-value">{userResult ? userResult.makespan : 0}</span>
                   </div>
                 </div>
               </div>

@@ -119,6 +119,12 @@
   overflow: visible;
 }
 
+.algorithm-content.simulation-interactive {
+  padding: 0;
+  max-width: none;
+  width: 100%;
+}
+
 /* Info Panel Moderne */
 .modern-info-panel {
   min-width: 320px;

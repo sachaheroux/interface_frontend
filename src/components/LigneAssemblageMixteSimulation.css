@@ -3,9 +3,10 @@
   padding: var(--spacing-lg);
   background: var(--background-main);
   height: auto;
-  overflow: visible;
+  overflow-x: hidden;
   max-width: 100%;
   box-sizing: border-box;
+  width: 100%;
 }
 
 /* ===== CONTEXTE D'USINE ===== */
@@ -217,7 +218,9 @@
   justify-content: space-between;
   min-height: 45px;
   max-height: 50px;
-  width: 320px;
+  width: 100%;
+  max-width: 320px;
+  min-width: 280px;
   flex-shrink: 0;
 }
 
@@ -237,8 +240,12 @@
   font-weight: 600;
   color: var(--text-primary);
   font-size: var(--font-size-sm);
-  width: 140px;
+  width: 120px;
+  min-width: 100px;
   flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lam-task-times {
@@ -262,9 +269,13 @@
   font-size: var(--font-size-xs);
   color: var(--text-secondary);
   font-style: italic;
-  width: 120px;
+  width: 100px;
+  min-width: 80px;
   text-align: right;
   flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ===== ZONE DES POSTES ===== */
@@ -612,7 +623,13 @@
   }
   
   .lam-tasks-container {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    justify-content: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .lam-task-block {
+    max-width: 280px;
+    min-width: 250px;
   }
 }
 
@@ -638,20 +655,25 @@
     align-items: flex-start;
   }
   
-  .validation-buttons {
+  .lam-validation-buttons {
     flex-direction: column;
   }
   
-  .results-grid {
+  .lam-results-grid {
     grid-template-columns: 1fr;
   }
   
-  .stations-container {
+  .lam-stations-container {
     grid-template-columns: 1fr;
   }
   
-  .tasks-container {
-    grid-template-columns: 1fr;
+  .lam-tasks-container {
+    justify-content: center;
+  }
+  
+  .lam-task-block {
+    max-width: 100%;
+    min-width: 280px;
   }
 }
 
@@ -662,6 +684,12 @@
   
   .lam-tasks-container {
     gap: var(--spacing-sm);
+    justify-content: center;
+  }
+  
+  .lam-task-block {
+    max-width: 100%;
+    min-width: 250px;
   }
   
   .lam-station-task-times {

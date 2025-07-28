@@ -6,7 +6,7 @@ const LigneAssemblageMixteSimulation = () => {
   const PRODUCT_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
   
   // Configuration initiale
-  const CYCLE_TIME = 60; // Temps de cycle maximum en secondes (adapté aux nouvelles tâches)
+  const CYCLE_TIME = 70; // Temps de cycle maximum en secondes (adapté aux nouvelles tâches)
   const INITIAL_STATIONS = 4; // Nombre initial de postes
   
   // Tâches d'assemblage basées sur un cas réel - Prédécesseurs variés pour créer un défi

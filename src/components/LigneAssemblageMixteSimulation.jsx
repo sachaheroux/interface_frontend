@@ -9,20 +9,20 @@ const LigneAssemblageMixteSimulation = () => {
   const CYCLE_TIME = 70; // Temps de cycle maximum en secondes (adapté aux nouvelles tâches)
   const INITIAL_STATIONS = 4; // Nombre initial de postes
   
-  // Tâches d'assemblage basées sur un cas réel - Prédécesseurs variés pour créer un défi
+  // Tâches d'assemblage automobile - Ligne d'assemblage standard
   const initialTasks = [
-    { id: 1, name: 'Insérer l\'essieu et les roues', time: 20, predecessors: [] },
-    { id: 2, name: 'Insérer la tige de ventilateur', time: 6, predecessors: [1] },
-    { id: 3, name: 'Insérer capot tige de vent.', time: 5, predecessors: [2] },
-    { id: 4, name: 'Insérer essieu arrière et roues', time: 21, predecessors: [] },
-    { id: 5, name: 'Insérer capot sur châssis', time: 8, predecessors: [] },
-    { id: 6, name: 'Coller fenêtres au-dessus', time: 35, predecessors: [] },
-    { id: 7, name: 'Insérer transmission', time: 15, predecessors: [3, 4] },
-    { id: 8, name: 'Insérer entretoises de transmission', time: 10, predecessors: [7] },
-    { id: 9, name: 'Sécuriser les roues avant', time: 15, predecessors: [5, 8] },
-    { id: 10, name: 'Insérer moteur', time: 5, predecessors: [3] },
-    { id: 11, name: 'Attacher dessus sur châssis', time: 46, predecessors: [6, 9, 10] },
-    { id: 12, name: 'Ajouter les collants', time: 16, predecessors: [11] }
+    { id: 1, name: 'Monter le châssis', time: 25, predecessors: [] },
+    { id: 2, name: 'Installer les roues avant', time: 15, predecessors: [1] },
+    { id: 3, name: 'Installer les roues arrière', time: 15, predecessors: [1] },
+    { id: 4, name: 'Monter le moteur', time: 30, predecessors: [2, 3] },
+    { id: 5, name: 'Installer la transmission', time: 20, predecessors: [4] },
+    { id: 6, name: 'Monter la carrosserie', time: 35, predecessors: [5] },
+    { id: 7, name: 'Installer les portes', time: 18, predecessors: [6] },
+    { id: 8, name: 'Monter le pare-brise', time: 12, predecessors: [6] },
+    { id: 9, name: 'Installer les phares', time: 10, predecessors: [7, 8] },
+    { id: 10, name: 'Monter les sièges', time: 22, predecessors: [7] },
+    { id: 11, name: 'Installer le tableau de bord', time: 28, predecessors: [10] },
+    { id: 12, name: 'Tests finaux et contrôle qualité', time: 20, predecessors: [9, 11] }
   ];
 
   const [tasks, setTasks] = useState(initialTasks);
@@ -80,7 +80,10 @@ const LigneAssemblageMixteSimulation = () => {
     const minTime = Math.min(...times);
     const avgTime = times.reduce((sum, time) => sum + time, 0) / times.length;
     
-    const balanceEfficiency = ((minTime / maxTime) * 100).toFixed(1);
+    // Calcul de l'efficacité d'équilibrage : (temps total des tâches / temps total de la ligne) × 100
+    const totalTaskTime = times.reduce((sum, time) => sum + time, 0);
+    const totalLineTime = stations * CYCLE_TIME;
+    const balanceEfficiency = ((totalTaskTime / totalLineTime) * 100).toFixed(1);
     const cycleTimeViolation = times.filter(time => time > CYCLE_TIME).length;
     
     return {
@@ -181,21 +184,21 @@ const LigneAssemblageMixteSimulation = () => {
       {/* Contexte */}
       <div className="lam-factory-context">
         <div className="lam-context-block">
-          <h2>🏭 Usine de Production Mixte</h2>
+          <h2>🏭 Ligne d'assemblage automobile standard</h2>
           <div className="lam-context-mission">
-            <strong>Mission :</strong> Équilibrer la ligne d'assemblage pour minimiser les déséquilibres et le nombre de postes de travail.
+            <strong>Mission :</strong> Équilibrer la ligne d'assemblage automobile pour optimiser la production et minimiser les temps d'attente entre stations.
           </div>
           <div className="lam-context-ressources">
             <strong>Contraintes :</strong>
             <ul>
               <li>Temps de cycle maximum : <strong>{CYCLE_TIME} secondes</strong></li>
-              <li>Un produit avec temps d'exécution variables</li>
+              <li>Assemblage d'un modèle unique d'automobile</li>
               <li>Respecter les relations de précédence entre tâches</li>
               <li>Minimiser le nombre de postes de travail</li>
             </ul>
           </div>
           <div className="lam-context-note">
-            <strong>Note :</strong> Les temps affichés sont en secondes. Chaque tâche a un temps d'exécution unique.
+            <strong>Note :</strong> Les temps affichés sont en secondes. Chaque tâche représente une étape d'assemblage automobile.
           </div>
         </div>
       </div>

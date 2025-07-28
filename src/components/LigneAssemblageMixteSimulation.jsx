@@ -4,16 +4,16 @@ import './LigneAssemblageMixteSimulation.css';
 const LigneAssemblageMixteSimulation = () => {
   // Configuration des produits
   const PRODUCTS = [
-    { id: 'A', name: 'Smartphone Alpha', color: '#3b82f6', demand: 70 },
-    { id: 'B', name: 'Smartphone Beta', color: '#10b981', demand: 30 }
+    { id: 'A', name: 'Vélo de Route Pro', color: '#3b82f6', demand: 70 },
+    { id: 'B', name: 'Vélo de Ville Standard', color: '#10b981', demand: 30 }
   ];
 
-  // Tâches du poste goulot (4 tâches par produit, mêmes tâches mais temps différents)
+  // Tâches du poste goulot (4 tâches spécifiques, mêmes tâches mais temps différents)
   const TASKS = [
-    { id: 1, name: 'Installation processeur', productA: 12, productB: 9 },
-    { id: 2, name: 'Montage carte mémoire', productA: 8, productB: 10 },
-    { id: 3, name: 'Connexion écran tactile', productA: 15, productB: 12 },
-    { id: 4, name: 'Test fonctionnel', productA: 10, productB: 8 }
+    { id: 1, name: 'Montage roue avant', productA: 14, productB: 10 },
+    { id: 2, name: 'Installation freins', productA: 12, productB: 8 },
+    { id: 3, name: 'Réglage dérailleur', productA: 16, productB: 12 },
+    { id: 4, name: 'Test transmission', productA: 11, productB: 9 }
   ];
 
   const [sequence, setSequence] = useState([]);
@@ -127,22 +127,22 @@ const LigneAssemblageMixteSimulation = () => {
       {/* Contexte */}
       <div className="lam-sequencage-context">
         <div className="lam-sequencage-context-block">
-          <h2>📊 Poste Goulot - Séquençage Mixte</h2>
+          <h2>🚴 Poste Goulot - Séquençage Mixte</h2>
           <div className="lam-sequencage-context-mission">
-            <strong>Contexte :</strong> Vous gérez le poste goulot d'une ligne d'assemblage mixte de smartphones. Ce poste effectue 4 tâches spécifiques sur chaque produit, mais avec des temps d'exécution différents selon le modèle.
+            <strong>Contexte :</strong> Vous gérez le poste goulot d'une ligne d'assemblage mixte de vélos. Ce poste effectue 4 tâches spécifiques sur chaque vélo, mais avec des temps d'exécution différents selon le modèle. Seul ce poste goulot est pris en compte pour le séquençage.
           </div>
           <div className="lam-sequencage-context-ressources">
             <strong>Problème du poste goulot :</strong>
             <ul>
-              <li>Le poste goulot limite le débit de toute la ligne</li>
-              <li>Les variations de temps entre produits créent des déséquilibres</li>
-              <li>Smartphone Alpha : 45 min total (25% plus long que Beta)</li>
-              <li>Smartphone Beta : 36 min total (plus rapide à assembler)</li>
-              <li>Objectif : Minimiser les variations de temps entre produits consécutifs</li>
+              <li>Le poste goulot limite le débit de toute la ligne d'assemblage</li>
+              <li>Les variations de temps entre vélos créent des déséquilibres</li>
+              <li>Vélo de Route Pro : 53 min total (plus complexe à assembler)</li>
+              <li>Vélo de Ville Standard : 39 min total (plus simple à assembler)</li>
+              <li>Objectif : Minimiser les variations de temps entre vélos consécutifs</li>
             </ul>
           </div>
           <div className="lam-sequencage-context-note">
-            <strong>Note :</strong> Les 4 tâches sont identiques pour les deux produits, mais les temps d'exécution diffèrent de 25% en moyenne.
+            <strong>Note :</strong> Les 4 tâches sont identiques pour les deux types de vélos, mais les temps d'exécution diffèrent selon la complexité du modèle.
           </div>
         </div>
       </div>

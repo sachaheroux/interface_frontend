@@ -108,15 +108,15 @@
   background: white;
   border: 2px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: var(--spacing-xs) var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
   cursor: grab;
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  min-height: 35px;
-  max-height: 40px;
+  gap: var(--spacing-sm);
+  min-height: 30px;
+  max-height: 35px;
 }
 
 .lam-task-block:hover {
@@ -134,8 +134,8 @@
 .lam-task-name {
   font-weight: 600;
   color: var(--text-primary);
-  font-size: var(--font-size-sm);
-  min-width: 120px;
+  font-size: var(--font-size-xs);
+  min-width: 80px;
   flex-shrink: 0;
 }
 
@@ -145,39 +145,20 @@
   flex: 1;
 }
 
-.lam-time-a {
-  color: #3b82f6;
+.lam-time {
+  color: var(--text-secondary);
   font-weight: 500;
   font-size: var(--font-size-xs);
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-}
-
-.lam-time-a::before {
-  content: "A:";
-  font-weight: 600;
-}
-
-.lam-time-b {
-  color: #10b981;
-  font-weight: 500;
-  font-size: var(--font-size-xs);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-}
-
-.lam-time-b::before {
-  content: "B:";
-  font-weight: 600;
 }
 
 .lam-task-predecessors {
   font-size: var(--font-size-xs);
   color: var(--text-secondary);
   font-style: italic;
-  min-width: 100px;
+  min-width: 60px;
   text-align: right;
 }
 
@@ -321,31 +302,38 @@
 }
 
 .lam-station-task {
-  background: var(--background-hover);
-  border: 1px solid var(--border-color);
+  background: white;
+  border: 2px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
   font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: 30px;
+  max-height: 35px;
+  box-shadow: var(--shadow-sm);
 }
 
 .lam-station-task-name {
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  min-width: 80px;
+  flex-shrink: 0;
 }
 
 .lam-station-task-times {
   display: flex;
   gap: var(--spacing-sm);
-  font-size: var(--font-size-sm);
+  flex: 1;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
-.lam-station-task-times span:first-child {
-  color: #3b82f6;
-}
-
-.lam-station-task-times span:last-child {
-  color: #10b981;
+.lam-station-task-times span {
+  color: var(--text-secondary);
 }
 
 /* ===== ZONE DE VALIDATION ===== */

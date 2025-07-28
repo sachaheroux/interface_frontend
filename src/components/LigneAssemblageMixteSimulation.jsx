@@ -89,8 +89,8 @@ const LigneAssemblageMixteSimulation = () => {
 
   // Évaluer la séquence
   const evaluateSequence = () => {
-    if (sequence.length < 2) {
-      alert('La séquence doit contenir au moins 2 produits pour évaluer les variations.');
+    if (sequence.length !== 10) {
+      alert('La séquence doit contenir exactement 10 produits pour être évaluée.');
       return;
     }
 
@@ -114,6 +114,7 @@ const LigneAssemblageMixteSimulation = () => {
             <strong>Notre stratégie de séquençage :</strong>
             <ul>
               <li><strong>Demande client :</strong> Vélo de Route Pro (30 unités) et Vélo de Ville Standard (70 unités)</li>
+              <li><strong>Séquence minimale :</strong> 10 positions (3 Vélo de Route Pro + 7 Vélo de Ville Standard)</li>
               <li><strong>Poste goulot :</strong> Ce poste effectue 4 tâches spécifiques sur chaque vélo avec des temps variables</li>
               <li><strong>Complexité des modèles :</strong> Le Vélo de Route Pro (53 min) est plus complexe que le Vélo de Ville Standard (39 min)</li>
               <li><strong>Objectif critique :</strong> Minimiser les variations de temps entre vélos consécutifs au poste goulot</li>
@@ -180,7 +181,7 @@ const LigneAssemblageMixteSimulation = () => {
         {/* Zone de séquence */}
         <div className="lam-sequence-zone">
           <div className="lam-sequence-header">
-            <h3>Séquence de production</h3>
+            <h3>Séquence de production (10 positions requises)</h3>
             <div className="lam-sequence-controls">
               <button 
                 className="lam-sequence-btn lam-remove-btn"
@@ -189,7 +190,7 @@ const LigneAssemblageMixteSimulation = () => {
               >
                 Retirer dernier
               </button>
-              <span className="lam-sequence-count">{sequence.length} produits</span>
+              <span className="lam-sequence-count">{sequence.length}/10 produits</span>
               <button 
                 className="lam-sequence-btn lam-reset-btn"
                 onClick={resetSequence}
@@ -204,6 +205,7 @@ const LigneAssemblageMixteSimulation = () => {
             {sequence.length === 0 ? (
               <div className="lam-sequence-empty">
                 <p>Aucun produit dans la séquence</p>
+                <p>Objectif : Créer une séquence de 10 positions</p>
                 <p>Cliquez sur "Ajouter Produit" pour commencer</p>
               </div>
             ) : (
@@ -236,7 +238,7 @@ const LigneAssemblageMixteSimulation = () => {
             <button 
               className="lam-sequencage-evaluate-btn" 
               onClick={evaluateSequence}
-              disabled={sequence.length < 2}
+              disabled={sequence.length !== 10}
             >
               Évaluer la séquence
             </button>

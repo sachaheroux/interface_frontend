@@ -52,18 +52,24 @@
 
 .lam-context-mission,
 .lam-context-ressources,
-.lam-context-note {
+.lam-context-note,
+.lam-context-jobs,
+.lam-context-defi {
   margin-bottom: var(--spacing-lg);
   padding: var(--spacing-md);
   background: rgba(255, 255, 255, 0.05);
   border-radius: var(--border-radius);
   border-left: 4px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
 }
 
-.lam-context-ressources strong {
+.lam-context-ressources strong,
+.lam-context-jobs strong,
+.lam-context-defi strong {
   color: white;
   display: block;
   margin-bottom: var(--spacing-sm);
+  text-align: center;
 }
 
 .lam-context-ressources ul {

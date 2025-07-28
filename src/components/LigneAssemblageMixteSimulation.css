@@ -3,7 +3,8 @@
   padding: var(--spacing-lg);
   background: var(--background-main);
   height: auto;
-  overflow: visible;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* ===== CONTEXTE DE SÉQUENÇAGE ===== */
@@ -79,6 +80,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* ===== ZONE DES PRODUITS ===== */
@@ -88,6 +91,9 @@
   padding: var(--spacing-lg);
   border: 1px solid var(--border-color);
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .lam-products-zone h3 {
@@ -102,6 +108,8 @@
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: var(--spacing-lg);
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .lam-product-block {
@@ -223,6 +231,9 @@
   padding: var(--spacing-lg);
   border: 1px solid var(--border-color);
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .lam-sequence-header {
@@ -379,6 +390,9 @@
   padding: var(--spacing-lg);
   border: 1px solid var(--border-color);
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .lam-sequencage-validation-zone h3 {
@@ -442,6 +456,9 @@
   padding: var(--spacing-lg);
   border: 1px solid var(--border-color);
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .lam-sequencage-results-zone h3 {
@@ -619,6 +636,8 @@
 @media (max-width: 768px) {
   .lam-sequencage {
     padding: var(--spacing-lg);
+    overflow-x: hidden;
+    width: 100%;
   }
   
   .lam-sequencage-context {
@@ -648,6 +667,8 @@
   
   .lam-products-container {
     grid-template-columns: 1fr;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .lam-sequence-items {
@@ -662,6 +683,8 @@
 @media (max-width: 480px) {
   .lam-products-container {
     gap: var(--spacing-md);
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .lam-sequence-items {

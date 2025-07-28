@@ -27,7 +27,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(120deg, rgba(30,41,59,0.7) 0%, rgba(76,29,149,0.6) 100%), url('/Velo.jpg') center/cover no-repeat;
+  background: linear-gradient(120deg, rgba(30,41,59,0.7) 0%, rgba(76,29,149,0.6) 100%), url('/Velo.jpg?v=1') center/cover no-repeat;
   z-index: -1;
 }
 
@@ -235,6 +235,19 @@
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
   filter: brightness(1.1);
+}
+
+.lam-add-product-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+.lam-add-product-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+  filter: none;
 }
 
 /* ===== ZONE DE SÉQUENCE ===== */

@@ -66,8 +66,51 @@ const LigneAssemblageMixteSimulation = () => {
     };
   };
 
+  // Calculer le temps cumulé au poste goulot
+  const calculateCumulativeTime = (sequence) => {
+    if (sequence.length === 0) return [];
+
+    const cycleTimes = calculateCycleTimes();
+    const cumulativeTimes = [];
+    let cumulativeTime = 0;
+
+    for (let i = 0; i < sequence.length; i++) {
+      const product = sequence[i];
+      const cycleTime = cycleTimes[product];
+      cumulativeTime += cycleTime;
+      
+      cumulativeTimes.push({
+        position: i + 1,
+        product: product,
+        cycleTime: cycleTime,
+        cumulativeTime: cumulativeTime
+      });
+    }
+
+    return cumulativeTimes;
+  };
+
   // Ajouter un produit à la séquence
   const addProduct = (productId) => {
+    // Vérifier si on peut ajouter ce produit
+    const currentCountA = sequence.filter(id => id === 'A').length;
+    const currentCountB = sequence.filter(id => id === 'B').length;
+    
+    if (productId === 'A' && currentCountA >= 3) {
+      alert('Vous ne pouvez pas ajouter plus de 3 Vélo de Route Pro.');
+      return;
+    }
+    
+    if (productId === 'B' && currentCountB >= 7) {
+      alert('Vous ne pouvez pas ajouter plus de 7 Vélo de Ville Standard.');
+      return;
+    }
+    
+    if (sequence.length >= 10) {
+      alert('La séquence ne peut pas dépasser 10 produits.');
+      return;
+    }
+    
     setSequence(prev => [...prev, productId]);
     setResults(null);
     setShowGraph(false);
@@ -104,7 +147,8 @@ const LigneAssemblageMixteSimulation = () => {
     }
 
     const variations = calculateTimeVariations(sequence);
-    setResults(variations);
+    const cumulativeTimes = calculateCumulativeTime(sequence);
+    setResults({ ...variations, cumulativeTimes });
     setShowGraph(true);
   };
 
@@ -179,6 +223,11 @@ const LigneAssemblageMixteSimulation = () => {
                   className="lam-add-product-btn"
                   onClick={() => addProduct(product.id)}
                   style={{ backgroundColor: product.color }}
+                  disabled={
+                    (product.id === 'A' && sequence.filter(id => id === 'A').length >= 3) ||
+                    (product.id === 'B' && sequence.filter(id => id === 'B').length >= 7) ||
+                    sequence.length >= 10
+                  }
                 >
                   Ajouter {product.name}
                 </button>
@@ -303,34 +352,64 @@ const LigneAssemblageMixteSimulation = () => {
               </div>
             </div>
 
-            {/* Graphique des variations */}
+            {/* Graphique du temps cumulé au poste goulot */}
             {showGraph && (
               <div className="lam-sequencage-graph-zone">
-                <h4>Graphique des variations</h4>
+                <h4>Variation du temps cumulé au poste goulot</h4>
                 <div className="lam-sequencage-graph">
-                  {results.variations.map((variation, index) => (
-                    <div key={index} className="lam-sequencage-graph-bar">
-                      <div 
-                        className="lam-sequencage-graph-bar-fill"
-                        style={{ 
-                          height: `${(variation.variation / Math.max(...results.variations.map(v => v.variation))) * 100}%`,
-                          backgroundColor: variation.variation > results.avgVariation ? '#ef4444' : '#10b981'
-                        }}
-                      ></div>
-                      <div className="lam-sequencage-graph-bar-label">
-                        {variation.variation}min
-                      </div>
-                    </div>
-                  ))}
+                  <svg width="100%" height="200" style={{ background: 'white', borderRadius: '8px' }}>
+                    {/* Axes */}
+                    <line x1="50" y1="180" x2="750" y2="180" stroke="#ccc" strokeWidth="1" />
+                    <line x1="50" y1="20" x2="50" y2="180" stroke="#ccc" strokeWidth="1" />
+                    
+                    {/* Points et lignes pour le temps cumulé */}
+                    {results.cumulativeTimes.map((point, index) => {
+                      const x = 50 + (index * 70);
+                      const y = 180 - ((point.cumulativeTime / Math.max(...results.cumulativeTimes.map(p => p.cumulativeTime))) * 160);
+                      
+                      return (
+                        <g key={index}>
+                          {/* Ligne entre les points */}
+                          {index > 0 && (
+                            <line 
+                              x1={50 + ((index - 1) * 70)} 
+                              y1={180 - ((results.cumulativeTimes[index - 1].cumulativeTime / Math.max(...results.cumulativeTimes.map(p => p.cumulativeTime))) * 160)}
+                              x2={x} 
+                              y2={y} 
+                              stroke="#3b82f6" 
+                              strokeWidth="2" 
+                            />
+                          )}
+                          {/* Point */}
+                          <circle 
+                            cx={x} 
+                            cy={y} 
+                            r="4" 
+                            fill={point.product === 'A' ? '#3b82f6' : '#10b981'} 
+                            stroke="white" 
+                            strokeWidth="2"
+                          />
+                          {/* Label du produit */}
+                          <text x={x} y="195" textAnchor="middle" fontSize="10" fill="#666">
+                            {point.product}
+                          </text>
+                          {/* Temps cumulé */}
+                          <text x={x} y={y - 10} textAnchor="middle" fontSize="8" fill="#666">
+                            {point.cumulativeTime}min
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </svg>
                 </div>
                 <div className="lam-sequencage-graph-legend">
                   <div className="lam-sequencage-graph-legend-item">
-                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#10b981' }}></div>
-                    <span>Variation faible</span>
+                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#3b82f6' }}></div>
+                    <span>Vélo de Route Pro</span>
                   </div>
                   <div className="lam-sequencage-graph-legend-item">
-                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#ef4444' }}></div>
-                    <span>Variation élevée</span>
+                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#10b981' }}></div>
+                    <span>Vélo de Ville Standard</span>
                   </div>
                 </div>
               </div>

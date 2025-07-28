@@ -2,387 +2,348 @@ import React, { useState, useEffect } from 'react';
 import './LigneAssemblageMixteSimulation.css';
 
 const LigneAssemblageMixteSimulation = () => {
-  // Couleurs pour les produits
-  const PRODUCT_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
-  
-  // Configuration initiale
-  const CYCLE_TIME = 70; // Temps de cycle maximum en secondes (adapté aux nouvelles tâches)
-  const INITIAL_STATIONS = 4; // Nombre initial de postes
-  
-  // Tâches d'assemblage basées sur un cas réel - Prédécesseurs variés pour créer un défi
-  const initialTasks = [
-    { id: 1, name: 'Insérer l\'essieu et les roues', time: 20, predecessors: [] },
-    { id: 2, name: 'Insérer la tige de ventilateur', time: 6, predecessors: [1] },
-    { id: 3, name: 'Insérer capot tige de vent.', time: 5, predecessors: [2] },
-    { id: 4, name: 'Insérer essieu arrière et roues', time: 21, predecessors: [] },
-    { id: 5, name: 'Insérer capot sur châssis', time: 8, predecessors: [] },
-    { id: 6, name: 'Coller fenêtres au-dessus', time: 35, predecessors: [] },
-    { id: 7, name: 'Insérer transmission', time: 15, predecessors: [3, 4] },
-    { id: 8, name: 'Insérer entretoises de transmission', time: 10, predecessors: [7] },
-    { id: 9, name: 'Sécuriser les roues avant', time: 15, predecessors: [5, 8] },
-    { id: 10, name: 'Insérer moteur', time: 5, predecessors: [3] },
-    { id: 11, name: 'Attacher dessus sur châssis', time: 46, predecessors: [6, 9, 10] },
-    { id: 12, name: 'Ajouter les collants', time: 16, predecessors: [11] }
+  // Configuration des produits
+  const PRODUCTS = [
+    { id: 'A', name: 'Smartphone Alpha', color: '#3b82f6', demand: 40 },
+    { id: 'B', name: 'Smartphone Beta', color: '#10b981', demand: 60 }
   ];
 
-  const [tasks, setTasks] = useState(initialTasks);
-  const [stations, setStations] = useState(INITIAL_STATIONS);
-  const [stationAssignments, setStationAssignments] = useState({});
-  const [draggedTask, setDraggedTask] = useState(null);
+  // Tâches du poste goulot (4 tâches par produit, mêmes tâches mais temps différents)
+  const TASKS = [
+    { id: 1, name: 'Installation processeur', productA: 12, productB: 9 },
+    { id: 2, name: 'Montage carte mémoire', productA: 8, productB: 10 },
+    { id: 3, name: 'Connexion écran tactile', productA: 15, productB: 12 },
+    { id: 4, name: 'Test fonctionnel', productA: 10, productB: 8 }
+  ];
+
+  const [sequence, setSequence] = useState([]);
   const [results, setResults] = useState(null);
+  const [showGraph, setShowGraph] = useState(false);
 
-  // Fonction pour trier les tâches par ordre des prédécesseurs
-  const sortTasksByPredecessors = (tasks) => {
-    const sorted = [];
-    const visited = new Set();
-    
-    const visit = (taskId) => {
-      if (visited.has(taskId)) return;
-      visited.add(taskId);
-      
-      const task = tasks.find(t => t.id === taskId);
-      if (task) {
-        // Visiter d'abord tous les prédécesseurs
-        task.predecessors.forEach(pred => visit(pred));
-        sorted.push(task);
-      }
-    };
-    
-    // Visiter toutes les tâches
-    tasks.forEach(task => visit(task.id));
-    
-    return sorted;
-  };
-
-  // Calculer l'équilibrage
-  const calculateBalancing = () => {
-    const stationTimes = {};
-    const stationTasks = {};
-    
-    // Initialiser les postes
-    for (let i = 1; i <= stations; i++) {
-      stationTimes[i] = 0;
-      stationTasks[i] = [];
-    }
-    
-    // Calculer les temps par poste
-    Object.entries(stationAssignments).forEach(([taskId, stationId]) => {
-      const task = tasks.find(t => t.id === parseInt(taskId));
-      if (task && stationId) {
-        stationTimes[stationId] += task.time;
-        stationTasks[stationId].push(task);
-      }
+  // Calculer les temps de cycle pour chaque produit
+  const calculateCycleTimes = () => {
+    const cycleTimes = {};
+    PRODUCTS.forEach(product => {
+      cycleTimes[product.id] = TASKS.reduce((total, task) => {
+        return total + (product.id === 'A' ? task.productA : task.productB);
+      }, 0);
     });
-    
-    // Calculer les métriques
-    const times = Object.values(stationTimes);
-    const maxTime = Math.max(...times);
-    const minTime = Math.min(...times);
-    const avgTime = times.reduce((sum, time) => sum + time, 0) / times.length;
-    
-    // Calcul de l'efficacité d'équilibrage : (temps total des tâches / temps total de la ligne) × 100
-    const totalTaskTime = times.reduce((sum, time) => sum + time, 0);
-    const totalLineTime = stations * CYCLE_TIME;
-    const balanceEfficiency = ((totalTaskTime / totalLineTime) * 100).toFixed(1);
-    const cycleTimeViolation = times.filter(time => time > CYCLE_TIME).length;
-    
+    return cycleTimes;
+  };
+
+  // Calculer les variations de temps
+  const calculateTimeVariations = (sequence) => {
+    if (sequence.length === 0) return { variations: [], totalVariation: 0, avgVariation: 0 };
+
+    const cycleTimes = calculateCycleTimes();
+    const variations = [];
+    let totalVariation = 0;
+
+    for (let i = 1; i < sequence.length; i++) {
+      const currentProduct = sequence[i];
+      const previousProduct = sequence[i - 1];
+      
+      const currentTime = cycleTimes[currentProduct];
+      const previousTime = cycleTimes[previousProduct];
+      
+      const variation = Math.abs(currentTime - previousTime);
+      variations.push({
+        position: i,
+        current: currentProduct,
+        previous: previousProduct,
+        currentTime,
+        previousTime,
+        variation
+      });
+      
+      totalVariation += variation;
+    }
+
     return {
-      stationTimes,
-      stationTasks,
-      maxTime,
-      minTime,
-      avgTime,
-      balanceEfficiency,
-      cycleTimeViolation,
-      totalStations: stations
+      variations,
+      totalVariation,
+      avgVariation: totalVariation / (sequence.length - 1)
     };
   };
 
-  // Évaluer la solution
-  const evaluateSolution = () => {
-    const balancing = calculateBalancing();
-    setResults(balancing);
-  };
-
-  // Réinitialiser
-  const resetSimulation = () => {
-    setStationAssignments({});
+  // Ajouter un produit à la séquence
+  const addProduct = (productId) => {
+    setSequence(prev => [...prev, productId]);
     setResults(null);
+    setShowGraph(false);
   };
 
-  // Ajouter un poste
-  const addStation = () => {
-    setStations(prev => prev + 1);
+  // Retirer le dernier produit
+  const removeLastProduct = () => {
+    setSequence(prev => prev.slice(0, -1));
+    setResults(null);
+    setShowGraph(false);
   };
 
-  // Enlever un poste
-  const removeStation = () => {
-    if (stations > 1) {
-      setStations(prev => prev - 1);
-      // Retirer les tâches du poste supprimé
-      const newAssignments = {};
-      Object.entries(stationAssignments).forEach(([taskId, stationId]) => {
-        if (stationId < stations) {
-          newAssignments[taskId] = stationId;
-        }
-      });
-      setStationAssignments(newAssignments);
-    }
+  // Réinitialiser la séquence
+  const resetSequence = () => {
+    setSequence([]);
+    setResults(null);
+    setShowGraph(false);
   };
 
-  // Gestion du drag and drop
-  const handleDragStart = (e, task) => {
-    setDraggedTask(task);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e, stationId) => {
-    e.preventDefault();
-    if (!draggedTask) return;
-
-    // Vérifier les contraintes
-    const currentStationTasks = Object.entries(stationAssignments)
-      .filter(([_, sId]) => sId === stationId)
-      .map(([taskId, _]) => parseInt(taskId));
-
-    // Vérifier les prédécesseurs
-    const completedTasks = Object.keys(stationAssignments).map(id => parseInt(id));
-    const predecessorsCompleted = draggedTask.predecessors.every(pred => 
-      completedTasks.includes(pred)
-    );
-
-    if (!predecessorsCompleted) {
-      alert(`La tâche "${draggedTask.name}" ne peut pas être placée car ses prédécesseurs ne sont pas terminés.`);
+  // Évaluer la séquence
+  const evaluateSequence = () => {
+    if (sequence.length < 2) {
+      alert('La séquence doit contenir au moins 2 produits pour évaluer les variations.');
       return;
     }
 
-    // Vérifier le temps de cycle
-    const currentStationTime = currentStationTasks.reduce((total, taskId) => {
-      const task = tasks.find(t => t.id === taskId);
-      return total + task.time;
-    }, 0);
+    const variations = calculateTimeVariations(sequence);
+    setResults(variations);
+    setShowGraph(true);
+  };
 
-    const newTaskTime = draggedTask.time;
-    if (currentStationTime + newTaskTime > CYCLE_TIME) {
-      alert(`La tâche "${draggedTask.name}" ne peut pas être placée car elle dépasserait le temps de cycle de ${CYCLE_TIME} minutes.`);
-      return;
+  // Générer une séquence optimale (exemple simple)
+  const generateOptimalSequence = () => {
+    const cycleTimes = calculateCycleTimes();
+    const productA = { id: 'A', time: cycleTimes.A };
+    const productB = { id: 'B', time: cycleTimes.B };
+    
+    // Séquence qui alterne les produits pour minimiser les variations
+    const optimalSequence = [];
+    const totalDemand = PRODUCTS.reduce((sum, p) => sum + p.demand, 0);
+    
+    for (let i = 0; i < totalDemand; i++) {
+      if (i % 2 === 0) {
+        optimalSequence.push('A');
+      } else {
+        optimalSequence.push('B');
+      }
     }
-
-    // Placer la tâche
-    setStationAssignments(prev => ({
-      ...prev,
-      [draggedTask.id]: stationId
-    }));
-    setDraggedTask(null);
+    
+    setSequence(optimalSequence);
+    setResults(null);
+    setShowGraph(false);
   };
 
   return (
-    <div className="lam-simulation">
+    <div className="lam-sequencage">
       {/* Contexte */}
-      <div className="lam-factory-context">
-        <h2>Contexte de la simulation</h2>
-        <div className="lam-context-block">
-          <p>
-            Vous êtes responsable de l'optimisation d'une ligne d'assemblage automobile dans une usine de production moderne. La ligne assemble un modèle unique de véhicule avec des étapes d'assemblage spécifiques qui doivent respecter des contraintes de précédence.<br/><br/>
-            L'objectif est d'équilibrer la charge de travail entre les différentes stations pour maximiser l'efficacité de la ligne et minimiser les temps d'attente entre les postes de travail.
-          </p>
-
-          <div className="lam-context-jobs">
-            <strong>Étapes d'assemblage automobile</strong>
-            <div className="lam-context-table-wrapper">
-              <table className="lam-context-table">
-                <thead>
-                  <tr>
-                    <th>Étape</th>
-                    <th>Opération</th>
-                    <th>Durée (sec)</th>
-                    <th>Prédécesseurs</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td>1</td><td>Insérer l'essieu et les roues</td><td>20</td><td>-</td></tr>
-                  <tr><td>2</td><td>Insérer la tige de ventilateur</td><td>6</td><td>1</td></tr>
-                  <tr><td>3</td><td>Insérer capot tige de vent.</td><td>5</td><td>2</td></tr>
-                  <tr><td>4</td><td>Insérer essieu arrière et roues</td><td>21</td><td>-</td></tr>
-                  <tr><td>5</td><td>Insérer capot sur châssis</td><td>8</td><td>-</td></tr>
-                  <tr><td>6</td><td>Coller fenêtres au-dessus</td><td>35</td><td>-</td></tr>
-                  <tr><td>7</td><td>Insérer transmission</td><td>15</td><td>3,4</td></tr>
-                  <tr><td>8</td><td>Insérer entretoises de transmission</td><td>10</td><td>7</td></tr>
-                  <tr><td>9</td><td>Sécuriser les roues avant</td><td>15</td><td>5,8</td></tr>
-                  <tr><td>10</td><td>Insérer moteur</td><td>5</td><td>3</td></tr>
-                  <tr><td>11</td><td>Attacher dessus sur châssis</td><td>46</td><td>6,9,10</td></tr>
-                  <tr><td>12</td><td>Ajouter les collants</td><td>16</td><td>11</td></tr>
-                </tbody>
-              </table>
-            </div>
+      <div className="lam-sequencage-context">
+        <div className="lam-sequencage-context-block">
+          <h2>📊 Poste Goulot - Séquençage Mixte</h2>
+          <div className="lam-sequencage-context-mission">
+            <strong>Contexte :</strong> Vous gérez le poste goulot d'une ligne d'assemblage mixte de smartphones. Ce poste effectue 4 tâches spécifiques sur chaque produit, mais avec des temps d'exécution différents selon le modèle.
           </div>
-          <div className="lam-context-defi">
-            <strong>Défi</strong><br/>
-            Glissez-déposez les tâches vers les stations pour créer un équilibrage optimal de la ligne d'assemblage.<br/>
-            Temps de cycle maximum : <strong>{CYCLE_TIME} secondes</strong><br/>
-            Essayez de minimiser le nombre de stations tout en respectant le temps de cycle maximum !
+          <div className="lam-sequencage-context-ressources">
+            <strong>Problème du poste goulot :</strong>
+            <ul>
+              <li>Le poste goulot limite le débit de toute la ligne</li>
+              <li>Les variations de temps entre produits créent des déséquilibres</li>
+              <li>Smartphone Alpha : 45 min total (25% plus long que Beta)</li>
+              <li>Smartphone Beta : 36 min total (plus rapide à assembler)</li>
+              <li>Objectif : Minimiser les variations de temps entre produits consécutifs</li>
+            </ul>
+          </div>
+          <div className="lam-sequencage-context-note">
+            <strong>Note :</strong> Les 4 tâches sont identiques pour les deux produits, mais les temps d'exécution diffèrent de 25% en moyenne.
           </div>
         </div>
       </div>
 
       {/* Contenu de simulation */}
-      <div className="lam-simulation-content">
-        {/* Zone des tâches */}
-        <div className="lam-tasks-zone">
-          <h3>Tâches disponibles</h3>
-          <div className="lam-tasks-container">
-            {sortTasksByPredecessors(tasks).map(task => (
-              <div
-                key={task.id}
-                className={`lam-task-block ${stationAssignments[task.id] ? 'assigned' : ''}`}
-                draggable={!stationAssignments[task.id]}
-                onDragStart={(e) => handleDragStart(e, task)}
-                style={{
-                  opacity: stationAssignments[task.id] ? 0.5 : 1,
-                  cursor: stationAssignments[task.id] ? 'not-allowed' : 'grab'
-                }}
-              >
-                <div className="lam-task-name">{task.name}</div>
-                <div className="lam-task-times">
-                  <span className="lam-time">{task.time}sec</span>
+      <div className="lam-sequencage-content">
+        {/* Zone des produits */}
+        <div className="lam-products-zone">
+          <h3>Produits disponibles</h3>
+          <div className="lam-products-container">
+            {PRODUCTS.map(product => (
+              <div key={product.id} className="lam-product-block">
+                <div className="lam-product-header">
+                  <div 
+                    className="lam-product-color" 
+                    style={{ backgroundColor: product.color }}
+                  ></div>
+                  <div className="lam-product-info">
+                    <div className="lam-product-name">{product.name}</div>
+                    <div className="lam-product-demand">Demande: {product.demand} unités</div>
+                  </div>
                 </div>
-                <div className="lam-task-predecessors">
-                  {task.predecessors.length > 0 ? `Précédents: ${task.predecessors.join(', ')}` : ''}
+                <div className="lam-product-times">
+                  <h4>Temps par tâche:</h4>
+                  <div className="lam-product-tasks">
+                    {TASKS.map(task => (
+                      <div key={task.id} className="lam-product-task">
+                        <span className="lam-task-name">{task.name}:</span>
+                        <span className="lam-task-time">
+                          {product.id === 'A' ? task.productA : task.productB} min
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="lam-product-total">
+                    <strong>Temps total: {TASKS.reduce((sum, task) => 
+                      sum + (product.id === 'A' ? task.productA : task.productB), 0
+                    )} min</strong>
+                  </div>
                 </div>
+                <button 
+                  className="lam-add-product-btn"
+                  onClick={() => addProduct(product.id)}
+                  style={{ backgroundColor: product.color }}
+                >
+                  Ajouter {product.name}
+                </button>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Zone des postes de travail */}
-        <div className="lam-stations-zone">
-          <div className="lam-stations-header">
-            <h3>Postes de travail</h3>
-            <div className="lam-stations-controls">
+        {/* Zone de séquence */}
+        <div className="lam-sequence-zone">
+          <div className="lam-sequence-header">
+            <h3>Séquence de production</h3>
+            <div className="lam-sequence-controls">
               <button 
-                className="lam-station-btn lam-remove-btn"
-                onClick={removeStation}
-                disabled={stations <= 1}
+                className="lam-sequence-btn lam-remove-btn"
+                onClick={removeLastProduct}
+                disabled={sequence.length === 0}
               >
-                - Poste
+                Retirer dernier
               </button>
-              <span className="lam-stations-count">{stations} postes</span>
+              <span className="lam-sequence-count">{sequence.length} produits</span>
               <button 
-                className="lam-station-btn lam-add-btn"
-                onClick={addStation}
+                className="lam-sequence-btn lam-reset-btn"
+                onClick={resetSequence}
+                disabled={sequence.length === 0}
               >
-                + Poste
+                Réinitialiser
               </button>
             </div>
           </div>
           
-          <div className="lam-stations-container">
-            {Array.from({ length: stations }, (_, index) => {
-              const stationId = index + 1;
-              const stationTasks = Object.entries(stationAssignments)
-                .filter(([_, sId]) => sId === stationId)
-                .map(([taskId, _]) => tasks.find(t => t.id === parseInt(taskId)))
-                .filter(Boolean);
-
-              const stationTime = stationTasks.reduce((total, task) => 
-                total + task.time, 0
-              );
-
-              return (
-                <div
-                  key={stationId}
-                  className={`lam-station ${stationTime > CYCLE_TIME ? 'overloaded' : ''}`}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, stationId)}
-                >
-                  <div className="lam-station-header">
-                    <h4>Poste {stationId}</h4>
-                    <div className="lam-station-time">
-                      {stationTime}/{CYCLE_TIME} sec
-                    </div>
-                  </div>
-                  <div className="lam-station-tasks">
-                    {stationTasks.map(task => (
-                      <div key={task.id} className="lam-station-task">
-                        <div className="lam-station-task-name">{task.name}</div>
-                        <div className="lam-station-task-times">
-                          <span>{task.time}sec</span>
-                        </div>
-                        <div className="lam-task-predecessors">
-                          {task.predecessors.length > 0 ? `Précédents: ${task.predecessors.join(', ')}` : ''}
-                        </div>
+          <div className="lam-sequence-container">
+            {sequence.length === 0 ? (
+              <div className="lam-sequence-empty">
+                <p>Aucun produit dans la séquence</p>
+                <p>Cliquez sur "Ajouter Produit" pour commencer</p>
+              </div>
+            ) : (
+              <div className="lam-sequence-items">
+                {sequence.map((productId, index) => {
+                  const product = PRODUCTS.find(p => p.id === productId);
+                  return (
+                    <div 
+                      key={index}
+                      className="lam-sequence-item"
+                      style={{ borderColor: product.color }}
+                    >
+                      <div className="lam-sequence-item-color" style={{ backgroundColor: product.color }}></div>
+                      <div className="lam-sequence-item-info">
+                        <span className="lam-sequence-item-name">{product.name}</span>
+                        <span className="lam-sequence-item-position">#{index + 1}</span>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Zone de validation */}
-        <div className="lam-validation-zone">
+        <div className="lam-sequencage-validation-zone">
           <h3>Évaluation</h3>
-          <div className="lam-validation-buttons">
-            <button className="lam-evaluate-btn" onClick={evaluateSolution}>
-              Évaluer l'équilibrage
+          <div className="lam-sequencage-validation-buttons">
+            <button 
+              className="lam-sequencage-evaluate-btn" 
+              onClick={evaluateSequence}
+              disabled={sequence.length < 2}
+            >
+              Évaluer la séquence
             </button>
-            <button className="lam-reset-btn" onClick={resetSimulation}>
-              Réinitialiser
+            <button 
+              className="lam-sequencage-optimal-btn"
+              onClick={generateOptimalSequence}
+            >
+              Séquence optimale
             </button>
           </div>
         </div>
 
         {/* Zone des résultats */}
         {results && (
-          <div className="lam-results-zone">
-            <h3>Résultats de l'équilibrage</h3>
-            <div className="lam-results-grid">
-              <div className="lam-result-card">
+          <div className="lam-sequencage-results-zone">
+            <h3>Résultats du séquençage</h3>
+            <div className="lam-sequencage-results-grid">
+              <div className="lam-sequencage-result-card">
                 <h4>Métriques globales</h4>
-                <div className="lam-metrics">
-                  <div className="lam-metric">
-                    <span className="lam-metric-label">Efficacité d'équilibrage:</span>
-                    <span className="lam-metric-value">{results.balanceEfficiency}%</span>
+                <div className="lam-sequencage-metrics">
+                  <div className="lam-sequencage-metric">
+                    <span className="lam-sequencage-metric-label">Variation totale:</span>
+                    <span className="lam-sequencage-metric-value">{results.totalVariation} min</span>
                   </div>
-                  <div className="lam-metric">
-                    <span className="lam-metric-label">Temps max poste:</span>
-                    <span className="lam-metric-value">{results.maxTime} min</span>
+                  <div className="lam-sequencage-metric">
+                    <span className="lam-sequencage-metric-label">Variation moyenne:</span>
+                    <span className="lam-sequencage-metric-value">{results.avgVariation.toFixed(1)} min</span>
                   </div>
-                  <div className="lam-metric">
-                    <span className="lam-metric-label">Temps min poste:</span>
-                    <span className="lam-metric-value">{results.minTime} min</span>
+                  <div className="lam-sequencage-metric">
+                    <span className="lam-sequencage-metric-label">Nombre de transitions:</span>
+                    <span className="lam-sequencage-metric-value">{results.variations.length}</span>
                   </div>
-                  <div className="lam-metric">
-                    <span className="lam-metric-label">Temps moyen:</span>
-                    <span className="lam-metric-value">{results.avgTime.toFixed(1)} min</span>
-                  </div>
-                  <div className="lam-metric">
-                    <span className="lam-metric-label">Violations cycle:</span>
-                    <span className="lam-metric-value">{results.cycleTimeViolation}</span>
-                  </div>
-                  <div className="lam-metric">
-                    <span className="lam-metric-label">Total postes:</span>
-                    <span className="lam-metric-value">{results.totalStations}</span>
+                  <div className="lam-sequencage-metric">
+                    <span className="lam-sequencage-metric-label">Longueur séquence:</span>
+                    <span className="lam-sequencage-metric-value">{sequence.length}</span>
                   </div>
                 </div>
               </div>
               
-              <div className="lam-result-card">
-                <h4>Détail par poste</h4>
-                <div className="lam-stations-detail">
-                  {Object.entries(results.stationTimes).map(([stationId, time]) => (
-                    <div key={stationId} className="lam-station-detail">
-                      <strong>Poste {stationId}:</strong>
-                      <span>{time}min</span>
+              <div className="lam-sequencage-result-card">
+                <h4>Détail des variations</h4>
+                <div className="lam-sequencage-variations">
+                  {results.variations.map((variation, index) => (
+                    <div key={index} className="lam-sequencage-variation">
+                      <div className="lam-sequencage-variation-header">
+                        <strong>Position {variation.position}:</strong>
+                        <span className="lam-sequencage-variation-value">{variation.variation} min</span>
+                      </div>
+                      <div className="lam-sequencage-variation-detail">
+                        <span>{variation.previous} ({variation.previousTime}min) → {variation.current} ({variation.currentTime}min)</span>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
+
+            {/* Graphique des variations */}
+            {showGraph && (
+              <div className="lam-sequencage-graph-zone">
+                <h4>Graphique des variations</h4>
+                <div className="lam-sequencage-graph">
+                  {results.variations.map((variation, index) => (
+                    <div key={index} className="lam-sequencage-graph-bar">
+                      <div 
+                        className="lam-sequencage-graph-bar-fill"
+                        style={{ 
+                          height: `${(variation.variation / Math.max(...results.variations.map(v => v.variation))) * 100}%`,
+                          backgroundColor: variation.variation > results.avgVariation ? '#ef4444' : '#10b981'
+                        }}
+                      ></div>
+                      <div className="lam-sequencage-graph-bar-label">
+                        {variation.variation}min
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="lam-sequencage-graph-legend">
+                  <div className="lam-sequencage-graph-legend-item">
+                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#10b981' }}></div>
+                    <span>Variation faible</span>
+                  </div>
+                  <div className="lam-sequencage-graph-legend-item">
+                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#ef4444' }}></div>
+                    <span>Variation élevée</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -9,28 +9,28 @@ const LigneAssemblageMixteSimulation = () => {
   const CYCLE_TIME = 45; // Temps de cycle maximum en minutes (augmenté)
   const INITIAL_STATIONS = 4; // Nombre initial de postes
   
-  // Tâches avec temps pour un seul produit
+  // Tâches avec temps pour un seul produit - Prédécesseurs variés pour créer un défi
   const initialTasks = [
     { id: 1, name: 'Préparation', time: 8, predecessors: [] },
     { id: 2, name: 'Assemblage base', time: 10, predecessors: [1] },
     { id: 3, name: 'Installation moteur', time: 12, predecessors: [2] },
-    { id: 4, name: 'Câblage', time: 6, predecessors: [3] },
+    { id: 4, name: 'Câblage', time: 6, predecessors: [2, 3] },
     { id: 5, name: 'Test électrique', time: 8, predecessors: [4] },
-    { id: 6, name: 'Installation écran', time: 9, predecessors: [5] },
+    { id: 6, name: 'Installation écran', time: 9, predecessors: [] },
     { id: 7, name: 'Programmation', time: 7, predecessors: [6] },
-    { id: 8, name: 'Test final', time: 11, predecessors: [7] },
+    { id: 8, name: 'Test final', time: 11, predecessors: [5, 7] },
     { id: 9, name: 'Emballage', time: 5, predecessors: [8] },
-    { id: 10, name: 'Contrôle qualité', time: 9, predecessors: [9] },
+    { id: 10, name: 'Contrôle qualité', time: 9, predecessors: [] },
     { id: 11, name: 'Étiquetage', time: 4, predecessors: [10] },
-    { id: 12, name: 'Palettisation', time: 6, predecessors: [11] },
+    { id: 12, name: 'Palettisation', time: 6, predecessors: [9, 11] },
     { id: 13, name: 'Vérification finale', time: 7, predecessors: [12] },
-    { id: 14, name: 'Expédition', time: 5, predecessors: [13] },
+    { id: 14, name: 'Expédition', time: 5, predecessors: [] },
     { id: 15, name: 'Documentation', time: 8, predecessors: [14] },
-    { id: 16, name: 'Formation utilisateur', time: 10, predecessors: [15] },
+    { id: 16, name: 'Formation utilisateur', time: 10, predecessors: [13, 15] },
     { id: 17, name: 'Installation logiciel', time: 9, predecessors: [16] },
-    { id: 18, name: 'Test intégration', time: 11, predecessors: [17] },
+    { id: 18, name: 'Test intégration', time: 11, predecessors: [] },
     { id: 19, name: 'Validation client', time: 8, predecessors: [18] },
-    { id: 20, name: 'Livraison', time: 6, predecessors: [19] }
+    { id: 20, name: 'Livraison', time: 6, predecessors: [17, 19] }
   ];
 
   const [tasks, setTasks] = useState(initialTasks);

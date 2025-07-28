@@ -243,12 +243,7 @@ function App() {
               {selectedCourse === "Flowshop" && (
                 <FlowshopInteractiveSimulation />
               )}
-              {selectedCourse === "Ligne d'assemblage" && (
-                <div style={{ padding: '2rem', textAlign: 'center' }}>
-                  <h2>Simulation Ligne d'assemblage</h2>
-                  <p>Contenu à venir...</p>
-                </div>
-              )}
+
               {/* Cours Théoriques */}
               {selectedCourse === "Introduction aux systèmes" && (
                 <div style={{ padding: '2rem' }}>

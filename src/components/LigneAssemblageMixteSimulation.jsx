@@ -316,20 +316,28 @@ const LigneAssemblageMixteSimulation = () => {
                 <h4>Métriques globales</h4>
                 <div className="lam-sequencage-metrics">
                   <div className="lam-sequencage-metric">
-                    <span className="lam-sequencage-metric-label">Variation totale:</span>
-                    <span className="lam-sequencage-metric-value">{results.totalVariation} min</span>
-                  </div>
-                  <div className="lam-sequencage-metric">
-                    <span className="lam-sequencage-metric-label">Variation moyenne:</span>
-                    <span className="lam-sequencage-metric-value">{results.avgVariation.toFixed(1)} min</span>
-                  </div>
-                  <div className="lam-sequencage-metric">
-                    <span className="lam-sequencage-metric-label">Nombre de transitions:</span>
-                    <span className="lam-sequencage-metric-value">{results.variations.length}</span>
-                  </div>
-                  <div className="lam-sequencage-metric">
-                    <span className="lam-sequencage-metric-label">Longueur séquence:</span>
+                    <span className="lam-sequencage-metric-label">Nombre total d'unités:</span>
                     <span className="lam-sequencage-metric-value">{sequence.length}</span>
+                  </div>
+                  <div className="lam-sequencage-metric">
+                    <span className="lam-sequencage-metric-label">Répartition modèles:</span>
+                    <span className="lam-sequencage-metric-value">3 Route Pro, 7 Ville Standard</span>
+                  </div>
+                  <div className="lam-sequencage-metric">
+                    <span className="lam-sequencage-metric-label">Variation maximale:</span>
+                    <span className="lam-sequencage-metric-value">{Math.max(...results.variations.map(v => v.variation))} min</span>
+                  </div>
+                  <div className="lam-sequencage-metric">
+                    <span className="lam-sequencage-metric-label">Temps de cycle goulot:</span>
+                    <span className="lam-sequencage-metric-value">{calculateCycleTimes().A} min</span>
+                  </div>
+                  <div className="lam-sequencage-metric">
+                    <span className="lam-sequencage-metric-label">Déviation moyenne:</span>
+                    <span className="lam-sequencage-metric-value">{results.avgVariation.toFixed(3)} min</span>
+                  </div>
+                  <div className="lam-sequencage-metric">
+                    <span className="lam-sequencage-metric-label">Efficacité de lissage:</span>
+                    <span className="lam-sequencage-metric-value">{((1 - results.avgVariation / calculateCycleTimes().A) * 100).toFixed(2)}%</span>
                   </div>
                 </div>
               </div>

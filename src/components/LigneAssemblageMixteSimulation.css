@@ -117,7 +117,7 @@
   justify-content: space-between;
   min-height: 30px;
   max-height: 35px;
-  width: 350px;
+  width: 280px;
   flex-shrink: 0;
 }
 
@@ -137,7 +137,7 @@
   font-weight: 600;
   color: var(--text-primary);
   font-size: var(--font-size-xs);
-  width: 120px;
+  width: 100px;
   flex-shrink: 0;
 }
 
@@ -162,7 +162,7 @@
   font-size: var(--font-size-xs);
   color: var(--text-secondary);
   font-style: italic;
-  width: 120px;
+  width: 100px;
   text-align: right;
   flex-shrink: 0;
 }
@@ -318,7 +318,7 @@
   justify-content: space-between;
   min-height: 30px;
   max-height: 35px;
-  width: 350px;
+  width: 280px;
   flex-shrink: 0;
   box-shadow: var(--shadow-sm);
 }
@@ -327,7 +327,7 @@
   font-weight: 600;
   color: var(--text-primary);
   font-size: var(--font-size-xs);
-  width: 120px;
+  width: 100px;
   flex-shrink: 0;
 }
 

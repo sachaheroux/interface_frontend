@@ -6,31 +6,23 @@ const LigneAssemblageMixteSimulation = () => {
   const PRODUCT_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
   
   // Configuration initiale
-  const CYCLE_TIME = 45; // Temps de cycle maximum en minutes (augmenté)
+  const CYCLE_TIME = 60; // Temps de cycle maximum en secondes (adapté aux nouvelles tâches)
   const INITIAL_STATIONS = 4; // Nombre initial de postes
   
-  // Tâches avec temps pour un seul produit - Prédécesseurs variés pour créer un défi
+  // Tâches d'assemblage basées sur un cas réel - Prédécesseurs variés pour créer un défi
   const initialTasks = [
-    { id: 1, name: 'Préparation', time: 8, predecessors: [] },
-    { id: 2, name: 'Assemblage base', time: 10, predecessors: [1] },
-    { id: 3, name: 'Installation moteur', time: 12, predecessors: [2] },
-    { id: 4, name: 'Câblage', time: 6, predecessors: [2, 3] },
-    { id: 5, name: 'Test électrique', time: 8, predecessors: [4] },
-    { id: 6, name: 'Installation écran', time: 9, predecessors: [] },
-    { id: 7, name: 'Programmation', time: 7, predecessors: [6] },
-    { id: 8, name: 'Test final', time: 11, predecessors: [5, 7] },
-    { id: 9, name: 'Emballage', time: 5, predecessors: [8] },
-    { id: 10, name: 'Contrôle qualité', time: 9, predecessors: [] },
-    { id: 11, name: 'Étiquetage', time: 4, predecessors: [10] },
-    { id: 12, name: 'Palettisation', time: 6, predecessors: [9, 11] },
-    { id: 13, name: 'Vérification finale', time: 7, predecessors: [12] },
-    { id: 14, name: 'Expédition', time: 5, predecessors: [] },
-    { id: 15, name: 'Documentation', time: 8, predecessors: [14] },
-    { id: 16, name: 'Formation utilisateur', time: 10, predecessors: [13, 15] },
-    { id: 17, name: 'Installation logiciel', time: 9, predecessors: [16] },
-    { id: 18, name: 'Test intégration', time: 11, predecessors: [] },
-    { id: 19, name: 'Validation client', time: 8, predecessors: [18] },
-    { id: 20, name: 'Livraison', time: 6, predecessors: [17, 19] }
+    { id: 1, name: 'Insérer l\'essieu et les roues', time: 20, predecessors: [] },
+    { id: 2, name: 'Insérer la tige de ventilateur', time: 6, predecessors: [1] },
+    { id: 3, name: 'Insérer capot tige de vent.', time: 5, predecessors: [2] },
+    { id: 4, name: 'Insérer essieu arrière et roues', time: 21, predecessors: [] },
+    { id: 5, name: 'Insérer capot sur châssis', time: 8, predecessors: [] },
+    { id: 6, name: 'Coller fenêtres au-dessus', time: 35, predecessors: [] },
+    { id: 7, name: 'Insérer transmission', time: 15, predecessors: [3, 4] },
+    { id: 8, name: 'Insérer entretoises de transmission', time: 10, predecessors: [7] },
+    { id: 9, name: 'Sécuriser les roues avant', time: 15, predecessors: [5, 8] },
+    { id: 10, name: 'Insérer moteur', time: 5, predecessors: [3] },
+    { id: 11, name: 'Attacher dessus sur châssis', time: 46, predecessors: [6, 9, 10] },
+    { id: 12, name: 'Ajouter les collants', time: 16, predecessors: [11] }
   ];
 
   const [tasks, setTasks] = useState(initialTasks);
@@ -196,14 +188,14 @@ const LigneAssemblageMixteSimulation = () => {
           <div className="lam-context-ressources">
             <strong>Contraintes :</strong>
             <ul>
-              <li>Temps de cycle maximum : <strong>{CYCLE_TIME} minutes</strong></li>
+              <li>Temps de cycle maximum : <strong>{CYCLE_TIME} secondes</strong></li>
               <li>Un produit avec temps d'exécution variables</li>
               <li>Respecter les relations de précédence entre tâches</li>
               <li>Minimiser le nombre de postes de travail</li>
             </ul>
           </div>
           <div className="lam-context-note">
-            <strong>Note :</strong> Les temps affichés sont en minutes. Chaque tâche a un temps d'exécution unique.
+            <strong>Note :</strong> Les temps affichés sont en secondes. Chaque tâche a un temps d'exécution unique.
           </div>
         </div>
       </div>
@@ -227,7 +219,7 @@ const LigneAssemblageMixteSimulation = () => {
               >
                 <div className="lam-task-name">{task.name}</div>
                 <div className="lam-task-times">
-                  <span className="lam-time">{task.time}min</span>
+                  <span className="lam-time">{task.time}sec</span>
                 </div>
                 <div className="lam-task-predecessors">
                   {task.predecessors.length > 0 ? `Précédents: ${task.predecessors.join(', ')}` : ''}
@@ -281,7 +273,7 @@ const LigneAssemblageMixteSimulation = () => {
                   <div className="lam-station-header">
                     <h4>Poste {stationId}</h4>
                     <div className="lam-station-time">
-                      {stationTime}/{CYCLE_TIME} min
+                      {stationTime}/{CYCLE_TIME} sec
                     </div>
                   </div>
                   <div className="lam-station-tasks">
@@ -289,7 +281,7 @@ const LigneAssemblageMixteSimulation = () => {
                       <div key={task.id} className="lam-station-task">
                         <div className="lam-station-task-name">{task.name}</div>
                         <div className="lam-station-task-times">
-                          <span>{task.time}min</span>
+                          <span>{task.time}sec</span>
                         </div>
                         <div className="lam-task-predecessors">
                           {task.predecessors.length > 0 ? `Précédents: ${task.predecessors.join(', ')}` : ''}

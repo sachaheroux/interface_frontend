@@ -98,8 +98,8 @@
 }
 
 .lam-tasks-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-xs);
   width: 100%;
 }
@@ -117,6 +117,8 @@
   gap: var(--spacing-sm);
   min-height: 30px;
   max-height: 35px;
+  width: 300px;
+  flex-shrink: 0;
 }
 
 .lam-task-block:hover {
@@ -299,6 +301,7 @@
   flex-direction: column;
   gap: var(--spacing-sm);
   min-height: 120px;
+  align-items: flex-start;
 }
 
 .lam-station-task {
@@ -312,6 +315,8 @@
   gap: var(--spacing-sm);
   min-height: 30px;
   max-height: 35px;
+  width: 300px;
+  flex-shrink: 0;
   box-shadow: var(--shadow-sm);
 }
 

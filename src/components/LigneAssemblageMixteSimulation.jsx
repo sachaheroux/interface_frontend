@@ -99,28 +99,7 @@ const LigneAssemblageMixteSimulation = () => {
     setShowGraph(true);
   };
 
-  // Générer une séquence optimale (exemple simple)
-  const generateOptimalSequence = () => {
-    const cycleTimes = calculateCycleTimes();
-    const productA = { id: 'A', time: cycleTimes.A };
-    const productB = { id: 'B', time: cycleTimes.B };
-    
-    // Séquence qui alterne les produits pour minimiser les variations
-    const optimalSequence = [];
-    const totalDemand = PRODUCTS.reduce((sum, p) => sum + p.demand, 0);
-    
-    for (let i = 0; i < totalDemand; i++) {
-      if (i % 2 === 0) {
-        optimalSequence.push('A');
-      } else {
-        optimalSequence.push('B');
-      }
-    }
-    
-    setSequence(optimalSequence);
-    setResults(null);
-    setShowGraph(false);
-  };
+
 
   return (
     <div className="lam-sequencage">
@@ -260,12 +239,6 @@ const LigneAssemblageMixteSimulation = () => {
               disabled={sequence.length < 2}
             >
               Évaluer la séquence
-            </button>
-            <button 
-              className="lam-sequencage-optimal-btn"
-              onClick={generateOptimalSequence}
-            >
-              Séquence optimale
             </button>
           </div>
         </div>

@@ -9,28 +9,28 @@ const LigneAssemblageMixteSimulation = () => {
   const CYCLE_TIME = 45; // Temps de cycle maximum en minutes (augmenté)
   const INITIAL_STATIONS = 4; // Nombre initial de postes
   
-  // Tâches avec temps pour chaque produit
+  // Tâches avec temps pour un seul produit
   const initialTasks = [
-    { id: 1, name: 'Préparation', productA: 8, productB: 6, predecessors: [] },
-    { id: 2, name: 'Assemblage base', productA: 10, productB: 8, predecessors: [1] },
-    { id: 3, name: 'Installation moteur', productA: 12, productB: 9, predecessors: [2] },
-    { id: 4, name: 'Câblage', productA: 6, productB: 7, predecessors: [3] },
-    { id: 5, name: 'Test électrique', productA: 8, productB: 10, predecessors: [4] },
-    { id: 6, name: 'Installation écran', productA: 9, productB: 11, predecessors: [5] },
-    { id: 7, name: 'Programmation', productA: 7, productB: 8, predecessors: [6] },
-    { id: 8, name: 'Test final', productA: 11, productB: 9, predecessors: [7] },
-    { id: 9, name: 'Emballage', productA: 5, productB: 6, predecessors: [8] },
-    { id: 10, name: 'Contrôle qualité', productA: 9, productB: 7, predecessors: [9] },
-    { id: 11, name: 'Étiquetage', productA: 4, productB: 5, predecessors: [10] },
-    { id: 12, name: 'Palettisation', productA: 6, productB: 8, predecessors: [11] },
-    { id: 13, name: 'Vérification finale', productA: 7, productB: 9, predecessors: [12] },
-    { id: 14, name: 'Expédition', productA: 5, productB: 4, predecessors: [13] },
-    { id: 15, name: 'Documentation', productA: 8, productB: 6, predecessors: [14] },
-    { id: 16, name: 'Formation utilisateur', productA: 10, productB: 12, predecessors: [15] },
-    { id: 17, name: 'Installation logiciel', productA: 9, productB: 7, predecessors: [16] },
-    { id: 18, name: 'Test intégration', productA: 11, productB: 10, predecessors: [17] },
-    { id: 19, name: 'Validation client', productA: 8, productB: 9, predecessors: [18] },
-    { id: 20, name: 'Livraison', productA: 6, productB: 5, predecessors: [19] }
+    { id: 1, name: 'Préparation', time: 8, predecessors: [] },
+    { id: 2, name: 'Assemblage base', time: 10, predecessors: [1] },
+    { id: 3, name: 'Installation moteur', time: 12, predecessors: [2] },
+    { id: 4, name: 'Câblage', time: 6, predecessors: [3] },
+    { id: 5, name: 'Test électrique', time: 8, predecessors: [4] },
+    { id: 6, name: 'Installation écran', time: 9, predecessors: [5] },
+    { id: 7, name: 'Programmation', time: 7, predecessors: [6] },
+    { id: 8, name: 'Test final', time: 11, predecessors: [7] },
+    { id: 9, name: 'Emballage', time: 5, predecessors: [8] },
+    { id: 10, name: 'Contrôle qualité', time: 9, predecessors: [9] },
+    { id: 11, name: 'Étiquetage', time: 4, predecessors: [10] },
+    { id: 12, name: 'Palettisation', time: 6, predecessors: [11] },
+    { id: 13, name: 'Vérification finale', time: 7, predecessors: [12] },
+    { id: 14, name: 'Expédition', time: 5, predecessors: [13] },
+    { id: 15, name: 'Documentation', time: 8, predecessors: [14] },
+    { id: 16, name: 'Formation utilisateur', time: 10, predecessors: [15] },
+    { id: 17, name: 'Installation logiciel', time: 9, predecessors: [16] },
+    { id: 18, name: 'Test intégration', time: 11, predecessors: [17] },
+    { id: 19, name: 'Validation client', time: 8, predecessors: [18] },
+    { id: 20, name: 'Livraison', time: 6, predecessors: [19] }
   ];
 
   const [tasks, setTasks] = useState(initialTasks);
@@ -69,7 +69,7 @@ const LigneAssemblageMixteSimulation = () => {
     
     // Initialiser les postes
     for (let i = 1; i <= stations; i++) {
-      stationTimes[i] = { productA: 0, productB: 0 };
+      stationTimes[i] = 0;
       stationTasks[i] = [];
     }
     
@@ -77,22 +77,19 @@ const LigneAssemblageMixteSimulation = () => {
     Object.entries(stationAssignments).forEach(([taskId, stationId]) => {
       const task = tasks.find(t => t.id === parseInt(taskId));
       if (task && stationId) {
-        stationTimes[stationId].productA += task.productA;
-        stationTimes[stationId].productB += task.productB;
+        stationTimes[stationId] += task.time;
         stationTasks[stationId].push(task);
       }
     });
     
     // Calculer les métriques
-    const avgTimes = Object.values(stationTimes).map(station => 
-      (station.productA + station.productB) / 2 // Moyenne des deux produits
-    );
-    const maxTime = Math.max(...avgTimes);
-    const minTime = Math.min(...avgTimes);
-    const avgTime = avgTimes.reduce((sum, time) => sum + time, 0) / avgTimes.length;
+    const times = Object.values(stationTimes);
+    const maxTime = Math.max(...times);
+    const minTime = Math.min(...times);
+    const avgTime = times.reduce((sum, time) => sum + time, 0) / times.length;
     
     const balanceEfficiency = ((minTime / maxTime) * 100).toFixed(1);
-    const cycleTimeViolation = avgTimes.filter(time => time > CYCLE_TIME).length;
+    const cycleTimeViolation = times.filter(time => time > CYCLE_TIME).length;
     
     return {
       stationTimes,
@@ -170,10 +167,10 @@ const LigneAssemblageMixteSimulation = () => {
     // Vérifier le temps de cycle
     const currentStationTime = currentStationTasks.reduce((total, taskId) => {
       const task = tasks.find(t => t.id === taskId);
-      return total + ((task.productA + task.productB) / 2); // Moyenne des deux produits
+      return total + task.time;
     }, 0);
 
-    const newTaskTime = (draggedTask.productA + draggedTask.productB) / 2; // Moyenne des deux produits
+    const newTaskTime = draggedTask.time;
     if (currentStationTime + newTaskTime > CYCLE_TIME) {
       alert(`La tâche "${draggedTask.name}" ne peut pas être placée car elle dépasserait le temps de cycle de ${CYCLE_TIME} minutes.`);
       return;
@@ -200,13 +197,13 @@ const LigneAssemblageMixteSimulation = () => {
             <strong>Contraintes :</strong>
             <ul>
               <li>Temps de cycle maximum : <strong>{CYCLE_TIME} minutes</strong></li>
-              <li>2 produits différents avec temps d'exécution variables</li>
+              <li>Un produit avec temps d'exécution variables</li>
               <li>Respecter les relations de précédence entre tâches</li>
               <li>Minimiser le nombre de postes de travail</li>
             </ul>
           </div>
           <div className="lam-context-note">
-            <strong>Note :</strong> Les temps affichés sont en minutes. Le temps de cycle est calculé en prenant la moyenne des temps des deux produits pour chaque tâche.
+            <strong>Note :</strong> Les temps affichés sont en minutes. Chaque tâche a un temps d'exécution unique.
           </div>
         </div>
       </div>
@@ -230,8 +227,7 @@ const LigneAssemblageMixteSimulation = () => {
               >
                 <div className="lam-task-name">{task.name}</div>
                 <div className="lam-task-times">
-                  <span className="lam-time-a">{task.productA}min</span>
-                  <span className="lam-time-b">{task.productB}min</span>
+                  <span className="lam-time">{task.time}min</span>
                 </div>
                 {task.predecessors.length > 0 && (
                   <div className="lam-task-predecessors">
@@ -274,7 +270,7 @@ const LigneAssemblageMixteSimulation = () => {
                 .filter(Boolean);
 
               const stationTime = stationTasks.reduce((total, task) => 
-                total + ((task.productA + task.productB) / 2), 0 // Moyenne des deux produits
+                total + task.time, 0
               );
 
               return (
@@ -295,8 +291,7 @@ const LigneAssemblageMixteSimulation = () => {
                       <div key={task.id} className="lam-station-task">
                         <div className="lam-station-task-name">{task.name}</div>
                         <div className="lam-station-task-times">
-                          <span>A:{task.productA}</span>
-                          <span>B:{task.productB}</span>
+                          <span>{task.time}min</span>
                         </div>
                       </div>
                     ))}
@@ -358,12 +353,10 @@ const LigneAssemblageMixteSimulation = () => {
               <div className="lam-result-card">
                 <h4>Détail par poste</h4>
                 <div className="lam-stations-detail">
-                  {Object.entries(results.stationTimes).map(([stationId, times]) => (
+                  {Object.entries(results.stationTimes).map(([stationId, time]) => (
                     <div key={stationId} className="lam-station-detail">
                       <strong>Poste {stationId}:</strong>
-                      <span>Produit A: {times.productA}min</span>
-                      <span>Produit B: {times.productB}min</span>
-                      <span>Moyenne: {((times.productA + times.productB) / 2).toFixed(1)}min</span>
+                      <span>{time}min</span>
                     </div>
                   ))}
                 </div>

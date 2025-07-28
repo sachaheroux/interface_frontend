@@ -92,7 +92,7 @@ function App() {
   // Configuration des cours
   const coursesConfig = {
     "Cours Théoriques": ["Introduction aux systèmes", "Ordonnancement de base", "Algorithmes avancés"],
-    "Simulations Interactives": ["Jobshop", "Flowshop", "Ligne d'assemblage", "Ligne d'assemblage mixte", "Ligne d'assemblage mixte Sequencage"],
+    "Simulations Interactives": ["Jobshop", "Flowshop", "Ligne d'assemblage", "Ligne d'assemblage mixte"],
     "Exercices Pratiques": ["Cas d'étude 1", "Cas d'étude 2", "Projet final"]
   };
 
@@ -263,12 +263,12 @@ function App() {
                   <p>Exercice pratique à venir...</p>
                 </div>
               )}
-              {/* Ligne d'assemblage mixte Simulation */}
-              {selectedCourse === "Ligne d'assemblage mixte" && (
+              {/* Ligne d'assemblage - Équilibrage (Partie 1) */}
+              {selectedCourse === "Ligne d'assemblage" && (
                 <LigneAssemblageMixteSimulation />
               )}
-              {/* Ligne d'assemblage mixte Sequencage */}
-              {selectedCourse === "Ligne d'assemblage mixte Sequencage" && (
+              {/* Ligne d'assemblage mixte - Séquençage (Partie 2) */}
+              {selectedCourse === "Ligne d'assemblage mixte" && (
                 <LigneAssemblageMixteSequencage />
               )}
             </div>

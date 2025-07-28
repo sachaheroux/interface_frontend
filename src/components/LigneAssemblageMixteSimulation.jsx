@@ -94,6 +94,15 @@ const LigneAssemblageMixteSimulation = () => {
       return;
     }
 
+    // Vérifier la proportion correcte : 3 produits A et 7 produits B
+    const countA = sequence.filter(productId => productId === 'A').length;
+    const countB = sequence.filter(productId => productId === 'B').length;
+    
+    if (countA !== 3 || countB !== 7) {
+      alert(`La séquence doit contenir exactement 3 Vélo de Route Pro et 7 Vélo de Ville Standard.\nActuellement : ${countA} Vélo de Route Pro et ${countB} Vélo de Ville Standard.`);
+      return;
+    }
+
     const variations = calculateTimeVariations(sequence);
     setResults(variations);
     setShowGraph(true);
@@ -190,7 +199,10 @@ const LigneAssemblageMixteSimulation = () => {
               >
                 Retirer dernier
               </button>
-              <span className="lam-sequence-count">{sequence.length}/10 produits</span>
+              <span className="lam-sequence-count">
+                {sequence.length}/10 produits 
+                ({sequence.filter(id => id === 'A').length}/3 Route Pro, {sequence.filter(id => id === 'B').length}/7 Ville Standard)
+              </span>
               <button 
                 className="lam-sequence-btn lam-reset-btn"
                 onClick={resetSequence}
@@ -206,6 +218,7 @@ const LigneAssemblageMixteSimulation = () => {
               <div className="lam-sequence-empty">
                 <p>Aucun produit dans la séquence</p>
                 <p>Objectif : Créer une séquence de 10 positions</p>
+                <p>Répartition requise : 3 Vélo de Route Pro + 7 Vélo de Ville Standard</p>
                 <p>Cliquez sur "Ajouter Produit" pour commencer</p>
               </div>
             ) : (

@@ -4,8 +4,8 @@ import './LigneAssemblageMixteSimulation.css';
 const LigneAssemblageMixteSimulation = () => {
   // Configuration des produits
   const PRODUCTS = [
-    { id: 'A', name: 'Vélo de Route Pro', color: '#3b82f6', demand: 70 },
-    { id: 'B', name: 'Vélo de Ville Standard', color: '#10b981', demand: 30 }
+    { id: 'A', name: 'Vélo de Route Pro', color: '#3b82f6', demand: 30 },
+    { id: 'B', name: 'Vélo de Ville Standard', color: '#10b981', demand: 70 }
   ];
 
   // Tâches du poste goulot (4 tâches spécifiques, mêmes tâches mais temps différents)
@@ -127,22 +127,22 @@ const LigneAssemblageMixteSimulation = () => {
       {/* Contexte */}
       <div className="lam-sequencage-context">
         <div className="lam-sequencage-context-block">
-          <h2>🚴 Poste Goulot - Séquençage Mixte</h2>
+          <h2>🚴 Séquençage Mixte - Poste Goulot Critique</h2>
           <div className="lam-sequencage-context-mission">
-            <strong>Contexte :</strong> Vous gérez le poste goulot d'une ligne d'assemblage mixte de vélos. Ce poste effectue 4 tâches spécifiques sur chaque vélo, mais avec des temps d'exécution différents selon le modèle. Seul ce poste goulot est pris en compte pour le séquençage.
+            <strong>Contexte de production :</strong> Notre usine produit deux types de vélos sur une ligne d'assemblage mixte. Nous devons optimiser le séquençage de production en fonction de notre demande client et des temps de production de chaque modèle. Le défi principal réside dans l'équilibrage du poste goulot, qui est le poste le plus critique de notre ligne.
           </div>
           <div className="lam-sequencage-context-ressources">
-            <strong>Problème du poste goulot :</strong>
+            <strong>Notre stratégie de séquençage :</strong>
             <ul>
-              <li>Le poste goulot limite le débit de toute la ligne d'assemblage</li>
-              <li>Les variations de temps entre vélos créent des déséquilibres</li>
-              <li>Vélo de Route Pro : 53 min total (plus complexe à assembler)</li>
-              <li>Vélo de Ville Standard : 39 min total (plus simple à assembler)</li>
-              <li>Objectif : Minimiser les variations de temps entre vélos consécutifs</li>
+              <li><strong>Demande client :</strong> Vélo de Route Pro (30 unités) et Vélo de Ville Standard (70 unités)</li>
+              <li><strong>Poste goulot :</strong> Ce poste effectue 4 tâches spécifiques sur chaque vélo avec des temps variables</li>
+              <li><strong>Complexité des modèles :</strong> Le Vélo de Route Pro (53 min) est plus complexe que le Vélo de Ville Standard (39 min)</li>
+              <li><strong>Objectif critique :</strong> Minimiser les variations de temps entre vélos consécutifs au poste goulot</li>
+              <li><strong>Impact du goulot :</strong> Ce poste limite le débit de toute la ligne d'assemblage</li>
             </ul>
           </div>
           <div className="lam-sequencage-context-note">
-            <strong>Note :</strong> Les 4 tâches sont identiques pour les deux types de vélos, mais les temps d'exécution diffèrent selon la complexité du modèle.
+            <strong>Pourquoi le poste goulot ?</strong> Dans le séquençage mixte, nous nous concentrons uniquement sur les tâches du poste goulot car c'est ce poste qui détermine la capacité de production de toute la ligne. Les variations de temps à ce poste créent des déséquilibres qui impactent directement notre efficacité globale.
           </div>
         </div>
       </div>

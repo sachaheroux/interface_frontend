@@ -7,7 +7,7 @@ import DecisionTree from './components/DecisionTree';
 import JobshopInteractiveSimulation from './components/JobshopInteractiveSimulation';
 import FlowshopInteractiveSimulation from './components/FlowshopInteractiveSimulation';
 import LigneAssemblageMixteSimulation from './components/LigneAssemblageMixteSimulation';
-import LigneAssemblageMixteSequencage from './components/LigneAssemblageMixteSequencage';
+import LigneAssemblageStandardSimulation from './components/LigneAssemblageStandardSimulation';
 import { Users, Factory, BookOpen, Brain } from 'lucide-react';
 import './App.css';
 import SystemDescription from "./components/SystemDescription";
@@ -260,11 +260,11 @@ function App() {
               )}
               {/* Ligne d'assemblage - Équilibrage (Partie 1) */}
               {selectedCourse === "Ligne d'assemblage" && (
-                <LigneAssemblageMixteSimulation />
+                <LigneAssemblageStandardSimulation />
               )}
               {/* Ligne d'assemblage mixte - Séquençage (Partie 2) */}
               {selectedCourse === "Ligne d'assemblage mixte" && (
-                <LigneAssemblageMixteSequencage />
+                <LigneAssemblageMixteSimulation />
               )}
             </div>
           )}

@@ -4,8 +4,8 @@ import './LigneAssemblageMixteSimulation.css';
 const LigneAssemblageMixteSimulation = () => {
   // Configuration des produits
   const PRODUCTS = [
-    { id: 'A', name: 'Smartphone Alpha', color: '#3b82f6', demand: 40 },
-    { id: 'B', name: 'Smartphone Beta', color: '#10b981', demand: 60 }
+    { id: 'A', name: 'Smartphone Alpha', color: '#3b82f6', demand: 70 },
+    { id: 'B', name: 'Smartphone Beta', color: '#10b981', demand: 110 }
   ];
 
   // Tâches du poste goulot (4 tâches par produit, mêmes tâches mais temps différents)

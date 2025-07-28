@@ -183,23 +183,61 @@ const LigneAssemblageMixteSimulation = () => {
     <div className="lam-simulation">
       {/* Contexte */}
       <div className="lam-factory-context">
+        <h2>Contexte de la simulation</h2>
         <div className="lam-context-block">
-          <h2>🏭 Ligne d'assemblage automobile standard</h2>
+          <p>
+            Vous êtes responsable de l'optimisation d'une ligne d'assemblage automobile dans une usine de production moderne. La ligne assemble un modèle unique de véhicule avec des étapes d'assemblage spécifiques qui doivent respecter des contraintes de précédence.<br/><br/>
+            L'objectif est d'équilibrer la charge de travail entre les différentes stations pour maximiser l'efficacité de la ligne et minimiser les temps d'attente entre les postes de travail.
+          </p>
           <div className="lam-context-mission">
-            <strong>Mission :</strong> Équilibrer la ligne d'assemblage automobile pour optimiser la production et minimiser les temps d'attente entre stations.
+            <strong>Votre mission</strong><br/>
+            Équilibrer la ligne d'assemblage automobile pour optimiser la production et minimiser les temps d'attente entre stations.
           </div>
           <div className="lam-context-ressources">
-            <strong>Contexte automobile :</strong>
+            <strong>Contraintes de production</strong>
             <ul>
-              <li>Vous gérez une ligne d'assemblage automobile où chaque tâche correspond à une étape spécifique</li>
-              <li>Les tâches incluent l'installation d'essieux, roues, transmission, moteur et finitions</li>
-              <li>Temps de cycle maximum : <strong>{CYCLE_TIME} secondes</strong></li>
-              <li>Respecter les relations de précédence entre tâches</li>
-              <li>Minimiser le nombre de postes de travail</li>
+              <li><b>Temps de cycle maximum :</b> {CYCLE_TIME} secondes par station</li>
+              <li><b>Type de production :</b> Assemblage d'un modèle unique d'automobile</li>
+              <li><b>Contraintes :</b> Respecter les relations de précédence entre tâches</li>
+              <li><b>Objectif :</b> Minimiser le nombre de postes de travail</li>
             </ul>
           </div>
-          <div className="lam-context-note">
-            <strong>Note :</strong> Les temps affichés sont en secondes. Chaque tâche représente une étape d'assemblage automobile spécifique.
+          <div className="lam-context-jobs">
+            <strong>Étapes d'assemblage automobile</strong>
+            <div className="lam-context-table-wrapper">
+              <table className="lam-context-table">
+                <thead>
+                  <tr>
+                    <th>Étape</th>
+                    <th>Opération</th>
+                    <th>Durée (sec)</th>
+                    <th>Prédécesseurs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>Insérer l'essieu et les roues</td><td>20</td><td>-</td></tr>
+                  <tr><td>2</td><td>Insérer la tige de ventilateur</td><td>6</td><td>1</td></tr>
+                  <tr><td>3</td><td>Insérer capot tige de vent.</td><td>5</td><td>2</td></tr>
+                  <tr><td>4</td><td>Insérer essieu arrière et roues</td><td>21</td><td>-</td></tr>
+                  <tr><td>5</td><td>Insérer capot sur châssis</td><td>8</td><td>-</td></tr>
+                  <tr><td>6</td><td>Coller fenêtres au-dessus</td><td>35</td><td>-</td></tr>
+                  <tr><td>7</td><td>Insérer transmission</td><td>15</td><td>3,4</td></tr>
+                  <tr><td>8</td><td>Insérer entretoises de transmission</td><td>10</td><td>7</td></tr>
+                  <tr><td>9</td><td>Sécuriser les roues avant</td><td>15</td><td>5,8</td></tr>
+                  <tr><td>10</td><td>Insérer moteur</td><td>5</td><td>3</td></tr>
+                  <tr><td>11</td><td>Attacher dessus sur châssis</td><td>46</td><td>6,9,10</td></tr>
+                  <tr><td>12</td><td>Ajouter les collants</td><td>16</td><td>11</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="lam-context-note">
+              <em>Remarque : Les temps affichés sont en secondes. Chaque tâche représente une étape d'assemblage automobile spécifique avec des contraintes de précédence.</em>
+            </div>
+          </div>
+          <div className="lam-context-defi">
+            <strong>Défi</strong><br/>
+            Glissez-déposez les tâches vers les stations pour créer un équilibrage optimal de la ligne d'assemblage.<br/>
+            Essayez de minimiser le nombre de stations tout en respectant le temps de cycle maximum !
           </div>
         </div>
       </div>

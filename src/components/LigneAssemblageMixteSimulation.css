@@ -26,7 +26,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(120deg, rgba(30,41,59,0.7) 0%, rgba(76,29,149,0.6) 100%), url('/Car.jpg') center/cover no-repeat;
+  background: linear-gradient(120deg, rgba(30,41,59,0.7) 0%, rgba(76,29,149,0.6) 100%), url('/Car.jpg?v=1') center/cover no-repeat;
   z-index: -1;
 }
 
@@ -74,6 +74,97 @@
 .lam-context-ressources li {
   margin-bottom: var(--spacing-xs);
   color: rgba(255, 255, 255, 0.9);
+}
+
+.lam-context-mission,
+.lam-context-ressources,
+.lam-context-jobs,
+.lam-context-defi {
+  margin: var(--spacing-lg) 0;
+}
+
+.lam-context-ressources {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: var(--spacing-lg) 0;
+  width: 100%;
+}
+
+.lam-context-ressources strong {
+  text-align: center;
+  width: 100%;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.lam-context-ressources ul {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 8px auto;
+  text-align: center;
+  padding-left: 0;
+  display: block;
+}
+
+.lam-context-ressources li {
+  display: inline-block;
+  margin: 0 16px 4px 16px;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: left;
+  min-width: 180px;
+}
+
+.lam-context-table-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: var(--spacing-md) 0;
+}
+
+.lam-context-table {
+  border-collapse: collapse;
+  background: rgba(255,255,255,0.97);
+  color: #222;
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 380px;
+  max-width: 100%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.lam-context-table th, .lam-context-table td {
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.lam-context-table th {
+  background: #f3f4f6;
+  color: #222;
+  font-weight: 600;
+}
+
+.lam-context-note {
+  margin-top: var(--spacing-sm);
+  color: #e0e7ef;
+  font-size: 0.98rem;
+  font-style: italic;
+}
+
+.lam-factory-context h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  color: white;
+}
+
+.lam-factory-context p {
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 /* ===== CONTENU DE SIMULATION ===== */

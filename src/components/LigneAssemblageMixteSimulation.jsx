@@ -193,15 +193,6 @@ const LigneAssemblageMixteSimulation = () => {
             <strong>Votre mission</strong><br/>
             Équilibrer la ligne d'assemblage automobile pour optimiser la production et minimiser les temps d'attente entre stations.
           </div>
-          <div className="lam-context-ressources">
-            <strong>Contraintes de production</strong>
-            <ul>
-              <li><b>Temps de cycle maximum :</b> {CYCLE_TIME} secondes par station</li>
-              <li><b>Type de production :</b> Assemblage d'un modèle unique d'automobile</li>
-              <li><b>Contraintes :</b> Respecter les relations de précédence entre tâches</li>
-              <li><b>Objectif :</b> Minimiser le nombre de postes de travail</li>
-            </ul>
-          </div>
           <div className="lam-context-jobs">
             <strong>Étapes d'assemblage automobile</strong>
             <div className="lam-context-table-wrapper">
@@ -230,13 +221,11 @@ const LigneAssemblageMixteSimulation = () => {
                 </tbody>
               </table>
             </div>
-            <div className="lam-context-note">
-              <em>Remarque : Les temps affichés sont en secondes. Chaque tâche représente une étape d'assemblage automobile spécifique avec des contraintes de précédence.</em>
-            </div>
           </div>
           <div className="lam-context-defi">
             <strong>Défi</strong><br/>
             Glissez-déposez les tâches vers les stations pour créer un équilibrage optimal de la ligne d'assemblage.<br/>
+            Temps de cycle maximum : <strong>{CYCLE_TIME} secondes</strong><br/>
             Essayez de minimiser le nombre de stations tout en respectant le temps de cycle maximum !
           </div>
         </div>

@@ -177,7 +177,10 @@ const LigneAssemblageMixteSimulation = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="lam-product-total">
+                  <div 
+                    className="lam-product-total"
+                    style={{ backgroundColor: product.color }}
+                  >
                     <strong>Temps total: {TASKS.reduce((sum, task) => 
                       sum + (product.id === 'A' ? task.productA : task.productB), 0
                     )} min</strong>

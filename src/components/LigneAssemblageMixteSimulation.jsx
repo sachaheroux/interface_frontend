@@ -229,11 +229,9 @@ const LigneAssemblageMixteSimulation = () => {
                 <div className="lam-task-times">
                   <span className="lam-time">{task.time}min</span>
                 </div>
-                {task.predecessors.length > 0 && (
-                  <div className="lam-task-predecessors">
-                    Précédents: {task.predecessors.join(', ')}
-                  </div>
-                )}
+                <div className="lam-task-predecessors">
+                  {task.predecessors.length > 0 ? `Précédents: ${task.predecessors.join(', ')}` : ''}
+                </div>
               </div>
             ))}
           </div>
@@ -292,6 +290,9 @@ const LigneAssemblageMixteSimulation = () => {
                         <div className="lam-station-task-name">{task.name}</div>
                         <div className="lam-station-task-times">
                           <span>{task.time}min</span>
+                        </div>
+                        <div className="lam-task-predecessors">
+                          {task.predecessors.length > 0 ? `Précédents: ${task.predecessors.join(', ')}` : ''}
                         </div>
                       </div>
                     ))}

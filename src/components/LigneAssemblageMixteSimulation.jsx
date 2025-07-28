@@ -189,10 +189,7 @@ const LigneAssemblageMixteSimulation = () => {
             Vous êtes responsable de l'optimisation d'une ligne d'assemblage automobile dans une usine de production moderne. La ligne assemble un modèle unique de véhicule avec des étapes d'assemblage spécifiques qui doivent respecter des contraintes de précédence.<br/><br/>
             L'objectif est d'équilibrer la charge de travail entre les différentes stations pour maximiser l'efficacité de la ligne et minimiser les temps d'attente entre les postes de travail.
           </p>
-          <div className="lam-context-mission">
-            <strong>Votre mission</strong><br/>
-            Équilibrer la ligne d'assemblage automobile pour optimiser la production et minimiser les temps d'attente entre stations.
-          </div>
+
           <div className="lam-context-jobs">
             <strong>Étapes d'assemblage automobile</strong>
             <div className="lam-context-table-wrapper">

@@ -4,22 +4,16 @@ import './LigneAssemblageMixteSequencage.css';
 const LigneAssemblageMixteSequencage = () => {
   // Configuration des produits
   const PRODUCTS = [
-    { id: 'A', name: 'Produit A', color: '#3b82f6', demand: 40 },
-    { id: 'B', name: 'Produit B', color: '#10b981', demand: 60 }
+    { id: 'A', name: 'Smartphone Alpha', color: '#3b82f6', demand: 40 },
+    { id: 'B', name: 'Smartphone Beta', color: '#10b981', demand: 60 }
   ];
 
-  // Tâches avec temps pour chaque produit
+  // Tâches du poste goulot (4 tâches par produit, mêmes tâches mais temps différents)
   const TASKS = [
-    { id: 1, name: 'Préparation', productA: 8, productB: 6 },
-    { id: 2, name: 'Assemblage base', productA: 10, productB: 8 },
-    { id: 3, name: 'Installation moteur', productA: 12, productB: 9 },
-    { id: 4, name: 'Câblage', productA: 6, productB: 7 },
-    { id: 5, name: 'Test électrique', productA: 8, productB: 10 },
-    { id: 6, name: 'Installation écran', productA: 9, productB: 11 },
-    { id: 7, name: 'Programmation', productA: 7, productB: 8 },
-    { id: 8, name: 'Test final', productA: 11, productB: 9 },
-    { id: 9, name: 'Emballage', productA: 5, productB: 6 },
-    { id: 10, name: 'Contrôle qualité', productA: 9, productB: 7 }
+    { id: 1, name: 'Installation processeur', productA: 12, productB: 9 },
+    { id: 2, name: 'Montage carte mémoire', productA: 8, productB: 10 },
+    { id: 3, name: 'Connexion écran tactile', productA: 15, productB: 12 },
+    { id: 4, name: 'Test fonctionnel', productA: 10, productB: 8 }
   ];
 
   const [sequence, setSequence] = useState([]);
@@ -133,21 +127,22 @@ const LigneAssemblageMixteSequencage = () => {
       {/* Contexte */}
       <div className="lam-sequencage-context">
         <div className="lam-sequencage-context-block">
-          <h2>📊 Séquençage des Produits</h2>
+          <h2>📊 Poste Goulot - Séquençage Mixte</h2>
           <div className="lam-sequencage-context-mission">
-            <strong>Mission :</strong> Créer une séquence de produits qui minimise les variations de temps de cycle entre les produits consécutifs.
+            <strong>Contexte :</strong> Vous gérez le poste goulot d'une ligne d'assemblage mixte de smartphones. Ce poste effectue 4 tâches spécifiques sur chaque produit, mais avec des temps d'exécution différents selon le modèle.
           </div>
           <div className="lam-sequencage-context-ressources">
-            <strong>Objectif :</strong>
+            <strong>Problème du poste goulot :</strong>
             <ul>
-              <li>Minimiser la variation totale de temps entre produits consécutifs</li>
-              <li>Réduire les fluctuations de charge sur la ligne</li>
-              <li>Améliorer la stabilité de production</li>
-              <li>Respecter les demandes de chaque produit</li>
+              <li>Le poste goulot limite le débit de toute la ligne</li>
+              <li>Les variations de temps entre produits créent des déséquilibres</li>
+              <li>Smartphone Alpha : 45 min total (25% plus long que Beta)</li>
+              <li>Smartphone Beta : 36 min total (plus rapide à assembler)</li>
+              <li>Objectif : Minimiser les variations de temps entre produits consécutifs</li>
             </ul>
           </div>
           <div className="lam-sequencage-context-note">
-            <strong>Note :</strong> Les temps de cycle sont calculés en sommant tous les temps de tâches pour chaque produit.
+            <strong>Note :</strong> Les 4 tâches sont identiques pour les deux produits, mais les temps d'exécution diffèrent de 25% en moyenne.
           </div>
         </div>
       </div>

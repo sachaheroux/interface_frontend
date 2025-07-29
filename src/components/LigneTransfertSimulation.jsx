@@ -7,10 +7,10 @@ const LigneTransfertSimulation = () => {
   const [bufferSizes, setBufferSizes] = useState([5, 5, 5]); // Taille des 3 buffers
   const [pieces, setPieces] = useState([]);
   const [stations, setStations] = useState([
-    { id: 1, name: 'Poste 1', speed: 1.8, failureRate: 0.02, isWorking: true, currentPiece: null, position: 0 },
-    { id: 2, name: 'Poste 2', speed: 4.5, failureRate: 0.03, isWorking: true, currentPiece: null, position: 1 },
-    { id: 3, name: 'Poste 3', speed: 3.2, failureRate: 0.025, isWorking: true, currentPiece: null, position: 2 },
-    { id: 4, name: 'Poste 4', speed: 2.1, failureRate: 0.015, isWorking: true, currentPiece: null, position: 3 }
+    { id: 1, name: 'Poste 1', speed: 1.8, failureRate: 0.02, failureDuration: 3000, isWorking: true, currentPiece: null, position: 0 },
+    { id: 2, name: 'Poste 2', speed: 4.5, failureRate: 0.03, failureDuration: 8000, isWorking: true, currentPiece: null, position: 1 },
+    { id: 3, name: 'Poste 3', speed: 3.2, failureRate: 0.025, failureDuration: 5000, isWorking: true, currentPiece: null, position: 2 },
+    { id: 4, name: 'Poste 4', speed: 2.1, failureRate: 0.015, failureDuration: 4000, isWorking: true, currentPiece: null, position: 3 }
   ]);
   const [buffers, setBuffers] = useState([
     { id: 1, pieces: [], maxSize: 5, position: 0.5 },
@@ -31,10 +31,10 @@ const LigneTransfertSimulation = () => {
 
   // Configuration des postes
   const stationConfig = [
-    { name: 'Découpe', speed: 1.8, failureRate: 0.02, color: '#3b82f6' },
-    { name: 'Perçage', speed: 4.5, failureRate: 0.03, color: '#10b981' },
-    { name: 'Assemblage', speed: 3.2, failureRate: 0.025, color: '#f59e0b' },
-    { name: 'Contrôle', speed: 2.1, failureRate: 0.015, color: '#ef4444' }
+    { name: 'Découpe', speed: 1.8, failureRate: 0.02, failureDuration: 3000, color: '#3b82f6' },
+    { name: 'Perçage', speed: 4.5, failureRate: 0.03, failureDuration: 8000, color: '#10b981' },
+    { name: 'Assemblage', speed: 3.2, failureRate: 0.025, failureDuration: 5000, color: '#f59e0b' },
+    { name: 'Contrôle', speed: 2.1, failureRate: 0.015, failureDuration: 4000, color: '#ef4444' }
   ];
 
   // Simulation step
@@ -88,7 +88,7 @@ const LigneTransfertSimulation = () => {
             setStations(current => 
               current.map(s => s.id === station.id ? { ...s, isWorking: true } : s)
             );
-          }, 5000); // Panne de 5 secondes
+          }, station.failureDuration); // Durée de panne spécifique au poste
         }
 
         // Traitement des pièces
@@ -290,6 +290,15 @@ const LigneTransfertSimulation = () => {
             et 3 zones de stockage intermédiaires (buffers). Votre objectif est de produire 100 pièces 
             en optimisant la configuration des buffers pour maximiser le débit.
           </p>
+          <p>
+            <strong>Profil des pannes :</strong> Chaque poste a un profil de panne unique :
+          </p>
+          <ul>
+            <li><strong>Découpe :</strong> Pannes courtes (3s) mais fréquentes (2%) - usure des outils</li>
+            <li><strong>Perçage :</strong> Pannes longues (8s) et fréquentes (3%) - goulot critique</li>
+            <li><strong>Assemblage :</strong> Pannes moyennes (5s) et modérées (2.5%) - complexité</li>
+            <li><strong>Contrôle :</strong> Pannes courtes (4s) et rares (1.5%) - fiabilité</li>
+          </ul>
           <div className="lt-objectives">
             <h4>Objectifs :</h4>
             <ul>
@@ -374,6 +383,7 @@ const LigneTransfertSimulation = () => {
                 <div className="lt-station-name">{stationConfig[index].name}</div>
                 <div className="lt-station-speed">{station.speed}s/pièce</div>
                 <div className="lt-station-failure">{station.failureRate * 100}% pannes</div>
+                <div className="lt-station-failure-duration">{(station.failureDuration / 1000).toFixed(1)}s durée</div>
               </div>
               {station.currentPiece && (
                 <div className="lt-piece lt-piece-in-station">📦</div>

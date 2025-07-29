@@ -326,6 +326,12 @@
   font-weight: 500;
 }
 
+.lt-station-failure-duration {
+  color: #dc2626;
+  font-weight: 500;
+  font-size: 10px;
+}
+
 /* Buffers */
 .lt-buffer {
   position: absolute;

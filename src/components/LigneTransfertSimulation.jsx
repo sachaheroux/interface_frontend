@@ -4,7 +4,7 @@ import './LigneTransfertSimulation.css';
 const LigneTransfertSimulation = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [simulationTime, setSimulationTime] = useState(0);
-  const [bufferSizes, setBufferSizes] = useState([5, 5, 5]); // Taille des 3 buffers
+  const [bufferSizes, setBufferSizes] = useState([5, 5, 5]); // Taille des 3 buffers (0 = pas de buffer)
   const [pieces, setPieces] = useState([]);
   const [stations, setStations] = useState([
     { id: 1, name: 'Poste 1', speed: 1.8, failureRate: 0.02, failureDuration: 3000, isWorking: true, currentPiece: null, position: 0 },
@@ -47,9 +47,9 @@ const LigneTransfertSimulation = () => {
     if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && pieces.length < 20) {
       const newPiece = {
         id: Date.now() + Math.random(),
-        position: -0.5,
+        position: 0,
         targetPosition: 0,
-        inStation: false,
+        inStation: true,
         completed: false,
         startTime: simulationTime,
         currentStation: 0
@@ -105,7 +105,22 @@ const LigneTransfertSimulation = () => {
               const nextBufferIndex = stationIndex;
               const buffer = buffers[nextBufferIndex];
               
-              if (buffer.pieces.length < buffer.maxSize) {
+              if (buffer.maxSize === 0) {
+                // Pas de buffer, transférer directement
+                setPieces(prevPieces => 
+                  prevPieces.map(p => {
+                    if (p.id === pieceId) {
+                      p.currentStation = stationIndex + 1;
+                      p.position = stationIndex + 0.5;
+                      p.targetPosition = stationIndex + 1;
+                      p.inStation = false;
+                    }
+                    return p;
+                  })
+                );
+                station.currentPiece = null;
+                station.processingTime = 0;
+              } else if (buffer.pieces.length < buffer.maxSize) {
                 // Buffer libéré, transférer la pièce
                 setBuffers(prevBuffers => {
                   const newBuffers = [...prevBuffers];
@@ -163,14 +178,47 @@ const LigneTransfertSimulation = () => {
             
             // Si pas de pièce dans le buffer, chercher une pièce directe
             if (!station.currentPiece) {
-              const availablePiece = pieces.find(p => 
-                p.currentStation === stationIndex && 
-                p.inStation && 
-                !p.completed
-              );
-              if (availablePiece) {
-                station.currentPiece = availablePiece.id;
-                station.processingTime = 0;
+              // Vérifier d'abord si le buffer précédent a des pièces (sauf si buffer désactivé)
+              if (stationIndex > 0) {
+                const prevBuffer = buffers[stationIndex - 1];
+                if (prevBuffer.maxSize > 0 && prevBuffer.pieces.length > 0) {
+                  const pieceId = prevBuffer.pieces[0];
+                  const piece = pieces.find(p => p.id === pieceId);
+                  if (piece) {
+                    // Retirer du buffer et assigner au poste
+                    setBuffers(prevBuffers => {
+                      const newBuffers = [...prevBuffers];
+                      newBuffers[stationIndex - 1].pieces.shift();
+                      return newBuffers;
+                    });
+                    setPieces(prevPieces => 
+                      prevPieces.map(p => {
+                        if (p.id === pieceId) {
+                          p.currentStation = stationIndex;
+                          p.position = stationIndex;
+                          p.targetPosition = stationIndex;
+                          p.inStation = true;
+                        }
+                        return p;
+                      })
+                    );
+                    station.currentPiece = pieceId;
+                    station.processingTime = 0;
+                  }
+                }
+              }
+              
+              // Si toujours pas de pièce, chercher une pièce directe
+              if (!station.currentPiece) {
+                const availablePiece = pieces.find(p => 
+                  p.currentStation === stationIndex && 
+                  p.inStation && 
+                  !p.completed
+                );
+                if (availablePiece) {
+                  station.currentPiece = availablePiece.id;
+                  station.processingTime = 0;
+                }
               }
             }
           }
@@ -200,7 +248,15 @@ const LigneTransfertSimulation = () => {
                       const nextBufferIndex = stationIndex;
                       const buffer = buffers[nextBufferIndex];
                       
-                      if (buffer.pieces.length < buffer.maxSize) {
+                      if (buffer.maxSize === 0) {
+                        // Pas de buffer, passer directement au poste suivant
+                        p.currentStation = stationIndex + 1;
+                        p.position = stationIndex + 0.5;
+                        p.targetPosition = stationIndex + 1;
+                        p.inStation = false;
+                        station.currentPiece = null;
+                        station.processingTime = 0;
+                      } else if (buffer.pieces.length < buffer.maxSize) {
                         // Ajouter au buffer
                         setBuffers(prevBuffers => {
                           const newBuffers = [...prevBuffers];
@@ -308,7 +364,7 @@ const LigneTransfertSimulation = () => {
   };
 
   const updateBufferSize = (bufferIndex, newSize) => {
-    const clampedSize = Math.max(1, Math.min(20, newSize));
+    const clampedSize = Math.max(0, Math.min(20, newSize));
     
     setBufferSizes(prev => {
       const newSizes = [...prev];
@@ -385,15 +441,15 @@ const LigneTransfertSimulation = () => {
           {bufferSizes.map((size, index) => (
             <div key={index} className="lt-buffer-control">
               <label>Buffer {index + 1} :</label>
-              <input
-                type="range"
-                min="1"
-                max="20"
-                value={size}
-                onChange={(e) => updateBufferSize(index, parseInt(e.target.value))}
-                disabled={isRunning}
-              />
-              <span>{size} pièces</span>
+                              <input
+                  type="range"
+                  min="0"
+                  max="20"
+                  value={size}
+                  onChange={(e) => updateBufferSize(index, parseInt(e.target.value))}
+                  disabled={isRunning}
+                />
+                <span>{size === 0 ? "Aucun" : `${size} pièces`}</span>
             </div>
           ))}
         </div>
@@ -458,7 +514,7 @@ const LigneTransfertSimulation = () => {
                 })}
               </div>
               <div className="lt-buffer-info">
-                {buffer.pieces.length}/{buffer.maxSize}
+                {buffer.maxSize === 0 ? "Désactivé" : `${buffer.pieces.length}/${buffer.maxSize}`}
               </div>
             </div>
           ))}
@@ -466,18 +522,27 @@ const LigneTransfertSimulation = () => {
 
         {/* Pièces en mouvement */}
         <div className="lt-pieces-container">
-          {pieces.map(piece => (
-            <div
-              key={piece.id}
-              className="lt-piece lt-piece-moving"
-              style={{
-                left: `${piece.position * 100}%`,
-                opacity: piece.completed ? 0.3 : 1
-              }}
-            >
-              📦
-            </div>
-          ))}
+          {pieces.map(piece => {
+            // Ne montrer que les pièces qui sont vraiment en mouvement entre postes
+            const isMovingBetweenStations = !piece.completed && 
+              !piece.inStation && 
+              piece.position > 0 && 
+              piece.position < 4 &&
+              piece.currentStation !== undefined;
+            
+            return isMovingBetweenStations ? (
+              <div
+                key={piece.id}
+                className="lt-piece lt-piece-moving"
+                style={{
+                  left: `${piece.position * 100}%`,
+                  opacity: piece.completed ? 0.3 : 1
+                }}
+              >
+                📦
+              </div>
+            ) : null;
+          })}
         </div>
       </div>
 

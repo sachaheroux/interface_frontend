@@ -453,222 +453,261 @@ const LigneAssemblageMixteSimulation = () => {
               </div>
             </div>
 
-            {/* Graphique du temps cumulé au poste goulot */}
+            {/* Graphiques côte à côte */}
             {showGraph && (
-              <div className="lam-sequencage-graph-zone" style={{ 
+              <div className="lam-sequencage-graphs-container" style={{ 
                 display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                flexDirection: 'column',
+                justifyContent: 'space-between', 
+                alignItems: 'flex-start',
                 width: '100%',
                 maxWidth: '100%',
                 overflow: 'hidden',
                 marginTop: '20px',
-                marginBottom: '20px'
+                marginBottom: '20px',
+                gap: '20px'
               }}>
-                <h4>Variation du temps cumulé au poste goulot</h4>
-                <div className="lam-sequencage-graph" style={{ 
-                  width: '100%', 
-                  maxWidth: '800px', 
-                  margin: '0 auto',
-                  overflow: 'hidden'
-                }}>
-                  <svg width="100%" height="450" style={{ 
-                    background: 'white', 
-                    borderRadius: '8px', 
-                    display: 'block', 
-                    margin: '0 auto',
-                    maxWidth: '100%',
-                    overflow: 'visible'
-                  }}>
-                    {/* Axes */}
-                    <line x1="50" y1="420" x2="750" y2="420" stroke="#ccc" strokeWidth="2" />
-                    <line x1="50" y1="30" x2="50" y2="420" stroke="#ccc" strokeWidth="2" />
-                    
-                    {/* Points et lignes pour le temps cumulé */}
-                    {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => {
-                      const x = 50 + (index * 70);
-                      const maxTime = Math.max(...results.cumulative_times);
-                      const y = 520 - ((cumulativeTime / maxTime) * 490);
-                      
-                      return (
-                        <g key={index}>
-                          {/* Ligne entre les points */}
-                          {index > 0 && (
-                            <line 
-                              x1={50 + ((index - 1) * 70)} 
-                              y1={520 - ((results.cumulative_times[index - 1] / maxTime) * 490)}
-                              x2={x} 
-                              y2={y} 
-                              stroke="#3b82f6" 
-                              strokeWidth="3" 
-                            />
-                          )}
-                          {/* Point */}
-                          <circle 
-                            cx={x} 
-                            cy={y} 
-                            r="5" 
-                            fill={sequence[index] === 'A' ? '#3b82f6' : '#10b981'} 
-                            stroke="white" 
-                            strokeWidth="2"
-                          />
-                          {/* Label du produit */}
-                          <text x={x} y="535" textAnchor="middle" fontSize="12" fill="#666" fontWeight="bold">
-                            {sequence[index]}
-                          </text>
-                          {/* Temps cumulé */}
-                          <text x={x} y={y - 15} textAnchor="middle" fontSize="10" fill="#666" fontWeight="bold">
-                            {cumulativeTime}min
-                          </text>
-                        </g>
-                      );
-                    })}
-                    
-                    {/* Ligne théorique idéale */}
-                    {results.theoretical_ideal && results.theoretical_ideal.map((theoreticalTime, index) => {
-                      const x = 50 + (index * 70);
-                      const maxTime = Math.max(...results.cumulative_times);
-                      const y = 520 - ((theoreticalTime / maxTime) * 490);
-                      
-                      return (
-                        <g key={`theoretical-${index}`}>
-                          {/* Ligne entre les points théoriques */}
-                          {index > 0 && (
-                            <line 
-                              x1={50 + ((index - 1) * 70)} 
-                              y1={520 - ((results.theoretical_ideal[index - 1] / maxTime) * 490)}
-                              x2={x} 
-                              y2={y} 
-                              stroke="#10b981" 
-                              strokeWidth="3" 
-                              strokeDasharray="8,5"
-                            />
-                          )}
-                          {/* Point théorique */}
-                          <circle 
-                            cx={x} 
-                            cy={y} 
-                            r="4" 
-                            fill="#10b981" 
-                            stroke="white" 
-                            strokeWidth="1"
-                          />
-                        </g>
-                      );
-                    })}
-                  </svg>
-                </div>
-                <div className="lam-sequencage-graph-legend">
-                  <div className="lam-sequencage-graph-legend-item">
-                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#3b82f6' }}></div>
-                    <span>Vélo de Route Pro</span>
-                  </div>
-                  <div className="lam-sequencage-graph-legend-item">
-                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#10b981' }}></div>
-                    <span>Vélo de Ville Standard</span>
-                  </div>
-                  <div className="lam-sequencage-graph-legend-item">
-                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#10b981', border: '2px dashed #10b981' }}></div>
-                    <span>Temps théorique idéal</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-                          {/* Deuxième graphique : Variations par rapport à la ligne théorique */}
-              {showGraph && (
+                {/* Premier graphique : Temps cumulé */}
                 <div className="lam-sequencage-graph-zone" style={{ 
                   display: 'flex', 
                   justifyContent: 'center', 
                   alignItems: 'center', 
                   flexDirection: 'column',
-                  width: '100%',
-                  maxWidth: '100%',
-                  overflow: 'hidden',
-                  marginTop: '40px',
-                  marginBottom: '40px'
-                }}>
-                <h4>Variations par rapport à la ligne théorique idéale</h4>
-                <div className="lam-sequencage-graph" style={{ 
-                  width: '100%', 
-                  maxWidth: '800px', 
-                  margin: '0 auto',
+                  width: '48%',
+                  maxWidth: '48%',
                   overflow: 'hidden'
                 }}>
-                  <svg width="100%" height="550" style={{ 
-                    background: 'white', 
-                    borderRadius: '8px', 
-                    display: 'block', 
+                  <h4>Variation du temps cumulé au poste goulot</h4>
+                  <div className="lam-sequencage-graph" style={{ 
+                    width: '100%', 
+                    maxWidth: '100%', 
                     margin: '0 auto',
-                    maxWidth: '100%',
-                    overflow: 'visible'
+                    overflow: 'hidden'
                   }}>
-                    {/* Axes */}
-                    <line x1="50" y1="520" x2="750" y2="520" stroke="#ccc" strokeWidth="2" />
-                    <line x1="50" y1="30" x2="50" y2="520" stroke="#ccc" strokeWidth="2" />
-                    
-                    {/* Ligne de référence à zéro */}
-                    <line x1="50" y1="275" x2="750" y2="275" stroke="#ef4444" strokeWidth="2" strokeDasharray="5,5" />
-                    <text x="35" y="280" textAnchor="middle" fontSize="12" fill="#ef4444" fontWeight="bold">0</text>
-                    
-                    {/* Points et lignes pour les variations */}
-                    {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => {
-                      const x = 50 + (index * 70);
-                      const theoreticalTime = results.theoretical_ideal[index];
-                      const variation = cumulativeTime - theoreticalTime;
-                      
-                      // Calculer la position Y (275 est le centre, 0)
-                      const maxVariation = Math.max(...results.cumulative_times.map((ct, i) => Math.abs(ct - results.theoretical_ideal[i])));
-                      const y = 275 - ((variation / maxVariation) * 245);
-                      
-                      return (
-                        <g key={index}>
-                          {/* Ligne entre les points */}
-                          {index > 0 && (
-                            <line 
-                              x1={50 + ((index - 1) * 70)} 
-                              y1={275 - (((results.cumulative_times[index - 1] - results.theoretical_ideal[index - 1]) / maxVariation) * 245)}
-                              x2={x} 
-                              y2={y} 
-                              stroke="#ef4444" 
-                              strokeWidth="3" 
-                            />
-                          )}
-                          {/* Point */}
-                          <circle 
-                            cx={x} 
-                            cy={y} 
-                            r="5" 
-                            fill={sequence[index] === 'A' ? '#3b82f6' : '#10b981'} 
-                            stroke="white" 
-                            strokeWidth="2"
-                          />
-                          {/* Label du produit */}
-                          <text x={x} y="535" textAnchor="middle" fontSize="12" fill="#666" fontWeight="bold">
-                            {sequence[index]}
-                          </text>
-                          {/* Variation */}
-                          <text x={x} y={y - 15} textAnchor="middle" fontSize="10" fill={variation >= 0 ? '#ef4444' : '#3b82f6'} fontWeight="bold">
-                            {variation >= 0 ? '+' : ''}{variation.toFixed(1)}min
-                          </text>
-                        </g>
-                      );
-                    })}
-                  </svg>
+                    <svg width="100%" height="400" style={{ 
+                      background: 'white', 
+                      borderRadius: '8px', 
+                      display: 'block', 
+                      margin: '0 auto',
+                      maxWidth: '100%',
+                      overflow: 'visible'
+                    }}>
+                      {/* Calculer les axes dynamiques */}
+                      {(() => {
+                        const maxTime = Math.max(...results.cumulative_times);
+                        const minTime = Math.min(...results.cumulative_times);
+                        const timeRange = maxTime - minTime;
+                        const padding = timeRange * 0.1;
+                        const yMax = maxTime + padding;
+                        const yMin = Math.max(0, minTime - padding);
+                        
+                        return (
+                          <>
+                            {/* Axes */}
+                            <line x1="50" y1="370" x2="350" y2="370" stroke="#ccc" strokeWidth="2" />
+                            <line x1="50" y1="30" x2="50" y2="370" stroke="#ccc" strokeWidth="2" />
+                            
+                            {/* Échelle Y */}
+                            <text x="25" y="30" textAnchor="middle" fontSize="10" fill="#666">{(yMax).toFixed(0)}</text>
+                            <text x="25" y="200" textAnchor="middle" fontSize="10" fill="#666">{((yMax + yMin) / 2).toFixed(0)}</text>
+                            <text x="25" y="370" textAnchor="middle" fontSize="10" fill="#666">{(yMin).toFixed(0)}</text>
+                            
+                            {/* Points et lignes pour le temps cumulé */}
+                            {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => {
+                              const x = 50 + (index * 30);
+                              const y = 370 - ((cumulativeTime - yMin) / (yMax - yMin)) * 340;
+                              
+                              return (
+                                <g key={index}>
+                                  {/* Ligne entre les points */}
+                                  {index > 0 && (
+                                    <line 
+                                      x1={50 + ((index - 1) * 30)} 
+                                      y1={370 - ((results.cumulative_times[index - 1] - yMin) / (yMax - yMin)) * 340}
+                                      x2={x} 
+                                      y2={y} 
+                                      stroke="#3b82f6" 
+                                      strokeWidth="3" 
+                                    />
+                                  )}
+                                  {/* Point */}
+                                  <circle 
+                                    cx={x} 
+                                    cy={y} 
+                                    r="4" 
+                                    fill={sequence[index] === 'A' ? '#3b82f6' : '#10b981'} 
+                                    stroke="white" 
+                                    strokeWidth="2"
+                                  />
+                                  {/* Label du produit */}
+                                  <text x={x} y="385" textAnchor="middle" fontSize="10" fill="#666" fontWeight="bold">
+                                    {sequence[index]}
+                                  </text>
+                                  {/* Temps cumulé */}
+                                  <text x={x} y={y - 10} textAnchor="middle" fontSize="8" fill="#666" fontWeight="bold">
+                                    {cumulativeTime}min
+                                  </text>
+                                </g>
+                              );
+                            })}
+                            
+                            {/* Ligne théorique idéale */}
+                            {results.theoretical_ideal && results.theoretical_ideal.map((theoreticalTime, index) => {
+                              const x = 50 + (index * 30);
+                              const y = 370 - ((theoreticalTime - yMin) / (yMax - yMin)) * 340;
+                              
+                              return (
+                                <g key={`theoretical-${index}`}>
+                                  {/* Ligne entre les points théoriques */}
+                                  {index > 0 && (
+                                    <line 
+                                      x1={50 + ((index - 1) * 30)} 
+                                      y1={370 - ((results.theoretical_ideal[index - 1] - yMin) / (yMax - yMin)) * 340}
+                                      x2={x} 
+                                      y2={y} 
+                                      stroke="#10b981" 
+                                      strokeWidth="3" 
+                                      strokeDasharray="8,5"
+                                    />
+                                  )}
+                                  {/* Point théorique */}
+                                  <circle 
+                                    cx={x} 
+                                    cy={y} 
+                                    r="3" 
+                                    fill="#10b981" 
+                                    stroke="white" 
+                                    strokeWidth="1"
+                                  />
+                                </g>
+                              );
+                            })}
+                          </>
+                        );
+                      })()}
+                    </svg>
+                  </div>
+                  <div className="lam-sequencage-graph-legend" style={{ fontSize: '12px' }}>
+                    <div className="lam-sequencage-graph-legend-item">
+                      <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#3b82f6' }}></div>
+                      <span>Vélo de Route Pro</span>
+                    </div>
+                    <div className="lam-sequencage-graph-legend-item">
+                      <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#10b981' }}></div>
+                      <span>Vélo de Ville Standard</span>
+                    </div>
+                    <div className="lam-sequencage-graph-legend-item">
+                      <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#10b981', border: '2px dashed #10b981' }}></div>
+                      <span>Temps théorique idéal</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="lam-sequencage-graph-legend">
-                  <div className="lam-sequencage-graph-legend-item">
-                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#ef4444' }}></div>
-                    <span>En avance (+)</span>
+
+                {/* Deuxième graphique : Variations */}
+                <div className="lam-sequencage-graph-zone" style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  flexDirection: 'column',
+                  width: '48%',
+                  maxWidth: '48%',
+                  overflow: 'hidden'
+                }}>
+                  <h4>Variations par rapport à la ligne théorique idéale</h4>
+                  <div className="lam-sequencage-graph" style={{ 
+                    width: '100%', 
+                    maxWidth: '100%', 
+                    margin: '0 auto',
+                    overflow: 'hidden'
+                  }}>
+                    <svg width="100%" height="400" style={{ 
+                      background: 'white', 
+                      borderRadius: '8px', 
+                      display: 'block', 
+                      margin: '0 auto',
+                      maxWidth: '100%',
+                      overflow: 'visible'
+                    }}>
+                      {/* Calculer les axes dynamiques pour les variations */}
+                      {(() => {
+                        const variations = results.cumulative_times.map((ct, i) => ct - results.theoretical_ideal[i]);
+                        const maxVariation = Math.max(...variations);
+                        const minVariation = Math.min(...variations);
+                        const variationRange = Math.max(Math.abs(maxVariation), Math.abs(minVariation));
+                        const yMax = variationRange;
+                        const yMin = -variationRange;
+                        
+                        return (
+                          <>
+                            {/* Axes */}
+                            <line x1="50" y1="370" x2="350" y2="370" stroke="#ccc" strokeWidth="2" />
+                            <line x1="50" y1="30" x2="50" y2="370" stroke="#ccc" strokeWidth="2" />
+                            
+                            {/* Ligne de référence à zéro */}
+                            <line x1="50" y1="200" x2="350" y2="200" stroke="#ef4444" strokeWidth="2" strokeDasharray="5,5" />
+                            <text x="35" y="205" textAnchor="middle" fontSize="10" fill="#ef4444" fontWeight="bold">0</text>
+                            
+                            {/* Échelle Y */}
+                            <text x="25" y="30" textAnchor="middle" fontSize="10" fill="#666">+{yMax.toFixed(1)}</text>
+                            <text x="25" y="370" textAnchor="middle" fontSize="10" fill="#666">{yMin.toFixed(1)}</text>
+                            
+                            {/* Points et lignes pour les variations */}
+                            {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => {
+                              const x = 50 + (index * 30);
+                              const theoreticalTime = results.theoretical_ideal[index];
+                              const variation = cumulativeTime - theoreticalTime;
+                              const y = 200 - ((variation / variationRange) * 170);
+                              
+                              return (
+                                <g key={index}>
+                                  {/* Ligne entre les points */}
+                                  {index > 0 && (
+                                    <line 
+                                      x1={50 + ((index - 1) * 30)} 
+                                      y1={200 - (((results.cumulative_times[index - 1] - results.theoretical_ideal[index - 1]) / variationRange) * 170)}
+                                      x2={x} 
+                                      y2={y} 
+                                      stroke="#ef4444" 
+                                      strokeWidth="3" 
+                                    />
+                                  )}
+                                  {/* Point */}
+                                  <circle 
+                                    cx={x} 
+                                    cy={y} 
+                                    r="4" 
+                                    fill={sequence[index] === 'A' ? '#3b82f6' : '#10b981'} 
+                                    stroke="white" 
+                                    strokeWidth="2"
+                                  />
+                                  {/* Label du produit */}
+                                  <text x={x} y="385" textAnchor="middle" fontSize="10" fill="#666" fontWeight="bold">
+                                    {sequence[index]}
+                                  </text>
+                                  {/* Variation */}
+                                  <text x={x} y={y - 10} textAnchor="middle" fontSize="8" fill={variation >= 0 ? '#ef4444' : '#3b82f6'} fontWeight="bold">
+                                    {variation >= 0 ? '+' : ''}{variation.toFixed(1)}min
+                                  </text>
+                                </g>
+                              );
+                            })}
+                          </>
+                        );
+                      })()}
+                    </svg>
                   </div>
-                  <div className="lam-sequencage-graph-legend-item">
-                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#3b82f6' }}></div>
-                    <span>En retard (-)</span>
-                  </div>
-                  <div className="lam-sequencage-graph-legend-item">
-                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#ef4444', border: '2px dashed #ef4444' }}></div>
-                    <span>Ligne de référence (0)</span>
+                  <div className="lam-sequencage-graph-legend" style={{ fontSize: '12px' }}>
+                    <div className="lam-sequencage-graph-legend-item">
+                      <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#ef4444' }}></div>
+                      <span>En avance (+)</span>
+                    </div>
+                    <div className="lam-sequencage-graph-legend-item">
+                      <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#3b82f6' }}></div>
+                      <span>En retard (-)</span>
+                    </div>
+                    <div className="lam-sequencage-graph-legend-item">
+                      <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#ef4444', border: '2px dashed #ef4444' }}></div>
+                      <span>Ligne de référence (0)</span>
+                    </div>
                   </div>
                 </div>
               </div>

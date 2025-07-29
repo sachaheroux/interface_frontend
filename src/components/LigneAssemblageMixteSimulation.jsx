@@ -170,12 +170,12 @@ const LigneAssemblageMixteSimulation = () => {
     }
 
     // Calculer les métriques directement dans le frontend (même logique que le backend)
-    const taskTimes = [
-      [18, 12], // Montage roue avant: A=18, B=12
-      [16, 10], // Installation freins: A=16, B=10
-      [20, 12], // Réglage dérailleur: A=20, B=12
-      [12, 8]   // Test transmission: A=12, B=8
-    ];
+                  const taskTimes = [
+                [15, 10], // Montage roue avant: A=15, B=10
+                [12, 8],  // Installation freins: A=12, B=8
+                [16, 12], // Réglage dérailleur: A=16, B=12
+                [10, 9]   // Test transmission: A=10, B=9
+              ];
 
     const modelsDemand = [3, 7]; // 3 Vélo de Route Pro, 7 Vélo de Ville Standard
     
@@ -188,9 +188,9 @@ const LigneAssemblageMixteSimulation = () => {
     
     // Calculer C_k (temps de cycle moyen du goulot)
     const N = 10; // Longueur de la séquence
-    // Temps total par produit : A = 66min (18+16+20+12), B = 42min (12+10+12+8)
-    // C_k = (42 * 7 + 66 * 3) / 10 = 49.2 minutes
-    const C_k = (42 * 7 + 66 * 3) / 10;
+                  // Temps total par produit : A = 53min, B = 39min
+              // C_k = (39 * 7 + 53 * 3) / 10 = 43.2 minutes
+              const C_k = (39 * 7 + 53 * 3) / 10;
     
     // Calculer les temps cumulés
     const cumulativeTimes = [];
@@ -473,7 +473,7 @@ const LigneAssemblageMixteSimulation = () => {
                   margin: '0 auto',
                   overflow: 'hidden'
                 }}>
-                  <svg width="100%" height="350" style={{ 
+                  <svg width="100%" height="450" style={{ 
                     background: 'white', 
                     borderRadius: '8px', 
                     display: 'block', 
@@ -482,14 +482,14 @@ const LigneAssemblageMixteSimulation = () => {
                     overflow: 'visible'
                   }}>
                     {/* Axes */}
-                    <line x1="50" y1="320" x2="750" y2="320" stroke="#ccc" strokeWidth="2" />
-                    <line x1="50" y1="30" x2="50" y2="320" stroke="#ccc" strokeWidth="2" />
+                    <line x1="50" y1="420" x2="750" y2="420" stroke="#ccc" strokeWidth="2" />
+                    <line x1="50" y1="30" x2="50" y2="420" stroke="#ccc" strokeWidth="2" />
                     
                     {/* Points et lignes pour le temps cumulé */}
                     {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => {
                       const x = 50 + (index * 70);
                       const maxTime = Math.max(...results.cumulative_times);
-                      const y = 320 - ((cumulativeTime / maxTime) * 290);
+                      const y = 420 - ((cumulativeTime / maxTime) * 390);
                       
                       return (
                         <g key={index}>
@@ -497,7 +497,7 @@ const LigneAssemblageMixteSimulation = () => {
                           {index > 0 && (
                             <line 
                               x1={50 + ((index - 1) * 70)} 
-                              y1={320 - ((results.cumulative_times[index - 1] / maxTime) * 290)}
+                              y1={420 - ((results.cumulative_times[index - 1] / maxTime) * 390)}
                               x2={x} 
                               y2={y} 
                               stroke="#3b82f6" 
@@ -514,7 +514,7 @@ const LigneAssemblageMixteSimulation = () => {
                             strokeWidth="2"
                           />
                           {/* Label du produit */}
-                          <text x={x} y="335" textAnchor="middle" fontSize="12" fill="#666" fontWeight="bold">
+                          <text x={x} y="435" textAnchor="middle" fontSize="12" fill="#666" fontWeight="bold">
                             {sequence[index]}
                           </text>
                           {/* Temps cumulé */}
@@ -529,7 +529,7 @@ const LigneAssemblageMixteSimulation = () => {
                     {results.theoretical_ideal && results.theoretical_ideal.map((theoreticalTime, index) => {
                       const x = 50 + (index * 70);
                       const maxTime = Math.max(...results.cumulative_times);
-                      const y = 320 - ((theoreticalTime / maxTime) * 290);
+                      const y = 420 - ((theoreticalTime / maxTime) * 390);
                       
                       return (
                         <g key={`theoretical-${index}`}>
@@ -537,7 +537,7 @@ const LigneAssemblageMixteSimulation = () => {
                           {index > 0 && (
                             <line 
                               x1={50 + ((index - 1) * 70)} 
-                              y1={320 - ((results.theoretical_ideal[index - 1] / maxTime) * 290)}
+                              y1={420 - ((results.theoretical_ideal[index - 1] / maxTime) * 390)}
                               x2={x} 
                               y2={y} 
                               stroke="#10b981" 
@@ -596,7 +596,7 @@ const LigneAssemblageMixteSimulation = () => {
                   margin: '0 auto',
                   overflow: 'hidden'
                 }}>
-                  <svg width="100%" height="350" style={{ 
+                  <svg width="100%" height="450" style={{ 
                     background: 'white', 
                     borderRadius: '8px', 
                     display: 'block', 
@@ -605,12 +605,12 @@ const LigneAssemblageMixteSimulation = () => {
                     overflow: 'visible'
                   }}>
                     {/* Axes */}
-                    <line x1="50" y1="320" x2="750" y2="320" stroke="#ccc" strokeWidth="2" />
-                    <line x1="50" y1="30" x2="50" y2="320" stroke="#ccc" strokeWidth="2" />
+                    <line x1="50" y1="420" x2="750" y2="420" stroke="#ccc" strokeWidth="2" />
+                    <line x1="50" y1="30" x2="50" y2="420" stroke="#ccc" strokeWidth="2" />
                     
                     {/* Ligne de référence à zéro */}
-                    <line x1="50" y1="175" x2="750" y2="175" stroke="#ef4444" strokeWidth="2" strokeDasharray="5,5" />
-                    <text x="35" y="180" textAnchor="middle" fontSize="12" fill="#ef4444" fontWeight="bold">0</text>
+                    <line x1="50" y1="225" x2="750" y2="225" stroke="#ef4444" strokeWidth="2" strokeDasharray="5,5" />
+                    <text x="35" y="230" textAnchor="middle" fontSize="12" fill="#ef4444" fontWeight="bold">0</text>
                     
                     {/* Points et lignes pour les variations */}
                     {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => {
@@ -618,9 +618,9 @@ const LigneAssemblageMixteSimulation = () => {
                       const theoreticalTime = results.theoretical_ideal[index];
                       const variation = cumulativeTime - theoreticalTime;
                       
-                      // Calculer la position Y (175 est le centre, 0)
+                      // Calculer la position Y (225 est le centre, 0)
                       const maxVariation = Math.max(...results.cumulative_times.map((ct, i) => Math.abs(ct - results.theoretical_ideal[i])));
-                      const y = 175 - ((variation / maxVariation) * 145);
+                      const y = 225 - ((variation / maxVariation) * 195);
                       
                       return (
                         <g key={index}>
@@ -628,10 +628,10 @@ const LigneAssemblageMixteSimulation = () => {
                           {index > 0 && (
                             <line 
                               x1={50 + ((index - 1) * 70)} 
-                              y1={175 - (((results.cumulative_times[index - 1] - results.theoretical_ideal[index - 1]) / maxVariation) * 145)}
+                              y1={225 - (((results.cumulative_times[index - 1] - results.theoretical_ideal[index - 1]) / maxVariation) * 195)}
                               x2={x} 
                               y2={y} 
-                              stroke={variation >= 0 ? '#ef4444' : '#3b82f6'} 
+                              stroke="#ef4444" 
                               strokeWidth="3" 
                             />
                           )}
@@ -645,7 +645,7 @@ const LigneAssemblageMixteSimulation = () => {
                             strokeWidth="2"
                           />
                           {/* Label du produit */}
-                          <text x={x} y="335" textAnchor="middle" fontSize="12" fill="#666" fontWeight="bold">
+                          <text x={x} y="435" textAnchor="middle" fontSize="12" fill="#666" fontWeight="bold">
                             {sequence[index]}
                           </text>
                           {/* Variation */}

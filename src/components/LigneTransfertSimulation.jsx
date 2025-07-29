@@ -47,9 +47,8 @@ const LigneTransfertSimulation = () => {
     
     // Vérification de sécurité supplémentaire (mais permettre la génération initiale)
     if (!pieces) return;
-    
 
-
+    // Incrémenter le temps seulement si la simulation est en cours
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
     // Générer de nouvelles pièces
@@ -330,11 +329,21 @@ const LigneTransfertSimulation = () => {
       lastTimeRef.current = currentTime;
 
       simulateStep(deltaTime);
-      animationRef.current = requestAnimationFrame(animate);
+      
+      // Continuer l'animation seulement si la simulation est en cours
+      if (isRunning) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
     };
 
     if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
+    } else {
+      // Arrêter l'animation si la simulation n'est pas en cours
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
     }
 
     return () => {

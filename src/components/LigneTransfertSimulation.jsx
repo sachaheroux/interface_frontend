@@ -48,7 +48,7 @@ const LigneTransfertSimulation = () => {
 
     // Générer de nouvelles pièces
     const activePieces = pieces.filter(p => !p.completed).length;
-    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && activePieces < 20 && isRunning) {
+    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && isRunning) {
       console.log(`DEBUG: Génération pièce - completedPieces=${metrics.completedPieces}, activePieces=${activePieces}, totalPieces=${pieces.length}`);
       const newPiece = {
         id: Date.now() + Math.random(),

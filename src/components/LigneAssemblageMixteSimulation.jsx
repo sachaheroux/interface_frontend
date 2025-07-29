@@ -574,8 +574,10 @@ const LigneAssemblageMixteSimulation = () => {
                   </div>
                 </div>
               </div>
-              
-              {/* Deuxième graphique : Variations par rapport à la ligne théorique */}
+            )}
+
+            {/* Deuxième graphique : Variations par rapport à la ligne théorique */}
+            {showGraph && (
               <div className="lam-sequencage-graph-zone" style={{ 
                 display: 'flex', 
                 justifyContent: 'center', 

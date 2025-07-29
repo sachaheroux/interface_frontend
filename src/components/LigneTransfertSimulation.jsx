@@ -43,14 +43,15 @@ const LigneTransfertSimulation = () => {
     setSimulationTime(prev => prev + deltaTime);
 
     // Générer de nouvelles pièces
-    if (Math.random() < 0.1 && pieces.length < 50) {
+    if (Math.random() < 0.05 && pieces.length < 50) {
       const newPiece = {
         id: Date.now() + Math.random(),
         position: -0.5,
         targetPosition: 0,
         inStation: false,
         completed: false,
-        startTime: simulationTime
+        startTime: simulationTime,
+        currentStation: 0
       };
       setPieces(prev => [...prev, newPiece]);
     }
@@ -60,12 +61,13 @@ const LigneTransfertSimulation = () => {
       return prevPieces.map(piece => {
         if (piece.completed) return piece;
 
-        // Déplacer la pièce
+        // Déplacer la pièce vers le prochain poste
         if (!piece.inStation) {
-          const newPosition = piece.position + 0.02;
+          const newPosition = piece.position + 0.01;
           if (newPosition >= piece.targetPosition) {
             piece.position = piece.targetPosition;
             piece.inStation = true;
+            piece.currentStation = piece.currentStation || 0;
           } else {
             piece.position = newPosition;
           }
@@ -75,9 +77,9 @@ const LigneTransfertSimulation = () => {
       });
     });
 
-    // Mettre à jour les postes
+    // Mettre à jour les postes et traiter les pièces
     setStations(prevStations => {
-      return prevStations.map(station => {
+      return prevStations.map((station, stationIndex) => {
         // Gestion des pannes
         if (Math.random() < station.failureRate * deltaTime) {
           station.isWorking = false;
@@ -89,16 +91,49 @@ const LigneTransfertSimulation = () => {
         }
 
         // Traitement des pièces
-        if (station.currentPiece && station.isWorking) {
-          station.processingTime = (station.processingTime || 0) + deltaTime;
-          if (station.processingTime >= station.speed) {
-            // Pièce terminée
-            station.currentPiece = null;
-            station.processingTime = 0;
-            setMetrics(prev => ({
-              ...prev,
-              completedPieces: prev.completedPieces + 1
-            }));
+        if (station.isWorking) {
+          // Chercher une pièce disponible pour ce poste
+          if (!station.currentPiece) {
+            const availablePiece = pieces.find(p => 
+              p.currentStation === stationIndex && 
+              p.inStation && 
+              !p.completed
+            );
+            if (availablePiece) {
+              station.currentPiece = availablePiece.id;
+              station.processingTime = 0;
+            }
+          }
+
+          // Traiter la pièce en cours
+          if (station.currentPiece && station.isWorking) {
+            station.processingTime = (station.processingTime || 0) + deltaTime;
+            if (station.processingTime >= station.speed) {
+              // Pièce terminée à ce poste
+              const pieceId = station.currentPiece;
+              setPieces(currentPieces => 
+                currentPieces.map(p => {
+                  if (p.id === pieceId) {
+                    if (stationIndex === 3) { // Dernier poste
+                      p.completed = true;
+                      setMetrics(prev => ({
+                        ...prev,
+                        completedPieces: prev.completedPieces + 1
+                      }));
+                    } else {
+                      // Passer au poste suivant
+                      p.currentStation = stationIndex + 1;
+                      p.position = stationIndex + 0.5;
+                      p.targetPosition = stationIndex + 1;
+                      p.inStation = false;
+                    }
+                  }
+                  return p;
+                })
+              );
+              station.currentPiece = null;
+              station.processingTime = 0;
+            }
           }
         }
 
@@ -110,8 +145,8 @@ const LigneTransfertSimulation = () => {
     setMetrics(prev => ({
       ...prev,
       totalPieces: pieces.length,
-      throughput: prev.completedPieces / (simulationTime / 60), // pièces/minute
-      avgWaitTime: simulationTime / Math.max(prev.completedPieces, 1)
+      throughput: simulationTime > 0 ? prev.completedPieces / (simulationTime / 60) : 0,
+      avgWaitTime: prev.completedPieces > 0 ? simulationTime / prev.completedPieces : 0
     }));
   };
 
@@ -173,14 +208,17 @@ const LigneTransfertSimulation = () => {
   };
 
   const updateBufferSize = (bufferIndex, newSize) => {
+    const clampedSize = Math.max(1, Math.min(20, newSize));
+    
     setBufferSizes(prev => {
       const newSizes = [...prev];
-      newSizes[bufferIndex] = Math.max(1, Math.min(20, newSize));
+      newSizes[bufferIndex] = clampedSize;
       return newSizes;
     });
+    
     setBuffers(prev => {
       const newBuffers = [...prev];
-      newBuffers[bufferIndex].maxSize = newSizes[bufferIndex];
+      newBuffers[bufferIndex].maxSize = clampedSize;
       return newBuffers;
     });
   };
@@ -268,6 +306,11 @@ const LigneTransfertSimulation = () => {
               </div>
               {station.currentPiece && (
                 <div className="lt-piece lt-piece-in-station">📦</div>
+              )}
+              {station.processingTime > 0 && (
+                <div className="lt-processing-indicator">
+                  {Math.round((station.processingTime / station.speed) * 100)}%
+                </div>
               )}
             </div>
           ))}

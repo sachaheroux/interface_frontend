@@ -31,38 +31,60 @@ const LigneAssemblageMixteSimulation = () => {
     return cycleTimes;
   };
 
-  // Calculer les variations de temps
+  // Calculer les variations de temps selon l'algorithme du goulot
   const calculateTimeVariations = (sequence) => {
     if (sequence.length === 0) return { variations: [], totalVariation: 0, avgVariation: 0 };
 
     const cycleTimes = calculateCycleTimes();
+    
+    // Calculer le temps de cycle moyen du goulot (C_k)
+    const totalTime = Object.values(cycleTimes).reduce((sum, time) => sum + time, 0);
+    const C_k = totalTime / sequence.length;
+    
+    // Calculer les temps cumulés réels
+    const cumulativeTimes = [];
+    let cumulativeTime = 0;
+    
+    for (const productId of sequence) {
+      const cycleTime = cycleTimes[productId];
+      cumulativeTime += cycleTime;
+      cumulativeTimes.push(cumulativeTime);
+    }
+    
+    // Calculer les temps théoriques idéaux
+    const theoreticalIdeal = [];
+    for (let i = 0; i < sequence.length; i++) {
+      theoreticalIdeal.push(C_k * (i + 1));
+    }
+    
+    // Calculer les déviations (variations)
     const variations = [];
-    let totalVariation = 0;
-
-    for (let i = 1; i < sequence.length; i++) {
-      const currentProduct = sequence[i];
-      const previousProduct = sequence[i - 1];
-      
-      const currentTime = cycleTimes[currentProduct];
-      const previousTime = cycleTimes[previousProduct];
-      
-      const variation = Math.abs(currentTime - previousTime);
+    let totalDeviation = 0;
+    
+    for (let i = 0; i < sequence.length; i++) {
+      const deviation = Math.abs(cumulativeTimes[i] - theoreticalIdeal[i]);
       variations.push({
-        position: i,
-        current: currentProduct,
-        previous: previousProduct,
-        currentTime,
-        previousTime,
-        variation
+        position: i + 1,
+        product: sequence[i],
+        cumulativeTime: cumulativeTimes[i],
+        theoreticalTime: theoreticalIdeal[i],
+        deviation: deviation
       });
       
-      totalVariation += variation;
+      totalDeviation += deviation;
     }
-
+    
+    const maxVariation = Math.max(...variations.map(v => v.deviation));
+    const avgDeviation = totalDeviation / sequence.length;
+    
     return {
       variations,
-      totalVariation,
-      avgVariation: totalVariation / (sequence.length - 1)
+      totalVariation: totalDeviation,
+      avgVariation: avgDeviation,
+      maxVariation: maxVariation,
+      C_k: C_k,
+      cumulativeTimes: cumulativeTimes,
+      theoreticalIdeal: theoreticalIdeal
     };
   };
 
@@ -325,11 +347,11 @@ const LigneAssemblageMixteSimulation = () => {
                   </div>
                   <div className="lam-sequencage-metric">
                     <span className="lam-sequencage-metric-label">Variation maximale:</span>
-                    <span className="lam-sequencage-metric-value">{Math.max(...results.variations.map(v => v.variation))} min</span>
+                    <span className="lam-sequencage-metric-value">{results.maxVariation.toFixed(3)} min</span>
                   </div>
                   <div className="lam-sequencage-metric">
                     <span className="lam-sequencage-metric-label">Temps de cycle goulot:</span>
-                    <span className="lam-sequencage-metric-value">{calculateCycleTimes().A} min</span>
+                    <span className="lam-sequencage-metric-value">{results.C_k.toFixed(3)} min</span>
                   </div>
                   <div className="lam-sequencage-metric">
                     <span className="lam-sequencage-metric-label">Déviation moyenne:</span>
@@ -337,7 +359,7 @@ const LigneAssemblageMixteSimulation = () => {
                   </div>
                   <div className="lam-sequencage-metric">
                     <span className="lam-sequencage-metric-label">Efficacité de lissage:</span>
-                    <span className="lam-sequencage-metric-value">{((1 - results.avgVariation / calculateCycleTimes().A) * 100).toFixed(2)}%</span>
+                    <span className="lam-sequencage-metric-value">{((1 - results.avgVariation / results.C_k) * 100).toFixed(2)}%</span>
                   </div>
                 </div>
               </div>
@@ -349,10 +371,10 @@ const LigneAssemblageMixteSimulation = () => {
                     <div key={index} className="lam-sequencage-variation">
                       <div className="lam-sequencage-variation-header">
                         <strong>Position {variation.position}:</strong>
-                        <span className="lam-sequencage-variation-value">{variation.variation} min</span>
+                        <span className="lam-sequencage-variation-value">{variation.deviation.toFixed(3)} min</span>
                       </div>
                       <div className="lam-sequencage-variation-detail">
-                        <span>{variation.previous} ({variation.previousTime}min) → {variation.current} ({variation.currentTime}min)</span>
+                        <span>Temps cumulé: {variation.cumulativeTime}min | Temps théorique: {variation.theoreticalTime.toFixed(1)}min</span>
                       </div>
                     </div>
                   ))}

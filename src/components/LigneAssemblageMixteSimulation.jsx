@@ -153,7 +153,7 @@ const LigneAssemblageMixteSimulation = () => {
   };
 
   // Évaluer la séquence
-  const evaluateSequence = () => {
+  const evaluateSequence = async () => {
     if (sequence.length !== 10) {
       alert('La séquence doit contenir exactement 10 produits pour être évaluée.');
       return;
@@ -168,10 +168,41 @@ const LigneAssemblageMixteSimulation = () => {
       return;
     }
 
-    const variations = calculateTimeVariations(sequence);
-    const cumulativeTimes = calculateCumulativeTime(sequence);
-    setResults({ ...variations, cumulativeTimes });
-    setShowGraph(true);
+    try {
+      // Préparer les données pour l'algorithme backend
+      const taskTimes = [
+        [14, 10], // Montage roue avant: A=14, B=10
+        [12, 8],  // Installation freins: A=12, B=8
+        [16, 12], // Réglage dérailleur: A=16, B=12
+        [11, 9]   // Test transmission: A=11, B=9
+      ];
+
+      const requestData = {
+        sequence: sequence,
+        models_demand: [3, 7], // 3 Vélo de Route Pro, 7 Vélo de Ville Standard
+        task_times: taskTimes
+      };
+
+      // Appeler l'algorithme backend
+      const response = await fetch('/api/goulot-variation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'évaluation de la séquence');
+      }
+
+      const result = await response.json();
+      setResults(result);
+      setShowGraph(true);
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de l\'évaluation de la séquence: ' + error.message);
+    }
   };
 
 
@@ -347,19 +378,19 @@ const LigneAssemblageMixteSimulation = () => {
                   </div>
                   <div className="lam-sequencage-metric">
                     <span className="lam-sequencage-metric-label">Variation maximale:</span>
-                    <span className="lam-sequencage-metric-value">{results.maxVariation.toFixed(3)} min</span>
+                    <span className="lam-sequencage-metric-value">{results.metrics.variation_maximale} min</span>
                   </div>
                   <div className="lam-sequencage-metric">
                     <span className="lam-sequencage-metric-label">Temps de cycle goulot:</span>
-                    <span className="lam-sequencage-metric-value">{results.C_k.toFixed(3)} min</span>
+                    <span className="lam-sequencage-metric-value">{results.metrics.temps_cycle_goulot} min</span>
                   </div>
                   <div className="lam-sequencage-metric">
                     <span className="lam-sequencage-metric-label">Déviation moyenne:</span>
-                    <span className="lam-sequencage-metric-value">{results.avgVariation.toFixed(3)} min</span>
+                    <span className="lam-sequencage-metric-value">{results.metrics.deviation_moyenne} min</span>
                   </div>
                   <div className="lam-sequencage-metric">
                     <span className="lam-sequencage-metric-label">Efficacité de lissage:</span>
-                    <span className="lam-sequencage-metric-value">{((1 - results.avgVariation / results.C_k) * 100).toFixed(2)}%</span>
+                    <span className="lam-sequencage-metric-value">{results.metrics.efficacite_lissage}%</span>
                   </div>
                 </div>
               </div>
@@ -367,14 +398,16 @@ const LigneAssemblageMixteSimulation = () => {
               <div className="lam-sequencage-result-card">
                 <h4>Détail des variations</h4>
                 <div className="lam-sequencage-variations">
-                  {results.variations.map((variation, index) => (
+                  {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => (
                     <div key={index} className="lam-sequencage-variation">
                       <div className="lam-sequencage-variation-header">
-                        <strong>Position {variation.position}:</strong>
-                        <span className="lam-sequencage-variation-value">{variation.deviation.toFixed(3)} min</span>
+                        <strong>Position {index + 1}:</strong>
+                        <span className="lam-sequencage-variation-value">
+                          {Math.abs(cumulativeTime - results.theoretical_ideal[index]).toFixed(3)} min
+                        </span>
                       </div>
                       <div className="lam-sequencage-variation-detail">
-                        <span>Temps cumulé: {variation.cumulativeTime}min | Temps théorique: {variation.theoreticalTime.toFixed(1)}min</span>
+                        <span>Temps cumulé: {cumulativeTime}min | Temps théorique: {results.theoretical_ideal[index].toFixed(1)}min</span>
                       </div>
                     </div>
                   ))}

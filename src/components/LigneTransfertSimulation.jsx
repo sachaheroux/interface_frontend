@@ -350,34 +350,35 @@ const LigneTransfertSimulation = () => {
     
     // Si c'est la première fois ou si on a atteint 100 pièces, faire un reset complet
     if (metrics.completedPieces >= targetPieces || pieces.length === 0) {
-      // Arrêter d'abord si en cours
+      // Arrêter complètement l'animation
       setIsRunning(false);
       
-      // Réinitialiser complètement
-      setSimulationTime(0);
-      setPieces([]);
-      setMetrics({
-        totalPieces: 0,
-        completedPieces: 0,
-        throughput: 0,
-        avgWaitTime: 0,
-        stationUtilization: [0, 0, 0, 0]
-      });
-      setStations(prev => prev.map(station => ({
-        ...station,
-        currentPiece: null,
-        isWorking: true,
-        processingTime: 0
-      })));
-      setBuffers(prev => prev.map(buffer => ({
-        ...buffer,
-        pieces: []
-      })));
-      
-      // Démarrer après un court délai pour laisser le temps aux états de se stabiliser
+      // Attendre que l'animation soit vraiment arrêtée avant de reset
       setTimeout(() => {
+        // Réinitialiser complètement
+        setSimulationTime(0);
+        setPieces([]);
+        setMetrics({
+          totalPieces: 0,
+          completedPieces: 0,
+          throughput: 0,
+          avgWaitTime: 0,
+          stationUtilization: [0, 0, 0, 0]
+        });
+        setStations(prev => prev.map(station => ({
+          ...station,
+          currentPiece: null,
+          isWorking: true,
+          processingTime: 0
+        })));
+        setBuffers(prev => prev.map(buffer => ({
+          ...buffer,
+          pieces: []
+        })));
+        
+        // Démarrer la nouvelle simulation
         setIsRunning(true);
-      }, 50);
+      }, 100); // Délai plus long pour s'assurer que l'animation est arrêtée
     } else {
       // Sinon, juste reprendre la simulation
       setIsRunning(true);

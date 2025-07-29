@@ -477,6 +477,50 @@
   margin-bottom: 10px;
 }
 
+/* Résultats précédents */
+.lt-previous-results {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+
+.lt-previous-results h4 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+}
+
+.lt-previous-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.lt-previous-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.lt-previous-metric span {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.lt-previous-metric strong {
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .lt-progress-bar {
   width: 100%;
   height: 8px;

@@ -24,6 +24,7 @@ const LigneTransfertSimulation = () => {
     avgWaitTime: 0,
     stationUtilization: [0, 0, 0, 0]
   });
+  const [previousResults, setPreviousResults] = useState(null);
   const [targetPieces] = useState(100);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
   const animationRef = useRef();
@@ -239,9 +240,16 @@ const LigneTransfertSimulation = () => {
                         completedPieces: prev.completedPieces + 1
                       }));
                       
-                      // Arrêter la simulation si on atteint l'objectif
+                      // Sauvegarder les résultats et réinitialiser si on atteint l'objectif
                       if (metrics.completedPieces + 1 >= targetPieces) {
-                        setIsRunning(false);
+                        setPreviousResults({
+                          completedPieces: metrics.completedPieces + 1,
+                          totalTime: simulationTime,
+                          throughput: (metrics.completedPieces + 1) / (simulationTime / 60),
+                          avgWaitTime: simulationTime / (metrics.completedPieces + 1),
+                          bufferSizes: [...bufferSizes]
+                        });
+                        resetSimulation();
                       }
                     } else {
                       // Passer au buffer suivant ou au poste suivant
@@ -341,6 +349,7 @@ const LigneTransfertSimulation = () => {
       avgWaitTime: 0,
       stationUtilization: [0, 0, 0, 0]
     });
+    setPreviousResults(null); // Effacer les résultats précédents quand on redémarre
   };
 
   const stopSimulation = () => {
@@ -583,6 +592,35 @@ const LigneTransfertSimulation = () => {
             </div>
           </div>
         </div>
+        
+        {/* Résultats précédents */}
+        {previousResults && (
+          <div className="lt-previous-results">
+            <h4>Résultats de la simulation précédente :</h4>
+            <div className="lt-previous-metrics">
+              <div className="lt-previous-metric">
+                <span>Pièces produites :</span>
+                <strong>{previousResults.completedPieces}/100</strong>
+              </div>
+              <div className="lt-previous-metric">
+                <span>Temps total :</span>
+                <strong>{Math.floor(previousResults.totalTime)}s</strong>
+              </div>
+              <div className="lt-previous-metric">
+                <span>Débit :</span>
+                <strong>{previousResults.throughput.toFixed(2)} pièces/min</strong>
+              </div>
+              <div className="lt-previous-metric">
+                <span>Temps d'attente moyen :</span>
+                <strong>{previousResults.avgWaitTime.toFixed(1)}s</strong>
+              </div>
+              <div className="lt-previous-metric">
+                <span>Configuration buffers :</span>
+                <strong>[{previousResults.bufferSizes.join(', ')}]</strong>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Configuration des postes */}

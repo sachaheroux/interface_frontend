@@ -72,6 +72,9 @@ const LigneTransfertSimulation = () => {
   // Simulation step
   const simulateStep = (deltaTime) => {
     if (!isRunning) return;
+    
+    // Vérification de sécurité supplémentaire
+    if (!pieces || pieces.length === 0) return;
 
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
@@ -134,7 +137,7 @@ const LigneTransfertSimulation = () => {
           // Vérifier si une pièce terminée peut être transférée (buffer libéré)
           if (station.currentPiece && station.processingTime >= station.speed) {
             const pieceId = station.currentPiece;
-            const piece = pieces.find(p => p.id === pieceId);
+            const piece = pieces.find(p => p && p.id === pieceId);
             if (piece && stationIndex < 3) {
               const nextBufferIndex = stationIndex;
               const buffer = buffers[nextBufferIndex];
@@ -185,7 +188,7 @@ const LigneTransfertSimulation = () => {
               const prevBuffer = buffers[stationIndex - 1];
               if (prevBuffer.pieces.length > 0) {
                 const pieceId = prevBuffer.pieces[0];
-                const piece = pieces.find(p => p.id === pieceId);
+                const piece = pieces.find(p => p && p.id === pieceId);
                 if (piece) {
                   // Retirer du buffer et assigner au poste
                   setBuffers(prevBuffers => {
@@ -217,7 +220,7 @@ const LigneTransfertSimulation = () => {
                 const prevBuffer = buffers[stationIndex - 1];
                 if (prevBuffer.maxSize > 0 && prevBuffer.pieces.length > 0) {
                   const pieceId = prevBuffer.pieces[0];
-                  const piece = pieces.find(p => p.id === pieceId);
+                  const piece = pieces.find(p => p && p.id === pieceId);
                   if (piece) {
                     // Retirer du buffer et assigner au poste
                     setBuffers(prevBuffers => {
@@ -263,11 +266,11 @@ const LigneTransfertSimulation = () => {
                 if (station.processingTime >= station.speed) {
                   // Pièce terminée à ce poste
                   const pieceId = station.currentPiece;
-                  setPieces(currentPieces => 
+                                    setPieces(currentPieces => 
                     currentPieces.map(p => {
                       if (!p) return p;
-                      if (p.id === pieceId) {
-                    if (stationIndex === 3) { // Dernier poste
+                      if (p && p.id === pieceId) {
+                        if (stationIndex === 3) { // Dernier poste
                       p.completed = true;
                       const newCompletedPieces = metrics.completedPieces + 1;
                       console.log(`DEBUG: Pièce ${pieceId} terminée au poste ${stationIndex}, completedPieces va passer de ${metrics.completedPieces} à ${newCompletedPieces}`);
@@ -286,7 +289,11 @@ const LigneTransfertSimulation = () => {
                         };
                         setSimulationHistory(prev => [completedResults, ...prev]);
                         setIsRunning(false);
-                        // Ne pas réinitialiser immédiatement, laisser la simulation s'arrêter proprement
+                        // Arrêter immédiatement la boucle d'animation
+                        if (animationRef.current) {
+                          cancelAnimationFrame(animationRef.current);
+                          animationRef.current = null;
+                        }
                         return; // Arrêter l'exécution de cette frame
                       }
                       

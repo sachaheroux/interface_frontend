@@ -73,8 +73,8 @@ const LigneTransfertSimulation = () => {
   const simulateStep = (deltaTime) => {
     if (!isRunning) return;
     
-    // Vérification de sécurité supplémentaire
-    if (!pieces || pieces.length === 0) return;
+    // Vérification de sécurité supplémentaire (mais permettre la génération initiale)
+    if (!pieces) return;
 
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 

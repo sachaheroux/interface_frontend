@@ -333,13 +333,15 @@ const LigneTransfertSimulation = () => {
       });
     });
 
-    // Mettre à jour les métriques
-    setMetrics(prev => ({
-      ...prev,
-      totalPieces: pieces.length,
-      throughput: simulationTime > 0 ? prev.completedPieces / (simulationTime / 60) : 0,
-      avgWaitTime: prev.completedPieces > 0 ? simulationTime / prev.completedPieces : 0
-    }));
+    // Mettre à jour les métriques (seulement si on n'a pas déjà mis à jour completedPieces)
+    if (metrics.completedPieces < targetPieces) {
+      setMetrics(prev => ({
+        ...prev,
+        totalPieces: pieces.length,
+        throughput: simulationTime > 0 ? prev.completedPieces / (simulationTime / 60) : 0,
+        avgWaitTime: prev.completedPieces > 0 ? simulationTime / prev.completedPieces : 0
+      }));
+    }
   };
 
   // Animation loop

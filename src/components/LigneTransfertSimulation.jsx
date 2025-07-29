@@ -345,34 +345,43 @@ const LigneTransfertSimulation = () => {
   }, [isRunning, pieces, stations]);
 
   const startSimulation = () => {
-    // Arrêter d'abord si en cours
-    setIsRunning(false);
+    // Si la simulation est déjà en cours, ne rien faire
+    if (isRunning) return;
     
-    // Réinitialiser complètement
-    setSimulationTime(0);
-    setPieces([]);
-    setMetrics({
-      totalPieces: 0,
-      completedPieces: 0,
-      throughput: 0,
-      avgWaitTime: 0,
-      stationUtilization: [0, 0, 0, 0]
-    });
-    setStations(prev => prev.map(station => ({
-      ...station,
-      currentPiece: null,
-      isWorking: true,
-      processingTime: 0
-    })));
-    setBuffers(prev => prev.map(buffer => ({
-      ...buffer,
-      pieces: []
-    })));
-    
-    // Démarrer après un court délai pour laisser le temps aux états de se stabiliser
-    setTimeout(() => {
+    // Si c'est la première fois ou si on a atteint 100 pièces, faire un reset complet
+    if (metrics.completedPieces >= targetPieces || pieces.length === 0) {
+      // Arrêter d'abord si en cours
+      setIsRunning(false);
+      
+      // Réinitialiser complètement
+      setSimulationTime(0);
+      setPieces([]);
+      setMetrics({
+        totalPieces: 0,
+        completedPieces: 0,
+        throughput: 0,
+        avgWaitTime: 0,
+        stationUtilization: [0, 0, 0, 0]
+      });
+      setStations(prev => prev.map(station => ({
+        ...station,
+        currentPiece: null,
+        isWorking: true,
+        processingTime: 0
+      })));
+      setBuffers(prev => prev.map(buffer => ({
+        ...buffer,
+        pieces: []
+      })));
+      
+      // Démarrer après un court délai pour laisser le temps aux états de se stabiliser
+      setTimeout(() => {
+        setIsRunning(true);
+      }, 50);
+    } else {
+      // Sinon, juste reprendre la simulation
       setIsRunning(true);
-    }, 50);
+    }
   };
 
   const stopSimulation = () => {

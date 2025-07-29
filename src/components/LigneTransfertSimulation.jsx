@@ -75,12 +75,21 @@ const LigneTransfertSimulation = () => {
     
     // Vérification de sécurité supplémentaire (mais permettre la génération initiale)
     if (!pieces) return;
+    
+    // Filtrer les pièces undefined pour éviter les erreurs
+    const validPieces = pieces.filter(p => p && p.id);
+    if (validPieces.length !== pieces.length) {
+      console.log('DEBUG: Nettoyage des pièces undefined détecté');
+      setPieces(validPieces);
+      return;
+    }
 
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
     // Générer de nouvelles pièces
     const activePieces = pieces.filter(p => !p.completed).length;
-    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && isRunning) {
+    const totalPiecesCreated = pieces.length;
+    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && totalPiecesCreated < targetPieces && isRunning) {
       console.log(`DEBUG: Génération pièce - completedPieces=${metrics.completedPieces}, activePieces=${activePieces}, totalPieces=${pieces.length}`);
       const newPiece = {
         id: Date.now() + Math.random(),
@@ -297,10 +306,13 @@ const LigneTransfertSimulation = () => {
                         return; // Arrêter l'exécution de cette frame
                       }
                       
-                      setMetrics(prev => ({
-                        ...prev,
-                        completedPieces: newCompletedPieces
-                      }));
+                                                setMetrics(prev => {
+                            console.log(`DEBUG: setMetrics - prev.completedPieces=${prev.completedPieces}, newCompletedPieces=${newCompletedPieces}`);
+                            return {
+                              ...prev,
+                              completedPieces: newCompletedPieces
+                            };
+                          });
                     } else {
                       // Passer au buffer suivant ou au poste suivant
                       const nextBufferIndex = stationIndex;

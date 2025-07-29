@@ -7,10 +7,10 @@ const LigneTransfertSimulation = () => {
   const [bufferSizes, setBufferSizes] = useState([5, 5, 5]); // Taille des 3 buffers
   const [pieces, setPieces] = useState([]);
   const [stations, setStations] = useState([
-    { id: 1, name: 'Poste 1', speed: 2.5, failureRate: 0.02, isWorking: true, currentPiece: null, position: 0 },
-    { id: 2, name: 'Poste 2', speed: 3.0, failureRate: 0.03, isWorking: true, currentPiece: null, position: 1 },
-    { id: 3, name: 'Poste 3', speed: 2.8, failureRate: 0.025, isWorking: true, currentPiece: null, position: 2 },
-    { id: 4, name: 'Poste 4', speed: 2.2, failureRate: 0.015, isWorking: true, currentPiece: null, position: 3 }
+    { id: 1, name: 'Poste 1', speed: 1.8, failureRate: 0.02, isWorking: true, currentPiece: null, position: 0 },
+    { id: 2, name: 'Poste 2', speed: 4.5, failureRate: 0.03, isWorking: true, currentPiece: null, position: 1 },
+    { id: 3, name: 'Poste 3', speed: 3.2, failureRate: 0.025, isWorking: true, currentPiece: null, position: 2 },
+    { id: 4, name: 'Poste 4', speed: 2.1, failureRate: 0.015, isWorking: true, currentPiece: null, position: 3 }
   ]);
   const [buffers, setBuffers] = useState([
     { id: 1, pieces: [], maxSize: 5, position: 0.5 },
@@ -25,22 +25,23 @@ const LigneTransfertSimulation = () => {
     stationUtilization: [0, 0, 0, 0]
   });
   const [targetPieces] = useState(100);
+  const [simulationSpeed, setSimulationSpeed] = useState(1);
   const animationRef = useRef();
   const lastTimeRef = useRef(0);
 
   // Configuration des postes
   const stationConfig = [
-    { name: 'Découpe', speed: 2.5, failureRate: 0.02, color: '#3b82f6' },
-    { name: 'Perçage', speed: 3.0, failureRate: 0.03, color: '#10b981' },
-    { name: 'Assemblage', speed: 2.8, failureRate: 0.025, color: '#f59e0b' },
-    { name: 'Contrôle', speed: 2.2, failureRate: 0.015, color: '#ef4444' }
+    { name: 'Découpe', speed: 1.8, failureRate: 0.02, color: '#3b82f6' },
+    { name: 'Perçage', speed: 4.5, failureRate: 0.03, color: '#10b981' },
+    { name: 'Assemblage', speed: 3.2, failureRate: 0.025, color: '#f59e0b' },
+    { name: 'Contrôle', speed: 2.1, failureRate: 0.015, color: '#ef4444' }
   ];
 
   // Simulation step
   const simulateStep = (deltaTime) => {
     if (!isRunning) return;
 
-    setSimulationTime(prev => prev + deltaTime);
+    setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
     // Générer de nouvelles pièces
     if (Math.random() < 0.05 && pieces.length < 50) {
@@ -140,7 +141,7 @@ const LigneTransfertSimulation = () => {
 
           // Traiter la pièce en cours
           if (station.currentPiece && station.isWorking) {
-            station.processingTime = (station.processingTime || 0) + deltaTime;
+            station.processingTime = (station.processingTime || 0) + deltaTime * simulationSpeed;
             if (station.processingTime >= station.speed) {
               // Pièce terminée à ce poste
               const pieceId = station.currentPiece;
@@ -334,6 +335,22 @@ const LigneTransfertSimulation = () => {
               <span>{size} pièces</span>
             </div>
           ))}
+        </div>
+        
+        <div className="lt-speed-controls">
+          <h4>Vitesse de Simulation :</h4>
+          <div className="lt-speed-buttons">
+            {[1, 2, 5, 10].map(speed => (
+              <button
+                key={speed}
+                onClick={() => setSimulationSpeed(speed)}
+                className={`lt-speed-btn ${simulationSpeed === speed ? 'lt-speed-btn-active' : ''}`}
+                disabled={isRunning}
+              >
+                {speed === 1 ? '1x' : `${speed}x`}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

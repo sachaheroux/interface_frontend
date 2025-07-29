@@ -44,7 +44,7 @@ const LigneTransfertSimulation = () => {
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
     // Générer de nouvelles pièces
-    if (Math.random() < 0.05 && pieces.length < 50) {
+    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces) {
       const newPiece = {
         id: Date.now() + Math.random(),
         position: -0.5,
@@ -189,6 +189,9 @@ const LigneTransfertSimulation = () => {
       });
     });
 
+    // Nettoyer les pièces terminées pour éviter l'accumulation
+    setPieces(prevPieces => prevPieces.filter(piece => !piece.completed));
+
     // Mettre à jour les métriques
     setMetrics(prev => ({
       ...prev,
@@ -330,7 +333,6 @@ const LigneTransfertSimulation = () => {
                 max="20"
                 value={size}
                 onChange={(e) => updateBufferSize(index, parseInt(e.target.value))}
-                disabled={isRunning}
               />
               <span>{size} pièces</span>
             </div>
@@ -345,7 +347,6 @@ const LigneTransfertSimulation = () => {
                 key={speed}
                 onClick={() => setSimulationSpeed(speed)}
                 className={`lt-speed-btn ${simulationSpeed === speed ? 'lt-speed-btn-active' : ''}`}
-                disabled={isRunning}
               >
                 {speed === 1 ? '1x' : `${speed}x`}
               </button>

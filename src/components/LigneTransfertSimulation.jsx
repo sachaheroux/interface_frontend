@@ -244,18 +244,19 @@ const LigneTransfertSimulation = () => {
                       if (p && p.id === pieceId) {
                                                 if (stationIndex === 3) { // Dernier poste
                           p.completed = true;
-                          const newCompletedPieces = metrics.completedPieces + 1;
-                          
-                          // Arrêter la simulation si on atteint 100 pièces
-                          if (newCompletedPieces >= targetPieces) {
-                            setIsRunning(false);
-                            return;
-                          }
-                          
-                          setMetrics(prev => ({
-                            ...prev,
-                            completedPieces: newCompletedPieces
-                          }));
+                          setMetrics(prev => {
+                            const newCompletedPieces = prev.completedPieces + 1;
+                            
+                            // Arrêter la simulation si on atteint 100 pièces
+                            if (newCompletedPieces >= targetPieces) {
+                              setTimeout(() => setIsRunning(false), 0);
+                            }
+                            
+                            return {
+                              ...prev,
+                              completedPieces: newCompletedPieces
+                            };
+                          });
                     } else {
                       // Passer au buffer suivant ou au poste suivant
                       const nextBufferIndex = stationIndex;

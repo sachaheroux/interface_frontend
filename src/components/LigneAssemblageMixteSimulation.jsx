@@ -11,10 +11,10 @@ const LigneAssemblageMixteSimulation = () => {
 
   // Tâches du poste goulot (4 tâches spécifiques, mêmes tâches mais temps différents)
   const TASKS = [
-    { id: 1, name: 'Montage roue avant', productA: 14, productB: 10 },
-    { id: 2, name: 'Installation freins', productA: 12, productB: 8 },
-    { id: 3, name: 'Réglage dérailleur', productA: 16, productB: 12 },
-    { id: 4, name: 'Test transmission', productA: 11, productB: 9 }
+    { id: 1, name: 'Montage roue avant', productA: 18, productB: 12 },
+    { id: 2, name: 'Installation freins', productA: 16, productB: 10 },
+    { id: 3, name: 'Réglage dérailleur', productA: 20, productB: 12 },
+    { id: 4, name: 'Test transmission', productA: 12, productB: 8 }
   ];
 
   const [sequence, setSequence] = useState([]);
@@ -171,10 +171,10 @@ const LigneAssemblageMixteSimulation = () => {
 
     // Calculer les métriques directement dans le frontend (même logique que le backend)
     const taskTimes = [
-      [14, 10], // Montage roue avant: A=14, B=10
-      [12, 8],  // Installation freins: A=12, B=8
-      [16, 12], // Réglage dérailleur: A=16, B=12
-      [11, 9]   // Test transmission: A=11, B=9
+      [18, 12], // Montage roue avant: A=18, B=12
+      [16, 10], // Installation freins: A=16, B=10
+      [20, 12], // Réglage dérailleur: A=20, B=12
+      [12, 8]   // Test transmission: A=12, B=8
     ];
 
     const modelsDemand = [3, 7]; // 3 Vélo de Route Pro, 7 Vélo de Ville Standard
@@ -188,9 +188,9 @@ const LigneAssemblageMixteSimulation = () => {
     
     // Calculer C_k (temps de cycle moyen du goulot)
     const N = 10; // Longueur de la séquence
-    // Temps total par produit : A = 53min (14+12+16+11), B = 39min (10+8+12+9)
-    // C_k = (39 * 7 + 53 * 3) / 10 = 43.2 minutes
-    const C_k = (39 * 7 + 53 * 3) / 10;
+    // Temps total par produit : A = 66min (18+16+20+12), B = 42min (12+10+12+8)
+    // C_k = (42 * 7 + 66 * 3) / 10 = 49.2 minutes
+    const C_k = (42 * 7 + 66 * 3) / 10;
     
     // Calculer les temps cumulés
     const cumulativeTimes = [];
@@ -455,48 +455,48 @@ const LigneAssemblageMixteSimulation = () => {
 
             {/* Graphique du temps cumulé au poste goulot */}
             {showGraph && (
-              <div className="lam-sequencage-graph-zone">
+              <div className="lam-sequencage-graph-zone" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                 <h4>Variation du temps cumulé au poste goulot</h4>
-                <div className="lam-sequencage-graph">
-                  <svg width="100%" height="300" style={{ background: 'white', borderRadius: '8px' }}>
+                <div className="lam-sequencage-graph" style={{ width: '90%', maxWidth: '900px', margin: '0 auto' }}>
+                  <svg width="100%" height="400" style={{ background: 'white', borderRadius: '8px', display: 'block', margin: '0 auto' }}>
                     {/* Axes */}
-                    <line x1="50" y1="280" x2="750" y2="280" stroke="#ccc" strokeWidth="1" />
-                    <line x1="50" y1="20" x2="50" y2="280" stroke="#ccc" strokeWidth="1" />
+                    <line x1="60" y1="380" x2="840" y2="380" stroke="#ccc" strokeWidth="2" />
+                    <line x1="60" y1="20" x2="60" y2="380" stroke="#ccc" strokeWidth="2" />
                     
                     {/* Points et lignes pour le temps cumulé */}
                     {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => {
-                      const x = 50 + (index * 70);
+                      const x = 60 + (index * 80);
                       const maxTime = Math.max(...results.cumulative_times);
-                      const y = 280 - ((cumulativeTime / maxTime) * 260);
+                      const y = 380 - ((cumulativeTime / maxTime) * 360);
                       
                       return (
                         <g key={index}>
                           {/* Ligne entre les points */}
                           {index > 0 && (
                             <line 
-                              x1={50 + ((index - 1) * 70)} 
-                              y1={280 - ((results.cumulative_times[index - 1] / maxTime) * 260)}
+                              x1={60 + ((index - 1) * 80)} 
+                              y1={380 - ((results.cumulative_times[index - 1] / maxTime) * 360)}
                               x2={x} 
                               y2={y} 
                               stroke="#3b82f6" 
-                              strokeWidth="3" 
+                              strokeWidth="4" 
                             />
                           )}
                           {/* Point */}
                           <circle 
                             cx={x} 
                             cy={y} 
-                            r="5" 
+                            r="6" 
                             fill={sequence[index] === 'A' ? '#3b82f6' : '#10b981'} 
                             stroke="white" 
                             strokeWidth="2"
                           />
                           {/* Label du produit */}
-                          <text x={x} y="295" textAnchor="middle" fontSize="12" fill="#666">
+                          <text x={x} y="395" textAnchor="middle" fontSize="14" fill="#666" fontWeight="bold">
                             {sequence[index]}
                           </text>
                           {/* Temps cumulé */}
-                          <text x={x} y={y - 15} textAnchor="middle" fontSize="10" fill="#666">
+                          <text x={x} y={y - 20} textAnchor="middle" fontSize="12" fill="#666" fontWeight="bold">
                             {cumulativeTime}min
                           </text>
                         </g>
@@ -505,29 +505,29 @@ const LigneAssemblageMixteSimulation = () => {
                     
                     {/* Ligne théorique idéale */}
                     {results.theoretical_ideal && results.theoretical_ideal.map((theoreticalTime, index) => {
-                      const x = 50 + (index * 70);
+                      const x = 60 + (index * 80);
                       const maxTime = Math.max(...results.cumulative_times);
-                      const y = 280 - ((theoreticalTime / maxTime) * 260);
+                      const y = 380 - ((theoreticalTime / maxTime) * 360);
                       
                       return (
                         <g key={`theoretical-${index}`}>
                           {/* Ligne entre les points théoriques */}
                           {index > 0 && (
                             <line 
-                              x1={50 + ((index - 1) * 70)} 
-                              y1={280 - ((results.theoretical_ideal[index - 1] / maxTime) * 260)}
+                              x1={60 + ((index - 1) * 80)} 
+                              y1={380 - ((results.theoretical_ideal[index - 1] / maxTime) * 360)}
                               x2={x} 
                               y2={y} 
                               stroke="#10b981" 
-                              strokeWidth="3" 
-                              strokeDasharray="8,5"
+                              strokeWidth="4" 
+                              strokeDasharray="10,6"
                             />
                           )}
                           {/* Point théorique */}
                           <circle 
                             cx={x} 
                             cy={y} 
-                            r="4" 
+                            r="5" 
                             fill="#10b981" 
                             stroke="white" 
                             strokeWidth="1"

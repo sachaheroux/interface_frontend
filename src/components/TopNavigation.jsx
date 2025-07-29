@@ -56,8 +56,8 @@ export default function TopNavigation({
   };
 
   const systems = [
-    { name: "Flowshop", icon: <Factory size={16} />, subtitle: "Production en flux" },
     { name: "Jobshop", icon: <Grid3x3 size={16} />, subtitle: "Ateliers flexibles" },
+    { name: "Flowshop", icon: <Factory size={16} />, subtitle: "Production en flux" },
     { name: "Ligne d'assemblage", icon: <GitBranch size={16} />, subtitle: "Assemblage séquentiel" },
     { name: "Ligne d'assemblage mixte", icon: <Network size={16} />, subtitle: "Assemblage multi-produits" },
     { name: "Ligne de transfert", icon: <CircleDot size={16} />, subtitle: "Production continue" },

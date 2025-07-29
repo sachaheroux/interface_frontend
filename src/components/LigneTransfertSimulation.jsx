@@ -28,41 +28,7 @@ const LigneTransfertSimulation = () => {
   const [targetPieces] = useState(100);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
 
-  // Surveiller quand on atteint l'objectif
-  useEffect(() => {
-    if (metrics.completedPieces >= targetPieces && isRunning) {
-      const completedResults = {
-        id: Date.now(),
-        completedPieces: metrics.completedPieces,
-        totalTime: simulationTime,
-        throughput: metrics.completedPieces / (simulationTime / 60),
-        avgWaitTime: simulationTime / metrics.completedPieces,
-        bufferSizes: [...bufferSizes],
-        timestamp: new Date().toLocaleTimeString()
-      };
-      setSimulationHistory(prev => [completedResults, ...prev]);
-      setIsRunning(false);
-      setSimulationTime(0);
-      setPieces([]);
-      setMetrics({
-        totalPieces: 0,
-        completedPieces: 0,
-        throughput: 0,
-        avgWaitTime: 0,
-        stationUtilization: [0, 0, 0, 0]
-      });
-      setStations(prev => prev.map(station => ({
-        ...station,
-        currentPiece: null,
-        isWorking: true,
-        processingTime: 0
-      })));
-      setBuffers(prev => prev.map(buffer => ({
-        ...buffer,
-        pieces: []
-      })));
-    }
-  }, [metrics.completedPieces, targetPieces, isRunning, simulationTime, bufferSizes]);
+
   const animationRef = useRef();
   const lastTimeRef = useRef(0);
 
@@ -271,9 +237,48 @@ const LigneTransfertSimulation = () => {
                   if (p.id === pieceId) {
                     if (stationIndex === 3) { // Dernier poste
                       p.completed = true;
+                      const newCompletedPieces = metrics.completedPieces + 1;
+                      console.log(`DEBUG: Pièce ${pieceId} terminée au poste ${stationIndex}, completedPieces va passer de ${metrics.completedPieces} à ${newCompletedPieces}`);
+                      
+                      // Vérifier immédiatement si on a atteint l'objectif
+                      if (newCompletedPieces >= targetPieces) {
+                        console.log('DEBUG: Objectif atteint dans simulateStep!');
+                        const completedResults = {
+                          id: Date.now(),
+                          completedPieces: newCompletedPieces,
+                          totalTime: simulationTime,
+                          throughput: newCompletedPieces / (simulationTime / 60),
+                          avgWaitTime: simulationTime / newCompletedPieces,
+                          bufferSizes: [...bufferSizes],
+                          timestamp: new Date().toLocaleTimeString()
+                        };
+                        setSimulationHistory(prev => [completedResults, ...prev]);
+                        setIsRunning(false);
+                        setSimulationTime(0);
+                        setPieces([]);
+                        setMetrics({
+                          totalPieces: 0,
+                          completedPieces: 0,
+                          throughput: 0,
+                          avgWaitTime: 0,
+                          stationUtilization: [0, 0, 0, 0]
+                        });
+                        setStations(prev => prev.map(station => ({
+                          ...station,
+                          currentPiece: null,
+                          isWorking: true,
+                          processingTime: 0
+                        })));
+                        setBuffers(prev => prev.map(buffer => ({
+                          ...buffer,
+                          pieces: []
+                        })));
+                        return; // Arrêter l'exécution de cette frame
+                      }
+                      
                       setMetrics(prev => ({
                         ...prev,
-                        completedPieces: prev.completedPieces + 1
+                        completedPieces: newCompletedPieces
                       }));
                     } else {
                       // Passer au buffer suivant ou au poste suivant

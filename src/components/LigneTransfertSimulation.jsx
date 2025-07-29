@@ -30,6 +30,27 @@ const LigneTransfertSimulation = () => {
 
   const animationRef = useRef();
   const lastTimeRef = useRef(0);
+  const piecesRef = useRef(pieces);
+  const stationsRef = useRef(stations);
+  const buffersRef = useRef(buffers);
+  const metricsRef = useRef(metrics);
+
+  // Maintenir les refs à jour
+  useEffect(() => {
+    piecesRef.current = pieces;
+  }, [pieces]);
+
+  useEffect(() => {
+    stationsRef.current = stations;
+  }, [stations]);
+
+  useEffect(() => {
+    buffersRef.current = buffers;
+  }, [buffers]);
+
+  useEffect(() => {
+    metricsRef.current = metrics;
+  }, [metrics]);
 
 
 
@@ -45,14 +66,17 @@ const LigneTransfertSimulation = () => {
   const simulateStep = (deltaTime) => {
     if (!isRunning) return;
     
-    // Vérification de sécurité supplémentaire (mais permettre la génération initiale)
-    if (!pieces) return;
+    // Mettre à jour les refs avec les valeurs actuelles
+    piecesRef.current = pieces;
+    stationsRef.current = stations;
+    buffersRef.current = buffers;
+    metricsRef.current = metrics;
 
     // Incrémenter le temps seulement si la simulation est en cours
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
     // Générer de nouvelles pièces
-    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && pieces.length < 20 && isRunning) {
+    if (Math.random() < 0.05 && metricsRef.current.completedPieces < targetPieces && piecesRef.current.length < 20 && isRunning) {
       const newPiece = {
         id: Date.now() + Math.random(),
         position: 0,
@@ -353,7 +377,7 @@ const LigneTransfertSimulation = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isRunning]); // Seulement isRunning comme dépendance
+  }, [isRunning, simulationSpeed]); // Ajouter simulationSpeed pour la vitesse
 
   const startSimulation = () => {
     // Si la simulation est déjà en cours, ne rien faire

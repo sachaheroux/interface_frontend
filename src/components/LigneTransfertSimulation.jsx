@@ -322,6 +322,8 @@ const LigneTransfertSimulation = () => {
   // Animation loop
   useEffect(() => {
     const animate = (currentTime) => {
+      if (!isRunning) return; // Arrêter immédiatement si pas en cours
+      
       if (lastTimeRef.current === 0) {
         lastTimeRef.current = currentTime;
       }
@@ -351,7 +353,7 @@ const LigneTransfertSimulation = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isRunning, pieces, stations]);
+  }, [isRunning]); // Seulement isRunning comme dépendance
 
   const startSimulation = () => {
     // Si la simulation est déjà en cours, ne rien faire

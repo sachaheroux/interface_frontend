@@ -24,7 +24,6 @@ const LigneTransfertSimulation = () => {
     avgWaitTime: 0,
     stationUtilization: [0, 0, 0, 0]
   });
-  const [simulationHistory, setSimulationHistory] = useState([]);
   const [targetPieces] = useState(100);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
 
@@ -54,10 +53,7 @@ const LigneTransfertSimulation = () => {
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
     // Générer de nouvelles pièces
-    const activePieces = pieces.filter(p => !p.completed).length;
-    const totalPiecesCreated = pieces.length;
-    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && totalPiecesCreated < targetPieces && isRunning) {
-      console.log(`DEBUG: Génération pièce - completedPieces=${metrics.completedPieces}, activePieces=${activePieces}, totalPieces=${pieces.length}, target=${targetPieces}`);
+    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && pieces.length < 20 && isRunning) {
       const newPiece = {
         id: Date.now() + Math.random(),
         position: 0,
@@ -68,8 +64,6 @@ const LigneTransfertSimulation = () => {
         currentStation: 0
       };
       setPieces(prev => [...prev, newPiece]);
-    } else if (Math.random() < 0.05 && isRunning) {
-      console.log(`DEBUG: Génération bloquée - completedPieces=${metrics.completedPieces}, totalPieces=${totalPiecesCreated}, target=${targetPieces}`);
     }
 
     // Mettre à jour les pièces
@@ -248,31 +242,11 @@ const LigneTransfertSimulation = () => {
                     currentPieces.map(p => {
                       if (!p) return p;
                       if (p && p.id === pieceId) {
-                        if (stationIndex === 3) { // Dernier poste
-                      p.completed = true;
-                      const newCompletedPieces = metrics.completedPieces + 1;
-                      console.log(`DEBUG: Pièce ${pieceId} terminée au poste ${stationIndex}, completedPieces va passer de ${metrics.completedPieces} à ${newCompletedPieces}`);
-                      
-                      // Vérifier immédiatement si on a atteint l'objectif
-                      if (newCompletedPieces >= targetPieces) {
-                        console.log('DEBUG: Objectif atteint dans simulateStep!');
-                        const completedResults = {
-                          id: Date.now(),
-                          completedPieces: newCompletedPieces,
-                          totalTime: simulationTime,
-                          throughput: newCompletedPieces / (simulationTime / 60),
-                          avgWaitTime: simulationTime / newCompletedPieces,
-                          bufferSizes: [...bufferSizes],
-                          timestamp: new Date().toLocaleTimeString()
-                        };
-                        setSimulationHistory(prev => [completedResults, ...prev]);
-                        setIsRunning(false);
-                        return; // Arrêter l'exécution de cette frame
-                      }
-                      
-                                                setMetrics(prev => ({
+                                                if (stationIndex === 3) { // Dernier poste
+                          p.completed = true;
+                          setMetrics(prev => ({
                             ...prev,
-                            completedPieces: newCompletedPieces
+                            completedPieces: prev.completedPieces + 1
                           }));
                     } else {
                       // Passer au buffer suivant ou au poste suivant
@@ -332,6 +306,9 @@ const LigneTransfertSimulation = () => {
       throughput: simulationTime > 0 ? prev.completedPieces / (simulationTime / 60) : 0,
       avgWaitTime: prev.completedPieces > 0 ? simulationTime / prev.completedPieces : 0
     }));
+
+    // Nettoyer les pièces terminées pour éviter l'accumulation
+    setPieces(prevPieces => prevPieces.filter(piece => !piece.completed));
   };
 
   // Animation loop
@@ -359,10 +336,7 @@ const LigneTransfertSimulation = () => {
   }, [isRunning, pieces, stations]);
 
   const startSimulation = () => {
-    // Arrêter d'abord si en cours
-    setIsRunning(false);
-    
-    // Réinitialiser complètement
+    setIsRunning(true);
     setSimulationTime(0);
     setPieces([]);
     setMetrics({
@@ -372,21 +346,6 @@ const LigneTransfertSimulation = () => {
       avgWaitTime: 0,
       stationUtilization: [0, 0, 0, 0]
     });
-    setStations(prev => prev.map(station => ({
-      ...station,
-      currentPiece: null,
-      isWorking: true,
-      processingTime: 0
-    })));
-    setBuffers(prev => prev.map(buffer => ({
-      ...buffer,
-      pieces: []
-    })));
-    
-    // Démarrer après un court délai pour laisser le temps aux états de se stabiliser
-    setTimeout(() => {
-      setIsRunning(true);
-    }, 50);
   };
 
   const stopSimulation = () => {
@@ -629,45 +588,6 @@ const LigneTransfertSimulation = () => {
             </div>
           </div>
         </div>
-        
-        {/* Historique des simulations */}
-        {simulationHistory.length > 0 && (
-          <div className="lt-simulation-history">
-            <h4>Historique des simulations ({simulationHistory.length}) :</h4>
-            <div className="lt-history-list">
-              {simulationHistory.map((result, index) => (
-                <div key={result.id} className="lt-history-item">
-                  <div className="lt-history-header">
-                    <span className="lt-history-number">#{simulationHistory.length - index}</span>
-                    <span className="lt-history-time">{result.timestamp}</span>
-                  </div>
-                  <div className="lt-history-metrics">
-                    <div className="lt-history-metric">
-                      <span>Pièces :</span>
-                      <strong>{result.completedPieces}/100</strong>
-                    </div>
-                    <div className="lt-history-metric">
-                      <span>Temps :</span>
-                      <strong>{Math.floor(result.totalTime)}s</strong>
-                    </div>
-                    <div className="lt-history-metric">
-                      <span>Débit :</span>
-                      <strong>{result.throughput.toFixed(2)}/min</strong>
-                    </div>
-                    <div className="lt-history-metric">
-                      <span>Attente :</span>
-                      <strong>{result.avgWaitTime.toFixed(1)}s</strong>
-                    </div>
-                    <div className="lt-history-metric">
-                      <span>Buffers :</span>
-                      <strong>[{result.bufferSizes.join(', ')}]</strong>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Configuration des postes */}

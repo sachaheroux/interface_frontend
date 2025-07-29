@@ -345,7 +345,10 @@ const LigneTransfertSimulation = () => {
   }, [isRunning, pieces, stations]);
 
   const startSimulation = () => {
-    setIsRunning(true);
+    // Arrêter d'abord si en cours
+    setIsRunning(false);
+    
+    // Réinitialiser complètement
     setSimulationTime(0);
     setPieces([]);
     setMetrics({
@@ -355,6 +358,21 @@ const LigneTransfertSimulation = () => {
       avgWaitTime: 0,
       stationUtilization: [0, 0, 0, 0]
     });
+    setStations(prev => prev.map(station => ({
+      ...station,
+      currentPiece: null,
+      isWorking: true,
+      processingTime: 0
+    })));
+    setBuffers(prev => prev.map(buffer => ({
+      ...buffer,
+      pieces: []
+    })));
+    
+    // Démarrer après un court délai pour laisser le temps aux états de se stabiliser
+    setTimeout(() => {
+      setIsRunning(true);
+    }, 50);
   };
 
   const stopSimulation = () => {

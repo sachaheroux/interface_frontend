@@ -84,15 +84,51 @@ const LigneTransfertSimulation = () => {
         // Gestion des pannes
         if (Math.random() < station.failureRate * deltaTime) {
           station.isWorking = false;
-          setTimeout(() => {
-            setStations(current => 
-              current.map(s => s.id === station.id ? { ...s, isWorking: true } : s)
-            );
-          }, station.failureDuration); // Durée de panne spécifique au poste
+          station.failureStartTime = simulationTime;
+          station.failureEndTime = simulationTime + (station.failureDuration / 1000);
+        }
+
+        // Vérifier si une panne doit se terminer
+        if (!station.isWorking && station.failureEndTime && simulationTime >= station.failureEndTime) {
+          station.isWorking = true;
+          station.failureStartTime = null;
+          station.failureEndTime = null;
         }
 
         // Traitement des pièces
         if (station.isWorking) {
+          // Vérifier si une pièce terminée peut être transférée (buffer libéré)
+          if (station.currentPiece && station.processingTime >= station.speed) {
+            const pieceId = station.currentPiece;
+            const piece = pieces.find(p => p.id === pieceId);
+            if (piece && stationIndex < 3) {
+              const nextBufferIndex = stationIndex;
+              const buffer = buffers[nextBufferIndex];
+              
+              if (buffer.pieces.length < buffer.maxSize) {
+                // Buffer libéré, transférer la pièce
+                setBuffers(prevBuffers => {
+                  const newBuffers = [...prevBuffers];
+                  newBuffers[nextBufferIndex].pieces.push(pieceId);
+                  return newBuffers;
+                });
+                setPieces(prevPieces => 
+                  prevPieces.map(p => {
+                    if (p.id === pieceId) {
+                      p.currentStation = stationIndex + 1;
+                      p.position = stationIndex + 0.5;
+                      p.targetPosition = stationIndex + 1;
+                      p.inStation = false;
+                    }
+                    return p;
+                  })
+                );
+                station.currentPiece = null;
+                station.processingTime = 0;
+              }
+            }
+          }
+          
           // Chercher une pièce disponible pour ce poste
           if (!station.currentPiece) {
             // D'abord chercher dans le buffer précédent
@@ -175,17 +211,25 @@ const LigneTransfertSimulation = () => {
                         p.position = stationIndex + 0.5;
                         p.targetPosition = stationIndex + 1;
                         p.inStation = false;
+                        // Libérer le poste pour la prochaine pièce
+                        station.currentPiece = null;
+                        station.processingTime = 0;
                       } else {
-                        // Buffer plein, rester au poste actuel
+                        // Buffer plein, garder la pièce au poste et maintenir le pourcentage à 100%
                         p.inStation = true;
+                        station.processingTime = station.speed; // Maintenir à 100%
                       }
                     }
                   }
                   return p;
                 })
               );
-              station.currentPiece = null;
-              station.processingTime = 0;
+              
+              // Ne libérer le poste que si la pièce a été transférée
+              if (stationIndex === 3 || buffers[stationIndex].pieces.length < buffers[stationIndex].maxSize) {
+                station.currentPiece = null;
+                station.processingTime = 0;
+              }
             }
           }
         }
@@ -391,6 +435,11 @@ const LigneTransfertSimulation = () => {
               {station.processingTime > 0 && (
                 <div className="lt-processing-indicator">
                   {Math.round((station.processingTime / station.speed) * 100)}%
+                </div>
+              )}
+              {!station.isWorking && station.failureEndTime && (
+                <div className="lt-failure-indicator">
+                  {Math.round(((station.failureEndTime - simulationTime) / (station.failureDuration / 1000)) * 100)}%
                 </div>
               )}
             </div>

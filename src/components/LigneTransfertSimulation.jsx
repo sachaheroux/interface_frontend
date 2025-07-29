@@ -57,7 +57,7 @@ const LigneTransfertSimulation = () => {
     const activePieces = pieces.filter(p => !p.completed).length;
     const totalPiecesCreated = pieces.length;
     if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && totalPiecesCreated < targetPieces && isRunning) {
-      console.log(`DEBUG: Génération pièce - completedPieces=${metrics.completedPieces}, activePieces=${activePieces}, totalPieces=${pieces.length}`);
+      console.log(`DEBUG: Génération pièce - completedPieces=${metrics.completedPieces}, activePieces=${activePieces}, totalPieces=${pieces.length}, target=${targetPieces}`);
       const newPiece = {
         id: Date.now() + Math.random(),
         position: 0,
@@ -68,6 +68,8 @@ const LigneTransfertSimulation = () => {
         currentStation: 0
       };
       setPieces(prev => [...prev, newPiece]);
+    } else if (Math.random() < 0.05 && isRunning) {
+      console.log(`DEBUG: Génération bloquée - completedPieces=${metrics.completedPieces}, totalPieces=${totalPiecesCreated}, target=${targetPieces}`);
     }
 
     // Mettre à jour les pièces
@@ -323,15 +325,13 @@ const LigneTransfertSimulation = () => {
       });
     });
 
-    // Mettre à jour les métriques (seulement si on n'a pas déjà mis à jour completedPieces)
-    if (metrics.completedPieces < targetPieces) {
-      setMetrics(prev => ({
-        ...prev,
-        totalPieces: pieces.length,
-        throughput: simulationTime > 0 ? prev.completedPieces / (simulationTime / 60) : 0,
-        avgWaitTime: prev.completedPieces > 0 ? simulationTime / prev.completedPieces : 0
-      }));
-    }
+    // Mettre à jour les métriques
+    setMetrics(prev => ({
+      ...prev,
+      totalPieces: pieces.length,
+      throughput: simulationTime > 0 ? prev.completedPieces / (simulationTime / 60) : 0,
+      avgWaitTime: prev.completedPieces > 0 ? simulationTime / prev.completedPieces : 0
+    }));
   };
 
   // Animation loop

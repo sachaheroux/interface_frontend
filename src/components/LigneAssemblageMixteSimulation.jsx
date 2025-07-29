@@ -184,7 +184,7 @@ const LigneAssemblageMixteSimulation = () => {
       };
 
       // Appeler l'algorithme backend
-      const response = await fetch('/api/goulot-variation', {
+      const response = await fetch('http://localhost:8000/goulot-variation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -426,9 +426,10 @@ const LigneAssemblageMixteSimulation = () => {
                     <line x1="50" y1="20" x2="50" y2="180" stroke="#ccc" strokeWidth="1" />
                     
                     {/* Points et lignes pour le temps cumulé */}
-                    {results.cumulativeTimes.map((point, index) => {
+                    {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => {
                       const x = 50 + (index * 70);
-                      const y = 180 - ((point.cumulativeTime / Math.max(...results.cumulativeTimes.map(p => p.cumulativeTime))) * 160);
+                      const maxTime = Math.max(...results.cumulative_times);
+                      const y = 180 - ((cumulativeTime / maxTime) * 160);
                       
                       return (
                         <g key={index}>
@@ -436,7 +437,7 @@ const LigneAssemblageMixteSimulation = () => {
                           {index > 0 && (
                             <line 
                               x1={50 + ((index - 1) * 70)} 
-                              y1={180 - ((results.cumulativeTimes[index - 1].cumulativeTime / Math.max(...results.cumulativeTimes.map(p => p.cumulativeTime))) * 160)}
+                              y1={180 - ((results.cumulative_times[index - 1] / maxTime) * 160)}
                               x2={x} 
                               y2={y} 
                               stroke="#3b82f6" 
@@ -448,18 +449,51 @@ const LigneAssemblageMixteSimulation = () => {
                             cx={x} 
                             cy={y} 
                             r="4" 
-                            fill={point.product === 'A' ? '#3b82f6' : '#10b981'} 
+                            fill={sequence[index] === 'A' ? '#3b82f6' : '#10b981'} 
                             stroke="white" 
                             strokeWidth="2"
                           />
                           {/* Label du produit */}
                           <text x={x} y="195" textAnchor="middle" fontSize="10" fill="#666">
-                            {point.product}
+                            {sequence[index]}
                           </text>
                           {/* Temps cumulé */}
                           <text x={x} y={y - 10} textAnchor="middle" fontSize="8" fill="#666">
-                            {point.cumulativeTime}min
+                            {cumulativeTime}min
                           </text>
+                        </g>
+                      );
+                    })}
+                    
+                    {/* Ligne théorique idéale */}
+                    {results.theoretical_ideal && results.theoretical_ideal.map((theoreticalTime, index) => {
+                      const x = 50 + (index * 70);
+                      const maxTime = Math.max(...results.cumulative_times);
+                      const y = 180 - ((theoreticalTime / maxTime) * 160);
+                      
+                      return (
+                        <g key={`theoretical-${index}`}>
+                          {/* Ligne entre les points théoriques */}
+                          {index > 0 && (
+                            <line 
+                              x1={50 + ((index - 1) * 70)} 
+                              y1={180 - ((results.theoretical_ideal[index - 1] / maxTime) * 160)}
+                              x2={x} 
+                              y2={y} 
+                              stroke="#10b981" 
+                              strokeWidth="2" 
+                              strokeDasharray="5,5"
+                            />
+                          )}
+                          {/* Point théorique */}
+                          <circle 
+                            cx={x} 
+                            cy={y} 
+                            r="3" 
+                            fill="#10b981" 
+                            stroke="white" 
+                            strokeWidth="1"
+                          />
                         </g>
                       );
                     })}
@@ -473,6 +507,10 @@ const LigneAssemblageMixteSimulation = () => {
                   <div className="lam-sequencage-graph-legend-item">
                     <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#10b981' }}></div>
                     <span>Vélo de Ville Standard</span>
+                  </div>
+                  <div className="lam-sequencage-graph-legend-item">
+                    <div className="lam-sequencage-graph-legend-color" style={{ backgroundColor: '#10b981', border: '2px dashed #10b981' }}></div>
+                    <span>Temps théorique idéal</span>
                   </div>
                 </div>
               </div>

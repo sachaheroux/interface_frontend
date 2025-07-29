@@ -32,6 +32,35 @@ const LigneTransfertSimulation = () => {
   const animationRef = useRef();
   const lastTimeRef = useRef(0);
 
+  // Réinitialiser quand la simulation s'arrête
+  useEffect(() => {
+    if (!isRunning) {
+      // Réinitialiser après un court délai pour laisser le temps aux états de se stabiliser
+      const timer = setTimeout(() => {
+        setSimulationTime(0);
+        setPieces([]);
+        setMetrics({
+          totalPieces: 0,
+          completedPieces: 0,
+          throughput: 0,
+          avgWaitTime: 0,
+          stationUtilization: [0, 0, 0, 0]
+        });
+        setStations(prev => prev.map(station => ({
+          ...station,
+          currentPiece: null,
+          isWorking: true,
+          processingTime: 0
+        })));
+        setBuffers(prev => prev.map(buffer => ({
+          ...buffer,
+          pieces: []
+        })));
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isRunning]);
+
   // Configuration des postes
   const stationConfig = [
     { name: 'Découpe', speed: 1.8, failureRate: 0.02, failureDuration: 3000, color: '#3b82f6' },
@@ -65,7 +94,7 @@ const LigneTransfertSimulation = () => {
     // Mettre à jour les pièces
     setPieces(prevPieces => {
       return prevPieces.map(piece => {
-        if (piece.completed) return piece;
+        if (!piece || piece.completed) return piece;
 
         // Déplacer la pièce vers le prochain poste
         if (!piece.inStation) {
@@ -216,7 +245,7 @@ const LigneTransfertSimulation = () => {
               // Si toujours pas de pièce, chercher une pièce directe
               if (!station.currentPiece) {
                 const availablePiece = pieces.find(p => 
-                  p.currentStation === stationIndex && 
+                  p && p.currentStation === stationIndex && 
                   p.inStation && 
                   !p.completed
                 );
@@ -228,15 +257,16 @@ const LigneTransfertSimulation = () => {
             }
           }
 
-          // Traiter la pièce en cours
-          if (station.currentPiece && station.isWorking) {
-            station.processingTime = (station.processingTime || 0) + deltaTime * simulationSpeed;
-            if (station.processingTime >= station.speed) {
-              // Pièce terminée à ce poste
-              const pieceId = station.currentPiece;
-              setPieces(currentPieces => 
-                currentPieces.map(p => {
-                  if (p.id === pieceId) {
+                        // Traiter la pièce en cours
+              if (station.currentPiece && station.isWorking) {
+                station.processingTime = (station.processingTime || 0) + deltaTime * simulationSpeed;
+                if (station.processingTime >= station.speed) {
+                  // Pièce terminée à ce poste
+                  const pieceId = station.currentPiece;
+                  setPieces(currentPieces => 
+                    currentPieces.map(p => {
+                      if (!p) return p;
+                      if (p.id === pieceId) {
                     if (stationIndex === 3) { // Dernier poste
                       p.completed = true;
                       const newCompletedPieces = metrics.completedPieces + 1;
@@ -256,25 +286,7 @@ const LigneTransfertSimulation = () => {
                         };
                         setSimulationHistory(prev => [completedResults, ...prev]);
                         setIsRunning(false);
-                        setSimulationTime(0);
-                        setPieces([]);
-                        setMetrics({
-                          totalPieces: 0,
-                          completedPieces: 0,
-                          throughput: 0,
-                          avgWaitTime: 0,
-                          stationUtilization: [0, 0, 0, 0]
-                        });
-                        setStations(prev => prev.map(station => ({
-                          ...station,
-                          currentPiece: null,
-                          isWorking: true,
-                          processingTime: 0
-                        })));
-                        setBuffers(prev => prev.map(buffer => ({
-                          ...buffer,
-                          pieces: []
-                        })));
+                        // Ne pas réinitialiser immédiatement, laisser la simulation s'arrêter proprement
                         return; // Arrêter l'exécution de cette frame
                       }
                       

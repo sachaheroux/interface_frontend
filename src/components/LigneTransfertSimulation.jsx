@@ -338,6 +338,7 @@ const LigneTransfertSimulation = () => {
                 max="20"
                 value={size}
                 onChange={(e) => updateBufferSize(index, parseInt(e.target.value))}
+                disabled={isRunning}
               />
               <span>{size} pièces</span>
             </div>

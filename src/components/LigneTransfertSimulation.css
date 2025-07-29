@@ -172,6 +172,21 @@
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
+.lt-buffer-control input[type="range"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lt-buffer-control input[type="range"]:disabled::-webkit-slider-thumb {
+  background: #9ca3af;
+  box-shadow: 0 2px 8px rgba(156, 163, 175, 0.3);
+}
+
+.lt-buffer-control input[type="range"]:disabled::-moz-range-thumb {
+  background: #9ca3af;
+  box-shadow: 0 2px 8px rgba(156, 163, 175, 0.3);
+}
+
 .lt-buffer-control span {
   font-weight: 600;
   color: #3b82f6;

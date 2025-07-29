@@ -342,7 +342,7 @@ const LigneTransfertSimulation = () => {
         <div className="lt-production-line">
           {/* Postes de travail */}
           {stations.map((station, index) => (
-            <div key={station.id} className="lt-station">
+            <div key={station.id} className={`lt-station lt-station-${index + 1}`}>
               <div className={`lt-station-icon ${!station.isWorking ? 'lt-station-failed' : ''}`}>
                 {station.isWorking ? '⚙️' : '🔴'}
               </div>
@@ -364,7 +364,7 @@ const LigneTransfertSimulation = () => {
 
           {/* Buffers */}
           {buffers.map((buffer, index) => (
-            <div key={buffer.id} className="lt-buffer">
+            <div key={buffer.id} className={`lt-buffer lt-buffer-${index + 1}`}>
               <div className="lt-buffer-label">Buffer {index + 1}</div>
               <div className="lt-buffer-content">
                 {buffer.pieces.map((pieceId, pieceIndex) => {

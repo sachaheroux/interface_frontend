@@ -217,10 +217,10 @@
   transition: all 0.3s ease;
 }
 
-.lt-station:nth-child(1) { left: 10%; }
-.lt-station:nth-child(2) { left: 35%; }
-.lt-station:nth-child(3) { left: 60%; }
-.lt-station:nth-child(4) { left: 85%; }
+.lt-station-1 { left: 10%; }
+.lt-station-2 { left: 35%; }
+.lt-station-3 { left: 60%; }
+.lt-station-4 { left: 85%; }
 
 .lt-station:hover {
   transform: translateY(-50%) scale(1.05);
@@ -280,9 +280,9 @@
   transition: all 0.3s ease;
 }
 
-.lt-buffer:nth-child(1) { left: 22%; }
-.lt-buffer:nth-child(2) { left: 47%; }
-.lt-buffer:nth-child(3) { left: 72%; }
+.lt-buffer-1 { left: 22%; }
+.lt-buffer-2 { left: 47%; }
+.lt-buffer-3 { left: 72%; }
 
 .lt-buffer:hover {
   transform: translateY(-50%) scale(1.05);

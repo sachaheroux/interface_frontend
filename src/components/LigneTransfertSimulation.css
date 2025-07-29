@@ -217,6 +217,11 @@
   transition: all 0.3s ease;
 }
 
+.lt-station:nth-child(1) { left: 10%; }
+.lt-station:nth-child(2) { left: 35%; }
+.lt-station:nth-child(3) { left: 60%; }
+.lt-station:nth-child(4) { left: 85%; }
+
 .lt-station:hover {
   transform: translateY(-50%) scale(1.05);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
@@ -275,6 +280,10 @@
   transition: all 0.3s ease;
 }
 
+.lt-buffer:nth-child(1) { left: 22%; }
+.lt-buffer:nth-child(2) { left: 47%; }
+.lt-buffer:nth-child(3) { left: 72%; }
+
 .lt-buffer:hover {
   transform: translateY(-50%) scale(1.05);
   box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
@@ -313,13 +322,7 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  animation: movePiece 2s linear infinite;
-}
-
-@keyframes movePiece {
-  0% { transform: translateY(-50%) scale(1); }
-  50% { transform: translateY(-50%) scale(1.1); }
-  100% { transform: translateY(-50%) scale(1); }
+  transition: left 0.5s ease;
 }
 
 .lt-piece-in-station {

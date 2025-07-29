@@ -63,7 +63,7 @@ const LigneTransfertSimulation = () => {
 
         // Déplacer la pièce vers le prochain poste
         if (!piece.inStation) {
-          const newPosition = piece.position + 0.01;
+          const newPosition = piece.position + 0.005;
           if (newPosition >= piece.targetPosition) {
             piece.position = piece.targetPosition;
             piece.inStation = true;
@@ -94,14 +94,47 @@ const LigneTransfertSimulation = () => {
         if (station.isWorking) {
           // Chercher une pièce disponible pour ce poste
           if (!station.currentPiece) {
-            const availablePiece = pieces.find(p => 
-              p.currentStation === stationIndex && 
-              p.inStation && 
-              !p.completed
-            );
-            if (availablePiece) {
-              station.currentPiece = availablePiece.id;
-              station.processingTime = 0;
+            // D'abord chercher dans le buffer précédent
+            if (stationIndex > 0) {
+              const prevBuffer = buffers[stationIndex - 1];
+              if (prevBuffer.pieces.length > 0) {
+                const pieceId = prevBuffer.pieces[0];
+                const piece = pieces.find(p => p.id === pieceId);
+                if (piece) {
+                  // Retirer du buffer et assigner au poste
+                  setBuffers(prevBuffers => {
+                    const newBuffers = [...prevBuffers];
+                    newBuffers[stationIndex - 1].pieces.shift();
+                    return newBuffers;
+                  });
+                  setPieces(prevPieces => 
+                    prevPieces.map(p => {
+                      if (p.id === pieceId) {
+                        p.currentStation = stationIndex;
+                        p.position = stationIndex;
+                        p.targetPosition = stationIndex;
+                        p.inStation = true;
+                      }
+                      return p;
+                    })
+                  );
+                  station.currentPiece = pieceId;
+                  station.processingTime = 0;
+                }
+              }
+            }
+            
+            // Si pas de pièce dans le buffer, chercher une pièce directe
+            if (!station.currentPiece) {
+              const availablePiece = pieces.find(p => 
+                p.currentStation === stationIndex && 
+                p.inStation && 
+                !p.completed
+              );
+              if (availablePiece) {
+                station.currentPiece = availablePiece.id;
+                station.processingTime = 0;
+              }
             }
           }
 
@@ -121,11 +154,25 @@ const LigneTransfertSimulation = () => {
                         completedPieces: prev.completedPieces + 1
                       }));
                     } else {
-                      // Passer au poste suivant
-                      p.currentStation = stationIndex + 1;
-                      p.position = stationIndex + 0.5;
-                      p.targetPosition = stationIndex + 1;
-                      p.inStation = false;
+                      // Passer au buffer suivant ou au poste suivant
+                      const nextBufferIndex = stationIndex;
+                      const buffer = buffers[nextBufferIndex];
+                      
+                      if (buffer.pieces.length < buffer.maxSize) {
+                        // Ajouter au buffer
+                        setBuffers(prevBuffers => {
+                          const newBuffers = [...prevBuffers];
+                          newBuffers[nextBufferIndex].pieces.push(p.id);
+                          return newBuffers;
+                        });
+                        p.currentStation = stationIndex + 1;
+                        p.position = stationIndex + 0.5;
+                        p.targetPosition = stationIndex + 1;
+                        p.inStation = false;
+                      } else {
+                        // Buffer plein, rester au poste actuel
+                        p.inStation = true;
+                      }
                     }
                   }
                   return p;
@@ -295,7 +342,7 @@ const LigneTransfertSimulation = () => {
         <div className="lt-production-line">
           {/* Postes de travail */}
           {stations.map((station, index) => (
-            <div key={station.id} className="lt-station" style={{ left: `${index * 25}%` }}>
+            <div key={station.id} className="lt-station">
               <div className={`lt-station-icon ${!station.isWorking ? 'lt-station-failed' : ''}`}>
                 {station.isWorking ? '⚙️' : '🔴'}
               </div>
@@ -317,12 +364,15 @@ const LigneTransfertSimulation = () => {
 
           {/* Buffers */}
           {buffers.map((buffer, index) => (
-            <div key={buffer.id} className="lt-buffer" style={{ left: `${(index + 1) * 25 - 12.5}%` }}>
+            <div key={buffer.id} className="lt-buffer">
               <div className="lt-buffer-label">Buffer {index + 1}</div>
               <div className="lt-buffer-content">
-                {buffer.pieces.map((piece, pieceIndex) => (
-                  <div key={pieceIndex} className="lt-piece">📦</div>
-                ))}
+                {buffer.pieces.map((pieceId, pieceIndex) => {
+                  const piece = pieces.find(p => p.id === pieceId);
+                  return piece ? (
+                    <div key={pieceIndex} className="lt-piece">📦</div>
+                  ) : null;
+                })}
               </div>
               <div className="lt-buffer-info">
                 {buffer.pieces.length}/{buffer.maxSize}

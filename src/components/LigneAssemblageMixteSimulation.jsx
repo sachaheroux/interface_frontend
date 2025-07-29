@@ -153,7 +153,7 @@ const LigneAssemblageMixteSimulation = () => {
   };
 
   // Évaluer la séquence
-  const evaluateSequence = async () => {
+  const evaluateSequence = () => {
     if (sequence.length !== 10) {
       alert('La séquence doit contenir exactement 10 produits pour être évaluée.');
       return;
@@ -168,41 +168,72 @@ const LigneAssemblageMixteSimulation = () => {
       return;
     }
 
-    try {
-      // Préparer les données pour l'algorithme backend
-      const taskTimes = [
-        [14, 10], // Montage roue avant: A=14, B=10
-        [12, 8],  // Installation freins: A=12, B=8
-        [16, 12], // Réglage dérailleur: A=16, B=12
-        [11, 9]   // Test transmission: A=11, B=9
-      ];
+    // Calculer les métriques directement dans le frontend
+    const taskTimes = [
+      [14, 10], // Montage roue avant: A=14, B=10
+      [12, 8],  // Installation freins: A=12, B=8
+      [16, 12], // Réglage dérailleur: A=16, B=12
+      [11, 9]   // Test transmission: A=11, B=9
+    ];
 
-      const requestData = {
-        sequence: sequence,
-        models_demand: [3, 7], // 3 Vélo de Route Pro, 7 Vélo de Ville Standard
-        task_times: taskTimes
-      };
-
-      // Appeler l'algorithme backend
-      const response = await fetch('http://localhost:8000/goulot-variation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de l\'évaluation de la séquence');
-      }
-
-      const result = await response.json();
-      setResults(result);
-      setShowGraph(true);
-    } catch (error) {
-      console.error('Erreur:', error);
-      alert('Erreur lors de l\'évaluation de la séquence: ' + error.message);
+    const modelsDemand = [3, 7]; // 3 Vélo de Route Pro, 7 Vélo de Ville Standard
+    
+    // Convertir la séquence de lettres (A, B) en indices (1, 2)
+    const sequenceIndices = sequence.map(product => product === 'A' ? 1 : 2);
+    
+    // Calculer C_k (temps de cycle moyen du goulot)
+    const N = 10; // Longueur de la séquence
+    const C_k = (3 * (14 + 12 + 16 + 11) + 7 * (10 + 8 + 12 + 9)) / N;
+    
+    // Calculer les temps cumulés
+    const cumulativeTimes = [];
+    let cumulativeTime = 0;
+    for (const model of sequenceIndices) {
+      const modelIdx = model - 1;
+      const taskTime = taskTimes.reduce((sum, task) => sum + task[modelIdx], 0);
+      cumulativeTime += taskTime;
+      cumulativeTimes.push(cumulativeTime);
     }
+    
+    // Temps théorique idéal
+    const theoreticalIdeal = Array.from({length: N}, (_, i) => C_k * (i + 1));
+    
+    // Calculer les déviations
+    const deviations = cumulativeTimes.map((cumulative, i) => Math.abs(cumulative - theoreticalIdeal[i]));
+    const maxVariation = Math.max(...deviations);
+    const avgDeviation = deviations.reduce((sum, dev) => sum + dev, 0) / deviations.length;
+    
+    // Compter les modèles
+    const modelCounts = {
+      1: sequenceIndices.filter(m => m === 1).length,
+      2: sequenceIndices.filter(m => m === 2).length
+    };
+    
+    // Créer les métriques
+    const metrics = {
+      nombre_total_unites: N,
+      repartition_modeles: [3, 7],
+      demandes_modeles: modelsDemand,
+      sequence_longueur: N,
+      variation_maximale: Math.round(maxVariation * 1000) / 1000,
+      temps_cycle_goulot: Math.round(C_k * 1000) / 1000,
+      deviation_moyenne: Math.round(avgDeviation * 1000) / 1000,
+      comptage_modeles: modelCounts,
+      parametres_lissage: {s1: 0.5, s2: 0.5},
+      statut_optimisation: "Evaluation",
+      efficacite_lissage: Math.round((1 - avgDeviation/C_k) * 100 * 100) / 100
+    };
+
+    const result = {
+      sequence: sequence,
+      metrics: metrics,
+      cumulative_times: cumulativeTimes,
+      theoretical_ideal: theoreticalIdeal,
+      status: "success"
+    };
+
+    setResults(result);
+    setShowGraph(true);
   };
 
 

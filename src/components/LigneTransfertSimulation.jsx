@@ -32,34 +32,7 @@ const LigneTransfertSimulation = () => {
   const animationRef = useRef();
   const lastTimeRef = useRef(0);
 
-  // Réinitialiser quand la simulation s'arrête
-  useEffect(() => {
-    if (!isRunning) {
-      // Réinitialiser après un court délai pour laisser le temps aux états de se stabiliser
-      const timer = setTimeout(() => {
-        setSimulationTime(0);
-        setPieces([]);
-        setMetrics({
-          totalPieces: 0,
-          completedPieces: 0,
-          throughput: 0,
-          avgWaitTime: 0,
-          stationUtilization: [0, 0, 0, 0]
-        });
-        setStations(prev => prev.map(station => ({
-          ...station,
-          currentPiece: null,
-          isWorking: true,
-          processingTime: 0
-        })));
-        setBuffers(prev => prev.map(buffer => ({
-          ...buffer,
-          pieces: []
-        })));
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isRunning]);
+
 
   // Configuration des postes
   const stationConfig = [
@@ -76,13 +49,7 @@ const LigneTransfertSimulation = () => {
     // Vérification de sécurité supplémentaire (mais permettre la génération initiale)
     if (!pieces) return;
     
-    // Filtrer les pièces undefined pour éviter les erreurs
-    const validPieces = pieces.filter(p => p && p.id);
-    if (validPieces.length !== pieces.length) {
-      console.log('DEBUG: Nettoyage des pièces undefined détecté');
-      setPieces(validPieces);
-      return;
-    }
+
 
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
@@ -298,21 +265,13 @@ const LigneTransfertSimulation = () => {
                         };
                         setSimulationHistory(prev => [completedResults, ...prev]);
                         setIsRunning(false);
-                        // Arrêter immédiatement la boucle d'animation
-                        if (animationRef.current) {
-                          cancelAnimationFrame(animationRef.current);
-                          animationRef.current = null;
-                        }
                         return; // Arrêter l'exécution de cette frame
                       }
                       
-                                                setMetrics(prev => {
-                            console.log(`DEBUG: setMetrics - prev.completedPieces=${prev.completedPieces}, newCompletedPieces=${newCompletedPieces}`);
-                            return {
-                              ...prev,
-                              completedPieces: newCompletedPieces
-                            };
-                          });
+                                                setMetrics(prev => ({
+                            ...prev,
+                            completedPieces: newCompletedPieces
+                          }));
                     } else {
                       // Passer au buffer suivant ou au poste suivant
                       const nextBufferIndex = stationIndex;
@@ -400,7 +359,10 @@ const LigneTransfertSimulation = () => {
   }, [isRunning, pieces, stations]);
 
   const startSimulation = () => {
-    // Réinitialiser complètement avant de démarrer
+    // Arrêter d'abord si en cours
+    setIsRunning(false);
+    
+    // Réinitialiser complètement
     setSimulationTime(0);
     setPieces([]);
     setMetrics({
@@ -420,9 +382,11 @@ const LigneTransfertSimulation = () => {
       ...buffer,
       pieces: []
     })));
-    // Démarrer la simulation après la réinitialisation
-    setIsRunning(true);
-    // Ne pas effacer l'historique quand on redémarre
+    
+    // Démarrer après un court délai pour laisser le temps aux états de se stabiliser
+    setTimeout(() => {
+      setIsRunning(true);
+    }, 50);
   };
 
   const stopSimulation = () => {

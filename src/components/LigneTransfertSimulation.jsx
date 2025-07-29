@@ -235,19 +235,20 @@ const LigneTransfertSimulation = () => {
                   if (p.id === pieceId) {
                     if (stationIndex === 3) { // Dernier poste
                       p.completed = true;
+                      const newCompletedPieces = metrics.completedPieces + 1;
                       setMetrics(prev => ({
                         ...prev,
-                        completedPieces: prev.completedPieces + 1
+                        completedPieces: newCompletedPieces
                       }));
                       
                       // Sauvegarder les résultats et réinitialiser si on atteint l'objectif
-                      if (metrics.completedPieces + 1 >= targetPieces) {
+                      if (newCompletedPieces >= targetPieces) {
                         const completedResults = {
                           id: Date.now(),
-                          completedPieces: metrics.completedPieces + 1,
+                          completedPieces: newCompletedPieces,
                           totalTime: simulationTime,
-                          throughput: (metrics.completedPieces + 1) / (simulationTime / 60),
-                          avgWaitTime: simulationTime / (metrics.completedPieces + 1),
+                          throughput: newCompletedPieces / (simulationTime / 60),
+                          avgWaitTime: simulationTime / newCompletedPieces,
                           bufferSizes: [...bufferSizes],
                           timestamp: new Date().toLocaleTimeString()
                         };

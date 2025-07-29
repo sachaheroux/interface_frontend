@@ -30,27 +30,6 @@ const LigneTransfertSimulation = () => {
 
   const animationRef = useRef();
   const lastTimeRef = useRef(0);
-  const piecesRef = useRef(pieces);
-  const stationsRef = useRef(stations);
-  const buffersRef = useRef(buffers);
-  const metricsRef = useRef(metrics);
-
-  // Maintenir les refs à jour
-  useEffect(() => {
-    piecesRef.current = pieces;
-  }, [pieces]);
-
-  useEffect(() => {
-    stationsRef.current = stations;
-  }, [stations]);
-
-  useEffect(() => {
-    buffersRef.current = buffers;
-  }, [buffers]);
-
-  useEffect(() => {
-    metricsRef.current = metrics;
-  }, [metrics]);
 
 
 
@@ -66,17 +45,14 @@ const LigneTransfertSimulation = () => {
   const simulateStep = (deltaTime) => {
     if (!isRunning) return;
     
-    // Mettre à jour les refs avec les valeurs actuelles
-    piecesRef.current = pieces;
-    stationsRef.current = stations;
-    buffersRef.current = buffers;
-    metricsRef.current = metrics;
+    // Vérification de sécurité supplémentaire (mais permettre la génération initiale)
+    if (!pieces) return;
 
     // Incrémenter le temps seulement si la simulation est en cours
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
     // Générer de nouvelles pièces
-    if (Math.random() < 0.05 && metricsRef.current.completedPieces < targetPieces && piecesRef.current.length < 20 && isRunning) {
+    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && pieces.length < 20 && isRunning) {
       const newPiece = {
         id: Date.now() + Math.random(),
         position: 0,
@@ -346,8 +322,6 @@ const LigneTransfertSimulation = () => {
   // Animation loop
   useEffect(() => {
     const animate = (currentTime) => {
-      if (!isRunning) return; // Arrêter immédiatement si pas en cours
-      
       if (lastTimeRef.current === 0) {
         lastTimeRef.current = currentTime;
       }
@@ -355,21 +329,11 @@ const LigneTransfertSimulation = () => {
       lastTimeRef.current = currentTime;
 
       simulateStep(deltaTime);
-      
-      // Continuer l'animation seulement si la simulation est en cours
-      if (isRunning) {
-        animationRef.current = requestAnimationFrame(animate);
-      }
+      animationRef.current = requestAnimationFrame(animate);
     };
 
     if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
-    } else {
-      // Arrêter l'animation si la simulation n'est pas en cours
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
-      }
     }
 
     return () => {
@@ -377,7 +341,7 @@ const LigneTransfertSimulation = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isRunning, simulationSpeed]); // Ajouter simulationSpeed pour la vitesse
+  }, [isRunning, pieces, stations]);
 
   const startSimulation = () => {
     // Si la simulation est déjà en cours, ne rien faire
@@ -385,30 +349,39 @@ const LigneTransfertSimulation = () => {
     
     // Si c'est la première fois ou si on a atteint 100 pièces, faire un reset complet
     if (metrics.completedPieces >= targetPieces || pieces.length === 0) {
-      // Réinitialiser complètement
-      setSimulationTime(0);
-      setPieces([]);
-      setMetrics({
-        totalPieces: 0,
-        completedPieces: 0,
-        throughput: 0,
-        avgWaitTime: 0,
-        stationUtilization: [0, 0, 0, 0]
-      });
-      setStations(prev => prev.map(station => ({
-        ...station,
-        currentPiece: null,
-        isWorking: true,
-        processingTime: 0
-      })));
-      setBuffers(prev => prev.map(buffer => ({
-        ...buffer,
-        pieces: []
-      })));
+      // Arrêter complètement l'animation
+      setIsRunning(false);
+      
+      // Attendre que l'animation soit vraiment arrêtée avant de reset
+      setTimeout(() => {
+        // Réinitialiser complètement
+        setSimulationTime(0);
+        setPieces([]);
+        setMetrics({
+          totalPieces: 0,
+          completedPieces: 0,
+          throughput: 0,
+          avgWaitTime: 0,
+          stationUtilization: [0, 0, 0, 0]
+        });
+        setStations(prev => prev.map(station => ({
+          ...station,
+          currentPiece: null,
+          isWorking: true,
+          processingTime: 0
+        })));
+        setBuffers(prev => prev.map(buffer => ({
+          ...buffer,
+          pieces: []
+        })));
+        
+        // Démarrer la nouvelle simulation
+        setIsRunning(true);
+      }, 100); // Délai plus long pour s'assurer que l'animation est arrêtée
+    } else {
+      // Sinon, juste reprendre la simulation
+      setIsRunning(true);
     }
-    
-    // Démarrer la simulation
-    setIsRunning(true);
   };
 
   const stopSimulation = () => {

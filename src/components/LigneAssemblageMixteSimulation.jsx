@@ -484,7 +484,7 @@ const LigneAssemblageMixteSimulation = () => {
                     overflow: 'hidden',
                     minHeight: '500px'
                   }}>
-                    <svg width="100%" height="450" style={{ 
+                    <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" style={{ 
                       background: 'white', 
                       borderRadius: '8px', 
                       display: 'block', 
@@ -504,47 +504,47 @@ const LigneAssemblageMixteSimulation = () => {
                         return (
                           <>
                             {/* Axes */}
-                            <line x1="50" y1="420" x2="350" y2="420" stroke="#ccc" strokeWidth="2" />
-                            <line x1="50" y1="30" x2="50" y2="420" stroke="#ccc" strokeWidth="2" />
+                            <line x1="10" y1="90" x2="90" y2="90" stroke="#ccc" strokeWidth="0.5" />
+                            <line x1="10" y1="10" x2="10" y2="90" stroke="#ccc" strokeWidth="0.5" />
                             
                             {/* Échelle Y */}
-                            <text x="25" y="30" textAnchor="middle" fontSize="10" fill="#666">{(yMax).toFixed(0)}</text>
-                            <text x="25" y="225" textAnchor="middle" fontSize="10" fill="#666">{((yMax + yMin) / 2).toFixed(0)}</text>
-                            <text x="25" y="420" textAnchor="middle" fontSize="10" fill="#666">{(yMin).toFixed(0)}</text>
+                            <text x="5" y="12" textAnchor="middle" fontSize="3" fill="#666">{(yMax).toFixed(0)}</text>
+                            <text x="5" y="50" textAnchor="middle" fontSize="3" fill="#666">{((yMax + yMin) / 2).toFixed(0)}</text>
+                            <text x="5" y="88" textAnchor="middle" fontSize="3" fill="#666">{(yMin).toFixed(0)}</text>
                             
                             {/* Points et lignes pour le temps cumulé */}
                             {results.cumulative_times && results.cumulative_times.map((cumulativeTime, index) => {
-                              const x = 50 + (index * 60);
-                              const y = 420 - ((cumulativeTime - yMin) / (yMax - yMin)) * 390;
+                              const x = 10 + (index * (80 / (results.cumulative_times.length - 1)));
+                              const y = 90 - ((cumulativeTime - yMin) / (yMax - yMin)) * 80;
                               
                               return (
                                 <g key={index}>
                                   {/* Ligne entre les points */}
                                   {index > 0 && (
                                     <line 
-                                      x1={50 + ((index - 1) * 60)} 
-                                      y1={420 - ((results.cumulative_times[index - 1] - yMin) / (yMax - yMin)) * 390}
+                                      x1={10 + ((index - 1) * (80 / (results.cumulative_times.length - 1)))} 
+                                      y1={90 - ((results.cumulative_times[index - 1] - yMin) / (yMax - yMin)) * 80}
                                       x2={x} 
                                       y2={y} 
                                       stroke="#3b82f6" 
-                                      strokeWidth="3" 
+                                      strokeWidth="0.8" 
                                     />
                                   )}
                                   {/* Point */}
                                   <circle 
                                     cx={x} 
                                     cy={y} 
-                                    r="4" 
+                                    r="1.5" 
                                     fill={sequence[index] === 'A' ? '#3b82f6' : '#10b981'} 
                                     stroke="white" 
-                                    strokeWidth="2"
+                                    strokeWidth="0.5"
                                   />
                                   {/* Label du produit */}
-                                  <text x={x} y="435" textAnchor="middle" fontSize="10" fill="#666" fontWeight="bold">
+                                  <text x={x} y="95" textAnchor="middle" fontSize="2.5" fill="#666" fontWeight="bold">
                                     {sequence[index]}
                                   </text>
                                   {/* Temps cumulé */}
-                                  <text x={x} y={y - 10} textAnchor="middle" fontSize="8" fill="#666" fontWeight="bold">
+                                  <text x={x} y={y - 2} textAnchor="middle" fontSize="2" fill="#666" fontWeight="bold">
                                     {cumulativeTime}min
                                   </text>
                                 </g>
@@ -553,31 +553,31 @@ const LigneAssemblageMixteSimulation = () => {
                             
                             {/* Ligne théorique idéale */}
                             {results.theoretical_ideal && results.theoretical_ideal.map((theoreticalTime, index) => {
-                              const x = 50 + (index * 60);
-                              const y = 420 - ((theoreticalTime - yMin) / (yMax - yMin)) * 390;
+                              const x = 10 + (index * (80 / (results.theoretical_ideal.length - 1)));
+                              const y = 90 - ((theoreticalTime - yMin) / (yMax - yMin)) * 80;
                               
                               return (
                                 <g key={`theoretical-${index}`}>
                                   {/* Ligne entre les points théoriques */}
                                   {index > 0 && (
                                     <line 
-                                      x1={50 + ((index - 1) * 60)} 
-                                      y1={420 - ((results.theoretical_ideal[index - 1] - yMin) / (yMax - yMin)) * 390}
+                                      x1={10 + ((index - 1) * (80 / (results.theoretical_ideal.length - 1)))} 
+                                      y1={90 - ((results.theoretical_ideal[index - 1] - yMin) / (yMax - yMin)) * 80}
                                       x2={x} 
                                       y2={y} 
                                       stroke="#10b981" 
-                                      strokeWidth="3" 
-                                      strokeDasharray="8,5"
+                                      strokeWidth="0.8" 
+                                      strokeDasharray="2,1"
                                     />
                                   )}
                                   {/* Point théorique */}
                                   <circle 
                                     cx={x} 
                                     cy={y} 
-                                    r="3" 
+                                    r="1" 
                                     fill="#10b981" 
                                     stroke="white" 
-                                    strokeWidth="1"
+                                    strokeWidth="0.3"
                                   />
                                 </g>
                               );

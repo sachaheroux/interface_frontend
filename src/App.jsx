@@ -8,6 +8,7 @@ import JobshopInteractiveSimulation from './components/JobshopInteractiveSimulat
 import FlowshopInteractiveSimulation from './components/FlowshopInteractiveSimulation';
 import LigneAssemblageMixteSimulation from './components/LigneAssemblageMixteSimulation';
 import LigneAssemblageStandardSimulation from './components/LigneAssemblageStandardSimulation';
+import LigneTransfertSimulation from './components/LigneTransfertSimulation';
 import { Users, Factory, BookOpen, Brain } from 'lucide-react';
 import './App.css';
 import SystemDescription from "./components/SystemDescription";
@@ -92,7 +93,7 @@ function App() {
   // Configuration des cours
   const coursesConfig = {
     "Cours Théoriques": ["Introduction aux systèmes", "Ordonnancement de base", "Algorithmes avancés"],
-    "Simulations Interactives": ["Jobshop", "Flowshop", "Ligne d'assemblage", "Ligne d'assemblage mixte"],
+    "Simulations Interactives": ["Jobshop", "Flowshop", "Ligne d'assemblage", "Ligne d'assemblage mixte", "Ligne de transfert"],
     "Exercices Pratiques": ["Cas d'étude 1", "Cas d'étude 2", "Projet final"]
   };
 
@@ -265,6 +266,10 @@ function App() {
               {/* Ligne d'assemblage mixte - Séquençage (Partie 2) */}
               {selectedCourse === "Ligne d'assemblage mixte" && (
                 <LigneAssemblageMixteSimulation />
+              )}
+              {/* Ligne de transfert - Simulation interactive */}
+              {selectedCourse === "Ligne de transfert" && (
+                <LigneTransfertSimulation />
               )}
             </div>
           )}

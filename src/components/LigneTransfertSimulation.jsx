@@ -44,7 +44,7 @@ const LigneTransfertSimulation = () => {
     setSimulationTime(prev => prev + deltaTime * simulationSpeed);
 
     // Générer de nouvelles pièces
-    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces) {
+    if (Math.random() < 0.05 && metrics.completedPieces < targetPieces && pieces.length < 20) {
       const newPiece = {
         id: Date.now() + Math.random(),
         position: -0.5,
@@ -154,6 +154,11 @@ const LigneTransfertSimulation = () => {
                         ...prev,
                         completedPieces: prev.completedPieces + 1
                       }));
+                      
+                      // Arrêter la simulation si on atteint l'objectif
+                      if (metrics.completedPieces + 1 >= targetPieces) {
+                        setIsRunning(false);
+                      }
                     } else {
                       // Passer au buffer suivant ou au poste suivant
                       const nextBufferIndex = stationIndex;

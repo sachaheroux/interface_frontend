@@ -89,20 +89,6 @@ const LigneTransfertSimulation = () => {
     // Mettre à jour les postes et traiter les pièces
     setStations(prevStations => {
       return prevStations.map((station, stationIndex) => {
-        // Gestion des pannes
-        if (Math.random() < station.failureRate * deltaTime) {
-          station.isWorking = false;
-          station.failureStartTime = simulationTime;
-          station.failureEndTime = simulationTime + (station.failureDuration / 1000);
-        }
-
-        // Vérifier si une panne doit se terminer
-        if (!station.isWorking && station.failureEndTime && simulationTime >= station.failureEndTime) {
-          station.isWorking = true;
-          station.failureStartTime = null;
-          station.failureEndTime = null;
-        }
-
         // Traitement des pièces
         if (station.isWorking) {
           // Vérifier si une pièce terminée peut être transférée (buffer libéré)
@@ -319,6 +305,33 @@ const LigneTransfertSimulation = () => {
     setPieces(prevPieces => prevPieces.filter(piece => !piece.completed));
   };
 
+  // Gestion des pannes - continue même en pause
+  useEffect(() => {
+    const failureInterval = setInterval(() => {
+      setStations(prevStations => {
+        return prevStations.map(station => {
+          // Gestion des pannes
+          if (Math.random() < station.failureRate * 0.1) { // deltaTime fixe de 0.1s
+            station.isWorking = false;
+            station.failureStartTime = simulationTime;
+            station.failureEndTime = simulationTime + (station.failureDuration / 1000);
+          }
+
+          // Vérifier si une panne doit se terminer
+          if (!station.isWorking && station.failureEndTime && simulationTime >= station.failureEndTime) {
+            station.isWorking = true;
+            station.failureStartTime = null;
+            station.failureEndTime = null;
+          }
+
+          return station;
+        });
+      });
+    }, 100); // Vérifier les pannes toutes les 100ms
+
+    return () => clearInterval(failureInterval);
+  }, [simulationTime]);
+
   // Animation loop
   useEffect(() => {
     const animate = (currentTime) => {
@@ -390,12 +403,15 @@ const LigneTransfertSimulation = () => {
       }, 100); // Délai plus long pour s'assurer que l'animation est arrêtée
     } else {
       // Sinon, juste reprendre la simulation
+      // Ne pas remettre lastTimeRef à 0 pour garder le temps actuel
       setIsRunning(true);
     }
   };
 
   const stopSimulation = () => {
     setIsRunning(false);
+    // Figer lastTimeRef pour que le temps ne continue pas d'accumuler
+    lastTimeRef.current = 0;
   };
 
   const resetSimulation = () => {

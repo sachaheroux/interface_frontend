@@ -312,8 +312,9 @@ const LigneTransfertSimulation = () => {
     const failureInterval = setInterval(() => {
       setStations(prevStations => {
         return prevStations.map(station => {
-          // Gestion des pannes
-          if (Math.random() < station.failureRate * 0.1) { // deltaTime fixe de 0.1s
+          // Gestion des pannes - respecter exactement les taux affichés
+          // failureRate est par seconde, donc on vérifie toutes les 100ms (0.1s)
+          if (Math.random() < station.failureRate * 0.1) {
             station.isWorking = false;
             station.failureStartTime = simulationTime;
             station.failureEndTime = simulationTime + (station.failureDuration / 1000);

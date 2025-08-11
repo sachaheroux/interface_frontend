@@ -320,17 +320,20 @@ const LigneTransfertSimulation = () => {
             station.failureEndTime = simulationTime + (station.failureDuration / 1000);
           }
 
-          // Vérifier si une panne doit se terminer
-          if (!station.isWorking && station.failureEndTime && simulationTime >= station.failureEndTime) {
-            station.isWorking = true;
-            station.failureStartTime = null;
-            station.failureEndTime = null;
+          // Vérifier si une panne doit se terminer - plus précis avec simulationTime
+          if (!station.isWorking && station.failureStartTime && station.failureDuration) {
+            const elapsedTime = simulationTime - station.failureStartTime;
+            if (elapsedTime >= station.failureDuration / 1000) {
+              station.isWorking = true;
+              station.failureStartTime = null;
+              station.failureEndTime = null;
+            }
           }
 
           return station;
         });
       });
-    }, 1000); // Vérifier les pannes chaque seconde pour respecter les taux
+    }, 100); // Vérifier plus fréquemment pour une meilleure précision
 
     return () => clearInterval(failureInterval);
   }, [isRunning]); // Retirer simulationTime des dépendances
@@ -569,9 +572,9 @@ const LigneTransfertSimulation = () => {
                   {Math.round((station.processingTime / station.speed) * 100)}%
                 </div>
               )}
-              {!station.isWorking && station.failureEndTime && (
+              {!station.isWorking && station.failureStartTime && (
                 <div className="lt-failure-indicator">
-                  {Math.round(((station.failureEndTime - simulationTime) / (station.failureDuration / 1000)) * 100)}%
+                  {Math.round(((simulationTime - station.failureStartTime) / (station.failureDuration / 1000)) * 100)}%
                 </div>
               )}
             </div>

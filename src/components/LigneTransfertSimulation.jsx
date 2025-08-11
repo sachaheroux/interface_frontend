@@ -571,7 +571,7 @@ const LigneTransfertSimulation = () => {
               )}
               {!station.isWorking && station.failureStartTime && (
                 <div className="lt-failure-indicator">
-                  {Math.round(((simulationTime - station.failureStartTime) / (station.failureDuration / 1000)) * 100)}%
+                  {Math.round(((station.failureEndTime - simulationTime) / (station.failureDuration / 1000)) * 100)}%
                 </div>
               )}
             </div>

@@ -312,9 +312,9 @@ const LigneTransfertSimulation = () => {
     const failureInterval = setInterval(() => {
       setStations(prevStations => {
         return prevStations.map(station => {
-          // Gestion des pannes - respecter exactement les taux affichés
-          // failureRate est par seconde, donc on vérifie toutes les 100ms (0.1s)
-          if (Math.random() < station.failureRate * 0.1) {
+          // Gestion des pannes - respecter exactement les taux affichés par seconde
+          // Pour avoir exactement failureRate par seconde, on vérifie chaque seconde
+          if (Math.random() < station.failureRate) {
             station.isWorking = false;
             station.failureStartTime = simulationTime;
             station.failureEndTime = simulationTime + (station.failureDuration / 1000);
@@ -330,7 +330,7 @@ const LigneTransfertSimulation = () => {
           return station;
         });
       });
-    }, 100); // Vérifier les pannes toutes les 100ms
+    }, 1000); // Vérifier les pannes chaque seconde pour respecter les taux
 
     return () => clearInterval(failureInterval);
   }, [isRunning, simulationTime]);

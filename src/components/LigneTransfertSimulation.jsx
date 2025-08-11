@@ -315,6 +315,7 @@ const LigneTransfertSimulation = () => {
           // Gestion des pannes - respecter exactement les taux affichés par seconde
           // Vérifier chaque seconde si une panne doit se déclencher
           if (Math.random() < station.failureRate && station.isWorking) {
+            console.log(`DEBUG: Début de panne pour poste ${station.id}, simulationTime=${simulationTime}, durée=${station.failureDuration/1000}s`);
             station.isWorking = false;
             station.failureStartTime = simulationTime;
             station.failureEndTime = simulationTime + (station.failureDuration / 1000);
@@ -322,6 +323,7 @@ const LigneTransfertSimulation = () => {
 
           // Vérifier si une panne doit se terminer
           if (!station.isWorking && station.failureEndTime && simulationTime >= station.failureEndTime) {
+            console.log(`DEBUG: Fin de panne pour poste ${station.id}, simulationTime=${simulationTime}, failureEndTime=${station.failureEndTime}`);
             station.isWorking = true;
             station.failureStartTime = null;
             station.failureEndTime = null;
@@ -333,7 +335,7 @@ const LigneTransfertSimulation = () => {
     }, 1000); // Vérifier les pannes chaque seconde pour respecter les taux
 
     return () => clearInterval(failureInterval);
-  }, [isRunning]); // Retirer simulationTime des dépendances
+  }, [isRunning, simulationTime]); // Ajouter simulationTime pour que les pannes se terminent
 
   // Animation loop
   useEffect(() => {

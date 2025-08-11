@@ -319,48 +319,39 @@ const LigneTransfertSimulation = () => {
     setPieces(prevPieces => prevPieces.filter(piece => !piece.completed));
   };
 
-  // Animation loop - contrôlée uniquement par isRunning
+  // Animation loop
   useEffect(() => {
-    // Nettoyer l'animation précédente
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = null;
-    }
-
-    // Démarrer l'animation seulement si isRunning est true
-    if (isRunning) {
-      const animate = (currentTime) => {
-        if (!isRunning) {
-          // Arrêter immédiatement si la simulation n'est plus en cours
-          cancelAnimationFrame(animationRef.current);
-          animationRef.current = null;
-          return;
-        }
-
-        if (lastTimeRef.current === 0) {
-          lastTimeRef.current = currentTime;
-        }
-        const deltaTime = (currentTime - lastTimeRef.current) / 1000;
+    const animate = (currentTime) => {
+      if (lastTimeRef.current === 0) {
         lastTimeRef.current = currentTime;
+      }
+      const deltaTime = (currentTime - lastTimeRef.current) / 1000;
+      lastTimeRef.current = currentTime;
 
-        simulateStep(deltaTime);
-        
-        // Continuer seulement si toujours en cours
-        if (isRunning) {
-          animationRef.current = requestAnimationFrame(animate);
-        }
-      };
+      simulateStep(deltaTime);
+      
+      // Continuer l'animation seulement si la simulation est en cours
+      if (isRunning) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
 
+    if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
+    } else {
+      // Arrêter l'animation si la simulation n'est pas en cours
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
     }
 
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
       }
     };
-  }, [isRunning]); // Seulement isRunning comme dépendance
+  }, [isRunning, pieces, stations]);
 
   const startSimulation = () => {
     // Si la simulation est déjà en cours, ne rien faire

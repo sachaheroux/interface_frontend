@@ -305,8 +305,10 @@ const LigneTransfertSimulation = () => {
     setPieces(prevPieces => prevPieces.filter(piece => !piece.completed));
   };
 
-  // Gestion des pannes - continue même en pause
+  // Gestion des pannes - seulement pendant la simulation active
   useEffect(() => {
+    if (!isRunning) return; // Pas de pannes en pause
+
     const failureInterval = setInterval(() => {
       setStations(prevStations => {
         return prevStations.map(station => {
@@ -330,7 +332,7 @@ const LigneTransfertSimulation = () => {
     }, 100); // Vérifier les pannes toutes les 100ms
 
     return () => clearInterval(failureInterval);
-  }, [simulationTime]);
+  }, [isRunning, simulationTime]);
 
   // Animation loop
   useEffect(() => {

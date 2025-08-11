@@ -66,6 +66,7 @@ import FMSLotsProductionGloutonInfo from "./components/FMSLotsProductionGloutonI
 import FMSLotsProductionMIPForm from "./components/FMSLotsProductionMIPForm";
 import FMSLotsProductionMIPInfo from "./components/FMSLotsProductionMIPInfo";
 import FMSLotsChargementHeuristiqueForm from "./components/FMSLotsChargementHeuristiqueForm";
+import JobshopSetupAssignment from "./components/JobshopSetupAssignment";
 import FMSLotsChargementHeuristiqueInfo from "./components/FMSLotsChargementHeuristiqueInfo";
 
 
@@ -94,7 +95,8 @@ function App() {
   const coursesConfig = {
     "Cours Théoriques": ["Introduction aux systèmes", "Ordonnancement de base", "Algorithmes avancés"],
     "Simulations Interactives": ["Flowshop", "Jobshop", "Ligne d'assemblage", "Ligne d'assemblage mixte", "Ligne de transfert"],
-    "Exercices Pratiques": ["Cas d'étude 1", "Cas d'étude 2", "Projet final"]
+    "Exercices Pratiques": ["Cas d'étude 1", "Cas d'étude 2", "Projet final"],
+    "Devoirs": ["Jobshop avec temps de setup"]
   };
 
   // Handlers pour la navigation
@@ -270,6 +272,11 @@ function App() {
               {/* Ligne de transfert - Simulation interactive */}
               {selectedCourse === "Ligne de transfert" && (
                 <LigneTransfertSimulation />
+              )}
+              
+              {/* Devoirs */}
+              {selectedCourse === "Jobshop avec temps de setup" && (
+                <JobshopSetupAssignment />
               )}
             </div>
           )}

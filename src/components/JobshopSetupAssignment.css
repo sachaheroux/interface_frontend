@@ -1,0 +1,393 @@
+.jobshop-setup-assignment {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Header du devoir */
+.assignment-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.assignment-header h1 {
+  margin: 0 0 1rem 0;
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
+.assignment-info {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.assignment-info p {
+  margin: 0;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Contexte du problème */
+.assignment-context {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #667eea;
+}
+
+.assignment-context h2 {
+  color: #667eea;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.context-content p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.context-content ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.context-content li {
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+}
+
+.problem-objective {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  border-left: 4px solid #28a745;
+}
+
+.problem-objective h3 {
+  color: #28a745;
+  margin-bottom: 1rem;
+}
+
+.setup-times-note {
+  background: #fff3cd;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  border-left: 4px solid #ffc107;
+}
+
+.setup-times-note h3 {
+  color: #856404;
+  margin-bottom: 1rem;
+}
+
+/* Navigation des questions */
+.question-navigation {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.nav-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.nav-btn.active {
+  background: #667eea;
+  color: white;
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Contenu des questions */
+.question-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.question-content h2 {
+  color: #667eea;
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+}
+
+.question-text p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.question-text ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.question-text li {
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+}
+
+/* Zone de réponse */
+.answer-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.answer-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Conseils */
+.question-tips {
+  background: #e3f2fd;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  border-left: 4px solid #2196f3;
+}
+
+.question-tips h4 {
+  color: #1976d2;
+  margin-bottom: 1rem;
+}
+
+.question-tips ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.question-tips li {
+  margin-bottom: 0.5rem;
+  color: #1565c0;
+}
+
+/* Exigences Excel */
+.excel-requirements {
+  background: #f3e5f5;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  border-left: 4px solid #9c27b0;
+}
+
+.excel-requirements h4 {
+  color: #7b1fa2;
+  margin-bottom: 1rem;
+}
+
+.excel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.excel-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e1bee7;
+}
+
+.excel-section h5 {
+  color: #7b1fa2;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.excel-section p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Upload de fichier */
+.file-upload {
+  background: #e8f5e8;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  border-left: 4px solid #4caf50;
+}
+
+.file-upload h4 {
+  color: #2e7d32;
+  margin-bottom: 1rem;
+}
+
+.excel-template {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  border: 1px solid #c8e6c9;
+}
+
+.excel-template h5 {
+  color: #2e7d32;
+  margin-bottom: 0.5rem;
+}
+
+.excel-template ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.excel-template li {
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+/* Footer et navigation */
+.assignment-footer {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5a6fd8;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+}
+
+.btn-success:hover {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+/* Indicateur de progression */
+.progress-indicator {
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width 0.3s ease;
+}
+
+.progress-indicator span {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .jobshop-setup-assignment {
+    padding: 1rem;
+  }
+  
+  .assignment-header {
+    padding: 1.5rem;
+  }
+  
+  .assignment-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .assignment-info {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .question-navigation {
+    flex-wrap: wrap;
+  }
+  
+  .excel-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .navigation-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+} 

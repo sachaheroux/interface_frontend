@@ -430,6 +430,8 @@ const LigneTransfertSimulation = () => {
       ...buffer,
       pieces: []
     })));
+    // Figer lastTimeRef pour que le temps ne continue pas d'accumuler
+    lastTimeRef.current = 0;
   };
 
   const updateBufferSize = (bufferIndex, newSize) => {

@@ -329,11 +329,21 @@ const LigneTransfertSimulation = () => {
       lastTimeRef.current = currentTime;
 
       simulateStep(deltaTime);
-      animationRef.current = requestAnimationFrame(animate);
+      
+      // Continuer l'animation seulement si la simulation est en cours
+      if (isRunning) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
     };
 
     if (isRunning) {
       animationRef.current = requestAnimationFrame(animate);
+    } else {
+      // Arrêter complètement l'animation si la simulation n'est pas en cours
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
     }
 
     return () => {

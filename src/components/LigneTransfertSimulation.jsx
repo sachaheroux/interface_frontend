@@ -314,7 +314,7 @@ const LigneTransfertSimulation = () => {
         return prevStations.map(station => {
           // Gestion des pannes - respecter exactement les taux affichés par seconde
           // Pour avoir exactement failureRate par seconde, on vérifie chaque seconde
-          if (Math.random() < station.failureRate) {
+          if (Math.random() < station.failureRate && station.isWorking) {
             station.isWorking = false;
             station.failureStartTime = simulationTime;
             station.failureEndTime = simulationTime + (station.failureDuration / 1000);
@@ -333,7 +333,7 @@ const LigneTransfertSimulation = () => {
     }, 1000); // Vérifier les pannes chaque seconde pour respecter les taux
 
     return () => clearInterval(failureInterval);
-  }, [isRunning, simulationTime]);
+  }, [isRunning]); // Retirer simulationTime des dépendances
 
   // Animation loop
   useEffect(() => {
@@ -394,7 +394,9 @@ const LigneTransfertSimulation = () => {
           ...station,
           currentPiece: null,
           isWorking: true,
-          processingTime: 0
+          processingTime: 0,
+          failureStartTime: null,
+          failureEndTime: null
         })));
         setBuffers(prev => prev.map(buffer => ({
           ...buffer,
@@ -425,7 +427,9 @@ const LigneTransfertSimulation = () => {
       ...station,
       currentPiece: null,
       isWorking: true,
-      processingTime: 0
+      processingTime: 0,
+      failureStartTime: null,
+      failureEndTime: null
     })));
     setBuffers(prev => prev.map(buffer => ({
       ...buffer,

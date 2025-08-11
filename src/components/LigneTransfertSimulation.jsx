@@ -321,13 +321,10 @@ const LigneTransfertSimulation = () => {
           }
 
           // Vérifier si une panne doit se terminer
-          if (!station.isWorking && station.failureStartTime && station.failureDuration) {
-            const elapsedTime = simulationTime - station.failureStartTime;
-            if (elapsedTime >= station.failureDuration / 1000) {
-              station.isWorking = true;
-              station.failureStartTime = null;
-              station.failureEndTime = null;
-            }
+          if (!station.isWorking && station.failureEndTime && simulationTime >= station.failureEndTime) {
+            station.isWorking = true;
+            station.failureStartTime = null;
+            station.failureEndTime = null;
           }
 
           return station;
@@ -574,7 +571,7 @@ const LigneTransfertSimulation = () => {
               )}
               {!station.isWorking && station.failureStartTime && (
                 <div className="lt-failure-indicator">
-                  {Math.round(((station.failureDuration / 1000 - (simulationTime - station.failureStartTime)) / (station.failureDuration / 1000)) * 100)}%
+                  {Math.round(((station.failureEndTime - simulationTime) / (station.failureDuration / 1000)) * 100)}%
                 </div>
               )}
             </div>

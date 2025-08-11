@@ -95,8 +95,7 @@ function App() {
   const coursesConfig = {
     "Cours Théoriques": ["Introduction aux systèmes", "Ordonnancement de base", "Algorithmes avancés"],
     "Simulations Interactives": ["Flowshop", "Jobshop", "Ligne d'assemblage", "Ligne d'assemblage mixte", "Ligne de transfert"],
-    "Exercices Pratiques": ["Cas d'étude 1", "Cas d'étude 2", "Projet final"],
-    "Devoirs": ["Jobshop avec temps de setup"]
+    "Exercices Pratiques": ["Cas d'étude 1", "Cas d'étude 2", "Projet final"]
   };
 
   // Handlers pour la navigation
@@ -274,24 +273,14 @@ function App() {
                 <LigneTransfertSimulation />
               )}
               
-              {/* Devoirs */}
-              {selectedCourse === "Jobshop avec temps de setup" && (
-                <JobshopSetupAssignment />
-              )}
+
             </div>
           )}
 
           {/* Devoirs - Mode éducatif */}
           {currentMode === "assignments" && (
             <div className="assignments-content">
-              <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '12px', margin: '2rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '2rem', color: '#6b7280', filter: 'grayscale(100%) brightness(0.5)' }}>🗎</div>
-                <h2 style={{ color: '#374151', marginBottom: '1rem' }}>Section Devoirs</h2>
-                <p style={{ color: '#6b7280', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto' }}>
-                  Cette section permettra aux étudiants de soumettre leurs devoirs et aux enseignants de créer des exercices.
-                  Système de gestion des devoirs à venir.
-                </p>
-              </div>
+              <JobshopSetupAssignment />
             </div>
           )}
 

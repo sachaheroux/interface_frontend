@@ -1,26 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './JobshopSetupAssignment.css';
 
 const JobshopSetupAssignment = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(1);
-  const [answers, setAnswers] = useState({
-    question1: '',
-    question2: '',
-    question3: ''
-  });
-
-  const handleAnswerChange = (question, value) => {
-    setAnswers(prev => ({
-      ...prev,
-      [question]: value
-    }));
-  };
-
-  const handleSubmit = () => {
-    console.log('Devoir soumis:', answers);
-    alert('Devoir soumis avec succès !');
-  };
-
   return (
     <div className="jobshop-setup-assignment">
       <div className="assignment-header">
@@ -70,51 +51,171 @@ const JobshopSetupAssignment = () => {
         </div>
       </div>
 
-      <div className="assignment-questions">
-        <div className="question-navigation">
-          <button 
-            className={`nav-btn ${currentQuestion === 1 ? 'active' : ''}`}
-            onClick={() => setCurrentQuestion(1)}
-          >
-            Question 1
-          </button>
-          <button 
-            className={`nav-btn ${currentQuestion === 2 ? 'active' : ''}`}
-            onClick={() => setCurrentQuestion(2)}
-          >
-            Question 2
-          </button>
-          <button 
-            className={`nav-btn ${currentQuestion === 3 ? 'active' : ''}`}
-            onClick={() => setCurrentQuestion(3)}
-          >
-            Question 3
-          </button>
+      <div className="data-section">
+        <h2>Données du Problème</h2>
+        
+        <div className="data-grid">
+          <div className="data-card">
+            <h3>Matrice des Temps de Traitement (minutes)</h3>
+            <p>Chaque job a des temps de traitement différents selon le poste</p>
+            <div className="matrix-container">
+              <table className="data-matrix">
+                <thead>
+                  <tr>
+                    <th>Job\Poste</th>
+                    <th>Poste 1<br/>Découpe</th>
+                    <th>Poste 2<br/>Perçage</th>
+                    <th>Poste 3<br/>Assemblage</th>
+                    <th>Poste 4<br/>Contrôle</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Job 1</strong><br/>Moteur</td>
+                    <td>15</td>
+                    <td>8</td>
+                    <td>12</td>
+                    <td>6</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Job 2</strong><br/>Transmission</td>
+                    <td>10</td>
+                    <td>12</td>
+                    <td>15</td>
+                    <td>8</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Job 3</strong><br/>Freinage</td>
+                    <td>8</td>
+                    <td>15</td>
+                    <td>10</td>
+                    <td>12</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Job 4</strong><br/>Direction</td>
+                    <td>12</td>
+                    <td>6</td>
+                    <td>8</td>
+                    <td>15</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="data-card">
+            <h3>Matrice des Temps de Setup (minutes)</h3>
+            <p>Temps de reconfiguration entre jobs consécutifs</p>
+            <div className="matrix-container">
+              <table className="data-matrix">
+                <thead>
+                  <tr>
+                    <th>Job\Suivant</th>
+                    <th>Job 1<br/>Moteur</th>
+                    <th>Job 2<br/>Transmission</th>
+                    <th>Job 3<br/>Freinage</th>
+                    <th>Job 4<br/>Direction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Job 1</strong><br/>Moteur</td>
+                    <td>0</td>
+                    <td>5</td>
+                    <td>8</td>
+                    <td>3</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Job 2</strong><br/>Transmission</td>
+                    <td>5</td>
+                    <td>0</td>
+                    <td>4</td>
+                    <td>7</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Job 3</strong><br/>Freinage</td>
+                    <td>8</td>
+                    <td>4</td>
+                    <td>0</td>
+                    <td>6</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Job 4</strong><br/>Direction</td>
+                    <td>3</td>
+                    <td>7</td>
+                    <td>6</td>
+                    <td>0</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
-        {/* Question 1 */}
-        {currentQuestion === 1 && (
-          <div className="question-content">
-            <h2>Question 1 : Choix de l'Algorithme (8 points)</h2>
-            <div className="question-text">
-              <p>
-                Parmi les trois algorithmes étudiés en classe (SPT, EDD, et par contraintes), 
-                quel algorithme pensez-vous être le plus approprié pour ce problème de minimisation 
-                du flowtime moyen ? Justifiez votre choix en expliquant :
-              </p>
-              <ul>
-                <li>Pourquoi cet algorithme est le plus adapté</li>
-                <li>Comment il traite l'objectif de minimisation du flowtime moyen</li>
-                <li>Quelles sont ses limitations dans ce contexte</li>
-              </ul>
+        <div className="example-sequence">
+          <h3>Exemple de Séquençage</h3>
+          <p>
+            <strong>Séquence actuelle :</strong> Job 1 → Job 2 → Job 3 → Job 4
+          </p>
+          <div className="sequence-visualization">
+            <div className="sequence-step">
+              <div className="step-number">1</div>
+              <div className="step-content">
+                <strong>Job 1 (Moteur)</strong><br/>
+                <span className="step-details">Temps total: 41 min + Setup: 5 min</span>
+              </div>
             </div>
-            <textarea
-              className="answer-textarea"
-              placeholder="Tapez votre réponse ici..."
-              value={answers.question1}
-              onChange={(e) => handleAnswerChange('question1', e.target.value)}
-              rows={8}
-            />
+            <div className="sequence-arrow">→</div>
+            <div className="sequence-step">
+              <div className="step-number">2</div>
+              <div className="step-content">
+                <strong>Job 2 (Transmission)</strong><br/>
+                <span className="step-details">Temps total: 45 min + Setup: 4 min</span>
+              </div>
+            </div>
+            <div className="sequence-arrow">→</div>
+            <div className="sequence-step">
+              <div className="step-number">3</div>
+              <div className="step-content">
+                <strong>Job 3 (Freinage)</strong><br/>
+                <span className="step-details">Temps total: 45 min + Setup: 6 min</span>
+              </div>
+            </div>
+            <div className="sequence-arrow">→</div>
+            <div className="sequence-step">
+              <div className="step-number">4</div>
+              <div className="step-content">
+                <strong>Job 4 (Direction)</strong><br/>
+                <span className="step-details">Temps total: 41 min</span>
+              </div>
+            </div>
+          </div>
+          <div className="sequence-summary">
+            <p><strong>Temps total de la séquence :</strong> 176 minutes</p>
+            <p><strong>Flowtime moyen :</strong> 44 minutes</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="questions-section">
+        <h2>Questions du Devoir</h2>
+        
+        <div className="question-card">
+          <div className="question-header">
+            <h3>Question 1 : Choix de l'Algorithme (8 points)</h3>
+            <span className="question-points">8 pts</span>
+          </div>
+          <div className="question-content">
+            <p>
+              Parmi les trois algorithmes étudiés en classe (SPT, EDD, et par contraintes), 
+              quel algorithme pensez-vous être le plus approprié pour ce problème de minimisation 
+              du flowtime moyen ? Justifiez votre choix en expliquant :
+            </p>
+            <ul>
+              <li>Pourquoi cet algorithme est le plus adapté</li>
+              <li>Comment il traite l'objectif de minimisation du flowtime moyen</li>
+              <li>Quelles sont ses limitations dans ce contexte</li>
+            </ul>
             <div className="question-tips">
               <h4>Conseils :</h4>
               <ul>
@@ -124,32 +225,25 @@ const JobshopSetupAssignment = () => {
               </ul>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Question 2 */}
-        {currentQuestion === 2 && (
+        <div className="question-card">
+          <div className="question-header">
+            <h3>Question 2 : Adaptation aux Temps de Setup (7 points)</h3>
+            <span className="question-points">7 pts</span>
+          </div>
           <div className="question-content">
-            <h2>Question 2 : Adaptation aux Temps de Setup (7 points)</h2>
-            <div className="question-text">
-              <p>
-                Les algorithmes vus en classe ne prennent pas en compte les temps de setup. 
-                Expliquez en détail comment vous modifieriez l'algorithme choisi à la question 1 
-                pour intégrer ces temps de setup :
-              </p>
-              <ul>
-                <li>Comment calculer le temps total d'un job (traitement + setup)</li>
-                <li>Quelles modifications apporter à la logique de l'algorithme</li>
-                <li>Comment gérer les dépendances entre postes</li>
-                <li>Quels nouveaux critères de décision considérer</li>
-              </ul>
-            </div>
-            <textarea
-              className="answer-textarea"
-              placeholder="Tapez votre réponse ici..."
-              value={answers.question2}
-              onChange={(e) => handleAnswerChange('question2', e.target.value)}
-              rows={8}
-            />
+            <p>
+              Les algorithmes vus en classe ne prennent pas en compte les temps de setup. 
+              Expliquez en détail comment vous modifieriez l'algorithme choisi à la question 1 
+              pour intégrer ces temps de setup :
+            </p>
+            <ul>
+              <li>Comment calculer le temps total d'un job (traitement + setup)</li>
+              <li>Quelles modifications apporter à la logique de l'algorithme</li>
+              <li>Comment gérer les dépendances entre postes</li>
+              <li>Quels nouveaux critères de décision considérer</li>
+            </ul>
             <div className="question-tips">
               <h4>Conseils :</h4>
               <ul>
@@ -159,36 +253,36 @@ const JobshopSetupAssignment = () => {
               </ul>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Question 3 */}
-        {currentQuestion === 3 && (
+        <div className="question-card">
+          <div className="question-header">
+            <h3>Question 3 : Implémentation Excel (10 points)</h3>
+            <span className="question-points">10 pts</span>
+          </div>
           <div className="question-content">
-            <h2>Question 3 : Implémentation Excel (10 points)</h2>
-            <div className="question-text">
-              <p>
-                Créez un fichier Excel qui implémente votre algorithme modifié avec les temps de setup. 
-                Votre fichier doit inclure :
-              </p>
-              <ul>
-                <li>Une matrice des temps de traitement (4 jobs × 4 postes)</li>
-                <li>Une matrice des temps de setup (4 jobs × 4 jobs)</li>
-                <li>Le calcul automatique du flowtime pour chaque job</li>
-                <li>Le calcul du flowtime moyen total</li>
-                <li>Une visualisation de l'ordonnancement (diagramme de Gantt simplifié)</li>
-              </ul>
-            </div>
+            <p>
+              Créez un fichier Excel qui implémente votre algorithme modifié avec les temps de setup. 
+              Votre fichier doit inclure :
+            </p>
+            <ul>
+              <li>Une matrice des temps de traitement (4 jobs × 4 postes)</li>
+              <li>Une matrice des temps de setup (4 jobs × 4 jobs)</li>
+              <li>Le calcul automatique du flowtime pour chaque job</li>
+              <li>Le calcul du flowtime moyen total</li>
+              <li>Une visualisation de l'ordonnancement (diagramme de Gantt simplifié)</li>
+            </ul>
             
             <div className="excel-requirements">
               <h4>Exigences Excel :</h4>
               <div className="excel-grid">
                 <div className="excel-section">
                   <h5>Matrice des Temps de Traitement</h5>
-                  <p>Créez une table 4×4 avec des temps réalistes (entre 5 et 30 minutes)</p>
+                  <p>Utilisez les données fournies dans ce devoir</p>
                 </div>
                 <div className="excel-section">
                   <h5>Matrice des Temps de Setup</h5>
-                  <p>Créez une table 4×4 avec des temps de setup (entre 2 et 15 minutes)</p>
+                  <p>Utilisez les données fournies dans ce devoir</p>
                 </div>
                 <div className="excel-section">
                   <h5>Calculs Automatiques</h5>
@@ -204,7 +298,7 @@ const JobshopSetupAssignment = () => {
             <div className="file-upload">
               <h4>Soumission du Fichier :</h4>
               <p>
-                <strong>Note :</strong> Pour ce devoir, vous devez créer le fichier Excel et le soumettre 
+                <strong>Note :</strong> Vous devez créer le fichier Excel et le soumettre 
                 séparément via la plateforme de cours. Assurez-vous que votre fichier est bien nommé 
                 avec votre nom et la date.
               </p>
@@ -218,45 +312,13 @@ const JobshopSetupAssignment = () => {
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       <div className="assignment-footer">
-        <div className="navigation-buttons">
-          {currentQuestion > 1 && (
-            <button 
-              className="btn btn-secondary"
-              onClick={() => setCurrentQuestion(currentQuestion - 1)}
-            >
-              ← Précédent
-            </button>
-          )}
-          {currentQuestion < 3 && (
-            <button 
-              className="btn btn-primary"
-              onClick={() => setCurrentQuestion(currentQuestion + 1)}
-            >
-              Suivant →
-            </button>
-          )}
-          {currentQuestion === 3 && (
-            <button 
-              className="btn btn-success"
-              onClick={handleSubmit}
-            >
-              Soumettre le Devoir
-            </button>
-          )}
-        </div>
-        
-        <div className="progress-indicator">
-          <div className="progress-bar">
-            <div 
-              className="progress-fill" 
-              style={{ width: `${(currentQuestion / 3) * 100}%` }}
-            ></div>
-          </div>
-          <span>Question {currentQuestion} sur 3</span>
+        <div className="footer-info">
+          <p><strong>Rappel :</strong> Ce devoir doit être soumis via la plateforme de cours avec votre fichier Excel.</p>
+          <p><strong>Durée recommandée :</strong> 45 minutes pour la réflexion et la création du fichier Excel.</p>
         </div>
       </div>
     </div>
